@@ -16,6 +16,8 @@
 
 @property (nonatomic,strong) UICollectionView * exampleImageCollectionView;
 
+@property (nonatomic,assign) NSInteger nowItem;
+
 @end
 
 @implementation BKShowExampleImageViewController
@@ -33,6 +35,12 @@
 
 -(void)initNav
 {
+    if ([self.imageArray count] == 1) {
+        self.title = @"预览";
+    }else{
+        self.title = [NSString stringWithFormat:@"%ld/%ld",[self.imageArray indexOfObject:self.tap_asset]+1,[self.imageArray count]];
+    }
+    
     UIButton * button = [UIButton buttonWithType:UIButtonTypeCustom];
     button.frame = CGRectMake(0, 0, 64, 64);
     [button setBackgroundColor:[UIColor clearColor]];
@@ -68,9 +76,9 @@
 {
     if (!_exampleImageCollectionView) {
         BKShowExampleImageCollectionViewFlowLayout * flowLayout = [[BKShowExampleImageCollectionViewFlowLayout alloc]init];
-        flowLayout.allImageCount = [self.assets count];
+        flowLayout.allImageCount = [self.imageArray count];
         
-        _exampleImageCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(-10, 64, self.view.frame.size.width+10*2, self.view.frame.size.height-64) collectionViewLayout:flowLayout];
+        _exampleImageCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(-20, 64, self.view.frame.size.width+20*2, self.view.frame.size.height-64) collectionViewLayout:flowLayout];
         _exampleImageCollectionView.delegate = self;
         _exampleImageCollectionView.dataSource = self;
         _exampleImageCollectionView.backgroundColor = [UIColor clearColor];
@@ -79,7 +87,7 @@
         
         [_exampleImageCollectionView registerClass:[BKShowExampleImageCollectionViewCell class] forCellWithReuseIdentifier:showExampleImageCell_identifier];
         
-        CGFloat contentOffX = (self.view.frame.size.width+10*2) * ([[self.title componentsSeparatedByString:@"/"][0] integerValue] - 1);
+        CGFloat contentOffX = (self.view.frame.size.width+20*2) * ([[self.title componentsSeparatedByString:@"/"][0] integerValue] - 1);
         [_exampleImageCollectionView setContentOffset:CGPointMake(contentOffX, 0) animated:NO];
     }
     return _exampleImageCollectionView;
@@ -87,16 +95,14 @@
 
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return [self.assets countOfAssetsWithMediaType:PHAssetMediaTypeImage];
+    return [self.imageArray count];
 }
 
 -(UICollectionViewCell*)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     BKShowExampleImageCollectionViewCell * cell = (BKShowExampleImageCollectionViewCell*)[collectionView dequeueReusableCellWithReuseIdentifier:showExampleImageCell_identifier forIndexPath:indexPath];
     
-    self.title = [NSString stringWithFormat:@"%ld/%ld",indexPath.row+1,[self.assets countOfAssetsWithMediaType:PHAssetMediaTypeImage]];
-    
-    cell.imageScrollView.contentSize = CGSizeMake(cell.frame.size.width-10*2, cell.frame.size.height);
+    cell.imageScrollView.contentSize = CGSizeMake(cell.frame.size.width-20*2, cell.frame.size.height);
     cell.imageScrollView.hidden = YES;
     cell.showImageView.transform = CGAffineTransformMakeScale(1, 1);
     cell.showImageView.userInteractionEnabled = YES;
@@ -121,7 +127,7 @@
         options.synchronous = YES;
         
         PHCachingImageManager * imageManager = [[PHCachingImageManager alloc]init];
-        [imageManager requestImageForAsset:self.assets[nowIndex] targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+        [imageManager requestImageForAsset:self.imageArray[nowIndex] targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
             
             // 排除取消，错误，低清图三种情况，即已经获取到了高清图
             BOOL downImageloadFinined = ![[info objectForKey:PHImageCancelledKey] boolValue] && ![info objectForKey:PHImageErrorKey] && ![[info objectForKey:PHImageResultIsDegradedKey] boolValue];
@@ -171,6 +177,22 @@
     }
     
     showImageView.frame = showImageViewFrame;
+}
+
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    if (scrollView == self.exampleImageCollectionView) {
+        
+        CGPoint p = [self.view convertPoint:self.exampleImageCollectionView.center toView:self.exampleImageCollectionView];
+        NSIndexPath * indexPath = [self.exampleImageCollectionView indexPathForItemAtPoint:p];
+        NSInteger item = indexPath.item;
+        
+        if ([self.title rangeOfString:@"/"].location != NSNotFound) {
+            self.title = [NSString stringWithFormat:@"%ld/%ld",item+1,[self.imageArray count]];
+        }
+    }
 }
 
 

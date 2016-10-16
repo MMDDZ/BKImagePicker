@@ -15,14 +15,14 @@
     [super prepareLayout];
     
     self.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-    self.itemSize = CGSizeMake([UIScreen mainScreen].bounds.size.width+10*2, [UIScreen mainScreen].bounds.size.height-64);
+    self.itemSize = CGSizeMake([UIScreen mainScreen].bounds.size.width+20*2, [UIScreen mainScreen].bounds.size.height-64);
     self.minimumInteritemSpacing = 0;
     self.minimumLineSpacing = 0;
 }
 
 - (CGSize)collectionViewContentSize
 {
-    return CGSizeMake(([UIScreen mainScreen].bounds.size.width+10*2)*_allImageCount, [UIScreen mainScreen].bounds.size.height-64);
+    return CGSizeMake(([UIScreen mainScreen].bounds.size.width+20*2)*_allImageCount, [UIScreen mainScreen].bounds.size.height-64);
 }
 
 @end

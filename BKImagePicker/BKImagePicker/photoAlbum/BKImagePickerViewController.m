@@ -176,10 +176,24 @@
 
 -(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    BKShowExampleImageViewController * vc =[[BKShowExampleImageViewController alloc]init];
-    vc.title = [NSString stringWithFormat:@"%ld/%ld",indexPath.row+1,[self.assets countOfAssetsWithMediaType:PHAssetMediaTypeImage]];
-    vc.assets = self.assets;
-    [self.navigationController pushViewController:vc animated:YES];
+    PHAsset * asset = (PHAsset*)(self.assets[indexPath.row]);
+    
+    if (asset.mediaType == PHAssetMediaTypeImage) {
+        BKShowExampleImageViewController * vc =[[BKShowExampleImageViewController alloc]init];
+
+        __block NSMutableArray * imageArray = [NSMutableArray array];
+        [self.assets enumerateObjectsUsingBlock:^(PHAsset * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if (obj.mediaType == PHAssetMediaTypeImage) {
+                [imageArray addObject:obj];
+            }
+        }];
+        vc.imageArray = imageArray;
+        vc.tap_asset = asset;
+        
+        [self.navigationController pushViewController:vc animated:YES];
+    }else{
+        
+    }
 }
 
 @end

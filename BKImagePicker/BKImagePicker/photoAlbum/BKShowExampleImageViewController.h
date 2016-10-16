@@ -11,6 +11,8 @@
 
 @interface BKShowExampleImageViewController : UIViewController
 
-@property (nonatomic,strong) PHFetchResult<PHAsset *> *assets;
+@property (nonatomic,strong) NSArray * imageArray;
+
+@property (nonatomic,strong) PHAsset * tap_asset;
 
 @end
