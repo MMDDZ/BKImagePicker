@@ -11,6 +11,8 @@
 
 @interface BKShowExampleImageViewController : UIViewController
 
+@property (nonatomic,strong) NSArray * thumbImageArray;
+
 @property (nonatomic,strong) NSArray * imageArray;
 
 @property (nonatomic,strong) PHAsset * tap_asset;

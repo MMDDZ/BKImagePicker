@@ -25,6 +25,15 @@
 @property (nonatomic,strong) NSMutableArray * albumImageArray;
 @property (nonatomic,strong) UICollectionView * albumCollectionView;
 
+/**
+ 该相簿中所有PHAsset数组 不包括视频
+ */
+@property (nonatomic,strong) NSMutableArray * imageArray;
+/**
+ 该相簿中所有thumb_image数组 不包括视频
+ */
+@property (nonatomic,strong) NSMutableArray * thumbImageArray;
+
 @property (nonatomic,assign) NSInteger allImageCount;
 
 @end
@@ -37,6 +46,22 @@
         _albumImageArray = [NSMutableArray array];
     }
     return _albumImageArray;
+}
+
+-(NSMutableArray*)imageArray
+{
+    if (!_imageArray) {
+        _imageArray = [NSMutableArray array];
+    }
+    return _imageArray;
+}
+
+-(NSMutableArray*)thumbImageArray
+{
+    if (!_thumbImageArray) {
+        _thumbImageArray = [NSMutableArray array];
+    }
+    return _thumbImageArray;
 }
 
 -(void)getAllImageClassData
@@ -79,6 +104,12 @@
                     if (downImageloadFinined) {
                         if(result)
                         {
+                            if (obj.mediaType == PHAssetMediaTypeImage) {
+                                [self.imageArray addObject:obj];
+                                
+                                [self.thumbImageArray addObject:result];
+                            }
+                            
                             [self.albumImageArray addObject:result];
                             dispatch_async(dispatch_get_main_queue(), ^{
                                 [self.albumCollectionView reloadData];
@@ -180,16 +211,9 @@
     
     if (asset.mediaType == PHAssetMediaTypeImage) {
         BKShowExampleImageViewController * vc =[[BKShowExampleImageViewController alloc]init];
-
-        __block NSMutableArray * imageArray = [NSMutableArray array];
-        [self.assets enumerateObjectsUsingBlock:^(PHAsset * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            if (obj.mediaType == PHAssetMediaTypeImage) {
-                [imageArray addObject:obj];
-            }
-        }];
-        vc.imageArray = imageArray;
+        vc.thumbImageArray = self.thumbImageArray;
+        vc.imageArray = self.imageArray;
         vc.tap_asset = asset;
-        
         [self.navigationController pushViewController:vc animated:YES];
     }else{
         

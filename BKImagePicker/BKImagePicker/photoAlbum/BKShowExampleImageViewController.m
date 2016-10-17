@@ -16,8 +16,6 @@
 
 @property (nonatomic,strong) UICollectionView * exampleImageCollectionView;
 
-@property (nonatomic,assign) NSInteger nowItem;
-
 @end
 
 @implementation BKShowExampleImageViewController
@@ -35,6 +33,8 @@
 
 -(void)initNav
 {
+    self.navigationController.navigationBar.alpha = 0.5;
+    
     if ([self.imageArray count] == 1) {
         self.title = @"预览";
     }else{
@@ -95,7 +95,7 @@
 
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return [self.imageArray count];
+    return [self.thumbImageArray count];
 }
 
 -(UICollectionViewCell*)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
@@ -103,13 +103,12 @@
     BKShowExampleImageCollectionViewCell * cell = (BKShowExampleImageCollectionViewCell*)[collectionView dequeueReusableCellWithReuseIdentifier:showExampleImageCell_identifier forIndexPath:indexPath];
     
     cell.imageScrollView.contentSize = CGSizeMake(cell.frame.size.width-20*2, cell.frame.size.height);
-    cell.imageScrollView.hidden = YES;
     cell.showImageView.transform = CGAffineTransformMakeScale(1, 1);
-    cell.showImageView.userInteractionEnabled = YES;
+    
+    [self editImageView:cell.showImageView image:self.thumbImageArray[indexPath.row] scrollView:cell.imageScrollView];
     
     [self getMaximumSizeImageOption:^(UIImage *originalImage) {
         [self editImageView:cell.showImageView image:originalImage scrollView:cell.imageScrollView];
-        cell.imageScrollView.hidden = NO;
     } nowIndex:indexPath.row];
 
     return cell;
@@ -155,26 +154,16 @@
 -(void)editImageView:(UIImageView*)showImageView image:(UIImage*)image scrollView:(UIScrollView*)imageScrollView
 {
     showImageView.image = image;
-    showImageView.frame = CGRectMake(0, 0, image.size.width, image.size.height);
     
     CGRect showImageViewFrame = showImageView.frame;
+
+    showImageViewFrame.size.width = imageScrollView.frame.size.width;
+    CGFloat scale = image.size.width/showImageViewFrame.size.width;
+    showImageViewFrame.size.height = image.size.height/scale;
+    showImageViewFrame.origin.x = 0;
+    showImageViewFrame.origin.y = (imageScrollView.frame.size.height-showImageViewFrame.size.height)/2.0f;
     
-    if (showImageViewFrame.size.width > imageScrollView.frame.size.width) {
-        
-        showImageViewFrame.size.width = imageScrollView.frame.size.width;
-        CGFloat scale = image.size.width/showImageViewFrame.size.width;
-        showImageViewFrame.size.height = image.size.height/scale;
-        showImageViewFrame.origin.x = 0;
-        showImageViewFrame.origin.y = (imageScrollView.frame.size.height-showImageViewFrame.size.height)/2.0f;
-        
-        imageScrollView.maximumZoomScale = scale;
-    }else{
-        
-        showImageViewFrame.origin.x = (imageScrollView.frame.size.width - image.size.width)/2.0f;
-        showImageViewFrame.origin.y = (imageScrollView.frame.size.height - image.size.height)/2.0f;
-        
-        imageScrollView.maximumZoomScale=2.0;
-    }
+    imageScrollView.maximumZoomScale = scale;
     
     showImageView.frame = showImageViewFrame;
 }
