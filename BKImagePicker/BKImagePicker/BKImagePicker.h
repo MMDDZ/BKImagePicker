@@ -10,8 +10,13 @@
 
 @interface BKImagePicker : NSObject
 
-+(instancetype)sharedManager;
+/**
+ 最大选取量
+ */
+@property (nonatomic,assign) NSInteger max_select;
 
--(void)showImagePickerView;
+-(void)takePhoto;
+
+-(void)photoAlbum;
 
 @end

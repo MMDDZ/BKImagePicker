@@ -17,6 +17,7 @@
 @property (nonatomic,strong) UICollectionView * exampleImageCollectionView;
 
 @property (nonatomic,strong) UIView * bottomView;
+@property (nonatomic,strong) UIButton * sendBtn;
 
 @end
 
@@ -36,8 +37,28 @@
         editBtn.titleLabel.font = [UIFont systemFontOfSize:15];
         [editBtn addTarget:self action:@selector(editBtnClick:) forControlEvents:UIControlEventTouchUpInside];
         [_bottomView addSubview:editBtn];
+        
+        [_bottomView addSubview:[self sendBtn]];
     }
     return _bottomView;
+}
+
+-(UIButton*)sendBtn
+{
+    if (!_sendBtn) {
+        
+        _sendBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        _sendBtn.frame = CGRectMake(self.view.frame.size.width/4*3, 6, self.view.frame.size.width/4-6, 37);
+        [_sendBtn setTitle:@"确定" forState:UIControlStateNormal];
+        [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [_sendBtn setBackgroundColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1]];
+        _sendBtn.titleLabel.font = [UIFont systemFontOfSize:14];
+        _sendBtn.layer.cornerRadius = 4;
+        _sendBtn.clipsToBounds = YES;
+        [_sendBtn addTarget:self action:@selector(sendBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+        
+    }
+    return _sendBtn;
 }
 
 - (void)viewDidLoad {
@@ -75,7 +96,7 @@
     titleLab.clipsToBounds = YES;
     titleLab.layer.cornerRadius = titleLab.frame.size.width/2.0f;
     titleLab.layer.borderColor = [UIColor whiteColor].CGColor;
-    titleLab.layer.borderWidth = 0.5;
+    titleLab.layer.borderWidth = 1;
     titleLab.textAlignment = NSTextAlignmentCenter;
     titleLab.tag = 1;
     [button addSubview:titleLab];
@@ -94,6 +115,17 @@
 -(void)editBtnClick:(UIButton*)button
 {
     
+}
+
+-(void)sendBtnClick:(UIButton*)button
+{
+    
+}
+
+-(void)exampleImageCollectionViewTapRecognizer
+{
+    self.navigationController.navigationBarHidden = !self.navigationController.navigationBarHidden;
+    self.bottomView.hidden = !self.bottomView.hidden;
 }
 
 #pragma mark - UICollectionView
@@ -115,6 +147,9 @@
         
         CGFloat contentOffX = (self.view.frame.size.width+20*2) * ([[self.title componentsSeparatedByString:@"/"][0] integerValue] - 1);
         [_exampleImageCollectionView setContentOffset:CGPointMake(contentOffX, 0) animated:NO];
+        
+        UITapGestureRecognizer * exampleImageCollectionViewTapRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(exampleImageCollectionViewTapRecognizer)];
+        [_exampleImageCollectionView addGestureRecognizer:exampleImageCollectionViewTapRecognizer];
     }
     return _exampleImageCollectionView;
 }
@@ -218,6 +253,5 @@
         }
     }
 }
-
 
 @end

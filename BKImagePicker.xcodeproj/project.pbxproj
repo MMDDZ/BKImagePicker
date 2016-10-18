@@ -21,6 +21,7 @@
 		88500AAA1DAF1D2300102A35 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 88500AA91DAF1D2300102A35 /* Assets.xcassets */; };
 		88500AAD1DAF1D2300102A35 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 88500AAB1DAF1D2300102A35 /* LaunchScreen.storyboard */; };
 		88500AB81DAF231500102A35 /* BKImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 88500AB71DAF231500102A35 /* BKImagePicker.m */; };
+		887192D51DB61DD8007FED28 /* SelectButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 887192D41DB61DD8007FED28 /* SelectButton.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,6 +52,8 @@
 		88500AAE1DAF1D2300102A35 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		88500AB61DAF231500102A35 /* BKImagePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKImagePicker.h; sourceTree = "<group>"; };
 		88500AB71DAF231500102A35 /* BKImagePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKImagePicker.m; sourceTree = "<group>"; };
+		887192D31DB61DD8007FED28 /* SelectButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SelectButton.h; sourceTree = "<group>"; };
+		887192D41DB61DD8007FED28 /* SelectButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SelectButton.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,6 +86,8 @@
 				2A16740F1DB2182200BA7AE0 /* BKShowExampleImageCollectionViewFlowLayout.m */,
 				2A1674111DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.h */,
 				2A1674121DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.m */,
+				887192D31DB61DD8007FED28 /* SelectButton.h */,
+				887192D41DB61DD8007FED28 /* SelectButton.m */,
 			);
 			path = photoAlbum;
 			sourceTree = "<group>";
@@ -213,6 +218,7 @@
 				2A1674061DB204A600BA7AE0 /* BKImageClassTableViewCell.m in Sources */,
 				2A1674101DB2182200BA7AE0 /* BKShowExampleImageCollectionViewFlowLayout.m in Sources */,
 				88500AB81DAF231500102A35 /* BKImagePicker.m in Sources */,
+				887192D51DB61DD8007FED28 /* SelectButton.m in Sources */,
 				2A1674131DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.m in Sources */,
 				2A1674071DB204A600BA7AE0 /* BKImageClassViewController.m in Sources */,
 				88500AA51DAF1D2300102A35 /* ViewController.m in Sources */,

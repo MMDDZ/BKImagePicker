@@ -45,32 +45,6 @@
     return _vc;
 }
 
-+(instancetype)sharedManager
-{
-    static BKImagePicker * imagePicker = nil;
-    static dispatch_once_t predicate;
-    dispatch_once(&predicate, ^{
-        imagePicker = [[BKImagePicker alloc] init];
-    });
-    return imagePicker;
-}
-
--(void)showImagePickerView
-{
-    UIAlertController * alert = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-    UIAlertAction * takePhoto = [UIAlertAction actionWithTitle:@"拍照" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        [self takePhoto];
-    }];
-    [alert addAction:takePhoto];
-    UIAlertAction * photoAlbum = [UIAlertAction actionWithTitle:@"从相册中选择" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        [self photoAlbum];
-    }];
-    [alert addAction:photoAlbum];
-    UIAlertAction * cancel = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {}];
-    [alert addAction:cancel];
-    [self.vc presentViewController:alert animated:YES completion:nil];
-}
-
 -(void)takePhoto
 {
     NSLog(@"1");
@@ -82,6 +56,7 @@
         if (handleFlag) {
             BKImageClassViewController * imageClassVC = [[BKImageClassViewController alloc]init];
             BKImagePickerViewController * imageVC = [[BKImagePickerViewController alloc]init];
+            imageVC.max_select = self.max_select;
             
             NSDictionary * info_dic = [[NSBundle mainBundle] infoDictionary];
             NSString * info_language = info_dic[@"CFBundleDevelopmentRegion"];

@@ -30,7 +30,26 @@
 
 -(void)buttonClick
 {
-    [[BKImagePicker sharedManager] showImagePickerView];
+    [self showImagePickerView];
+}
+
+-(void)showImagePickerView
+{
+    BKImagePicker * imagePicker = [[BKImagePicker alloc]init];
+    imagePicker.max_select = 6;
+    
+    UIAlertController * alert = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    UIAlertAction * takePhoto = [UIAlertAction actionWithTitle:@"拍照" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [imagePicker takePhoto];
+    }];
+    [alert addAction:takePhoto];
+    UIAlertAction * photoAlbum = [UIAlertAction actionWithTitle:@"从相册中选择" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [imagePicker photoAlbum];
+    }];
+    [alert addAction:photoAlbum];
+    UIAlertAction * cancel = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {}];
+    [alert addAction:cancel];
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 

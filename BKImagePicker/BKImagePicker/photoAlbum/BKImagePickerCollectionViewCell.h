@@ -7,9 +7,16 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "SelectButton.h"
 
 @interface BKImagePickerCollectionViewCell : UICollectionViewCell
 
 @property (nonatomic,strong) UIImageView * photoImageView;
+
+@property (nonatomic,strong) SelectButton * selectButton;
+
+@property (nonatomic,strong) UIImageView * videoImageView;
+
+@property (nonatomic,strong) UILabel * videoTimeLab;
 
 @end

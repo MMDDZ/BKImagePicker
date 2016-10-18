@@ -12,23 +12,34 @@
 #define imagePickerCell_identifier @"BKImagePickerCollectionViewCell"
 #define imagePickerFooter_identifier @"BKImagePickerFooterCollectionReusableView"
 
+#import "BKImageClassViewController.h"
+
 #import "BKImagePickerViewController.h"
-#import <Photos/Photos.h>
 #import "BKImagePickerCollectionViewCell.h"
 #import "BKImagePickerFooterCollectionReusableView.h"
 #import "BKShowExampleImageViewController.h"
+#import "SelectButton.h"
 
 @interface BKImagePickerViewController ()<UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout>
 
 @property (nonatomic,strong) PHFetchResult<PHAsset *> *assets;
 
-@property (nonatomic,strong) NSMutableArray * albumImageArray;
 @property (nonatomic,strong) UICollectionView * albumCollectionView;
+
+/**
+ 该相簿中所有thumb_image数组 包括视频
+ */
+@property (nonatomic,strong) NSMutableArray * albumImageArray;
+
+/**
+ 该相簿中所有PHAsset数组 包括视频
+ */
+@property (nonatomic,strong) NSMutableArray * albumAssetArray;
 
 /**
  该相簿中所有PHAsset数组 不包括视频
  */
-@property (nonatomic,strong) NSMutableArray * imageArray;
+@property (nonatomic,strong) NSMutableArray * imageAssetArray;
 /**
  该相簿中所有thumb_image数组 不包括视频
  */
@@ -48,12 +59,20 @@
     return _albumImageArray;
 }
 
--(NSMutableArray*)imageArray
+-(NSMutableArray*)albumAssetArray
 {
-    if (!_imageArray) {
-        _imageArray = [NSMutableArray array];
+    if (!_albumAssetArray) {
+        _albumAssetArray = [NSMutableArray array];
     }
-    return _imageArray;
+    return _albumAssetArray;
+}
+
+-(NSMutableArray*)imageAssetArray
+{
+    if (!_imageAssetArray) {
+        _imageAssetArray = [NSMutableArray array];
+    }
+    return _imageAssetArray;
 }
 
 -(NSMutableArray*)thumbImageArray
@@ -62,6 +81,26 @@
         _thumbImageArray = [NSMutableArray array];
     }
     return _thumbImageArray;
+}
+
+-(NSMutableArray*)select_imageArray
+{
+    if (!_select_imageArray) {
+        _select_imageArray = [NSMutableArray array];
+    }
+    return _select_imageArray;
+}
+
+//更新选取的PHAsset数组
+-(void)refreshClassSelectImageArray
+{
+    [self.navigationController.viewControllers enumerateObjectsUsingBlock:^(__kindof UIViewController * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ([obj isKindOfClass:[BKImageClassViewController class]]) {
+            BKImageClassViewController * vc = (BKImageClassViewController*)obj;
+            vc.select_imageArray = self.select_imageArray;
+            *stop = YES;
+        }
+    }];
 }
 
 -(void)getAllImageClassData
@@ -105,11 +144,11 @@
                         if(result)
                         {
                             if (obj.mediaType == PHAssetMediaTypeImage) {
-                                [self.imageArray addObject:obj];
-                                
+                                [self.imageAssetArray addObject:obj];
                                 [self.thumbImageArray addObject:result];
                             }
                             
+                            [self.albumAssetArray addObject:obj];
                             [self.albumImageArray addObject:result];
                             dispatch_async(dispatch_get_main_queue(), ^{
                                 [self.albumCollectionView reloadData];
@@ -146,9 +185,18 @@
     self.navigationItem.rightBarButtonItem = rightItem;
 }
 
+
 -(void)rightItemClick
 {
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+-(void)selectButton:(SelectButton*)button
+{
+    [button selectClickNum:[self.select_imageArray count]+1 addMethod:^{
+        PHAsset * asset = (PHAsset*)self.albumAssetArray[button.tag];
+        [self.select_imageArray addObject:asset];
+    }];
 }
 
 #pragma mark - UICollectionView
@@ -186,6 +234,26 @@
     
     cell.photoImageView.image = self.albumImageArray[indexPath.row];
     
+    PHAsset * asset = (PHAsset*)(self.assets[indexPath.row]);
+    if (asset.mediaType == PHAssetMediaTypeImage) {
+        
+        cell.selectButton.hidden = NO;
+        
+        if ([self.select_imageArray containsObject:asset]) {
+            NSInteger select_num = [self.select_imageArray indexOfObject:asset]+1;
+            cell.selectButton.title = [NSString stringWithFormat:@"%ld",select_num];
+        }
+        
+        cell.selectButton.tag = indexPath.item;
+        [cell.selectButton addTarget:self action:@selector(selectButton:) forControlEvents:UIControlEventTouchUpInside];
+        
+    }else{
+        
+        cell.selectButton.hidden = YES;
+        
+    }
+    
+    
     return cell;
 }
 
@@ -212,7 +280,7 @@
     if (asset.mediaType == PHAssetMediaTypeImage) {
         BKShowExampleImageViewController * vc =[[BKShowExampleImageViewController alloc]init];
         vc.thumbImageArray = self.thumbImageArray;
-        vc.imageArray = self.imageArray;
+        vc.imageArray = self.imageAssetArray;
         vc.tap_asset = asset;
         [self.navigationController pushViewController:vc animated:YES];
     }else{

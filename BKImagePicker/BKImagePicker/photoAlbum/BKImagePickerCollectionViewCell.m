@@ -20,6 +20,9 @@
         _photoImageView.contentMode = UIViewContentModeScaleAspectFill;
         [self addSubview:_photoImageView];
         
+        _selectButton = [[SelectButton alloc]initSelectButtonWithFrame:CGRectMake(frame.size.width - 30, 0, 30, 30)];
+        [self addSubview:_selectButton];
+        
     }
     return self;
 }
