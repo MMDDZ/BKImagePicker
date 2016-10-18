@@ -16,9 +16,29 @@
 
 @property (nonatomic,strong) UICollectionView * exampleImageCollectionView;
 
+@property (nonatomic,strong) UIView * bottomView;
+
 @end
 
 @implementation BKShowExampleImageViewController
+
+-(UIView*)bottomView
+{
+    if (!_bottomView) {
+        
+        _bottomView = [[UIView alloc]initWithFrame:CGRectMake(0, self.view.frame.size.height-49, self.view.frame.size.width, 49)];
+        _bottomView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.8];
+        
+        UIButton * editBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        editBtn.frame = CGRectMake(0, 0, self.view.frame.size.width / 6, 49);
+        [editBtn setTitle:@"编辑" forState:UIControlStateNormal];
+        [editBtn setTitleColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1] forState:UIControlStateNormal];
+        editBtn.titleLabel.font = [UIFont systemFontOfSize:15];
+        [editBtn addTarget:self action:@selector(editBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+        [_bottomView addSubview:editBtn];
+    }
+    return _bottomView;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -29,11 +49,12 @@
     
     [self initNav];
     [self.view addSubview:[self exampleImageCollectionView]];
+    [self.view addSubview:[self bottomView]];
 }
 
 -(void)initNav
 {
-    self.navigationController.navigationBar.alpha = 0.5;
+    self.navigationController.navigationBar.alpha = 0.8;
     
     if ([self.imageArray count] == 1) {
         self.title = @"预览";
@@ -70,6 +91,11 @@
     
 }
 
+-(void)editBtnClick:(UIButton*)button
+{
+    
+}
+
 #pragma mark - UICollectionView
 
 -(UICollectionView*)exampleImageCollectionView
@@ -78,7 +104,7 @@
         BKShowExampleImageCollectionViewFlowLayout * flowLayout = [[BKShowExampleImageCollectionViewFlowLayout alloc]init];
         flowLayout.allImageCount = [self.imageArray count];
         
-        _exampleImageCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(-20, 64, self.view.frame.size.width+20*2, self.view.frame.size.height-64) collectionViewLayout:flowLayout];
+        _exampleImageCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(-20, 0, self.view.frame.size.width+20*2, self.view.frame.size.height) collectionViewLayout:flowLayout];
         _exampleImageCollectionView.delegate = self;
         _exampleImageCollectionView.dataSource = self;
         _exampleImageCollectionView.backgroundColor = [UIColor clearColor];
@@ -157,13 +183,22 @@
     
     CGRect showImageViewFrame = showImageView.frame;
 
-    showImageViewFrame.size.width = imageScrollView.frame.size.width;
-    CGFloat scale = image.size.width/showImageViewFrame.size.width;
-    showImageViewFrame.size.height = image.size.height/scale;
-    showImageViewFrame.origin.x = 0;
-    showImageViewFrame.origin.y = (imageScrollView.frame.size.height-showImageViewFrame.size.height)/2.0f;
+    CGFloat scale = image.size.width / showImageViewFrame.size.width;
+    CGFloat height = image.size.height / scale;
+    if (height > imageScrollView.frame.size.height) {
+        showImageViewFrame.size.height = imageScrollView.frame.size.height;
+        scale = image.size.height / showImageViewFrame.size.height;
+        showImageViewFrame.size.width = image.size.width / scale;
+        showImageViewFrame.origin.x = (imageScrollView.frame.size.width - showImageViewFrame.size.width) / 2.0f;
+        showImageViewFrame.origin.y = 0;
+    }else{
+        showImageViewFrame.size.height = height;
+        showImageViewFrame.size.width = imageScrollView.frame.size.width;
+        showImageViewFrame.origin.x = 0;
+        showImageViewFrame.origin.y = (imageScrollView.frame.size.height-showImageViewFrame.size.height)/2.0f;
+    }
     
-    imageScrollView.maximumZoomScale = scale;
+    imageScrollView.maximumZoomScale = scale<2?2:scale;
     
     showImageView.frame = showImageViewFrame;
 }
