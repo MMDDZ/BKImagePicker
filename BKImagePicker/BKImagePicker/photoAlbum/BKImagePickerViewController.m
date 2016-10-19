@@ -19,6 +19,7 @@
 #import "BKImagePickerFooterCollectionReusableView.h"
 #import "BKShowExampleImageViewController.h"
 #import "SelectButton.h"
+#import "BKTool.h"
 
 @interface BKImagePickerViewController ()<UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout>
 
@@ -45,7 +46,13 @@
  */
 @property (nonatomic,strong) NSMutableArray * thumbImageArray;
 
-@property (nonatomic,assign) NSInteger allImageCount;
+/**
+ 该相簿中所有相册和视频总数
+ */
+@property (nonatomic,assign) NSInteger allAlbumImageNum;
+
+@property (nonatomic,strong) UIView * bottomView;
+@property (nonatomic,strong) UIButton * sendBtn;
 
 @end
 
@@ -98,6 +105,13 @@
         if ([obj isKindOfClass:[BKImageClassViewController class]]) {
             BKImageClassViewController * vc = (BKImageClassViewController*)obj;
             vc.select_imageArray = self.select_imageArray;
+            
+            if ([self.select_imageArray count] == 0) {
+                [_sendBtn setTitle:@"确定" forState:UIControlStateNormal];
+            }else{
+                [_sendBtn setTitle:[NSString stringWithFormat:@"确定(%ld)",[self.select_imageArray count]] forState:UIControlStateNormal];
+            }
+            
             *stop = YES;
         }
     }];
@@ -105,6 +119,9 @@
 
 -(void)getAllImageClassData
 {
+    [self.albumCollectionView setHidden:YES];
+    [[BKTool shareInstance] showLoad];
+    
     //系统的相簿
     PHFetchResult * smartAlbums = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
     [self getSingleAlbum:smartAlbums];
@@ -128,7 +145,7 @@
             
             self.assets  = [PHAsset fetchAssetsInAssetCollection:collection options:fetchOptions];
             
-            self.allImageCount = [self.assets count];
+            self.allAlbumImageNum = [self.assets count];
             
             PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
             options.synchronous = YES;
@@ -151,7 +168,13 @@
                             [self.albumAssetArray addObject:obj];
                             [self.albumImageArray addObject:result];
                             dispatch_async(dispatch_get_main_queue(), ^{
-                                [self.albumCollectionView reloadData];
+                                if ([self.albumImageArray count] == self.allAlbumImageNum) {
+                                    [self.albumCollectionView reloadData];
+                                    [self.albumCollectionView setContentOffset:CGPointMake(0, self.albumCollectionView.contentSize.height - self.albumCollectionView.frame.size.height)];
+                                    
+                                    [self.albumCollectionView setHidden:NO];
+//                                    [[BKTool shareInstance] hideLoad];
+                                }
                             });
                         }
                     }
@@ -173,6 +196,7 @@
     
     [self initNav];
     [self.view addSubview:[self albumCollectionView]];
+    [self.view addSubview:[self bottomView]];
     
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         [self getAllImageClassData];
@@ -185,18 +209,9 @@
     self.navigationItem.rightBarButtonItem = rightItem;
 }
 
-
 -(void)rightItemClick
 {
     [self dismissViewControllerAnimated:YES completion:nil];
-}
-
--(void)selectButton:(SelectButton*)button
-{
-    [button selectClickNum:[self.select_imageArray count]+1 addMethod:^{
-        PHAsset * asset = (PHAsset*)self.albumAssetArray[button.tag];
-        [self.select_imageArray addObject:asset];
-    }];
 }
 
 #pragma mark - UICollectionView
@@ -212,7 +227,7 @@
         flowLayout.sectionInset = UIEdgeInsetsMake(item_space, item_space, item_space, item_space);
         [flowLayout setFooterReferenceSize:CGSizeMake(self.view.frame.size.width, 40)];
         
-        _albumCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 64, self.view.frame.size.width, self.view.frame.size.height-64) collectionViewLayout:flowLayout];
+        _albumCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 64, self.view.frame.size.width, self.view.frame.size.height-64-49) collectionViewLayout:flowLayout];
         _albumCollectionView.delegate = self;
         _albumCollectionView.dataSource = self;
         _albumCollectionView.showsVerticalScrollIndicator = NO;
@@ -242,19 +257,39 @@
         if ([self.select_imageArray containsObject:asset]) {
             NSInteger select_num = [self.select_imageArray indexOfObject:asset]+1;
             cell.selectButton.title = [NSString stringWithFormat:@"%ld",select_num];
+        }else{
+            cell.selectButton.title = @"";
         }
         
         cell.selectButton.tag = indexPath.item;
         [cell.selectButton addTarget:self action:@selector(selectButton:) forControlEvents:UIControlEventTouchUpInside];
         
     }else{
-        
         cell.selectButton.hidden = YES;
-        
     }
     
-    
     return cell;
+}
+
+-(void)selectButton:(SelectButton*)button
+{
+    PHAsset * asset = (PHAsset*)self.albumAssetArray[button.tag];
+    BOOL isHave = [self.select_imageArray containsObject:asset];
+    if (!isHave && [self.select_imageArray count] >= self.max_select) {
+        [[BKTool shareInstance] showRemind:[NSString stringWithFormat:@"最多只能选择%ld张照片",self.max_select]];
+        return;
+    }
+    
+    [button selectClickNum:[self.select_imageArray count]+1 addMethod:^{
+        if (isHave) {
+            [self.select_imageArray removeObject:asset];
+            [self.albumCollectionView reloadData];
+        }else{
+            [self.select_imageArray addObject:asset];
+        }
+        
+        [self refreshClassSelectImageArray];
+    }];
 }
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
@@ -265,7 +300,7 @@
         
         BKImagePickerFooterCollectionReusableView * footerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:imagePickerFooter_identifier forIndexPath:indexPath];
         
-        footerView.titleLab.text = [NSString stringWithFormat:@"共%ld张照片",self.allImageCount];
+        footerView.titleLab.text = [NSString stringWithFormat:@"共%ld张照片",self.allAlbumImageNum];
         
         reusableview = footerView;
     }
@@ -284,8 +319,78 @@
         vc.tap_asset = asset;
         [self.navigationController pushViewController:vc animated:YES];
     }else{
+        if ([self.select_imageArray count] > 0) {
+            [[BKTool shareInstance] showRemind:@"不能同时选择照片和视频"];
+            return;
+        }
+    }
+}
+
+#pragma mark - BottomView
+
+-(UIView*)bottomView
+{
+    if (!_bottomView) {
+        
+        _bottomView = [[UIView alloc]initWithFrame:CGRectMake(0, self.view.frame.size.height-49, self.view.frame.size.width, 49)];
+        _bottomView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1];
+        
+        UIImageView * lineView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 0.3)];
+        lineView.backgroundColor = [UIColor colorWithWhite:0.75 alpha:1];
+        [_bottomView addSubview:lineView];
+        
+        UIButton * previewBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        previewBtn.frame = CGRectMake(0, 0, self.view.frame.size.width/6, 49);
+        [previewBtn setTitle:@"预览" forState:UIControlStateNormal];
+        [previewBtn setTitleColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1] forState:UIControlStateNormal];
+        previewBtn.titleLabel.font = [UIFont systemFontOfSize:15];
+        [previewBtn addTarget:self action:@selector(previewBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+        [_bottomView addSubview:previewBtn];
+        
+        UIButton * editBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        editBtn.frame = CGRectMake(self.view.frame.size.width/6, 0, self.view.frame.size.width/6, 49);
+        [editBtn setTitle:@"编辑" forState:UIControlStateNormal];
+        [editBtn setTitleColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1] forState:UIControlStateNormal];
+        editBtn.titleLabel.font = [UIFont systemFontOfSize:15];
+        [editBtn addTarget:self action:@selector(editBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+        [_bottomView addSubview:editBtn];
+        
+        [_bottomView addSubview:[self sendBtn]];
+    }
+    return _bottomView;
+}
+
+-(UIButton*)sendBtn
+{
+    if (!_sendBtn) {
+        
+        _sendBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        _sendBtn.frame = CGRectMake(self.view.frame.size.width/4*3, 6, self.view.frame.size.width/4-6, 37);
+        [_sendBtn setTitle:@"确定" forState:UIControlStateNormal];
+        [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [_sendBtn setBackgroundColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1]];
+        _sendBtn.titleLabel.font = [UIFont systemFontOfSize:14];
+        _sendBtn.layer.cornerRadius = 4;
+        _sendBtn.clipsToBounds = YES;
+        [_sendBtn addTarget:self action:@selector(sendBtnClick:) forControlEvents:UIControlEventTouchUpInside];
         
     }
+    return _sendBtn;
+}
+
+-(void)previewBtnClick:(UIButton*)button
+{
+    
+}
+
+-(void)editBtnClick:(UIButton*)button
+{
+    
+}
+
+-(void)sendBtnClick:(UIButton*)button
+{
+    
 }
 
 @end

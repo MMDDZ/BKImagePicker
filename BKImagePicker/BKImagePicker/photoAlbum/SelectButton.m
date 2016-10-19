@@ -73,13 +73,14 @@
         
         _titleLab.text = [NSString stringWithFormat:@"%ld",num];
         _titleLab.backgroundColor = [UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1];
-        
-        if (method) {
-            method();
-        }
+
     }else{
         _titleLab.text = @"";
         _titleLab.backgroundColor = [UIColor colorWithWhite:0.5 alpha:0.5];
+    }
+    
+    if (method) {
+        method();
     }
 }
 

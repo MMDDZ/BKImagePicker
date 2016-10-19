@@ -21,27 +21,26 @@
 
 -(UIViewController *)vc
 {
-    if (!_vc) {
-        UIWindow * window = [[UIApplication sharedApplication] keyWindow];
-        if (window.windowLevel != UIWindowLevelNormal) {
-            NSArray *windows = [[UIApplication sharedApplication] windows];
-            for(UIWindow * tmpWin in windows) {
-                if (tmpWin.windowLevel == UIWindowLevelNormal) {
-                    window = tmpWin;
-                    break;
-                }
+    UIWindow * window = [[UIApplication sharedApplication] keyWindow];
+    if (window.windowLevel != UIWindowLevelNormal) {
+        NSArray *windows = [[UIApplication sharedApplication] windows];
+        for(UIWindow * tmpWin in windows) {
+            if (tmpWin.windowLevel == UIWindowLevelNormal) {
+                window = tmpWin;
+                break;
             }
         }
-        
-        UIView *frontView = [[window subviews] objectAtIndex:0];
-        id nextResponder = [frontView nextResponder];
-        
-        if ([nextResponder isKindOfClass:[UIViewController class]]) {
-            _vc = nextResponder;
-        }else {
-            _vc = window.rootViewController;
-        }
     }
+    
+    UIView *frontView = [[window subviews] objectAtIndex:0];
+    id nextResponder = [frontView nextResponder];
+    
+    if ([nextResponder isKindOfClass:[UIViewController class]]) {
+        _vc = nextResponder;
+    }else {
+        _vc = window.rootViewController;
+    }
+    
     return _vc;
 }
 
@@ -55,6 +54,7 @@
     [self checkAllowVisitPhotoAlbumHandler:^(BOOL handleFlag) {
         if (handleFlag) {
             BKImageClassViewController * imageClassVC = [[BKImageClassViewController alloc]init];
+            imageClassVC.max_select = self.max_select;
             BKImagePickerViewController * imageVC = [[BKImagePickerViewController alloc]init];
             imageVC.max_select = self.max_select;
             

@@ -11,6 +11,11 @@
 @interface BKImageClassViewController : UIViewController
 
 /**
+ 最大选取量
+ */
+@property (nonatomic,assign) NSInteger max_select;
+
+/**
  选取的PHAsset数组
  */
 @property (nonatomic,strong) NSArray * select_imageArray;

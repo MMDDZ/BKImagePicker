@@ -173,6 +173,8 @@
     NSDictionary * dic = self.imageClassArray[indexPath.row];
     imageVC.title = dic[@"album_name"];
     
+    imageVC.max_select = self.max_select;
+    
     [self.navigationController pushViewController:imageVC animated:YES];
 }
 

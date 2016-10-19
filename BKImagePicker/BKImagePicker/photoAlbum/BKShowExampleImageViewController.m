@@ -124,6 +124,7 @@
 
 -(void)exampleImageCollectionViewTapRecognizer
 {
+    [UIApplication sharedApplication].statusBarHidden = ![UIApplication sharedApplication].statusBarHidden;
     self.navigationController.navigationBarHidden = !self.navigationController.navigationBarHidden;
     self.bottomView.hidden = !self.bottomView.hidden;
 }
