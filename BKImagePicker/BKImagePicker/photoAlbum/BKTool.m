@@ -28,7 +28,7 @@
 
 #pragma mark - Remind
 
--(void)showRemind:(NSString*)text
++(void)showRemind:(NSString*)text
 {
     UIWindow * window = [[[UIApplication sharedApplication] delegate] window];
     
@@ -68,7 +68,7 @@
     }];
 }
 
--(CGSize)sizeWithString:(NSString *)string UIWidth:(CGFloat)width font:(UIFont*)font
++(CGSize)sizeWithString:(NSString *)string UIWidth:(CGFloat)width font:(UIFont*)font
 {
     CGRect rect = [string boundingRectWithSize:CGSizeMake(width, MAXFLOAT)
                                        options: NSStringDrawingUsesFontLeading  |NSStringDrawingUsesLineFragmentOrigin
@@ -78,7 +78,7 @@
     return rect.size;
 }
 
--(CGSize)sizeWithString:(NSString *)string UIHeight:(CGFloat)height font:(UIFont*)font
++(CGSize)sizeWithString:(NSString *)string UIHeight:(CGFloat)height font:(UIFont*)font
 {
     CGRect rect = [string boundingRectWithSize:CGSizeMake(MAXFLOAT, height)
                                        options: NSStringDrawingUsesFontLeading  |NSStringDrawingUsesLineFragmentOrigin
@@ -90,24 +90,24 @@
 
 #pragma mark - Load
 
--(void)showLoad
++(void)showLoadInView:(UIView*)view
 {
-    UIWindow * window = [[[UIApplication sharedApplication] delegate] window];
+    CALayer * loadLayer = [CALayer layer];
+    loadLayer.bounds = CGRectMake(0, 0, view.bounds.size.width/4.0f, view.bounds.size.width/4.0f);
+    loadLayer.position = view.center;
+    loadLayer.backgroundColor = [UIColor colorWithWhite:0 alpha:0.75f].CGColor;
+    loadLayer.cornerRadius = loadLayer.bounds.size.width/10.0f;
+    loadLayer.masksToBounds = YES;
+    [view.layer addSublayer:loadLayer];
     
-    self.loadLayer = [CALayer layer];
-    self.loadLayer.bounds = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width/4.0f, [UIScreen mainScreen].bounds.size.width/4.0f);
-    self.loadLayer.position = window.center;
-    self.loadLayer.backgroundColor = [UIColor colorWithWhite:0 alpha:0.75f].CGColor;
-    self.loadLayer.cornerRadius = _loadLayer.bounds.size.width/10.0f;
-    self.loadLayer.masksToBounds = YES;
-    [window.layer addSublayer:self.loadLayer];
+    [BKTool shareInstance].loadLayer = loadLayer;
     
     NSTimeInterval beginTime = CACurrentMediaTime();
     
     for (int i = 0; i < 2; i++) {
         CALayer * circle = [CALayer layer];
-        circle.bounds = CGRectMake(0, 0, self.loadLayer.bounds.size.width/2.0f, self.loadLayer.bounds.size.height/2.0f);
-        circle.position = CGPointMake(self.loadLayer.bounds.size.width/2.0f, self.loadLayer.bounds.size.height/2.0f);
+        circle.bounds = CGRectMake(0, 0, loadLayer.bounds.size.width/2.0f, loadLayer.bounds.size.height/2.0f);
+        circle.position = CGPointMake(loadLayer.bounds.size.width/2.0f, loadLayer.bounds.size.height/2.0f);
         circle.backgroundColor = [UIColor whiteColor].CGColor;
         circle.opacity = 0.6;
         circle.cornerRadius = CGRectGetHeight(circle.bounds) * 0.5;
@@ -128,17 +128,18 @@
                         [NSValue valueWithCATransform3D:CATransform3DMakeScale(1.0, 1.0, 0.0)],
                         [NSValue valueWithCATransform3D:CATransform3DMakeScale(0.0, 0.0, 0.0)]];
         
-        [self.loadLayer addSublayer:circle];
+        [loadLayer addSublayer:circle];
         [circle addAnimation:animation forKey:@"loading_admin"];
     }
 }
 
--(void)hideLoad
++(void)hideLoad
 {
-    [[self.loadLayer sublayers] enumerateObjectsUsingBlock:^(CALayer * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [[[BKTool shareInstance].loadLayer sublayers] enumerateObjectsUsingBlock:^(CALayer * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         [obj removeAnimationForKey:@"loading_admin"];
     }];
-    [self.loadLayer removeFromSuperlayer];
+    [[BKTool shareInstance].loadLayer removeFromSuperlayer];
+    [BKTool shareInstance].loadLayer = nil;
 }
 
 @end

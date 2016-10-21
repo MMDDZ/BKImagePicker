@@ -120,7 +120,7 @@
 -(void)getAllImageClassData
 {
     [self.albumCollectionView setHidden:YES];
-    [[BKTool shareInstance] showLoad];
+    [BKTool showLoadInView:self.view];
     
     //系统的相簿
     PHFetchResult * smartAlbums = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
@@ -170,10 +170,17 @@
                             dispatch_async(dispatch_get_main_queue(), ^{
                                 if ([self.albumImageArray count] == self.allAlbumImageNum) {
                                     [self.albumCollectionView reloadData];
-                                    [self.albumCollectionView setContentOffset:CGPointMake(0, self.albumCollectionView.contentSize.height - self.albumCollectionView.frame.size.height)];
+                                    
+                                    NSUInteger finalRow = MAX(0, [self.albumCollectionView numberOfItemsInSection:0] - 1);
+                                    NSIndexPath *finalIndexPath = [NSIndexPath indexPathForItem:finalRow inSection:0];
+                                    [self.albumCollectionView scrollToItemAtIndexPath:finalIndexPath atScrollPosition:UICollectionViewScrollPositionBottom animated:NO];
+                                    
+                                    if (self.albumCollectionView.contentOffset.y > 0) {
+                                        [self.albumCollectionView setContentOffset:CGPointMake(0, self.albumCollectionView.contentOffset.y + 46)];
+                                    }
                                     
                                     [self.albumCollectionView setHidden:NO];
-//                                    [[BKTool shareInstance] hideLoad];
+                                    [BKTool hideLoad];
                                 }
                             });
                         }
@@ -253,6 +260,9 @@
     if (asset.mediaType == PHAssetMediaTypeImage) {
         
         cell.selectButton.hidden = NO;
+        cell.videoBgLayer.hidden = YES;
+        cell.videoImageView.hidden = YES;
+        cell.videoTimeLab.hidden = YES;
         
         if ([self.select_imageArray containsObject:asset]) {
             NSInteger select_num = [self.select_imageArray indexOfObject:asset]+1;
@@ -266,6 +276,31 @@
         
     }else{
         cell.selectButton.hidden = YES;
+        cell.videoBgLayer.hidden = NO;
+        cell.videoImageView.hidden = NO;
+        cell.videoTimeLab.hidden = NO;
+        
+        NSInteger allTime = [[asset valueForKey:@"duration"] integerValue];
+        if (allTime > 60) {
+            NSInteger second = allTime%60;
+            NSInteger minute = allTime/60;
+            
+            NSString * secondStr = [NSString stringWithFormat:@"%ld",second];
+            if ([secondStr length] == 1) {
+                secondStr = [NSString stringWithFormat:@"0%ld",second];
+            }
+            
+            cell.videoTimeLab.text = [NSString stringWithFormat:@"%ld:%@",minute,secondStr];
+            
+        }else{
+            
+            NSString * second = [NSString stringWithFormat:@"%ld",allTime];
+            if ([second length] == 1) {
+                second = [NSString stringWithFormat:@"0%ld",allTime];
+            }
+            
+            cell.videoTimeLab.text = [NSString stringWithFormat:@"00:%@",second];
+        }
     }
     
     return cell;
@@ -276,7 +311,7 @@
     PHAsset * asset = (PHAsset*)self.albumAssetArray[button.tag];
     BOOL isHave = [self.select_imageArray containsObject:asset];
     if (!isHave && [self.select_imageArray count] >= self.max_select) {
-        [[BKTool shareInstance] showRemind:[NSString stringWithFormat:@"最多只能选择%ld张照片",self.max_select]];
+        [BKTool showRemind:[NSString stringWithFormat:@"最多只能选择%ld张照片",self.max_select]];
         return;
     }
     
@@ -294,7 +329,7 @@
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
 {
-    UICollectionReusableView *reusableview = nil;
+    UICollectionReusableView * reusableview = nil;
     
     if (kind == UICollectionElementKindSectionFooter){
         
@@ -320,7 +355,7 @@
         [self.navigationController pushViewController:vc animated:YES];
     }else{
         if ([self.select_imageArray count] > 0) {
-            [[BKTool shareInstance] showRemind:@"不能同时选择照片和视频"];
+            [BKTool showRemind:@"不能同时选择照片和视频"];
             return;
         }
     }

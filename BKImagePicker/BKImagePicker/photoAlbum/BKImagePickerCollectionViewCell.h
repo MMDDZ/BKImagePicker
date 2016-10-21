@@ -15,6 +15,8 @@
 
 @property (nonatomic,strong) SelectButton * selectButton;
 
+@property (nonatomic,strong) CAGradientLayer * videoBgLayer;
+
 @property (nonatomic,strong) UIImageView * videoImageView;
 
 @property (nonatomic,strong) UILabel * videoTimeLab;

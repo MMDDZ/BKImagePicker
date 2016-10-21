@@ -22,6 +22,7 @@
 		88500AAA1DAF1D2300102A35 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 88500AA91DAF1D2300102A35 /* Assets.xcassets */; };
 		88500AAD1DAF1D2300102A35 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 88500AAB1DAF1D2300102A35 /* LaunchScreen.storyboard */; };
 		88500AB81DAF231500102A35 /* BKImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 88500AB71DAF231500102A35 /* BKImagePicker.m */; };
+		88506A7C1DB9B5AF0043F3E0 /* BKImage.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 88506A7B1DB9B5AF0043F3E0 /* BKImage.bundle */; };
 		887192D51DB61DD8007FED28 /* SelectButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 887192D41DB61DD8007FED28 /* SelectButton.m */; };
 /* End PBXBuildFile section */
 
@@ -55,6 +56,7 @@
 		88500AAE1DAF1D2300102A35 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		88500AB61DAF231500102A35 /* BKImagePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKImagePicker.h; sourceTree = "<group>"; };
 		88500AB71DAF231500102A35 /* BKImagePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKImagePicker.m; sourceTree = "<group>"; };
+		88506A7B1DB9B5AF0043F3E0 /* BKImage.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = BKImage.bundle; sourceTree = "<group>"; };
 		887192D31DB61DD8007FED28 /* SelectButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SelectButton.h; sourceTree = "<group>"; };
 		887192D41DB61DD8007FED28 /* SelectButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SelectButton.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -143,6 +145,7 @@
 				2A1673FB1DB204A600BA7AE0 /* photoAlbum */,
 				88500AB61DAF231500102A35 /* BKImagePicker.h */,
 				88500AB71DAF231500102A35 /* BKImagePicker.m */,
+				88506A7B1DB9B5AF0043F3E0 /* BKImage.bundle */,
 			);
 			path = BKImagePicker;
 			sourceTree = "<group>";
@@ -208,6 +211,7 @@
 			files = (
 				88500AAD1DAF1D2300102A35 /* LaunchScreen.storyboard in Resources */,
 				88500AAA1DAF1D2300102A35 /* Assets.xcassets in Resources */,
+				88506A7C1DB9B5AF0043F3E0 /* BKImage.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -341,6 +345,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 779S864B3K;
 				INFOPLIST_FILE = BKImagePicker/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -354,6 +359,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 779S864B3K;
 				INFOPLIST_FILE = BKImagePicker/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;

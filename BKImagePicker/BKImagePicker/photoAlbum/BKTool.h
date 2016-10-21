@@ -11,12 +11,10 @@
 
 @interface BKTool : NSObject
 
-+(instancetype)shareInstance;
++(void)showRemind:(NSString*)text;
 
--(void)showRemind:(NSString*)text;
++(void)showLoadInView:(UIView*)view;
 
--(void)showLoad;
-
--(void)hideLoad;
++(void)hideLoad;
 
 @end
