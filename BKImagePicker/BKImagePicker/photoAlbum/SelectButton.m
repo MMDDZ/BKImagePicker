@@ -10,21 +10,31 @@
 
 @interface SelectButton()
 
+@property (nonatomic,copy) NSString * bundlePath;
+
 @property (nonatomic,strong) UILabel * titleLab;
 
 @end
 
 @implementation SelectButton
 
+-(NSString*)bundlePath
+{
+    if (!_bundlePath) {
+        _bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
+    }
+    return _bundlePath;
+}
+
 -(void)setTitle:(NSString *)title
 {
     if (_titleLab) {
         if ([title length] == 0) {
             _titleLab.text = @"";
-            _titleLab.backgroundColor = [UIColor colorWithWhite:0.5 alpha:0.5];
+            [self setImage:[UIImage imageWithContentsOfFile:[self.bundlePath stringByAppendingString:@"/no_select_image.png"]] forState:UIControlStateNormal];
         }else{
             _titleLab.text = title;
-            _titleLab.backgroundColor = [UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1];
+            [self setImage:[UIImage imageWithContentsOfFile:[self.bundlePath stringByAppendingString:@"/select_image.png"]] forState:UIControlStateNormal];
         }
     }
 }
@@ -35,12 +45,8 @@
         _titleLab = [[UILabel alloc]initWithFrame:CGRectMake((self.frame.size.width-20)/2.0f, (self.frame.size.height-20)/2.0f, 20, 20)];
         _titleLab.font = [UIFont systemFontOfSize:12];
         _titleLab.textColor = [UIColor whiteColor];
-        _titleLab.backgroundColor = [UIColor colorWithWhite:0.5 alpha:0.3];
+        _titleLab.backgroundColor = [UIColor clearColor];
         _titleLab.text = @"";
-        _titleLab.clipsToBounds = YES;
-        _titleLab.layer.cornerRadius = _titleLab.frame.size.width/2.0f;
-        _titleLab.layer.borderColor = [UIColor whiteColor].CGColor;
-        _titleLab.layer.borderWidth = 1;
         _titleLab.textAlignment = NSTextAlignmentCenter;
         _titleLab.tag = 1;
     }
@@ -53,6 +59,10 @@
     if (self) {
         self.frame = frame;
         [self setBackgroundColor:[UIColor clearColor]];
+        [self setImage:[UIImage imageWithContentsOfFile:[self.bundlePath stringByAppendingString:@"/no_select_image.png"]] forState:UIControlStateNormal];
+        
+        [self setImageEdgeInsets:UIEdgeInsetsMake(4, 4, 4, 4)];
+        self.clipsToBounds = YES;
         
         [self addSubview:[self titleLab]];
     }
@@ -63,20 +73,23 @@
 {
     if ([_titleLab.text length] == 0) {
         
+        [self setImage:[UIImage imageWithContentsOfFile:[self.bundlePath stringByAppendingString:@"/select_image.png"]] forState:UIControlStateNormal];
+        
         [UIView animateWithDuration:0.25 animations:^{
-            _titleLab.transform = CGAffineTransformMakeScale(1.15, 1.15);
+            self.transform = CGAffineTransformMakeScale(1.15, 1.15);
         } completion:^(BOOL finished) {
             [UIView animateWithDuration:0.25 animations:^{
-                _titleLab.transform = CGAffineTransformMakeScale(1, 1);
+                self.transform = CGAffineTransformMakeScale(1, 1);
             }];
         }];
         
         _titleLab.text = [NSString stringWithFormat:@"%ld",num];
-        _titleLab.backgroundColor = [UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1];
 
     }else{
+        
+        [self setImage:[UIImage imageWithContentsOfFile:[self.bundlePath stringByAppendingString:@"/no_select_image.png"]] forState:UIControlStateNormal];
+        
         _titleLab.text = @"";
-        _titleLab.backgroundColor = [UIColor colorWithWhite:0.5 alpha:0.5];
     }
     
     if (method) {

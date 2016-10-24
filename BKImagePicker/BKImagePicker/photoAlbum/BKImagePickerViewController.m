@@ -259,26 +259,38 @@
     PHAsset * asset = (PHAsset*)(self.assets[indexPath.row]);
     if (asset.mediaType == PHAssetMediaTypeImage) {
         
-        cell.selectButton.hidden = NO;
-        cell.videoBgLayer.hidden = YES;
         cell.videoImageView.hidden = YES;
         cell.videoTimeLab.hidden = YES;
         
-        if ([self.select_imageArray containsObject:asset]) {
-            NSInteger select_num = [self.select_imageArray indexOfObject:asset]+1;
-            cell.selectButton.title = [NSString stringWithFormat:@"%ld",select_num];
+        NSString * fileName = [asset valueForKey:@"filename"];
+        if ([fileName rangeOfString:@"gif"].location != NSNotFound || [fileName rangeOfString:@"GIF"].location != NSNotFound) {
+            
+            cell.selectButton.hidden = YES;
+            cell.gradientBgLayer.hidden = NO;
+            cell.GIF_identifier_lab.hidden = NO;
+            
         }else{
-            cell.selectButton.title = @"";
+            
+            cell.selectButton.hidden = NO;
+            cell.gradientBgLayer.hidden = YES;
+            cell.GIF_identifier_lab.hidden = YES;
+            
+            if ([self.select_imageArray containsObject:asset]) {
+                NSInteger select_num = [self.select_imageArray indexOfObject:asset]+1;
+                cell.selectButton.title = [NSString stringWithFormat:@"%ld",select_num];
+            }else{
+                cell.selectButton.title = @"";
+            }
+            
+            cell.selectButton.tag = indexPath.item;
+            [cell.selectButton addTarget:self action:@selector(selectButton:) forControlEvents:UIControlEventTouchUpInside];
         }
-        
-        cell.selectButton.tag = indexPath.item;
-        [cell.selectButton addTarget:self action:@selector(selectButton:) forControlEvents:UIControlEventTouchUpInside];
-        
     }else{
         cell.selectButton.hidden = YES;
-        cell.videoBgLayer.hidden = NO;
+        cell.gradientBgLayer.hidden = NO;
         cell.videoImageView.hidden = NO;
         cell.videoTimeLab.hidden = NO;
+        cell.GIF_identifier_lab.hidden = YES;
         
         NSInteger allTime = [[asset valueForKey:@"duration"] integerValue];
         if (allTime > 60) {
@@ -318,7 +330,10 @@
     [button selectClickNum:[self.select_imageArray count]+1 addMethod:^{
         if (isHave) {
             [self.select_imageArray removeObject:asset];
-            [self.albumCollectionView reloadData];
+            [self.select_imageArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                NSIndexPath * indexPath = [NSIndexPath indexPathForItem:[self.albumAssetArray indexOfObject:obj] inSection:0];
+                [self.albumCollectionView reloadItemsAtIndexPaths:@[indexPath]];
+            }];
         }else{
             [self.select_imageArray addObject:asset];
         }
@@ -348,11 +363,19 @@
     PHAsset * asset = (PHAsset*)(self.assets[indexPath.row]);
     
     if (asset.mediaType == PHAssetMediaTypeImage) {
-        BKShowExampleImageViewController * vc =[[BKShowExampleImageViewController alloc]init];
-        vc.thumbImageArray = self.thumbImageArray;
-        vc.imageArray = self.imageAssetArray;
-        vc.tap_asset = asset;
-        [self.navigationController pushViewController:vc animated:YES];
+        NSString * fileName = [asset valueForKey:@"filename"];
+        if ([fileName rangeOfString:@"gif"].location != NSNotFound || [fileName rangeOfString:@"GIF"].location != NSNotFound) {
+            if ([self.select_imageArray count] > 0) {
+                [BKTool showRemind:@"不能同时选择照片和GIF"];
+                return;
+            }
+        }else{
+            BKShowExampleImageViewController * vc =[[BKShowExampleImageViewController alloc]init];
+            vc.thumbImageArray = self.thumbImageArray;
+            vc.imageArray = self.imageAssetArray;
+            vc.tap_asset = asset;
+            [self.navigationController pushViewController:vc animated:YES];
+        }
     }else{
         if ([self.select_imageArray count] > 0) {
             [BKTool showRemind:@"不能同时选择照片和视频"];

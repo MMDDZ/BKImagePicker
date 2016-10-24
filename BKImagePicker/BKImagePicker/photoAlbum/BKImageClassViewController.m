@@ -161,8 +161,6 @@
     countLabCenter.y = cell.exampleImageView.center.y;
     cell.countLab.center = countLabCenter;
     
-    //[NSString stringWithFormat:@"%@ (%@)",,dic[@"album_image_count"]];
-    
     return cell;
 }
 
