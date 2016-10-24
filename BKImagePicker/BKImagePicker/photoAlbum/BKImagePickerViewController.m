@@ -28,26 +28,26 @@
 @property (nonatomic,strong) UICollectionView * albumCollectionView;
 
 /**
- 该相簿中所有thumb_image数组 包括视频
+ 该相簿中所有thumb_image数组 包括视频 & GIF
  */
 @property (nonatomic,strong) NSMutableArray * albumImageArray;
 
 /**
- 该相簿中所有PHAsset数组 包括视频
+ 该相簿中所有PHAsset数组 包括视频 & GIF
  */
 @property (nonatomic,strong) NSMutableArray * albumAssetArray;
 
 /**
- 该相簿中所有PHAsset数组 不包括视频
+ 该相簿中所有PHAsset数组 不包括视频 & GIF
  */
 @property (nonatomic,strong) NSMutableArray * imageAssetArray;
 /**
- 该相簿中所有thumb_image数组 不包括视频
+ 该相簿中所有thumb_image数组 不包括视频 & GIF
  */
 @property (nonatomic,strong) NSMutableArray * thumbImageArray;
 
 /**
- 该相簿中所有相册和视频总数
+ 该相簿中所有照片和视频总数
  */
 @property (nonatomic,assign) NSInteger allAlbumImageNum;
 
@@ -155,7 +155,7 @@
             [self.assets enumerateObjectsUsingBlock:^(PHAsset * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 
                 PHCachingImageManager * imageManager = [[PHCachingImageManager alloc]init];
-                [imageManager requestImageForAsset:obj targetSize:CGSizeMake(150, 150) contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+                [imageManager requestImageForAsset:obj targetSize:CGSizeMake(130, 130) contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
                     
                     // 排除取消，错误，低清图三种情况，即已经获取到了高清图
                     BOOL downImageloadFinined = ![[info objectForKey:PHImageCancelledKey] boolValue] && ![info objectForKey:PHImageErrorKey] && ![[info objectForKey:PHImageResultIsDegradedKey] boolValue];
@@ -163,8 +163,13 @@
                         if(result)
                         {
                             if (obj.mediaType == PHAssetMediaTypeImage) {
-                                [self.imageAssetArray addObject:obj];
-                                [self.thumbImageArray addObject:result];
+                                
+                                NSString * fileName = [obj valueForKey:@"filename"];
+                                if ([fileName rangeOfString:@"gif"].location == NSNotFound && [fileName rangeOfString:@"GIF"].location == NSNotFound) {
+                                    
+                                    [self.imageAssetArray addObject:obj];
+                                    [self.thumbImageArray addObject:result];
+                                }
                             }
                             
                             [self.albumAssetArray addObject:obj];
@@ -341,7 +346,7 @@
                 [_previewBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
                 [_editBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
                 [_sendBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
-                [_sendBtn setBackgroundColor:[UIColor colorWithWhite:0.75 alpha:1]];
+                [_sendBtn setBackgroundColor:[UIColor colorWithWhite:0.85 alpha:1]];
             }else if ([self.select_imageArray count] == 1) {
                 [_editBtn setTitleColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1] forState:UIControlStateNormal];
             }
@@ -390,8 +395,9 @@
             }
         }else{
             BKShowExampleImageViewController * vc =[[BKShowExampleImageViewController alloc]init];
-            vc.thumbImageArray = self.thumbImageArray;
-            vc.imageArray = self.imageAssetArray;
+            vc.imageAssetsArray = self.imageAssetArray;
+            vc.select_imageArray = self.select_imageArray;
+            vc.max_select = self.max_select;
             vc.tap_asset = asset;
             [self.navigationController pushViewController:vc animated:YES];
         }
@@ -428,7 +434,11 @@
             
             [_sendBtn setTitle:[NSString stringWithFormat:@"确定(%ld)",[self.select_imageArray count]] forState:UIControlStateNormal];
         }else if ([self.select_imageArray count] > 1) {
+            
+            [_previewBtn setTitleColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1] forState:UIControlStateNormal];
             [_editBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
+            [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+            [_sendBtn setBackgroundColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1]];
             
             [_sendBtn setTitle:[NSString stringWithFormat:@"确定(%ld)",[self.select_imageArray count]] forState:UIControlStateNormal];
         }
@@ -483,7 +493,15 @@
 
 -(void)previewBtnClick:(UIButton*)button
 {
+    if ([self.select_imageArray count] == 0) {
+        return;
+    }
     
+    BKShowExampleImageViewController * vc = [[BKShowExampleImageViewController alloc]init];
+    vc.select_imageArray = self.select_imageArray;
+    vc.max_select = self.max_select;
+    vc.tap_asset = [self.select_imageArray lastObject];
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 -(void)editBtnClick:(UIButton*)button
