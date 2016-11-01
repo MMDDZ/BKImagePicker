@@ -106,7 +106,7 @@
     [self.navigationController.viewControllers enumerateObjectsUsingBlock:^(__kindof UIViewController * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         if ([obj isKindOfClass:[BKImageClassViewController class]]) {
             BKImageClassViewController * vc = (BKImageClassViewController*)obj;
-            vc.select_imageArray = self.select_imageArray;
+            vc.select_imageArray = [NSArray arrayWithArray:self.select_imageArray];
             
             if ([self.select_imageArray count] == 0) {
                 [_sendBtn setTitle:@"确定" forState:UIControlStateNormal];
@@ -395,16 +395,13 @@
             }
         }else{
             BKShowExampleImageViewController * vc =[[BKShowExampleImageViewController alloc]init];
-            vc.imageAssetsArray = self.imageAssetArray;
-            vc.select_imageArray = self.select_imageArray;
+            vc.imageAssetsArray = [NSArray arrayWithArray:self.imageAssetArray];
+            vc.select_imageArray = [NSMutableArray arrayWithArray:self.select_imageArray];
             vc.max_select = self.max_select;
             vc.tap_asset = asset;
             [vc setRefreshAlbumViewOption:^(NSMutableArray * select_imageArray) {
-                self.select_imageArray = select_imageArray;
-                [self.select_imageArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                    NSIndexPath * indexPath = [NSIndexPath indexPathForItem:[self.albumAssetArray indexOfObject:obj] inSection:0];
-                    [self.albumCollectionView reloadItemsAtIndexPaths:@[indexPath]];
-                }];
+                self.select_imageArray = [NSMutableArray arrayWithArray:select_imageArray];
+                [self.albumCollectionView reloadData];
             }];
             [self.navigationController pushViewController:vc animated:YES];
         }
@@ -505,12 +502,16 @@
     }
     
     BKShowExampleImageViewController * vc = [[BKShowExampleImageViewController alloc]init];
-    vc.select_imageArray = self.select_imageArray;
+    vc.select_imageArray = [NSMutableArray arrayWithArray:self.select_imageArray];
     vc.max_select = self.max_select;
     vc.tap_asset = [self.select_imageArray lastObject];
     [vc setRefreshAlbumViewOption:^(NSMutableArray * select_imageArray) {
-        self.select_imageArray = select_imageArray;
-        [self.select_imageArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        
+        NSArray * oldSelect_imageArr = [NSArray arrayWithArray:self.select_imageArray];
+        
+        self.select_imageArray = [NSMutableArray arrayWithArray:select_imageArray];
+        
+        [oldSelect_imageArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             NSIndexPath * indexPath = [NSIndexPath indexPathForItem:[self.albumAssetArray indexOfObject:obj] inSection:0];
             [self.albumCollectionView reloadItemsAtIndexPaths:@[indexPath]];
         }];

@@ -130,9 +130,8 @@
         self.title = @"预览";
     }else{
         self.title = [NSString stringWithFormat:@"%ld/%ld",[self.imageAssetsArray indexOfObject:self.tap_asset]+1,[self.imageAssetsArray count]];
-        
-        [self addObserver:self forKeyPath:@"title" options:NSKeyValueObservingOptionNew context:nil];
     }
+    [self addObserver:self forKeyPath:@"title" options:NSKeyValueObservingOptionNew context:nil];
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:[self rightBtn]];
 }
@@ -160,6 +159,14 @@
     if (!_rightBtn) {
         _rightBtn = [[SelectButton alloc]initSelectButtonWithFrame:CGRectMake(self.view.frame.size.width - 40, 7, 30, 30)];
         [_rightBtn addTarget:self action:@selector(rightBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+        
+        if ([self.imageAssetsArray count] == 1) {
+            if ([self.select_imageArray count] == 1) {
+                _rightBtn.title = @"1";
+            }else{
+                _rightBtn.title = @"0";
+            }
+        }
     }
     return _rightBtn;
 }
@@ -206,7 +213,7 @@
     [self.navigationController.viewControllers enumerateObjectsUsingBlock:^(__kindof UIViewController * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         if ([obj isKindOfClass:[BKImageClassViewController class]]) {
             BKImageClassViewController * vc = (BKImageClassViewController*)obj;
-            vc.select_imageArray = self.select_imageArray;
+            vc.select_imageArray = [NSArray arrayWithArray:self.select_imageArray];
             
             if ([self.select_imageArray count] == 0) {
                 [_sendBtn setTitle:@"确定" forState:UIControlStateNormal];
