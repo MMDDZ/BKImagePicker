@@ -15,7 +15,7 @@
 #import "SelectButton.h"
 #import "BKTool.h"
 
-@interface BKShowExampleImageViewController ()<UICollectionViewDataSource,UICollectionViewDelegate,UICollectionViewDelegateFlowLayout>
+@interface BKShowExampleImageViewController ()<UICollectionViewDataSource,UICollectionViewDelegate,UICollectionViewDelegateFlowLayout,UINavigationControllerDelegate>
 
 @property (nonatomic,strong) SelectButton * rightBtn;
 
@@ -110,6 +110,8 @@
     self.automaticallyAdjustsScrollViewInsets = NO;
     self.view.backgroundColor = [UIColor blackColor];
     
+    self.navigationController.delegate = self;
+    
     [self initNav];
     [self.view addSubview:[self exampleImageCollectionView]];
     [self.view addSubview:[self bottomView]];
@@ -132,27 +134,7 @@
         [self addObserver:self forKeyPath:@"title" options:NSKeyValueObservingOptionNew context:nil];
     }
     
-//    UIButton * button = [UIButton buttonWithType:UIButtonTypeCustom];
-//    button.frame = CGRectMake(0, 0, 64, 64);
-//    [button setBackgroundColor:[UIColor clearColor]];
-//    [button addTarget:self action:@selector(rightBtnClick:) forControlEvents:UIControlEventTouchUpInside];
-//    
-//    UILabel * titleLab = [[UILabel alloc]initWithFrame:CGRectMake(button.frame.size.width-12.5, (button.frame.size.height-25)/2.0f, 25, 25)];
-//    titleLab.font = [UIFont systemFontOfSize:13];
-//    titleLab.textColor = [UIColor whiteColor];
-//    titleLab.backgroundColor = [UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1];
-//    titleLab.text = @"11";
-//    titleLab.clipsToBounds = YES;
-//    titleLab.layer.cornerRadius = titleLab.frame.size.width/2.0f;
-//    titleLab.layer.borderColor = [UIColor whiteColor].CGColor;
-//    titleLab.layer.borderWidth = 1;
-//    titleLab.textAlignment = NSTextAlignmentCenter;
-//    titleLab.tag = 1;
-//    [button addSubview:titleLab];
-    
-    UIBarButtonItem * rightItem = [[UIBarButtonItem alloc]initWithCustomView:[self rightBtn]];
-    rightItem.imageInsets = UIEdgeInsetsMake(0, 20, 0, 0);
-    self.navigationItem.rightBarButtonItem = rightItem;
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:[self rightBtn]];
 }
 
 -(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
@@ -170,14 +152,13 @@
             self.rightBtn.title = @"";
         }
         self.rightBtn.tag = item;
-        
     }
 }
 
 -(SelectButton*)rightBtn
 {
     if (!_rightBtn) {
-        _rightBtn = [[SelectButton alloc]initSelectButtonWithFrame:CGRectMake(0, 0, 30, 30)];
+        _rightBtn = [[SelectButton alloc]initSelectButtonWithFrame:CGRectMake(self.view.frame.size.width - 40, 7, 30, 30)];
         [_rightBtn addTarget:self action:@selector(rightBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _rightBtn;
@@ -231,6 +212,10 @@
                 [_sendBtn setTitle:@"确定" forState:UIControlStateNormal];
             }else{
                 [_sendBtn setTitle:[NSString stringWithFormat:@"确定(%ld)",[self.select_imageArray count]] forState:UIControlStateNormal];
+            }
+            
+            if (self.refreshAlbumViewOption) {
+                self.refreshAlbumViewOption(self.select_imageArray);
             }
             
             *stop = YES;

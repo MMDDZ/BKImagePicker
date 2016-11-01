@@ -14,6 +14,8 @@
 
 @property (nonatomic,strong) UILabel * titleLab;
 
+@property (nonatomic,strong) UIImageView * showImageView;
+
 @end
 
 @implementation SelectButton
@@ -31,10 +33,10 @@
     if (_titleLab) {
         if ([title length] == 0) {
             _titleLab.text = @"";
-            [self setImage:[UIImage imageWithContentsOfFile:[self.bundlePath stringByAppendingString:@"/no_select_image.png"]] forState:UIControlStateNormal];
+            _showImageView.image = [UIImage imageWithContentsOfFile:[self.bundlePath stringByAppendingString:@"/no_select_image.png"]];
         }else{
             _titleLab.text = title;
-            [self setImage:[UIImage imageWithContentsOfFile:[self.bundlePath stringByAppendingString:@"/select_image.png"]] forState:UIControlStateNormal];
+            _showImageView.image = [UIImage imageWithContentsOfFile:[self.bundlePath stringByAppendingString:@"/select_image.png"]];
         }
     }
 }
@@ -53,17 +55,23 @@
     return _titleLab;
 }
 
+-(UIImageView*)showImageView
+{
+    if (!_showImageView) {
+        _showImageView = [[UIImageView alloc]initWithFrame:CGRectMake(4, 4, self.frame.size.width-8, self.frame.size.height-8)];
+        _showImageView.image = [UIImage imageWithContentsOfFile:[self.bundlePath stringByAppendingString:@"/select_image.png"]];
+    }
+    return _showImageView;
+}
+
 -(instancetype)initSelectButtonWithFrame:(CGRect)frame
 {
     self = [SelectButton buttonWithType:UIButtonTypeCustom];
     if (self) {
         self.frame = frame;
         [self setBackgroundColor:[UIColor clearColor]];
-        [self setImage:[UIImage imageWithContentsOfFile:[self.bundlePath stringByAppendingString:@"/no_select_image.png"]] forState:UIControlStateNormal];
         
-        [self setImageEdgeInsets:UIEdgeInsetsMake(4, 4, 4, 4)];
-        self.clipsToBounds = YES;
-        
+        [self addSubview:[self showImageView]];
         [self addSubview:[self titleLab]];
     }
     return self;
@@ -73,13 +81,13 @@
 {
     if ([_titleLab.text length] == 0) {
         
-        [self setImage:[UIImage imageWithContentsOfFile:[self.bundlePath stringByAppendingString:@"/select_image.png"]] forState:UIControlStateNormal];
+        _showImageView.image = [UIImage imageWithContentsOfFile:[self.bundlePath stringByAppendingString:@"/select_image.png"]];
         
         [UIView animateWithDuration:0.25 animations:^{
-            self.transform = CGAffineTransformMakeScale(1.15, 1.15);
+            _showImageView.transform = CGAffineTransformMakeScale(1.15, 1.15);
         } completion:^(BOOL finished) {
             [UIView animateWithDuration:0.25 animations:^{
-                self.transform = CGAffineTransformMakeScale(1, 1);
+                _showImageView.transform = CGAffineTransformMakeScale(1, 1);
             }];
         }];
         
@@ -87,8 +95,8 @@
 
     }else{
         
-        [self setImage:[UIImage imageWithContentsOfFile:[self.bundlePath stringByAppendingString:@"/no_select_image.png"]] forState:UIControlStateNormal];
-        
+        _showImageView.image = [UIImage imageWithContentsOfFile:[self.bundlePath stringByAppendingString:@"/no_select_image.png"]];
+       
         _titleLab.text = @"";
     }
     

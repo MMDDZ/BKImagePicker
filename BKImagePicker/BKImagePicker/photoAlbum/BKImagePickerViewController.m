@@ -399,6 +399,13 @@
             vc.select_imageArray = self.select_imageArray;
             vc.max_select = self.max_select;
             vc.tap_asset = asset;
+            [vc setRefreshAlbumViewOption:^(NSMutableArray * select_imageArray) {
+                self.select_imageArray = select_imageArray;
+                [self.select_imageArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                    NSIndexPath * indexPath = [NSIndexPath indexPathForItem:[self.albumAssetArray indexOfObject:obj] inSection:0];
+                    [self.albumCollectionView reloadItemsAtIndexPaths:@[indexPath]];
+                }];
+            }];
             [self.navigationController pushViewController:vc animated:YES];
         }
     }else{
@@ -501,6 +508,13 @@
     vc.select_imageArray = self.select_imageArray;
     vc.max_select = self.max_select;
     vc.tap_asset = [self.select_imageArray lastObject];
+    [vc setRefreshAlbumViewOption:^(NSMutableArray * select_imageArray) {
+        self.select_imageArray = select_imageArray;
+        [self.select_imageArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            NSIndexPath * indexPath = [NSIndexPath indexPathForItem:[self.albumAssetArray indexOfObject:obj] inSection:0];
+            [self.albumCollectionView reloadItemsAtIndexPaths:@[indexPath]];
+        }];
+    }];
     [self.navigationController pushViewController:vc animated:YES];
 }
 

@@ -25,4 +25,9 @@
  */
 @property (nonatomic,strong) NSMutableArray * select_imageArray;
 
+/**
+ 更新选取相册数组
+ */
+@property (nonatomic,copy) void (^refreshAlbumViewOption)(NSMutableArray * select_imageArray);
+
 @end
