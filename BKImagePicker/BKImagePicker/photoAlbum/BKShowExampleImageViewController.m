@@ -133,7 +133,12 @@
     }
     [self addObserver:self forKeyPath:@"title" options:NSKeyValueObservingOptionNew context:nil];
     
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:[self rightBtn]];
+    UIView * rightItem = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 30, 30)];
+    [rightItem setBackgroundColor:[UIColor clearColor]];
+    
+    [rightItem addSubview:[self rightBtn]];
+    
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:rightItem];
 }
 
 -(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
@@ -157,7 +162,7 @@
 -(BKImageAlbumItemSelectButton*)rightBtn
 {
     if (!_rightBtn) {
-        _rightBtn = [[BKImageAlbumItemSelectButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width - 40, 7, 30, 30)];
+        _rightBtn = [[BKImageAlbumItemSelectButton alloc]initWithFrame:CGRectMake(0, 0, 30, 30)];
         __block BKShowExampleImageViewController * mySelf = self;
         [_rightBtn setSelectButtonClick:^(BKImageAlbumItemSelectButton * button) {
             [mySelf rightBtnClick:button];

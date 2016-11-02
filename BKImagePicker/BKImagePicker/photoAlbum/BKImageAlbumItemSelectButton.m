@@ -13,6 +13,8 @@
 @property (nonatomic,strong) NSString * showTitle;
 @property (nonatomic,strong) UIColor * fillColor;
 
+@property (nonatomic,assign) BOOL isAnimate;
+
 @end
 
 @implementation BKImageAlbumItemSelectButton
@@ -87,11 +89,17 @@
 
 -(void)selectClickNum:(NSInteger)num addMethod:(void (^)())method
 {
+    if (self.isAnimate) {
+        return;
+    }
+    
     if ([self.showTitle length] == 0) {
         
         self.showTitle = [NSString stringWithFormat:@"%ld",num];
         self.fillColor = [UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1];
         [self setNeedsDisplay];
+        
+        self.isAnimate = YES;
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [UIView animateWithDuration:0.25 animations:^{
@@ -99,6 +107,8 @@
             } completion:^(BOOL finished) {
                 [UIView animateWithDuration:0.25 animations:^{
                     self.transform = CGAffineTransformMakeScale(1, 1);
+                } completion:^(BOOL finished) {
+                    self.isAnimate = NO;
                 }];
             }];
         });

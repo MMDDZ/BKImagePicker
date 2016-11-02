@@ -43,7 +43,7 @@
     CGGradientRef gradient = CGGradientCreateWithColorComponents(rgb, colors, NULL, sizeof(colors)/(sizeof(colors[0])*4));
     CGColorSpaceRelease(rgb);
     
-    CGPoint start = CGPointMake(0,self.frame.size.height/6*5);
+    CGPoint start = CGPointMake(0,self.frame.size.height - 20);
     CGPoint end = CGPointMake(0,self.frame.size.height);
     
     CGContextDrawLinearGradient(context, gradient ,start ,end ,kCGGradientDrawsBeforeStartLocation);
@@ -51,7 +51,7 @@
     
     NSString * bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
     UIImage * videoImage = [UIImage imageWithContentsOfFile:[bundlePath stringByAppendingString:@"/video.png"]];
-    [videoImage drawInRect:CGRectMake(3, self.frame.size.height/6*5+2, self.frame.size.height/6 - 4, self.frame.size.height/6 - 4)];
+    [videoImage drawInRect:CGRectMake(5, self.frame.size.height - 16, 14, 14)];
     
     
     NSString * timeStr = @"";
@@ -77,11 +77,11 @@
     }
 
     NSMutableParagraphStyle* paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-    paragraphStyle.lineBreakMode = NSLineBreakByCharWrapping;
+    paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
     paragraphStyle.alignment = NSTextAlignmentRight;
     
     NSDictionary * attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:12],NSParagraphStyleAttributeName:paragraphStyle,NSForegroundColorAttributeName:[UIColor whiteColor]};
-    [timeStr drawWithRect:CGRectMake(self.frame.size.width/2.0f-3, self.frame.size.height/6*5+2, self.frame.size.width/2.0f, self.frame.size.height/6 - 4) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil];
+    [timeStr drawWithRect:CGRectMake(self.frame.size.width/2.0f-5, self.frame.size.height-16, self.frame.size.width/2.0f, 14) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil];
 }
 
 @end

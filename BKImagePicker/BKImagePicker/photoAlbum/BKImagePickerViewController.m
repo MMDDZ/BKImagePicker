@@ -221,7 +221,7 @@
 
 -(void)initNav
 {
-    UIBarButtonItem * rightItem = [[UIBarButtonItem alloc]initWithTitle:@"取消" style:UIBarButtonItemStylePlain target:self action:@selector(rightItemClick)];
+    UIBarButtonItem * rightItem = [[UIBarButtonItem alloc]initWithTitle:@"取消   " style:UIBarButtonItemStylePlain target:self action:@selector(rightItemClick)];
     self.navigationItem.rightBarButtonItem = rightItem;
 }
 
