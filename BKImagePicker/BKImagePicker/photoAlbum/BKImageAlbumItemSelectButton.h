@@ -1,5 +1,5 @@
 //
-//  SelectButton.h
+//  BKImageAlbumItemSelectButton.h
 //  BKImagePicker
 //
 //  Created by iMac on 16/10/18.
@@ -8,14 +8,17 @@
 
 #import <UIKit/UIKit.h>
 
-@interface SelectButton : UIButton
+@interface BKImageAlbumItemSelectButton : UIView
 
 /**
  标记选中第几个
  */
 @property (nonatomic,copy) NSString * title;
 
--(instancetype)initSelectButtonWithFrame:(CGRect)frame;
+/**
+ 点击方法
+ */
+@property (nonatomic,copy) void (^selectButtonClick)(BKImageAlbumItemSelectButton*button);
 
 -(void)selectClickNum:(NSInteger)num addMethod:(void (^)())method;
 

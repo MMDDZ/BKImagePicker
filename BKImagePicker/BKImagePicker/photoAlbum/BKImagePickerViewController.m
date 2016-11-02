@@ -18,10 +18,11 @@
 #import "BKImagePickerCollectionViewCell.h"
 #import "BKImagePickerFooterCollectionReusableView.h"
 #import "BKShowExampleImageViewController.h"
-#import "SelectButton.h"
+#import "BKImageAlbumItemSelectButton.h"
 #import "BKTool.h"
+#import "BKShowExampleVideoView.h"
 
-@interface BKImagePickerViewController ()<UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout>
+@interface BKImagePickerViewController ()<UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout,BKImagePickerCollectionViewCellDelegate>
 
 @property (nonatomic,strong) PHFetchResult<PHAsset *> *assets;
 
@@ -150,12 +151,13 @@
             self.allAlbumImageNum = [self.assets count];
             
             PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+            options.resizeMode = PHImageRequestOptionsResizeModeFast;
+            options.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
             options.synchronous = YES;
             
             [self.assets enumerateObjectsUsingBlock:^(PHAsset * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 
-                PHCachingImageManager * imageManager = [[PHCachingImageManager alloc]init];
-                [imageManager requestImageForAsset:obj targetSize:CGSizeMake(130, 130) contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+                [[PHImageManager defaultManager] requestImageForAsset:obj targetSize:CGSizeMake(self.view.frame.size.width/2.0f, self.view.frame.size.width/2.0f) contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
                     
                     // 排除取消，错误，低清图三种情况，即已经获取到了高清图
                     BOOL downImageloadFinined = ![[info objectForKey:PHImageCancelledKey] boolValue] && ![info objectForKey:PHImageErrorKey] && ![[info objectForKey:PHImageResultIsDegradedKey] boolValue];
@@ -260,110 +262,13 @@
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     BKImagePickerCollectionViewCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:imagePickerCell_identifier forIndexPath:indexPath];
+    cell.delegate = self;
     
-    cell.photoImageView.image = self.albumImageArray[indexPath.row];
+    UIImage * photoImage = self.albumImageArray[indexPath.item];
     
-    PHAsset * asset = (PHAsset*)(self.assets[indexPath.row]);
-    if (asset.mediaType == PHAssetMediaTypeImage) {
-        
-        cell.videoImageView.hidden = YES;
-        cell.videoTimeLab.hidden = YES;
-        
-        NSString * fileName = [asset valueForKey:@"filename"];
-        if ([fileName rangeOfString:@"gif"].location != NSNotFound || [fileName rangeOfString:@"GIF"].location != NSNotFound) {
-            
-            cell.selectButton.hidden = YES;
-            cell.gradientBgLayer.hidden = NO;
-            cell.GIF_identifier_lab.hidden = NO;
-            
-        }else{
-            
-            cell.selectButton.hidden = NO;
-            cell.gradientBgLayer.hidden = YES;
-            cell.GIF_identifier_lab.hidden = YES;
-            
-            if ([self.select_imageArray containsObject:asset]) {
-                NSInteger select_num = [self.select_imageArray indexOfObject:asset]+1;
-                cell.selectButton.title = [NSString stringWithFormat:@"%ld",select_num];
-            }else{
-                cell.selectButton.title = @"";
-            }
-            
-            cell.selectButton.tag = indexPath.item;
-            [cell.selectButton addTarget:self action:@selector(selectButton:) forControlEvents:UIControlEventTouchUpInside];
-        }
-    }else{
-        cell.selectButton.hidden = YES;
-        cell.gradientBgLayer.hidden = NO;
-        cell.videoImageView.hidden = NO;
-        cell.videoTimeLab.hidden = NO;
-        cell.GIF_identifier_lab.hidden = YES;
-        
-        NSInteger allTime = [[asset valueForKey:@"duration"] integerValue];
-        if (allTime > 60) {
-            NSInteger second = allTime%60;
-            NSInteger minute = allTime/60;
-            
-            NSString * secondStr = [NSString stringWithFormat:@"%ld",second];
-            if ([secondStr length] == 1) {
-                secondStr = [NSString stringWithFormat:@"0%ld",second];
-            }
-            
-            cell.videoTimeLab.text = [NSString stringWithFormat:@"%ld:%@",minute,secondStr];
-            
-        }else{
-            
-            NSString * second = [NSString stringWithFormat:@"%ld",allTime];
-            if ([second length] == 1) {
-                second = [NSString stringWithFormat:@"0%ld",allTime];
-            }
-            
-            cell.videoTimeLab.text = [NSString stringWithFormat:@"00:%@",second];
-        }
-    }
+    [cell revaluateIndexPath:indexPath exampleAssetArr:[NSArray arrayWithArray:self.albumAssetArray] selectImageArr:[NSArray arrayWithArray:self.select_imageArray] photoImage:photoImage];
     
     return cell;
-}
-
--(void)selectButton:(SelectButton*)button
-{
-    PHAsset * asset = (PHAsset*)self.albumAssetArray[button.tag];
-    BOOL isHave = [self.select_imageArray containsObject:asset];
-    if (!isHave && [self.select_imageArray count] >= self.max_select) {
-        [BKTool showRemind:[NSString stringWithFormat:@"最多只能选择%ld张照片",self.max_select]];
-        return;
-    }
-    
-    [button selectClickNum:[self.select_imageArray count]+1 addMethod:^{
-        if (isHave) {
-            [self.select_imageArray removeObject:asset];
-            [self.select_imageArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                NSIndexPath * indexPath = [NSIndexPath indexPathForItem:[self.albumAssetArray indexOfObject:obj] inSection:0];
-                [self.albumCollectionView reloadItemsAtIndexPaths:@[indexPath]];
-            }];
-            
-            if ([self.select_imageArray count] == 0) {
-                [_previewBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
-                [_editBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
-                [_sendBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
-                [_sendBtn setBackgroundColor:[UIColor colorWithWhite:0.85 alpha:1]];
-            }else if ([self.select_imageArray count] == 1) {
-                [_editBtn setTitleColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1] forState:UIControlStateNormal];
-            }
-        }else{
-            [self.select_imageArray addObject:asset];
-            if ([self.select_imageArray count] == 1) {
-                [_previewBtn setTitleColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1] forState:UIControlStateNormal];
-                [_editBtn setTitleColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1] forState:UIControlStateNormal];
-                [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-                [_sendBtn setBackgroundColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1]];
-            }else if ([self.select_imageArray count] > 1) {
-                [_editBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
-            }
-        }
-        
-        [self refreshClassSelectImageArray];
-    }];
 }
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
@@ -410,7 +315,53 @@
             [BKTool showRemind:@"不能同时选择照片和视频"];
             return;
         }
+        
+        BKShowExampleVideoView * exampleVideoView = [[BKShowExampleVideoView alloc]initWithAsset:asset];
+        [exampleVideoView showInVC:self];
     }
+}
+
+#pragma mark - BKImagePickerCollectionViewCellDelegate
+
+-(void)selectImageBtnClick:(BKImageAlbumItemSelectButton*)button
+{
+    PHAsset * asset = (PHAsset*)self.albumAssetArray[button.tag];
+    BOOL isHave = [self.select_imageArray containsObject:asset];
+    if (!isHave && [self.select_imageArray count] >= self.max_select) {
+        [BKTool showRemind:[NSString stringWithFormat:@"最多只能选择%ld张照片",self.max_select]];
+        return;
+    }
+    
+    [button selectClickNum:[self.select_imageArray count]+1 addMethod:^{
+        if (isHave) {
+            [self.select_imageArray removeObject:asset];
+            [self.select_imageArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                NSIndexPath * indexPath = [NSIndexPath indexPathForItem:[self.albumAssetArray indexOfObject:obj] inSection:0];
+                [self.albumCollectionView reloadItemsAtIndexPaths:@[indexPath]];
+            }];
+            
+            if ([self.select_imageArray count] == 0) {
+                [_previewBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
+                [_editBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
+                [_sendBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
+                [_sendBtn setBackgroundColor:[UIColor colorWithWhite:0.85 alpha:1]];
+            }else if ([self.select_imageArray count] == 1) {
+                [_editBtn setTitleColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1] forState:UIControlStateNormal];
+            }
+        }else{
+            [self.select_imageArray addObject:asset];
+            if ([self.select_imageArray count] == 1) {
+                [_previewBtn setTitleColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1] forState:UIControlStateNormal];
+                [_editBtn setTitleColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1] forState:UIControlStateNormal];
+                [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+                [_sendBtn setBackgroundColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1]];
+            }else if ([self.select_imageArray count] > 1) {
+                [_editBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
+            }
+        }
+        
+        [self refreshClassSelectImageArray];
+    }];
 }
 
 #pragma mark - BottomView

@@ -16,7 +16,8 @@
 		2A1674101DB2182200BA7AE0 /* BKShowExampleImageCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A16740F1DB2182200BA7AE0 /* BKShowExampleImageCollectionViewFlowLayout.m */; };
 		2A1674131DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1674121DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.m */; };
 		88291EFB1DB7467600011A68 /* BKTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 88291EFA1DB7467600011A68 /* BKTool.m */; };
-		883BB4E11DC828EB00952C2D /* UINavigationItem+margin.m in Sources */ = {isa = PBXBuildFile; fileRef = 883BB4E01DC828EB00952C2D /* UINavigationItem+margin.m */; };
+		883BB4E11DC828EB00952C2D /* UINavigationItem+BKMargin.m in Sources */ = {isa = PBXBuildFile; fileRef = 883BB4E01DC828EB00952C2D /* UINavigationItem+BKMargin.m */; };
+		883BB4E41DC864F500952C2D /* BKShowExampleVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 883BB4E31DC864F500952C2D /* BKShowExampleVideoView.m */; };
 		88500A9F1DAF1D2300102A35 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 88500A9E1DAF1D2300102A35 /* main.m */; };
 		88500AA21DAF1D2300102A35 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 88500AA11DAF1D2300102A35 /* AppDelegate.m */; };
 		88500AA51DAF1D2300102A35 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88500AA41DAF1D2300102A35 /* ViewController.m */; };
@@ -24,7 +25,9 @@
 		88500AAD1DAF1D2300102A35 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 88500AAB1DAF1D2300102A35 /* LaunchScreen.storyboard */; };
 		88500AB81DAF231500102A35 /* BKImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 88500AB71DAF231500102A35 /* BKImagePicker.m */; };
 		88506A7C1DB9B5AF0043F3E0 /* BKImage.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 88506A7B1DB9B5AF0043F3E0 /* BKImage.bundle */; };
-		887192D51DB61DD8007FED28 /* SelectButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 887192D41DB61DD8007FED28 /* SelectButton.m */; };
+		885DC5771DC9D5B400FCEFD4 /* BKVideoAlbumItemView.m in Sources */ = {isa = PBXBuildFile; fileRef = 885DC5761DC9D5B400FCEFD4 /* BKVideoAlbumItemView.m */; };
+		885DC57A1DC9DD0C00FCEFD4 /* BKGIFAlbumItemView.m in Sources */ = {isa = PBXBuildFile; fileRef = 885DC5791DC9DD0C00FCEFD4 /* BKGIFAlbumItemView.m */; };
+		887192D51DB61DD8007FED28 /* BKImageAlbumItemSelectButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 887192D41DB61DD8007FED28 /* BKImageAlbumItemSelectButton.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,8 +49,10 @@
 		2A1674121DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKShowExampleImageCollectionViewCell.m; sourceTree = "<group>"; };
 		88291EF91DB7467600011A68 /* BKTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKTool.h; sourceTree = "<group>"; };
 		88291EFA1DB7467600011A68 /* BKTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKTool.m; sourceTree = "<group>"; };
-		883BB4DF1DC828EB00952C2D /* UINavigationItem+margin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UINavigationItem+margin.h"; sourceTree = "<group>"; };
-		883BB4E01DC828EB00952C2D /* UINavigationItem+margin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationItem+margin.m"; sourceTree = "<group>"; };
+		883BB4DF1DC828EB00952C2D /* UINavigationItem+BKMargin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UINavigationItem+BKMargin.h"; sourceTree = "<group>"; };
+		883BB4E01DC828EB00952C2D /* UINavigationItem+BKMargin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationItem+BKMargin.m"; sourceTree = "<group>"; };
+		883BB4E21DC864F500952C2D /* BKShowExampleVideoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKShowExampleVideoView.h; sourceTree = "<group>"; };
+		883BB4E31DC864F500952C2D /* BKShowExampleVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKShowExampleVideoView.m; sourceTree = "<group>"; };
 		88500A9A1DAF1D2300102A35 /* BKImagePicker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BKImagePicker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		88500A9E1DAF1D2300102A35 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		88500AA01DAF1D2300102A35 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -60,8 +65,12 @@
 		88500AB61DAF231500102A35 /* BKImagePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKImagePicker.h; sourceTree = "<group>"; };
 		88500AB71DAF231500102A35 /* BKImagePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKImagePicker.m; sourceTree = "<group>"; };
 		88506A7B1DB9B5AF0043F3E0 /* BKImage.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = BKImage.bundle; sourceTree = "<group>"; };
-		887192D31DB61DD8007FED28 /* SelectButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SelectButton.h; sourceTree = "<group>"; };
-		887192D41DB61DD8007FED28 /* SelectButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SelectButton.m; sourceTree = "<group>"; };
+		885DC5751DC9D5B400FCEFD4 /* BKVideoAlbumItemView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKVideoAlbumItemView.h; sourceTree = "<group>"; };
+		885DC5761DC9D5B400FCEFD4 /* BKVideoAlbumItemView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKVideoAlbumItemView.m; sourceTree = "<group>"; };
+		885DC5781DC9DD0C00FCEFD4 /* BKGIFAlbumItemView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKGIFAlbumItemView.h; sourceTree = "<group>"; };
+		885DC5791DC9DD0C00FCEFD4 /* BKGIFAlbumItemView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKGIFAlbumItemView.m; sourceTree = "<group>"; };
+		887192D31DB61DD8007FED28 /* BKImageAlbumItemSelectButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKImageAlbumItemSelectButton.h; sourceTree = "<group>"; };
+		887192D41DB61DD8007FED28 /* BKImageAlbumItemSelectButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKImageAlbumItemSelectButton.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,6 +95,12 @@
 				2A1674051DB204A600BA7AE0 /* BKImagePickerViewController.m */,
 				2A1674001DB204A600BA7AE0 /* BKImagePickerCollectionViewCell.h */,
 				2A1674011DB204A600BA7AE0 /* BKImagePickerCollectionViewCell.m */,
+				887192D31DB61DD8007FED28 /* BKImageAlbumItemSelectButton.h */,
+				887192D41DB61DD8007FED28 /* BKImageAlbumItemSelectButton.m */,
+				885DC5751DC9D5B400FCEFD4 /* BKVideoAlbumItemView.h */,
+				885DC5761DC9D5B400FCEFD4 /* BKVideoAlbumItemView.m */,
+				885DC5781DC9DD0C00FCEFD4 /* BKGIFAlbumItemView.h */,
+				885DC5791DC9DD0C00FCEFD4 /* BKGIFAlbumItemView.m */,
 				2A1674021DB204A600BA7AE0 /* BKImagePickerFooterCollectionReusableView.h */,
 				2A1674031DB204A600BA7AE0 /* BKImagePickerFooterCollectionReusableView.m */,
 				2A16740B1DB2056E00BA7AE0 /* BKShowExampleImageViewController.h */,
@@ -94,12 +109,12 @@
 				2A16740F1DB2182200BA7AE0 /* BKShowExampleImageCollectionViewFlowLayout.m */,
 				2A1674111DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.h */,
 				2A1674121DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.m */,
-				887192D31DB61DD8007FED28 /* SelectButton.h */,
-				887192D41DB61DD8007FED28 /* SelectButton.m */,
+				883BB4E21DC864F500952C2D /* BKShowExampleVideoView.h */,
+				883BB4E31DC864F500952C2D /* BKShowExampleVideoView.m */,
+				883BB4DF1DC828EB00952C2D /* UINavigationItem+BKMargin.h */,
+				883BB4E01DC828EB00952C2D /* UINavigationItem+BKMargin.m */,
 				88291EF91DB7467600011A68 /* BKTool.h */,
 				88291EFA1DB7467600011A68 /* BKTool.m */,
-				883BB4DF1DC828EB00952C2D /* UINavigationItem+margin.h */,
-				883BB4E01DC828EB00952C2D /* UINavigationItem+margin.m */,
 			);
 			path = photoAlbum;
 			sourceTree = "<group>";
@@ -228,19 +243,22 @@
 			buildActionMask = 2147483647;
 			files = (
 				2A1674081DB204A600BA7AE0 /* BKImagePickerCollectionViewCell.m in Sources */,
+				883BB4E41DC864F500952C2D /* BKShowExampleVideoView.m in Sources */,
 				2A16740D1DB2056E00BA7AE0 /* BKShowExampleImageViewController.m in Sources */,
 				2A1674061DB204A600BA7AE0 /* BKImageClassTableViewCell.m in Sources */,
 				2A1674101DB2182200BA7AE0 /* BKShowExampleImageCollectionViewFlowLayout.m in Sources */,
 				88500AB81DAF231500102A35 /* BKImagePicker.m in Sources */,
-				887192D51DB61DD8007FED28 /* SelectButton.m in Sources */,
+				887192D51DB61DD8007FED28 /* BKImageAlbumItemSelectButton.m in Sources */,
+				885DC57A1DC9DD0C00FCEFD4 /* BKGIFAlbumItemView.m in Sources */,
 				2A1674131DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.m in Sources */,
 				2A1674071DB204A600BA7AE0 /* BKImageClassViewController.m in Sources */,
+				885DC5771DC9D5B400FCEFD4 /* BKVideoAlbumItemView.m in Sources */,
 				88291EFB1DB7467600011A68 /* BKTool.m in Sources */,
 				88500AA51DAF1D2300102A35 /* ViewController.m in Sources */,
 				2A16740A1DB204A600BA7AE0 /* BKImagePickerViewController.m in Sources */,
 				2A1674091DB204A600BA7AE0 /* BKImagePickerFooterCollectionReusableView.m in Sources */,
 				88500AA21DAF1D2300102A35 /* AppDelegate.m in Sources */,
-				883BB4E11DC828EB00952C2D /* UINavigationItem+margin.m in Sources */,
+				883BB4E11DC828EB00952C2D /* UINavigationItem+BKMargin.m in Sources */,
 				88500A9F1DAF1D2300102A35 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

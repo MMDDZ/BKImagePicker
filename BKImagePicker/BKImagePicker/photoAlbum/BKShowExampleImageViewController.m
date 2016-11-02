@@ -12,12 +12,12 @@
 #import "BKShowExampleImageCollectionViewFlowLayout.h"
 #import "BKShowExampleImageCollectionViewCell.h"
 #import "BKImageClassViewController.h"
-#import "SelectButton.h"
+#import "BKImageAlbumItemSelectButton.h"
 #import "BKTool.h"
 
 @interface BKShowExampleImageViewController ()<UICollectionViewDataSource,UICollectionViewDelegate,UICollectionViewDelegateFlowLayout,UINavigationControllerDelegate>
 
-@property (nonatomic,strong) SelectButton * rightBtn;
+@property (nonatomic,strong) BKImageAlbumItemSelectButton * rightBtn;
 
 @property (nonatomic,strong) UICollectionView * exampleImageCollectionView;
 
@@ -154,11 +154,14 @@
     }
 }
 
--(SelectButton*)rightBtn
+-(BKImageAlbumItemSelectButton*)rightBtn
 {
     if (!_rightBtn) {
-        _rightBtn = [[SelectButton alloc]initSelectButtonWithFrame:CGRectMake(self.view.frame.size.width - 40, 7, 30, 30)];
-        [_rightBtn addTarget:self action:@selector(rightBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+        _rightBtn = [[BKImageAlbumItemSelectButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width - 40, 7, 30, 30)];
+        __block BKShowExampleImageViewController * mySelf = self;
+        [_rightBtn setSelectButtonClick:^(BKImageAlbumItemSelectButton * button) {
+            [mySelf rightBtnClick:button];
+        }];
         
         if ([self.imageAssetsArray count] == 1) {
             if ([self.select_imageArray count] == 1) {
@@ -171,7 +174,7 @@
     return _rightBtn;
 }
 
--(void)rightBtnClick:(SelectButton*)button
+-(void)rightBtnClick:(BKImageAlbumItemSelectButton*)button
 {
     PHAsset * asset = (PHAsset*)self.imageAssetsArray[button.tag];
     BOOL isHave = [self.select_imageArray containsObject:asset];

@@ -1,14 +1,14 @@
 //
-//  UINavigationItem+margin.m
+//  UINavigationItem+BKMargin.m
 //  BKImagePicker
 //
 //  Created by iMac on 16/11/1.
 //  Copyright © 2016年 BIKE. All rights reserved.
 //
 
-#import "UINavigationItem+margin.h"
+#import "UINavigationItem+BKMargin.h"
 
-@implementation UINavigationItem (margin)
+@implementation UINavigationItem (BKMargin)
 
 - (void)setRightBarButtonItem:(UIBarButtonItem *)_rightBarButtonItem
 {

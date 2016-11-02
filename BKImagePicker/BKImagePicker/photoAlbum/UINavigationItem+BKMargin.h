@@ -1,5 +1,5 @@
 //
-//  UINavigationItem+margin.h
+//  UINavigationItem+BKMargin.h
 //  BKImagePicker
 //
 //  Created by iMac on 16/11/1.
@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface UINavigationItem (margin)
+@interface UINavigationItem (BKMargin)
 
 @end
