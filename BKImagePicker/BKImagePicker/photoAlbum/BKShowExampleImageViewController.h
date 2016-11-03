@@ -11,8 +11,14 @@
 
 @interface BKShowExampleImageViewController : UIViewController
 
+/**
+ 展示数组
+ */
 @property (nonatomic,strong) NSArray * imageAssetsArray;
 
+/**
+ 选取的照片
+ */
 @property (nonatomic,strong) PHAsset * tap_asset;
 
 /**

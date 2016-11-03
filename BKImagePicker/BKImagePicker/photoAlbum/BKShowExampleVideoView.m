@@ -91,6 +91,17 @@
     [self.player play];
 }
 
+-(void)dealloc
+{
+    [self removeObserverFromPlayerItem:self.player.currentItem];
+}
+
+-(void)removeObserverFromPlayerItem:(AVPlayerItem *)playerItem
+{
+    [playerItem removeObserver:self forKeyPath:@"status"];
+    [playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
+}
+
 -(instancetype)initWithAsset:(PHAsset*)asset
 {
     self = [super initWithFrame:CGRectMake([UIScreen mainScreen].bounds.size.width, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height)];
