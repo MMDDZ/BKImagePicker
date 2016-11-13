@@ -17,6 +17,7 @@
 @property (nonatomic ,strong) UIView * currentView;
 
 @property (nonatomic ,strong) UIView * bottomView;
+@property (nonatomic ,strong) UIButton * start_pause;
 
 @end
 
@@ -37,17 +38,7 @@
         [back addTarget:self action:@selector(backBtnClick) forControlEvents:UIControlEventTouchUpInside];
         [_bottomView addSubview:back];
         
-        NSString * bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
-        UIImage * start_image = [UIImage imageWithContentsOfFile:[bundlePath stringByAppendingString:@"/video_start.png"]];
-        
-        UIButton * start_pause = [UIButton buttonWithType:UIButtonTypeCustom];
-        start_pause.frame = CGRectMake((self.frame.size.width - 64)/2.0f, 0, 64, 64);
-        [start_pause setImage:start_image forState:UIControlStateNormal];
-        [start_pause setImageEdgeInsets:UIEdgeInsetsMake(16, 16, 16, 16)];
-        start_pause.clipsToBounds = YES;
-        start_pause.adjustsImageWhenHighlighted = NO;
-        [start_pause addTarget:self action:@selector(start_pauseBtnClick) forControlEvents:UIControlEventTouchUpInside];
-        [_bottomView addSubview:start_pause];
+        [_bottomView addSubview:[self start_pause]];
         
         UIButton * select = [UIButton buttonWithType:UIButtonTypeCustom];
         select.frame = CGRectMake(self.frame.size.width - 64 - 10, 0, 64, 64);
@@ -59,6 +50,23 @@
         [_bottomView addSubview:select];
     }
     return _bottomView;
+}
+
+-(UIButton*)start_pause
+{
+    if (!_start_pause) {
+        NSString * bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
+        UIImage * start_image = [UIImage imageWithContentsOfFile:[bundlePath stringByAppendingString:@"/video_start.png"]];
+        
+        _start_pause = [UIButton buttonWithType:UIButtonTypeCustom];
+        _start_pause.frame = CGRectMake((self.frame.size.width - 64)/2.0f, 0, 64, 64);
+        [_start_pause setImage:start_image forState:UIControlStateNormal];
+        [_start_pause setImageEdgeInsets:UIEdgeInsetsMake(16, 16, 16, 16)];
+        _start_pause.clipsToBounds = YES;
+        _start_pause.adjustsImageWhenHighlighted = NO;
+        [_start_pause addTarget:self action:@selector(start_pauseBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+    }
+    return _start_pause;
 }
 
 -(void)backBtnClick
@@ -86,21 +94,36 @@
     
 }
 
--(void)start_pauseBtnClick
+-(void)start_pauseBtnClick:(UIButton*)button
 {
-    [self.player play];
+    NSString * bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
+    
+    if (self.player.rate == 0) {
+        UIImage * pause_image = [UIImage imageWithContentsOfFile:[bundlePath stringByAppendingString:@"/video_pause.png"]];
+        [button setImage:pause_image forState:UIControlStateNormal];
+        
+        [self.player play];
+    }else {
+        UIImage * start_image = [UIImage imageWithContentsOfFile:[bundlePath stringByAppendingString:@"/video_start.png"]];
+        [button setImage:start_image forState:UIControlStateNormal];
+        
+        [self.player pause];
+    }
 }
 
-//-(void)dealloc
-//{
-//    [self removeObserverFromPlayerItem:self.player.currentItem];
-//}
-//
-//-(void)removeObserverFromPlayerItem:(AVPlayerItem *)playerItem
-//{
-//    [playerItem removeObserver:self forKeyPath:@"status"];
-//    [playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
-//}
+-(void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+-(void)playbackFinished:(NSNotification *)notification
+{
+    NSString * bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
+    UIImage * start_image = [UIImage imageWithContentsOfFile:[bundlePath stringByAppendingString:@"/video_start.png"]];
+    [_start_pause setImage:start_image forState:UIControlStateNormal];
+    
+    [self.player seekToTime:CMTimeMake(0, 1)];
+}
 
 -(instancetype)initWithAsset:(PHAsset*)asset
 {
@@ -110,6 +133,8 @@
         self.backgroundColor = [UIColor blackColor];
         
         [self initPrepareVideoWithAsset:asset];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playbackFinished:) name:AVPlayerItemDidPlayToEndTimeNotification object:self.player.currentItem];
     }
     return self;
 }
