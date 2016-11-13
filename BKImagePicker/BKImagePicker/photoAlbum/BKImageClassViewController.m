@@ -47,7 +47,7 @@
         PHAssetCollection *collection = obj;
         
         // 获取所有资源的集合按照创建时间倒序排列
-        __block PHFetchOptions * fetchOptions = [[PHFetchOptions alloc] init];
+        PHFetchOptions * fetchOptions = [[PHFetchOptions alloc] init];
         fetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
         
         PHFetchResult<PHAsset *> *assets  = [PHAsset fetchAssetsInAssetCollection:collection options:fetchOptions];
@@ -55,6 +55,8 @@
             PHAsset * asset = assets[0];
             
             PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+            options.resizeMode = PHImageRequestOptionsResizeModeFast;
+            options.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
             options.synchronous = YES;
             
             PHCachingImageManager * imageManager = [[PHCachingImageManager alloc]init];

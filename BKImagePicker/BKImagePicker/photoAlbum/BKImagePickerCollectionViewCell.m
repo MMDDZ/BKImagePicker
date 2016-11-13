@@ -81,7 +81,7 @@
         }else{
             
             BKImageAlbumItemSelectButton * selectButton = [[BKImageAlbumItemSelectButton alloc]initWithFrame:CGRectMake(self.frame.size.width - 30, 0, 30, 30)];
-            __block BKImagePickerCollectionViewCell * mySelf = self;
+            __weak BKImagePickerCollectionViewCell * mySelf = self;
             [selectButton setSelectButtonClick:^(BKImageAlbumItemSelectButton * button) {
                 [mySelf selectButton:button];
             }];

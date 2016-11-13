@@ -91,16 +91,16 @@
     [self.player play];
 }
 
--(void)dealloc
-{
-    [self removeObserverFromPlayerItem:self.player.currentItem];
-}
-
--(void)removeObserverFromPlayerItem:(AVPlayerItem *)playerItem
-{
-    [playerItem removeObserver:self forKeyPath:@"status"];
-    [playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
-}
+//-(void)dealloc
+//{
+//    [self removeObserverFromPlayerItem:self.player.currentItem];
+//}
+//
+//-(void)removeObserverFromPlayerItem:(AVPlayerItem *)playerItem
+//{
+//    [playerItem removeObserver:self forKeyPath:@"status"];
+//    [playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
+//}
 
 -(instancetype)initWithAsset:(PHAsset*)asset
 {

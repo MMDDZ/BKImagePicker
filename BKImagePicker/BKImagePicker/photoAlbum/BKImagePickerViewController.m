@@ -143,7 +143,7 @@
         if ([collection.localizedTitle isEqualToString:self.title]) {
             
             // 获取所有资源的集合按照创建时间排列
-            __block PHFetchOptions * fetchOptions = [[PHFetchOptions alloc] init];
+            PHFetchOptions * fetchOptions = [[PHFetchOptions alloc] init];
             fetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:YES]];
             
             self.assets  = [PHAsset fetchAssetsInAssetCollection:collection options:fetchOptions];
