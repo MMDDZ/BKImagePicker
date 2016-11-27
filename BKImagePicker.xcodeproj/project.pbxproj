@@ -16,6 +16,9 @@
 		2A1674101DB2182200BA7AE0 /* BKShowExampleImageCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A16740F1DB2182200BA7AE0 /* BKShowExampleImageCollectionViewFlowLayout.m */; };
 		2A1674131DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1674121DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.m */; };
 		2AC73EC51DD8A01800CF5B5D /* BKShowExampleGIFView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AC73EC41DD8A01800CF5B5D /* BKShowExampleGIFView.m */; };
+		2ADC20A81DEADECA001DD97C /* FLAnimatedImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2ADC20A41DEADECA001DD97C /* FLAnimatedImage.m */; };
+		2ADC20A91DEADECA001DD97C /* FLAnimatedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2ADC20A61DEADECA001DD97C /* FLAnimatedImageView.m */; };
+		2ADC20AA1DEADECA001DD97C /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2ADC20A71DEADECA001DD97C /* Info.plist */; };
 		88291EFB1DB7467600011A68 /* BKTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 88291EFA1DB7467600011A68 /* BKTool.m */; };
 		883BB4E11DC828EB00952C2D /* UINavigationItem+BKMargin.m in Sources */ = {isa = PBXBuildFile; fileRef = 883BB4E01DC828EB00952C2D /* UINavigationItem+BKMargin.m */; };
 		883BB4E41DC864F500952C2D /* BKShowExampleVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 883BB4E31DC864F500952C2D /* BKShowExampleVideoView.m */; };
@@ -50,6 +53,11 @@
 		2A1674121DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKShowExampleImageCollectionViewCell.m; sourceTree = "<group>"; };
 		2AC73EC31DD8A01800CF5B5D /* BKShowExampleGIFView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKShowExampleGIFView.h; sourceTree = "<group>"; };
 		2AC73EC41DD8A01800CF5B5D /* BKShowExampleGIFView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKShowExampleGIFView.m; sourceTree = "<group>"; };
+		2ADC20A31DEADECA001DD97C /* FLAnimatedImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FLAnimatedImage.h; sourceTree = "<group>"; };
+		2ADC20A41DEADECA001DD97C /* FLAnimatedImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FLAnimatedImage.m; sourceTree = "<group>"; };
+		2ADC20A51DEADECA001DD97C /* FLAnimatedImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FLAnimatedImageView.h; sourceTree = "<group>"; };
+		2ADC20A61DEADECA001DD97C /* FLAnimatedImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FLAnimatedImageView.m; sourceTree = "<group>"; };
+		2ADC20A71DEADECA001DD97C /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		88291EF91DB7467600011A68 /* BKTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKTool.h; sourceTree = "<group>"; };
 		88291EFA1DB7467600011A68 /* BKTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKTool.m; sourceTree = "<group>"; };
 		883BB4DF1DC828EB00952C2D /* UINavigationItem+BKMargin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UINavigationItem+BKMargin.h"; sourceTree = "<group>"; };
@@ -90,6 +98,7 @@
 		2A1673FB1DB204A600BA7AE0 /* photoAlbum */ = {
 			isa = PBXGroup;
 			children = (
+				2ADC20A21DEADECA001DD97C /* FLAnimatedImage */,
 				2A1673FE1DB204A600BA7AE0 /* BKImageClassViewController.h */,
 				2A1673FF1DB204A600BA7AE0 /* BKImageClassViewController.m */,
 				2A1673FC1DB204A600BA7AE0 /* BKImageClassTableViewCell.h */,
@@ -122,6 +131,18 @@
 				88291EFA1DB7467600011A68 /* BKTool.m */,
 			);
 			path = photoAlbum;
+			sourceTree = "<group>";
+		};
+		2ADC20A21DEADECA001DD97C /* FLAnimatedImage */ = {
+			isa = PBXGroup;
+			children = (
+				2ADC20A31DEADECA001DD97C /* FLAnimatedImage.h */,
+				2ADC20A41DEADECA001DD97C /* FLAnimatedImage.m */,
+				2ADC20A51DEADECA001DD97C /* FLAnimatedImageView.h */,
+				2ADC20A61DEADECA001DD97C /* FLAnimatedImageView.m */,
+				2ADC20A71DEADECA001DD97C /* Info.plist */,
+			);
+			path = FLAnimatedImage;
 			sourceTree = "<group>";
 		};
 		88500A911DAF1D2300102A35 = {
@@ -234,6 +255,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2ADC20AA1DEADECA001DD97C /* Info.plist in Resources */,
 				88500AAD1DAF1D2300102A35 /* LaunchScreen.storyboard in Resources */,
 				88500AAA1DAF1D2300102A35 /* Assets.xcassets in Resources */,
 				88506A7C1DB9B5AF0043F3E0 /* BKImage.bundle in Resources */,
@@ -259,7 +281,9 @@
 				2A1674071DB204A600BA7AE0 /* BKImageClassViewController.m in Sources */,
 				885DC5771DC9D5B400FCEFD4 /* BKVideoAlbumItemView.m in Sources */,
 				2AC73EC51DD8A01800CF5B5D /* BKShowExampleGIFView.m in Sources */,
+				2ADC20A81DEADECA001DD97C /* FLAnimatedImage.m in Sources */,
 				88291EFB1DB7467600011A68 /* BKTool.m in Sources */,
+				2ADC20A91DEADECA001DD97C /* FLAnimatedImageView.m in Sources */,
 				88500AA51DAF1D2300102A35 /* ViewController.m in Sources */,
 				2A16740A1DB204A600BA7AE0 /* BKImagePickerViewController.m in Sources */,
 				2A1674091DB204A600BA7AE0 /* BKImagePickerFooterCollectionReusableView.m in Sources */,

@@ -21,6 +21,7 @@
 #import "BKImageAlbumItemSelectButton.h"
 #import "BKTool.h"
 #import "BKShowExampleVideoView.h"
+#import "BKShowExampleGIFView.h"
 
 @interface BKImagePickerViewController ()<UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout,BKImagePickerCollectionViewCellDelegate>
 
@@ -305,6 +306,9 @@
                 [BKTool showRemind:@"不能同时选择照片和GIF"];
                 return;
             }
+            
+            BKShowExampleGIFView * gifView = [[BKShowExampleGIFView alloc]initWithAsset:asset];
+            [gifView showInVC:self];
         }else{
             BKShowExampleImageViewController * vc =[[BKShowExampleImageViewController alloc]init];
             vc.imageAssetsArray = [NSArray arrayWithArray:self.imageAssetArray];
