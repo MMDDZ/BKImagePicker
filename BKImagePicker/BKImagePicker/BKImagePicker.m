@@ -13,13 +13,11 @@
 
 @interface BKImagePicker ()
 
-@property (nonatomic,strong) UIViewController * vc;
-
 @end
 
 @implementation BKImagePicker
 
--(UIViewController *)vc
++(UIViewController *)vc
 {
     UIWindow * window = [[UIApplication sharedApplication] keyWindow];
     if (window.windowLevel != UIWindowLevelNormal) {
@@ -35,13 +33,14 @@
     UIView *frontView = [[window subviews] objectAtIndex:0];
     id nextResponder = [frontView nextResponder];
     
+    UIViewController * vc;
     if ([nextResponder isKindOfClass:[UIViewController class]]) {
-        _vc = nextResponder;
+        vc = nextResponder;
     }else {
-        _vc = window.rootViewController;
+        vc = window.rootViewController;
     }
     
-    return _vc;
+    return vc;
 }
 
 -(void)takePhoto
@@ -49,14 +48,14 @@
     NSLog(@"1");
 }
 
--(void)photoAlbum
++(void)showPhotoAlbumWithTypePhoto:(BKPhotoType)photoType maxSelect:(NSInteger)maxSelect complete:(void (^)(NSArray * imageArray))complete
 {
     [self checkAllowVisitPhotoAlbumHandler:^(BOOL handleFlag) {
         if (handleFlag) {
             BKImageClassViewController * imageClassVC = [[BKImageClassViewController alloc]init];
-            imageClassVC.max_select = self.max_select;
+            imageClassVC.max_select = maxSelect;
             BKImagePickerViewController * imageVC = [[BKImagePickerViewController alloc]init];
-            imageVC.max_select = self.max_select;
+            imageVC.max_select = maxSelect;
             
             NSDictionary * info_dic = [[NSBundle mainBundle] infoDictionary];
             NSString * info_language = info_dic[@"CFBundleDevelopmentRegion"];
@@ -80,7 +79,7 @@
 
  @param handler 检测结果
  */
--(void)checkAllowVisitPhotoAlbumHandler:(void (^)(BOOL handleFlag))handler
++(void)checkAllowVisitPhotoAlbumHandler:(void (^)(BOOL handleFlag))handler
 {
     PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
     

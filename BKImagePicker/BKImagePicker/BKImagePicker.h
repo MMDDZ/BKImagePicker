@@ -8,15 +8,20 @@
 
 #import <UIKit/UIKit.h>
 
-@interface BKImagePicker : NSObject
+typedef NS_ENUM(NSInteger,BKPhotoType) {
+    BKPhotoTypeDefault = 0,
+    BKPhotoTypeImage,
+    BKPhotoTypeVideo,
+    BKPhotoTypeGIF,
+    BKPhotoTypeGIFAndImage,
+    BKPhotoTypeVideoAndImage,
+    BKPhotoTypeVideoAndGIF
+};
 
-/**
- 最大选取量
- */
-@property (nonatomic,assign) NSInteger max_select;
+@interface BKImagePicker : NSObject
 
 -(void)takePhoto;
 
--(void)photoAlbum;
++(void)showPhotoAlbumWithTypePhoto:(BKPhotoType)photoType maxSelect:(NSInteger)maxSelect complete:(void (^)(NSArray * imageArray))complete;
 
 @end
