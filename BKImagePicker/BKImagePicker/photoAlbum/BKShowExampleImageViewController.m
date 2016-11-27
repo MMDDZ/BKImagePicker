@@ -317,8 +317,7 @@
         options.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
         options.synchronous = YES;
         
-        PHCachingImageManager * imageManager = [[PHCachingImageManager alloc]init];
-        [imageManager requestImageForAsset:self.imageAssetsArray[nowIndex] targetSize:CGSizeMake(self.view.frame.size.width/2.0f, self.view.frame.size.width/2.0f) contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+        [[PHImageManager defaultManager] requestImageForAsset:self.imageAssetsArray[nowIndex] targetSize:CGSizeMake(self.view.frame.size.width/2.0f, self.view.frame.size.width/2.0f) contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
             
             // 排除取消，错误，低清图三种情况，即已经获取到了高清图
             BOOL downImageloadFinined = ![[info objectForKey:PHImageCancelledKey] boolValue] && ![info objectForKey:PHImageErrorKey] && ![[info objectForKey:PHImageResultIsDegradedKey] boolValue];
@@ -345,12 +344,11 @@
 {
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
-        options.resizeMode = PHImageRequestOptionsResizeModeFast;
-        options.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
+        options.resizeMode = PHImageRequestOptionsResizeModeExact;
+        options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
         options.synchronous = YES;
         
-        PHCachingImageManager * imageManager = [[PHCachingImageManager alloc]init];
-        [imageManager requestImageForAsset:self.imageAssetsArray[nowIndex] targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+        [[PHImageManager defaultManager] requestImageForAsset:self.imageAssetsArray[nowIndex] targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
             
             // 排除取消，错误，低清图三种情况，即已经获取到了高清图
             BOOL downImageloadFinined = ![[info objectForKey:PHImageCancelledKey] boolValue] && ![info objectForKey:PHImageErrorKey] && ![[info objectForKey:PHImageResultIsDegradedKey] boolValue];

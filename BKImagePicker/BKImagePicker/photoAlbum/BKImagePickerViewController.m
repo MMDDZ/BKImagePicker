@@ -155,15 +155,21 @@
             options.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
             options.synchronous = YES;
             
+            PHCachingImageManager * imageManager = [[PHCachingImageManager alloc]init];
+            imageManager.allowsCachingHighQualityImages = NO;
+            
+            CGSize imageSize = CGSizeMake([UIScreen mainScreen].bounds.size.width/2.0f, [UIScreen mainScreen].bounds.size.width/2.0f);
+            
+            [imageManager startCachingImagesForAssets:self.assets.copy targetSize:imageSize contentMode:PHImageContentModeAspectFill options:options];
+            
             [self.assets enumerateObjectsUsingBlock:^(PHAsset * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 
-                [[PHImageManager defaultManager] requestImageForAsset:obj targetSize:CGSizeMake(self.view.frame.size.width/2.0f, self.view.frame.size.width/2.0f) contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+                [imageManager requestImageForAsset:obj targetSize:imageSize contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
                     
                     // 排除取消，错误，低清图三种情况，即已经获取到了高清图
                     BOOL downImageloadFinined = ![[info objectForKey:PHImageCancelledKey] boolValue] && ![info objectForKey:PHImageErrorKey] && ![[info objectForKey:PHImageResultIsDegradedKey] boolValue];
                     if (downImageloadFinined) {
-                        if(result)
-                        {
+                        if(result) {
                             if (obj.mediaType == PHAssetMediaTypeImage) {
                                 
                                 NSString * fileName = [obj valueForKey:@"filename"];
@@ -177,6 +183,7 @@
                             [self.albumAssetArray addObject:obj];
                             [self.albumImageArray addObject:result];
                             dispatch_async(dispatch_get_main_queue(), ^{
+                                
                                 if ([self.albumImageArray count] == self.allAlbumImageNum) {
                                     [self.albumCollectionView reloadData];
                                     
@@ -246,7 +253,7 @@
         _albumCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 64, self.view.frame.size.width, self.view.frame.size.height-64-49) collectionViewLayout:flowLayout];
         _albumCollectionView.delegate = self;
         _albumCollectionView.dataSource = self;
-        _albumCollectionView.showsVerticalScrollIndicator = NO;
+//        _albumCollectionView.showsVerticalScrollIndicator = NO;
         _albumCollectionView.backgroundColor = [UIColor clearColor];
         [_albumCollectionView registerClass:[BKImagePickerCollectionViewCell class] forCellWithReuseIdentifier:imagePickerCell_identifier];
         [_albumCollectionView registerClass:[BKImagePickerFooterCollectionReusableView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:imagePickerFooter_identifier];

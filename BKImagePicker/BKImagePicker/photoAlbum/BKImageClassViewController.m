@@ -59,8 +59,7 @@
             options.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
             options.synchronous = YES;
             
-            PHCachingImageManager * imageManager = [[PHCachingImageManager alloc]init];
-            [imageManager requestImageForAsset:asset targetSize:CGSizeMake(ROW_HEIGHT*2, ROW_HEIGHT*2) contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+            [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake([UIScreen mainScreen].bounds.size.width/2.0f, [UIScreen mainScreen].bounds.size.width/2.0f) contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
                 
                 // 排除取消，错误，低清图三种情况，即已经获取到了高清图
                 BOOL downImageloadFinined = ![[info objectForKey:PHImageCancelledKey] boolValue] && ![info objectForKey:PHImageErrorKey] && ![[info objectForKey:PHImageResultIsDegradedKey] boolValue];
