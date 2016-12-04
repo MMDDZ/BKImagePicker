@@ -48,7 +48,7 @@
     NSLog(@"1");
 }
 
-+(void)showPhotoAlbumWithTypePhoto:(BKPhotoType)photoType maxSelect:(NSInteger)maxSelect complete:(void (^)(NSArray * imageArray))complete
++(void)showPhotoAlbumWithTypePhoto:(BKPhotoType)photoType maxSelect:(NSInteger)maxSelect complete:(void (^)(NSArray * imageArray , BKSelectPhotoType selectPhotoType))complete
 {
     [self checkAllowVisitPhotoAlbumHandler:^(BOOL handleFlag) {
         if (handleFlag) {
@@ -56,6 +56,11 @@
             imageClassVC.max_select = maxSelect;
             BKImagePickerViewController * imageVC = [[BKImagePickerViewController alloc]init];
             imageVC.max_select = maxSelect;
+            imageVC.finishSelectOption = ^(NSArray * imageArray , BKSelectPhotoType selectPhotoType){
+                if (complete) {
+                    complete(imageArray,selectPhotoType);
+                }
+            };
             
             NSDictionary * info_dic = [[NSBundle mainBundle] infoDictionary];
             NSString * info_language = info_dic[@"CFBundleDevelopmentRegion"];

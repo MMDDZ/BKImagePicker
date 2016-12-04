@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <Photos/Photos.h>
+#import "BKImagePicker.h"
 
 @interface BKImagePickerViewController : UIViewController
 
@@ -20,5 +21,7 @@
  选取的PHAsset数组
  */
 @property (nonatomic,strong) NSMutableArray * select_imageArray;
+
+@property (nonatomic,copy) void (^finishSelectOption)(NSArray * imageArr,BKSelectPhotoType selectPhotoType);
 
 @end

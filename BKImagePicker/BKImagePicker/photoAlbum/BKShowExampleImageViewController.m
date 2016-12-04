@@ -245,7 +245,9 @@
 
 -(void)sendBtnClick:(UIButton*)button
 {
-    
+    if (self.finishSelectOption) {
+        self.finishSelectOption(self.select_imageArray.copy, BKSelectPhotoTypeImage);
+    }
 }
 
 -(void)exampleImageCollectionViewTapRecognizer

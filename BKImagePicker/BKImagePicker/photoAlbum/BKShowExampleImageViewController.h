@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <Photos/Photos.h>
+#import "BKImagePicker.h"
 
 @interface BKShowExampleImageViewController : UIViewController
 
@@ -35,5 +36,7 @@
  更新选取相册数组
  */
 @property (nonatomic,copy) void (^refreshAlbumViewOption)(NSMutableArray * select_imageArray);
+
+@property (nonatomic,copy) void (^finishSelectOption)(NSArray * imageArr,BKSelectPhotoType selectPhotoType);
 
 @end

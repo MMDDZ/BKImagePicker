@@ -19,6 +19,8 @@
 @property (nonatomic ,strong) UIView * bottomView;
 @property (nonatomic ,strong) UIButton * start_pause;
 
+@property (nonatomic ,strong) PHAsset * asset;
+
 @end
 
 @implementation BKShowExampleVideoView
@@ -91,7 +93,9 @@
 
 -(void)selectBtnClick
 {
-    
+    if (self.finishSelectOption) {
+        self.finishSelectOption(@[self.asset],BKSelectPhotoTypeVideo);
+    }
 }
 
 -(void)start_pauseBtnClick:(UIButton*)button
@@ -130,16 +134,18 @@
     self = [super initWithFrame:CGRectMake([UIScreen mainScreen].bounds.size.width, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height)];
     if (self) {
         
+        self.asset = asset;
+        
         self.backgroundColor = [UIColor blackColor];
         
-        [self initPrepareVideoWithAsset:asset];
+        [self initPrepareVideo];
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playbackFinished:) name:AVPlayerItemDidPlayToEndTimeNotification object:self.player.currentItem];
     }
     return self;
 }
 
--(void)initPrepareVideoWithAsset:(PHAsset*)asset
+-(void)initPrepareVideo
 {
     [self requestPlayerItemHandler:^(AVPlayerItem *playerItem) {
         self.player = [AVPlayer playerWithPlayerItem:playerItem];
@@ -151,14 +157,14 @@
                 [self animateShow];
             });
         });
-    } withAsset:asset];
+    }];
 }
 
--(void)requestPlayerItemHandler:(void (^)(AVPlayerItem * playerItem))handler withAsset:(PHAsset*)asset
+-(void)requestPlayerItemHandler:(void (^)(AVPlayerItem * playerItem))handler
 {
     PHVideoRequestOptions * options = [[PHVideoRequestOptions alloc]init];
     
-    [[PHImageManager defaultManager] requestPlayerItemForVideo:asset options:options resultHandler:^(AVPlayerItem * _Nullable playerItem, NSDictionary * _Nullable info) {
+    [[PHImageManager defaultManager] requestPlayerItemForVideo:self.asset options:options resultHandler:^(AVPlayerItem * _Nullable playerItem, NSDictionary * _Nullable info) {
         if (handler) {
             handler(playerItem);
         }

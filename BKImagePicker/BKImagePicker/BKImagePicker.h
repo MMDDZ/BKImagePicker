@@ -18,10 +18,16 @@ typedef NS_ENUM(NSInteger,BKPhotoType) {
     BKPhotoTypeVideoAndGIF
 };
 
+typedef NS_ENUM(NSInteger,BKSelectPhotoType) {
+    BKSelectPhotoTypeImage = 0,
+    BKSelectPhotoTypeGIF,
+    BKSelectPhotoTypeVideo,
+};
+
 @interface BKImagePicker : NSObject
 
 -(void)takePhoto;
 
-+(void)showPhotoAlbumWithTypePhoto:(BKPhotoType)photoType maxSelect:(NSInteger)maxSelect complete:(void (^)(NSArray * imageArray))complete;
++(void)showPhotoAlbumWithTypePhoto:(BKPhotoType)photoType maxSelect:(NSInteger)maxSelect complete:(void (^)(NSArray * imageArray , BKSelectPhotoType selectPhotoType))complete;
 
 @end

@@ -15,6 +15,8 @@
 
 @property (nonatomic ,strong) UIView * bottomView;
 
+@property (nonatomic ,strong) PHAsset * asset;
+
 @end
 
 @implementation BKShowExampleGIFView
@@ -68,7 +70,9 @@
 
 -(void)selectBtnClick
 {
-    
+    if (self.finishSelectOption) {
+        self.finishSelectOption(@[self.asset],BKSelectPhotoTypeGIF);
+    }
 }
 
 -(instancetype)initWithAsset:(PHAsset*)asset
@@ -76,14 +80,16 @@
     self = [super initWithFrame:CGRectMake([UIScreen mainScreen].bounds.size.width, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height)];
     if (self) {
         
+        self.asset = asset;
+        
         self.backgroundColor = [UIColor blackColor];
         
-        [self initGIFImageViewWithAsset:asset];
+        [self initGIFImageView];
     }
     return self;
 }
 
--(void)initGIFImageViewWithAsset:(PHAsset*)asset
+-(void)initGIFImageView
 {
     [self requestGIFImageHandler:^(UIImage * image , NSString * urlStr) {
         
@@ -102,17 +108,17 @@
                 [self animateShow];
             });
         });
-    } withAsset:asset];
+    }];
 }
 
--(void)requestGIFImageHandler:(void (^)(UIImage * image , NSString * urlStr))handler withAsset:(PHAsset*)asset
+-(void)requestGIFImageHandler:(void (^)(UIImage * image , NSString * urlStr))handler
 {
     PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
     options.resizeMode = PHImageRequestOptionsResizeModeExact;
     options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
     options.synchronous = YES;
     
-    [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+    [[PHImageManager defaultManager] requestImageForAsset:self.asset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
         
         // 排除取消，错误，低清图三种情况，即已经获取到了高清图
         BOOL downImageloadFinined = ![[info objectForKey:PHImageCancelledKey] boolValue] && ![info objectForKey:PHImageErrorKey] && ![[info objectForKey:PHImageResultIsDegradedKey] boolValue];

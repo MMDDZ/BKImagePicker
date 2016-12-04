@@ -335,6 +335,11 @@
             }
             
             BKShowExampleGIFView * gifView = [[BKShowExampleGIFView alloc]initWithAsset:asset];
+            [gifView setFinishSelectOption:^(NSArray * imageArr, BKSelectPhotoType selectPhotoType) {
+                if (self.finishSelectOption) {
+                    self.finishSelectOption(imageArr,selectPhotoType);
+                }
+            }];
             [gifView showInVC:self];
         }else{
             BKShowExampleImageViewController * vc =[[BKShowExampleImageViewController alloc]init];
@@ -346,6 +351,11 @@
                 self.select_imageArray = [NSMutableArray arrayWithArray:select_imageArray];
                 [self.albumCollectionView reloadData];
             }];
+            [vc setFinishSelectOption:^(NSArray * imageArr, BKSelectPhotoType selectPhotoType) {
+                if (self.finishSelectOption) {
+                    self.finishSelectOption(self.select_imageArray.copy, BKSelectPhotoTypeImage);
+                }
+            }];
             [self.navigationController pushViewController:vc animated:YES];
         }
     }else{
@@ -355,6 +365,11 @@
         }
         
         BKShowExampleVideoView * exampleVideoView = [[BKShowExampleVideoView alloc]initWithAsset:asset];
+        [exampleVideoView setFinishSelectOption:^(NSArray * imageArr, BKSelectPhotoType selectPhotoType) {
+            if (self.finishSelectOption) {
+                self.finishSelectOption(imageArr,selectPhotoType);
+            }
+        }];
         [exampleVideoView showInVC:self];
     }
 }
@@ -505,6 +520,11 @@
             [self.albumCollectionView reloadItemsAtIndexPaths:@[indexPath]];
         }];
     }];
+    [vc setFinishSelectOption:^(NSArray * imageArr, BKSelectPhotoType selectPhotoType) {
+        if (self.finishSelectOption) {
+            self.finishSelectOption(self.select_imageArray.copy, BKSelectPhotoTypeImage);
+        }
+    }];
     [self.navigationController pushViewController:vc animated:YES];
 }
 
@@ -517,7 +537,9 @@
 
 -(void)sendBtnClick:(UIButton*)button
 {
-    
+    if (self.finishSelectOption) {
+        self.finishSelectOption(self.select_imageArray.copy, BKSelectPhotoTypeImage);
+    }
 }
 
 @end

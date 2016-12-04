@@ -8,8 +8,11 @@
 
 #import <UIKit/UIKit.h>
 #import <Photos/Photos.h>
+#import "BKImagePicker.h"
 
 @interface BKShowExampleGIFView : UIView
+
+@property (nonatomic,copy) void (^finishSelectOption)(NSArray * imageArr,BKSelectPhotoType selectPhotoType);
 
 -(instancetype)initWithAsset:(PHAsset*)asset;
 
