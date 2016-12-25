@@ -15,7 +15,7 @@
 #import "BKImageAlbumItemSelectButton.h"
 #import "BKTool.h"
 
-@interface BKShowExampleImageViewController ()<UICollectionViewDataSource,UICollectionViewDelegate,UICollectionViewDelegateFlowLayout,UINavigationControllerDelegate>
+@interface BKShowExampleImageViewController ()<UICollectionViewDataSource,UICollectionViewDelegate,UICollectionViewDelegateFlowLayout,UINavigationControllerDelegate,UIGestureRecognizerDelegate>
 
 @property (nonatomic,strong) BKImageAlbumItemSelectButton * rightBtn;
 
@@ -116,14 +116,47 @@
     [self.view addSubview:[self exampleImageCollectionView]];
     [self.view addSubview:[self bottomView]];
     
+    [self showAnimate];
+}
+
+-(void)showAnimate
+{
+    CGRect tapImageViewFrame = [[self.tapImageView superview] convertRect:self.tapImageView.frame toView:self.view];
+    
+    UIImageView * tapImageView = [[UIImageView alloc]initWithFrame:tapImageViewFrame];
+    tapImageView.image = self.tapImageView.image;
+    [self.view addSubview:tapImageView];
+    [self.view bringSubviewToFront:self.bottomView];
+    
+    CGSize tapImageSize = tapImageView.image.size;
+    
+    CGFloat scale = tapImageSize.width / self.view.frame.size.width;
+    CGFloat height = tapImageSize.height / scale;
+    if (height > self.view.frame.size.height) {
+        tapImageViewFrame.size.height = self.view.frame.size.height;
+        scale = tapImageSize.height / tapImageViewFrame.size.height;
+        tapImageViewFrame.size.width = tapImageSize.width / scale;
+        tapImageViewFrame.origin.x = (self.view.frame.size.width - tapImageViewFrame.size.width) / 2.0f;
+        tapImageViewFrame.origin.y = 0;
+    }else{
+        tapImageViewFrame.size.height = height;
+        tapImageViewFrame.size.width = self.view.frame.size.width;
+        tapImageViewFrame.origin.x = 0;
+        tapImageViewFrame.origin.y = (self.view.frame.size.height-tapImageViewFrame.size.height)/2.0f;
+    }
+    
     [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.navigationController.navigationBar.frame = CGRectMake(0, 0, self.view.frame.size.width, 64);
-        self.exampleImageCollectionView.alpha = 1;
         CGRect bottomViewFrame = self.bottomView.frame;
         bottomViewFrame.origin.y = self.view.frame.size.height - 49;
         self.bottomView.frame = bottomViewFrame;
+        tapImageView.frame = tapImageViewFrame;
     } completion:^(BOOL finished) {
+        [tapImageView removeFromSuperview];
+        self.exampleImageCollectionView.alpha = 1;
         
+        self.navigationController.interactivePopGestureRecognizer.delegate = self;
+        [self.exampleImageCollectionView.panGestureRecognizer requireGestureRecognizerToFail:self.navigationController.interactivePopGestureRecognizer];
     }];
 }
 
@@ -267,10 +300,13 @@
     if ([UIApplication sharedApplication].statusBarHidden) {
         self.navigationController.navigationBar.alpha = 0;
         self.bottomView.alpha = 0;
+        self.navigationController.interactivePopGestureRecognizer.delegate = nil;
     }else{
         self.navigationController.navigationBar.backgroundColor = [UIColor clearColor];
         self.navigationController.navigationBar.alpha = 0.8;
         self.bottomView.alpha = 0.8;
+        self.navigationController.interactivePopGestureRecognizer.delegate = self;
+        [self.exampleImageCollectionView.panGestureRecognizer requireGestureRecognizerToFail:self.navigationController.interactivePopGestureRecognizer];
     }
 }
 
@@ -400,7 +436,7 @@
     
     CGRect showImageViewFrame = showImageView.frame;
 
-    CGFloat scale = image.size.width / showImageViewFrame.size.width;
+    CGFloat scale = image.size.width / imageScrollView.frame.size.width;
     CGFloat height = image.size.height / scale;
     if (height > imageScrollView.frame.size.height) {
         showImageViewFrame.size.height = imageScrollView.frame.size.height;

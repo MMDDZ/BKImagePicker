@@ -342,21 +342,17 @@
             }];
             [gifView showInVC:self];
         }else{
-            BKShowExampleImageViewController * vc =[[BKShowExampleImageViewController alloc]init];
-            vc.imageAssetsArray = [NSArray arrayWithArray:self.imageAssetArray];
-            vc.select_imageArray = [NSMutableArray arrayWithArray:self.select_imageArray];
-            vc.max_select = self.max_select;
-            vc.tap_asset = asset;
-            [vc setRefreshAlbumViewOption:^(NSMutableArray * select_imageArray) {
-                self.select_imageArray = [NSMutableArray arrayWithArray:select_imageArray];
-                [self.albumCollectionView reloadData];
-            }];
-            [vc setFinishSelectOption:^(NSArray * imageArr, BKSelectPhotoType selectPhotoType) {
-                if (self.finishSelectOption) {
-                    self.finishSelectOption(self.select_imageArray.copy, BKSelectPhotoTypeImage);
-                }
-            }];
-            [self.navigationController pushViewController:vc animated:NO];
+            
+            BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
+            if (!cell) {
+                [self.albumCollectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:YES];
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
+                    [self tapWithCell:cell andAsset:asset];
+                });
+            }else{
+                [self tapWithCell:cell andAsset:asset];
+            }
         }
     }else{
         if ([self.select_imageArray count] > 0) {
@@ -372,6 +368,26 @@
         }];
         [exampleVideoView showInVC:self];
     }
+}
+
+-(void)tapWithCell:(BKImagePickerCollectionViewCell*)cell andAsset:(PHAsset*)asset
+{
+    BKShowExampleImageViewController * vc =[[BKShowExampleImageViewController alloc]init];
+    vc.tapImageView = cell.photoImageView;
+    vc.imageAssetsArray = [NSArray arrayWithArray:self.imageAssetArray];
+    vc.select_imageArray = [NSMutableArray arrayWithArray:self.select_imageArray];
+    vc.max_select = self.max_select;
+    vc.tap_asset = asset;
+    [vc setRefreshAlbumViewOption:^(NSMutableArray * select_imageArray) {
+        self.select_imageArray = [NSMutableArray arrayWithArray:select_imageArray];
+        [self.albumCollectionView reloadData];
+    }];
+    [vc setFinishSelectOption:^(NSArray * imageArr, BKSelectPhotoType selectPhotoType) {
+        if (self.finishSelectOption) {
+            self.finishSelectOption(self.select_imageArray.copy, BKSelectPhotoTypeImage);
+        }
+    }];
+    [self.navigationController pushViewController:vc animated:NO];
 }
 
 #pragma mark - BKImagePickerCollectionViewCellDelegate
@@ -505,7 +521,23 @@
         return;
     }
     
+    NSIndexPath * indexPath = [NSIndexPath indexPathForItem:[self.imageAssetArray indexOfObject:[self.select_imageArray lastObject]] inSection:0];
+    BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
+    if (!cell) {
+        [self.albumCollectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:YES];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
+            [self previewWithCell:cell];
+        });
+    }else{
+        [self previewWithCell:cell];
+    }
+}
+
+-(void)previewWithCell:(BKImagePickerCollectionViewCell*)cell
+{
     BKShowExampleImageViewController * vc = [[BKShowExampleImageViewController alloc]init];
+    vc.tapImageView = cell.photoImageView;
     vc.select_imageArray = [NSMutableArray arrayWithArray:self.select_imageArray];
     vc.max_select = self.max_select;
     vc.tap_asset = [self.select_imageArray lastObject];
