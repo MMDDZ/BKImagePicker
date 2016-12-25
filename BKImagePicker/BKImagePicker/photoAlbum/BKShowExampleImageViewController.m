@@ -14,6 +14,7 @@
 #import "BKImageClassViewController.h"
 #import "BKImageAlbumItemSelectButton.h"
 #import "BKTool.h"
+#import "UIViewController+BKExpand.h"
 
 @interface BKShowExampleImageViewController ()<UICollectionViewDataSource,UICollectionViewDelegate,UICollectionViewDelegateFlowLayout,UINavigationControllerDelegate>
 
@@ -108,7 +109,7 @@
     // Do any additional setup after loading the view.
     
     self.automaticallyAdjustsScrollViewInsets = NO;
-    self.view.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
+    self.view.backgroundColor = [UIColor blackColor];
     
     self.navigationController.delegate = self;
     
@@ -146,7 +147,6 @@
     }
     
     [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-        self.view.backgroundColor = [UIColor colorWithWhite:0 alpha:1];
         tapImageView.frame = tapImageViewFrame;
     } completion:^(BOOL finished) {
         [tapImageView removeFromSuperview];
@@ -195,6 +195,32 @@
         }
         self.rightBtn.tag = item;
     }
+}
+
+-(BOOL)navigationShouldPopOnBackItem
+{
+    if ([self.title rangeOfString:@"/"].location != NSNotFound) {
+        NSInteger item = [[self.title componentsSeparatedByString:@"/"][0] integerValue]-1;
+        PHAsset * asset = (PHAsset*)(self.imageAssetsArray[item]);
+        
+        NSIndexPath * indexPath = [NSIndexPath indexPathForItem:item inSection:0];
+        BKShowExampleImageCollectionViewCell * cell = (BKShowExampleImageCollectionViewCell*)[self.exampleImageCollectionView  cellForItemAtIndexPath:indexPath];
+        if (self.backOption) {
+            self.backOption(asset,cell.showImageView);
+        }
+    }else{
+        PHAsset * asset = (PHAsset*)(self.imageAssetsArray[0]);
+        
+        NSIndexPath * indexPath = [NSIndexPath indexPathForItem:0 inSection:0];
+        BKShowExampleImageCollectionViewCell * cell = (BKShowExampleImageCollectionViewCell*)[self.exampleImageCollectionView  cellForItemAtIndexPath:indexPath];
+        if (self.backOption) {
+            self.backOption(asset,cell.showImageView);
+        }
+    }
+    
+    [self.navigationController popViewControllerAnimated:NO];
+    
+    return NO;
 }
 
 -(BKImageAlbumItemSelectButton*)rightBtn

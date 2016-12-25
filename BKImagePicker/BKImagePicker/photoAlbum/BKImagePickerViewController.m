@@ -385,6 +385,31 @@
             [self.albumCollectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:YES];
         }
     }];
+    [vc setBackOption:^(PHAsset * asset, UIImageView * imageView) {
+        NSIndexPath * indexPath = [NSIndexPath indexPathForItem:[self.imageAssetArray indexOfObject:asset] inSection:0];
+        BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
+        if (!cell) {
+            [self.albumCollectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
+            cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
+        }
+        cell.alpha = 0;
+        CGRect cellImageFrame = [[cell.photoImageView superview] convertRect:cell.photoImageView.frame toView:self.view];
+        
+        CGRect imageViewFrame = [[imageView superview] convertRect:imageView.frame toView:self.view];
+        
+        UIImageView * newImageView = [[UIImageView alloc]initWithFrame:imageViewFrame];
+        newImageView.clipsToBounds = YES;
+        newImageView.contentMode = UIViewContentModeScaleAspectFill;
+        newImageView.image = imageView.image;
+        [self.view addSubview:newImageView];
+        
+        [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+            newImageView.frame = cellImageFrame;
+        } completion:^(BOOL finished) {
+            [newImageView removeFromSuperview];
+            cell.alpha = 1;
+        }];
+    }];
     [vc setRefreshAlbumViewOption:^(NSMutableArray * select_imageArray) {
         self.select_imageArray = [NSMutableArray arrayWithArray:select_imageArray];
         [self.albumCollectionView reloadData];
@@ -554,6 +579,31 @@
         if (!cell) {
             [self.albumCollectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:YES];
         }
+    }];
+    [vc setBackOption:^(PHAsset * asset, UIImageView * imageView) {
+        NSIndexPath * indexPath = [NSIndexPath indexPathForItem:[self.imageAssetArray indexOfObject:asset] inSection:0];
+        BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
+        if (!cell) {
+            [self.albumCollectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
+            cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
+        }
+        cell.alpha = 0;
+        CGRect cellImageFrame = [[cell.photoImageView superview] convertRect:cell.photoImageView.frame toView:self.view];
+        
+        CGRect imageViewFrame = [[imageView superview] convertRect:imageView.frame toView:self.view];
+        
+        UIImageView * newImageView = [[UIImageView alloc]initWithFrame:imageViewFrame];
+        newImageView.clipsToBounds = YES;
+        newImageView.contentMode = UIViewContentModeScaleAspectFill;
+        newImageView.image = imageView.image;
+        [self.view addSubview:newImageView];
+        
+        [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+            newImageView.frame = cellImageFrame;
+        } completion:^(BOOL finished) {
+            [newImageView removeFromSuperview];
+            cell.alpha = 1;
+        }];
     }];
     [vc setRefreshAlbumViewOption:^(NSMutableArray * select_imageArray) {
         

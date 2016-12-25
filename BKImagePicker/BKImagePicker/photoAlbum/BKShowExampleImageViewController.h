@@ -43,6 +43,11 @@
 @property (nonatomic,copy) void (^refreshLookAsset)(PHAsset * asset);
 
 /**
+ 返回调用方法
+ */
+@property (nonatomic,copy) void (^backOption)(PHAsset * asset,UIImageView * imageView);
+
+/**
  更新选取相册数组
  */
 @property (nonatomic,copy) void (^refreshAlbumViewOption)(NSMutableArray * select_imageArray);
