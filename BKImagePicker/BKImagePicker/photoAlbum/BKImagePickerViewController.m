@@ -379,14 +379,14 @@
     vc.max_select = self.max_select;
     vc.tap_asset = asset;
     [vc setRefreshLookAsset:^(PHAsset * asset) {
-        NSIndexPath * indexPath = [NSIndexPath indexPathForItem:[self.imageAssetArray indexOfObject:asset] inSection:0];
+        NSIndexPath * indexPath = [NSIndexPath indexPathForItem:[self.albumAssetArray indexOfObject:asset] inSection:0];
         BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
         if (!cell) {
             [self.albumCollectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:YES];
         }
     }];
     [vc setBackOption:^(PHAsset * asset, UIImageView * imageView) {
-        NSIndexPath * indexPath = [NSIndexPath indexPathForItem:[self.imageAssetArray indexOfObject:asset] inSection:0];
+        NSIndexPath * indexPath = [NSIndexPath indexPathForItem:[self.albumAssetArray indexOfObject:asset] inSection:0];
         BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
         if (!cell) {
             [self.albumCollectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
@@ -553,7 +553,7 @@
         return;
     }
     
-    NSIndexPath * indexPath = [NSIndexPath indexPathForItem:[self.imageAssetArray indexOfObject:[self.select_imageArray lastObject]] inSection:0];
+    NSIndexPath * indexPath = [NSIndexPath indexPathForItem:[self.albumAssetArray indexOfObject:[self.select_imageArray lastObject]] inSection:0];
     BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
     if (!cell) {
         [self.albumCollectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:YES];
@@ -574,14 +574,14 @@
     vc.max_select = self.max_select;
     vc.tap_asset = [self.select_imageArray lastObject];
     [vc setRefreshLookAsset:^(PHAsset * asset) {
-        NSIndexPath * indexPath = [NSIndexPath indexPathForItem:[self.imageAssetArray indexOfObject:asset] inSection:0];
+        NSIndexPath * indexPath = [NSIndexPath indexPathForItem:[self.albumAssetArray indexOfObject:asset] inSection:0];
         BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
         if (!cell) {
             [self.albumCollectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:YES];
         }
     }];
     [vc setBackOption:^(PHAsset * asset, UIImageView * imageView) {
-        NSIndexPath * indexPath = [NSIndexPath indexPathForItem:[self.imageAssetArray indexOfObject:asset] inSection:0];
+        NSIndexPath * indexPath = [NSIndexPath indexPathForItem:[self.albumAssetArray indexOfObject:asset] inSection:0];
         BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
         if (!cell) {
             [self.albumCollectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
