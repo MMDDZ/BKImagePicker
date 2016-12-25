@@ -26,6 +26,7 @@
         _imageScrollView.showsVerticalScrollIndicator = NO;
         _imageScrollView.delegate=self;
         _imageScrollView.contentSize = CGSizeMake(frame.size.width-20*2, frame.size.height);
+        _imageScrollView.backgroundColor = [UIColor clearColor];
         _imageScrollView.minimumZoomScale = 1.0;
         [self addSubview:_imageScrollView];
         

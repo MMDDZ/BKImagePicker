@@ -38,6 +38,11 @@
 @property (nonatomic,strong) NSMutableArray * select_imageArray;
 
 /**
+ 更新观看位置
+ */
+@property (nonatomic,copy) void (^refreshLookAsset)(PHAsset * asset);
+
+/**
  更新选取相册数组
  */
 @property (nonatomic,copy) void (^refreshAlbumViewOption)(NSMutableArray * select_imageArray);

@@ -49,7 +49,7 @@
 {
     if (!_bottomView) {
         
-        _bottomView = [[UIView alloc]initWithFrame:CGRectMake(0, self.view.frame.size.height, self.view.frame.size.width, 49)];
+        _bottomView = [[UIView alloc]initWithFrame:CGRectMake(0, self.view.frame.size.height-49, self.view.frame.size.width, 49)];
         _bottomView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.8];
         
         [_bottomView addSubview:[self editBtn]];
@@ -108,7 +108,7 @@
     // Do any additional setup after loading the view.
     
     self.automaticallyAdjustsScrollViewInsets = NO;
-    self.view.backgroundColor = [UIColor blackColor];
+    self.view.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
     
     self.navigationController.delegate = self;
     
@@ -146,10 +146,7 @@
     }
     
     [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-        self.navigationController.navigationBar.frame = CGRectMake(0, 0, self.view.frame.size.width, 64);
-        CGRect bottomViewFrame = self.bottomView.frame;
-        bottomViewFrame.origin.y = self.view.frame.size.height - 49;
-        self.bottomView.frame = bottomViewFrame;
+        self.view.backgroundColor = [UIColor colorWithWhite:0 alpha:1];
         tapImageView.frame = tapImageViewFrame;
     } completion:^(BOOL finished) {
         [tapImageView removeFromSuperview];
@@ -164,9 +161,6 @@
 
 -(void)initNav
 {
-    self.navigationController.navigationBar.backgroundColor = [UIColor colorWithWhite:1 alpha:0.8];
-    self.navigationController.navigationBar.frame = CGRectMake(0, -64, self.view.frame.size.width, 64);
-    
     if ([self.imageAssetsArray count] == 1) {
         self.title = @"预览";
     }else{
@@ -189,6 +183,9 @@
         NSInteger item = [[change[@"new"] componentsSeparatedByString:@"/"][0] integerValue]-1;
         
         PHAsset * asset = (PHAsset*)(self.imageAssetsArray[item]);
+        if (self.refreshLookAsset) {
+            self.refreshLookAsset(asset);
+        }
         
         if ([self.select_imageArray containsObject:asset]) {
             NSInteger select_num = [self.select_imageArray indexOfObject:asset]+1;
@@ -251,11 +248,11 @@
                 [_editBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
             }
         }
-
+        
         [self refreshClassSelectImageArray];
     }];
 }
-     
+
 //更新选取的PHAsset数组
 -(void)refreshClassSelectImageArray
 {
@@ -299,7 +296,6 @@
         self.bottomView.alpha = 0;
         [self.navigationController.interactivePopGestureRecognizer setEnabled:NO];
     }else{
-        self.navigationController.navigationBar.backgroundColor = [UIColor clearColor];
         self.navigationController.navigationBar.alpha = 0.8;
         self.bottomView.alpha = 0.8;
         [self.navigationController.interactivePopGestureRecognizer setEnabled:YES];
@@ -353,7 +349,7 @@
     [self getMaximumSizeImageOption:^(UIImage *originalImage) {
         [self editImageView:cell.showImageView image:originalImage scrollView:cell.imageScrollView];
     } nowIndex:indexPath.item];
-
+    
     return cell;
 }
 
@@ -390,7 +386,7 @@
 
 /**
  获取对应缩略图大图
-
+ 
  @param imageOption 大图
  */
 -(void)getMaximumSizeImageOption:(void (^)(UIImage * originalImage))imageOption nowIndex:(NSInteger)nowIndex
@@ -421,7 +417,7 @@
 
 /**
  修改图frame
-
+ 
  @param showImageView   image所在的imageVIew
  @param image           image
  @param imageScrollView image所在的scrollView
@@ -431,7 +427,7 @@
     showImageView.image = image;
     
     CGRect showImageViewFrame = showImageView.frame;
-
+    
     CGFloat scale = image.size.width / imageScrollView.frame.size.width;
     CGFloat height = image.size.height / scale;
     if (height > imageScrollView.frame.size.height) {
