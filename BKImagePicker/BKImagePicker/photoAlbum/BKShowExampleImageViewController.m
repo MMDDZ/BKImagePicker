@@ -15,7 +15,7 @@
 #import "BKImageAlbumItemSelectButton.h"
 #import "BKTool.h"
 
-@interface BKShowExampleImageViewController ()<UICollectionViewDataSource,UICollectionViewDelegate,UICollectionViewDelegateFlowLayout,UINavigationControllerDelegate,UIGestureRecognizerDelegate>
+@interface BKShowExampleImageViewController ()<UICollectionViewDataSource,UICollectionViewDelegate,UICollectionViewDelegateFlowLayout,UINavigationControllerDelegate>
 
 @property (nonatomic,strong) BKImageAlbumItemSelectButton * rightBtn;
 
@@ -154,9 +154,6 @@
     } completion:^(BOOL finished) {
         [tapImageView removeFromSuperview];
         self.exampleImageCollectionView.alpha = 1;
-        
-        self.navigationController.interactivePopGestureRecognizer.delegate = self;
-        [self.exampleImageCollectionView.panGestureRecognizer requireGestureRecognizerToFail:self.navigationController.interactivePopGestureRecognizer];
     }];
 }
 
@@ -300,13 +297,12 @@
     if ([UIApplication sharedApplication].statusBarHidden) {
         self.navigationController.navigationBar.alpha = 0;
         self.bottomView.alpha = 0;
-        self.navigationController.interactivePopGestureRecognizer.delegate = nil;
+        [self.navigationController.interactivePopGestureRecognizer setEnabled:NO];
     }else{
         self.navigationController.navigationBar.backgroundColor = [UIColor clearColor];
         self.navigationController.navigationBar.alpha = 0.8;
         self.bottomView.alpha = 0.8;
-        self.navigationController.interactivePopGestureRecognizer.delegate = self;
-        [self.exampleImageCollectionView.panGestureRecognizer requireGestureRecognizerToFail:self.navigationController.interactivePopGestureRecognizer];
+        [self.navigationController.interactivePopGestureRecognizer setEnabled:YES];
     }
 }
 
