@@ -22,6 +22,9 @@
  */
 @property (nonatomic,strong) NSMutableArray * select_imageArray;
 
+/**
+ 完成选择
+ */
 @property (nonatomic,copy) void (^finishSelectOption)(NSArray * imageArr,BKSelectPhotoType selectPhotoType);
 
 @end

@@ -49,7 +49,7 @@
 {
     if (!_bottomView) {
         
-        _bottomView = [[UIView alloc]initWithFrame:CGRectMake(0, self.view.frame.size.height-49, self.view.frame.size.width, 49)];
+        _bottomView = [[UIView alloc]initWithFrame:CGRectMake(0, self.view.frame.size.height, self.view.frame.size.width, 49)];
         _bottomView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.8];
         
         [_bottomView addSubview:[self editBtn]];
@@ -115,6 +115,16 @@
     [self initNav];
     [self.view addSubview:[self exampleImageCollectionView]];
     [self.view addSubview:[self bottomView]];
+    
+    [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        self.navigationController.navigationBar.frame = CGRectMake(0, 0, self.view.frame.size.width, 64);
+        self.exampleImageCollectionView.alpha = 1;
+        CGRect bottomViewFrame = self.bottomView.frame;
+        bottomViewFrame.origin.y = self.view.frame.size.height - 49;
+        self.bottomView.frame = bottomViewFrame;
+    } completion:^(BOOL finished) {
+        
+    }];
 }
 
 -(void)dealloc
@@ -124,7 +134,8 @@
 
 -(void)initNav
 {
-    self.navigationController.navigationBar.alpha = 0.8;
+    self.navigationController.navigationBar.backgroundColor = [UIColor colorWithWhite:1 alpha:0.8];
+    self.navigationController.navigationBar.frame = CGRectMake(0, -64, self.view.frame.size.width, 64);
     
     if ([self.imageAssetsArray count] == 1) {
         self.title = @"预览";
@@ -253,8 +264,14 @@
 -(void)exampleImageCollectionViewTapRecognizer
 {
     [UIApplication sharedApplication].statusBarHidden = ![UIApplication sharedApplication].statusBarHidden;
-    self.navigationController.navigationBarHidden = !self.navigationController.navigationBarHidden;
-    self.bottomView.hidden = !self.bottomView.hidden;
+    if ([UIApplication sharedApplication].statusBarHidden) {
+        self.navigationController.navigationBar.alpha = 0;
+        self.bottomView.alpha = 0;
+    }else{
+        self.navigationController.navigationBar.backgroundColor = [UIColor clearColor];
+        self.navigationController.navigationBar.alpha = 0.8;
+        self.bottomView.alpha = 0.8;
+    }
 }
 
 #pragma mark - UICollectionView
@@ -270,7 +287,9 @@
         _exampleImageCollectionView.dataSource = self;
         _exampleImageCollectionView.backgroundColor = [UIColor clearColor];
         _exampleImageCollectionView.showsVerticalScrollIndicator = NO;
+        _exampleImageCollectionView.showsHorizontalScrollIndicator = NO;
         _exampleImageCollectionView.pagingEnabled = YES;
+        _exampleImageCollectionView.alpha = 0;
         
         [_exampleImageCollectionView registerClass:[BKShowExampleImageCollectionViewCell class] forCellWithReuseIdentifier:showExampleImageCell_identifier];
         

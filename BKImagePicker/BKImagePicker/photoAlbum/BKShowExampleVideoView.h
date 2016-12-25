@@ -12,6 +12,9 @@
 
 @interface BKShowExampleVideoView : UIView
 
+/**
+ 完成选择
+ */
 @property (nonatomic,copy) void (^finishSelectOption)(NSArray * imageArr,BKSelectPhotoType selectPhotoType);
 
 -(instancetype)initWithAsset:(PHAsset*)asset;

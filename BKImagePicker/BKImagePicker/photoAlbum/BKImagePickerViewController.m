@@ -356,7 +356,7 @@
                     self.finishSelectOption(self.select_imageArray.copy, BKSelectPhotoTypeImage);
                 }
             }];
-            [self.navigationController pushViewController:vc animated:YES];
+            [self.navigationController pushViewController:vc animated:NO];
         }
     }else{
         if ([self.select_imageArray count] > 0) {
@@ -525,7 +525,7 @@
             self.finishSelectOption(self.select_imageArray.copy, BKSelectPhotoTypeImage);
         }
     }];
-    [self.navigationController pushViewController:vc animated:YES];
+    [self.navigationController pushViewController:vc animated:NO];
 }
 
 -(void)editBtnClick:(UIButton*)button

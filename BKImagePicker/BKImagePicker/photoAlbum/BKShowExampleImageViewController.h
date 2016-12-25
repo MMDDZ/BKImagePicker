@@ -13,6 +13,11 @@
 @interface BKShowExampleImageViewController : UIViewController
 
 /**
+ 点击的那张图片
+ */
+@property (nonatomic,strong) UIImageView * tapImageView;
+
+/**
  展示数组
  */
 @property (nonatomic,strong) NSArray * imageAssetsArray;
@@ -37,6 +42,9 @@
  */
 @property (nonatomic,copy) void (^refreshAlbumViewOption)(NSMutableArray * select_imageArray);
 
+/**
+ 完成选择
+ */
 @property (nonatomic,copy) void (^finishSelectOption)(NSArray * imageArr,BKSelectPhotoType selectPhotoType);
 
 @end

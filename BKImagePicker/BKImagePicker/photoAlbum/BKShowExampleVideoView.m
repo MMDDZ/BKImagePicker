@@ -80,7 +80,7 @@
     currentRect.origin.x = 0;
     selfRect.origin.x = self.frame.size.width;
     
-    [UIView animateWithDuration:0.2 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+    [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         
         self.currentView.frame = currentRect;
         self.frame = selfRect;
@@ -195,7 +195,7 @@
     currentRect.origin.x = -self.frame.size.width/2.0f;
     selfRect.origin.x = 0;
     
-    [UIView animateWithDuration:0.25 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+    [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         
         self.currentView.frame = currentRect;
         self.frame = selfRect;
