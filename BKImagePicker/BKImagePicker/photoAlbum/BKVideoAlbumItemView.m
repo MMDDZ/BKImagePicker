@@ -34,7 +34,10 @@
     
     CGContextRef context = UIGraphicsGetCurrentContext();
     
+    CGPathRef pathRef = CGPathCreateWithRect(self.frame, nil);
+    CGContextAddPath(context, pathRef);
     CGContextClip(context);
+    
     CGColorSpaceRef rgb = CGColorSpaceCreateDeviceRGB();
     CGFloat colors[] = {
         102.0/255.0,102.0/255.0,102.0/255.0,0,
@@ -47,7 +50,7 @@
     CGPoint end = CGPointMake(0,self.frame.size.height);
     
     CGContextDrawLinearGradient(context, gradient ,start ,end ,kCGGradientDrawsBeforeStartLocation);
-    
+    CGGradientRelease(gradient);
     
     NSString * bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
     UIImage * videoImage = [UIImage imageWithContentsOfFile:[bundlePath stringByAppendingString:@"/video.png"]];

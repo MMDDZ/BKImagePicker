@@ -30,4 +30,11 @@ typedef NS_ENUM(NSInteger,BKSelectPhotoType) {
 
 +(void)showPhotoAlbumWithTypePhoto:(BKPhotoType)photoType maxSelect:(NSInteger)maxSelect complete:(void (^)(NSArray * imageArray , BKSelectPhotoType selectPhotoType))complete;
 
+/**
+ 检测是否允许调用相册
+ 
+ @param handler 检测结果
+ */
++(void)checkAllowVisitPhotoAlbumHandler:(void (^)(BOOL handleFlag))handler;
+
 @end

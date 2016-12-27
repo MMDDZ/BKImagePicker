@@ -24,16 +24,6 @@
 
 @property (nonatomic,strong) UIView * instanceView;
 
-//@property (nonatomic,strong) SelectButton * selectButton;
-//
-//@property (nonatomic,strong) CAGradientLayer * gradientBgLayer;
-//
-//@property (nonatomic,strong) UIImageView * videoImageView;
-//
-//@property (nonatomic,strong) UILabel * videoTimeLab;
-//
-//@property (nonatomic,strong) UILabel * GIF_identifier_lab;
-
 -(void)revaluateIndexPath:(NSIndexPath *)indexPath exampleAssetArr:(NSArray *)exampleAssetArr selectImageArr:(NSArray *)selectImageArr photoImage:(UIImage *)photoImage;
 
 @end
