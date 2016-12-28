@@ -23,6 +23,11 @@
 @property (nonatomic,strong) NSMutableArray * select_imageArray;
 
 /**
+ 相册显示类型
+ */
+@property (nonatomic,assign) BKPhotoType photoType;
+
+/**
  完成选择
  */
 @property (nonatomic,copy) void (^finishSelectOption)(NSArray * imageArr,BKSelectPhotoType selectPhotoType);

@@ -1,5 +1,5 @@
 //
-//  BKShowExampleImageViewController.m
+//  BKShowExampleImageView.m
 //  BKImagePicker
 //
 //  Created by 毕珂 on 16/10/15.
@@ -8,7 +8,7 @@
 
 #define showExampleImageCell_identifier @"BKShowExampleImageCollectionViewCell"
 
-#import "BKShowExampleImageViewController.h"
+#import "BKShowExampleImageView.h"
 #import "BKShowExampleImageCollectionViewFlowLayout.h"
 #import "BKShowExampleImageCollectionViewCell.h"
 #import "BKImageClassViewController.h"
@@ -16,11 +16,26 @@
 #import "BKTool.h"
 #import "UIViewController+BKExpand.h"
 
-@interface BKShowExampleImageViewController ()<UICollectionViewDataSource,UICollectionViewDelegate,UICollectionViewDelegateFlowLayout,UINavigationControllerDelegate>
+@interface BKShowExampleImageView ()<UICollectionViewDataSource,UICollectionViewDelegate,UICollectionViewDelegateFlowLayout,UINavigationControllerDelegate>
 
-@property (nonatomic,strong) BKImageAlbumItemSelectButton * rightBtn;
+/**
+ 展示数组
+ */
+@property (nonatomic,strong) NSArray * imageAssetsArray;
+/**
+ 选取的照片
+ */
+@property (nonatomic,strong) PHAsset * tap_asset;
+
 
 @property (nonatomic,strong) UICollectionView * exampleImageCollectionView;
+
+@property (nonatomic,strong) UIView * topView;
+@property (nonatomic,strong) UILabel * titleLab;
+@property (nonatomic,copy) NSString * title;
+@property (nonatomic,weak) UIViewController * locationVC;
+
+@property (nonatomic,strong) BKImageAlbumItemSelectButton * rightBtn;
 
 @property (nonatomic,strong) UIView * bottomView;
 @property (nonatomic,strong) UIButton * editBtn;
@@ -28,7 +43,7 @@
 
 @end
 
-@implementation BKShowExampleImageViewController
+@implementation BKShowExampleImageView
 
 -(NSArray*)imageAssetsArray
 {
@@ -46,139 +61,82 @@
     return _select_imageArray;
 }
 
--(UIView*)bottomView
+#pragma mark - init
+
+-(instancetype)initWithLocationVC:(UIViewController *)locationVC imageAssetsArray:(NSArray *)imageAssetsArray tapAsset:(PHAsset *)tapAsset
 {
-    if (!_bottomView) {
+    self = [super initWithFrame:[UIScreen mainScreen].bounds];
+    if (self) {
         
-        _bottomView = [[UIView alloc]initWithFrame:CGRectMake(0, self.view.frame.size.height-49, self.view.frame.size.width, 49)];
-        _bottomView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.8];
+        self.backgroundColor = [UIColor blackColor];
+        self.alpha = 0;
         
-        [_bottomView addSubview:[self editBtn]];
-        [_bottomView addSubview:[self sendBtn]];
+        self.locationVC = locationVC;
         
-        if ([self.select_imageArray count] == 1) {
-            [_editBtn setTitleColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1] forState:UIControlStateNormal];
-            [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-            [_sendBtn setBackgroundColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1]];
-            
-            [_sendBtn setTitle:[NSString stringWithFormat:@"确定(%ld)",[self.select_imageArray count]] forState:UIControlStateNormal];
-        }else if ([self.select_imageArray count] > 1) {
-            [_editBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
-            [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-            [_sendBtn setBackgroundColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1]];
-            
-            [_sendBtn setTitle:[NSString stringWithFormat:@"确定(%ld)",[self.select_imageArray count]] forState:UIControlStateNormal];
+        self.imageAssetsArray = imageAssetsArray;
+        self.tap_asset = tapAsset;
+        
+        [self addSubview:[self topView]];
+        [self addSubview:[self bottomView]];
+    }
+    return self;
+}
+
+#pragma mark - topView
+
+-(UIView*)topView
+{
+    if (!_topView) {
+        _topView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, 64)];
+        _topView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.8];
+        
+        [_topView addSubview:[self titleLab]];
+        
+        if ([self.imageAssetsArray count] == 1) {
+            self.title = @"预览";
+        }else{
+            self.title = [NSString stringWithFormat:@"%ld/%ld",[self.imageAssetsArray indexOfObject:self.tap_asset]+1,[self.imageAssetsArray count]];
         }
-    }
-    return _bottomView;
-}
-
--(UIButton*)editBtn
-{
-    if (!_editBtn) {
-        _editBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _editBtn.frame = CGRectMake(0, 0, self.view.frame.size.width / 6, 49);
-        [_editBtn setTitle:@"编辑" forState:UIControlStateNormal];
-        [_editBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
-        _editBtn.titleLabel.font = [UIFont systemFontOfSize:15];
-        [_editBtn addTarget:self action:@selector(editBtnClick:) forControlEvents:UIControlEventTouchUpInside];
-    }
-    return _editBtn;
-}
-
--(UIButton*)sendBtn
-{
-    if (!_sendBtn) {
+        self.titleLab.text = self.title;
+        [self addObserver:self forKeyPath:@"title" options:NSKeyValueObservingOptionNew context:nil];
         
-        _sendBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _sendBtn.frame = CGRectMake(self.view.frame.size.width/4*3, 6, self.view.frame.size.width/4-6, 37);
-        [_sendBtn setTitle:@"确定" forState:UIControlStateNormal];
-        [_sendBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
-        [_sendBtn setBackgroundColor:[UIColor colorWithWhite:0.85 alpha:1]];
-        _sendBtn.titleLabel.font = [UIFont systemFontOfSize:14];
-        _sendBtn.layer.cornerRadius = 4;
-        _sendBtn.clipsToBounds = YES;
-        [_sendBtn addTarget:self action:@selector(sendBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+        UIButton * leftBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        leftBtn.frame = CGRectMake(0, 0, 64, 64);
+        [leftBtn addTarget:self action:@selector(leftBtnClick) forControlEvents:UIControlEventTouchUpInside];
+        [_topView addSubview:leftBtn];
+        
+        NSString * backPath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
+        UIImageView * leftImageView = [[UIImageView alloc]initWithFrame:CGRectMake(12, 20 + 12, 20, 20)];
+        leftImageView.clipsToBounds = YES;
+        leftImageView.contentMode = UIViewContentModeScaleAspectFit;
+        leftImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/blue_back.png",backPath]];
+        [leftBtn addSubview:leftImageView];
+        
+        UIView * rightBtn = [[UIView alloc]initWithFrame:CGRectMake(self.frame.size.width-64, 0, 64, 64)];
+        [_topView addSubview:rightBtn];
+        
+        [rightBtn addSubview:[self rightBtn]];
         
     }
-    return _sendBtn;
+    return _topView;
 }
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    // Do any additional setup after loading the view.
-    
-    self.automaticallyAdjustsScrollViewInsets = NO;
-    self.view.backgroundColor = [UIColor blackColor];
-    
-    self.navigationController.delegate = self;
-    
-    [self initNav];
-    [self.view addSubview:[self exampleImageCollectionView]];
-    [self.view addSubview:[self bottomView]];
-    
-    [self showAnimate];
-}
-
--(void)showAnimate
+-(UILabel*)titleLab
 {
-    CGRect tapImageViewFrame = [[self.tapImageView superview] convertRect:self.tapImageView.frame toView:self.view];
-    
-    UIImageView * tapImageView = [[UIImageView alloc]initWithFrame:tapImageViewFrame];
-    tapImageView.image = self.tapImageView.image;
-    [self.view addSubview:tapImageView];
-    [self.view bringSubviewToFront:self.bottomView];
-    
-    CGSize tapImageSize = tapImageView.image.size;
-    
-    CGFloat scale = tapImageSize.width / self.view.frame.size.width;
-    CGFloat height = tapImageSize.height / scale;
-    if (height > self.view.frame.size.height) {
-        tapImageViewFrame.size.height = self.view.frame.size.height;
-        scale = tapImageSize.height / tapImageViewFrame.size.height;
-        tapImageViewFrame.size.width = tapImageSize.width / scale;
-        tapImageViewFrame.origin.x = (self.view.frame.size.width - tapImageViewFrame.size.width) / 2.0f;
-        tapImageViewFrame.origin.y = 0;
-    }else{
-        tapImageViewFrame.size.height = height;
-        tapImageViewFrame.size.width = self.view.frame.size.width;
-        tapImageViewFrame.origin.x = 0;
-        tapImageViewFrame.origin.y = (self.view.frame.size.height-tapImageViewFrame.size.height)/2.0f;
+    if (!_titleLab) {
+        _titleLab = [[UILabel alloc]initWithFrame:CGRectMake(64, 20, self.frame.size.width - 64*2, 44)];
+        _titleLab.font = [UIFont boldSystemFontOfSize:17];
+        _titleLab.textColor = [UIColor blackColor];
+        _titleLab.textAlignment = NSTextAlignmentCenter;
     }
-    
-    [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-        tapImageView.frame = tapImageViewFrame;
-    } completion:^(BOOL finished) {
-        [tapImageView removeFromSuperview];
-        self.exampleImageCollectionView.alpha = 1;
-    }];
-}
-
--(void)dealloc
-{
-    [self removeObserver:self forKeyPath:@"title"];
-}
-
--(void)initNav
-{
-    if ([self.imageAssetsArray count] == 1) {
-        self.title = @"预览";
-    }else{
-        self.title = [NSString stringWithFormat:@"%ld/%ld",[self.imageAssetsArray indexOfObject:self.tap_asset]+1,[self.imageAssetsArray count]];
-    }
-    [self addObserver:self forKeyPath:@"title" options:NSKeyValueObservingOptionNew context:nil];
-    
-    UIView * rightItem = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 30, 30)];
-    [rightItem setBackgroundColor:[UIColor clearColor]];
-    
-    [rightItem addSubview:[self rightBtn]];
-    
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:rightItem];
+    return _titleLab;
 }
 
 -(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
 {
     if ([keyPath isEqualToString:@"title"]) {
+        
+        self.titleLab.text = change[@"new"];
         
         NSInteger item = [[change[@"new"] componentsSeparatedByString:@"/"][0] integerValue]-1;
         
@@ -197,37 +155,16 @@
     }
 }
 
--(BOOL)navigationShouldPopOnBackItem
+-(void)dealloc
 {
-    if ([self.title rangeOfString:@"/"].location != NSNotFound) {
-        NSInteger item = [[self.title componentsSeparatedByString:@"/"][0] integerValue]-1;
-        PHAsset * asset = (PHAsset*)(self.imageAssetsArray[item]);
-        
-        NSIndexPath * indexPath = [NSIndexPath indexPathForItem:item inSection:0];
-        BKShowExampleImageCollectionViewCell * cell = (BKShowExampleImageCollectionViewCell*)[self.exampleImageCollectionView  cellForItemAtIndexPath:indexPath];
-        if (self.backOption) {
-            self.backOption(asset,cell.showImageView);
-        }
-    }else{
-        PHAsset * asset = (PHAsset*)(self.imageAssetsArray[0]);
-        
-        NSIndexPath * indexPath = [NSIndexPath indexPathForItem:0 inSection:0];
-        BKShowExampleImageCollectionViewCell * cell = (BKShowExampleImageCollectionViewCell*)[self.exampleImageCollectionView  cellForItemAtIndexPath:indexPath];
-        if (self.backOption) {
-            self.backOption(asset,cell.showImageView);
-        }
-    }
-    
-    [self.navigationController popViewControllerAnimated:NO];
-    
-    return NO;
+    [self removeObserver:self forKeyPath:@"title"];
 }
 
 -(BKImageAlbumItemSelectButton*)rightBtn
 {
     if (!_rightBtn) {
-        _rightBtn = [[BKImageAlbumItemSelectButton alloc]initWithFrame:CGRectMake(0, 0, 30, 30)];
-        __weak BKShowExampleImageViewController * mySelf = self;
+        _rightBtn = [[BKImageAlbumItemSelectButton alloc]initWithFrame:CGRectMake(25, 28.5, 30, 30)];
+        __weak BKShowExampleImageView * mySelf = self;
         [_rightBtn setSelectButtonClick:^(BKImageAlbumItemSelectButton * button) {
             [mySelf rightBtnClick:button];
         }];
@@ -282,7 +219,7 @@
 //更新选取的PHAsset数组
 -(void)refreshClassSelectImageArray
 {
-    [self.navigationController.viewControllers enumerateObjectsUsingBlock:^(__kindof UIViewController * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [self.locationVC.navigationController.viewControllers enumerateObjectsUsingBlock:^(__kindof UIViewController * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         if ([obj isKindOfClass:[BKImageClassViewController class]]) {
             BKImageClassViewController * vc = (BKImageClassViewController*)obj;
             vc.select_imageArray = [NSArray arrayWithArray:self.select_imageArray];
@@ -302,6 +239,94 @@
     }];
 }
 
+-(void)leftBtnClick
+{
+//    if ([self.title rangeOfString:@"/"].location != NSNotFound) {
+//        NSInteger item = [[self.title componentsSeparatedByString:@"/"][0] integerValue]-1;
+//        PHAsset * asset = (PHAsset*)(self.imageAssetsArray[item]);
+//        
+//        NSIndexPath * indexPath = [NSIndexPath indexPathForItem:item inSection:0];
+//        BKShowExampleImageCollectionViewCell * cell = (BKShowExampleImageCollectionViewCell*)[self.exampleImageCollectionView  cellForItemAtIndexPath:indexPath];
+//        if (self.backOption) {
+//            self.backOption(asset,cell.showImageView);
+//        }
+//    }else{
+//        PHAsset * asset = (PHAsset*)(self.imageAssetsArray[0]);
+//        
+//        NSIndexPath * indexPath = [NSIndexPath indexPathForItem:0 inSection:0];
+//        BKShowExampleImageCollectionViewCell * cell = (BKShowExampleImageCollectionViewCell*)[self.exampleImageCollectionView  cellForItemAtIndexPath:indexPath];
+//        if (self.backOption) {
+//            self.backOption(asset,cell.showImageView);
+//        }
+//    }
+    
+
+    
+    
+    [self removeFromSuperview];
+    self.locationVC.navigationController.navigationBarHidden = NO;
+}
+
+#pragma mark - bottomView
+
+-(UIView*)bottomView
+{
+    if (!_bottomView) {
+        
+        _bottomView = [[UIView alloc]initWithFrame:CGRectMake(0, self.frame.size.height-49, self.frame.size.width, 49)];
+        _bottomView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.8];
+        
+        [_bottomView addSubview:[self editBtn]];
+        [_bottomView addSubview:[self sendBtn]];
+        
+        if ([self.select_imageArray count] == 1) {
+            [_editBtn setTitleColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1] forState:UIControlStateNormal];
+            [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+            [_sendBtn setBackgroundColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1]];
+            
+            [_sendBtn setTitle:[NSString stringWithFormat:@"确定(%ld)",[self.select_imageArray count]] forState:UIControlStateNormal];
+        }else if ([self.select_imageArray count] > 1) {
+            [_editBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
+            [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+            [_sendBtn setBackgroundColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1]];
+            
+            [_sendBtn setTitle:[NSString stringWithFormat:@"确定(%ld)",[self.select_imageArray count]] forState:UIControlStateNormal];
+        }
+    }
+    return _bottomView;
+}
+
+-(UIButton*)editBtn
+{
+    if (!_editBtn) {
+        _editBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        _editBtn.frame = CGRectMake(0, 0, self.frame.size.width / 6, 49);
+        [_editBtn setTitle:@"编辑" forState:UIControlStateNormal];
+        [_editBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
+        _editBtn.titleLabel.font = [UIFont systemFontOfSize:15];
+        [_editBtn addTarget:self action:@selector(editBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+    }
+    return _editBtn;
+}
+
+-(UIButton*)sendBtn
+{
+    if (!_sendBtn) {
+        
+        _sendBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        _sendBtn.frame = CGRectMake(self.frame.size.width/4*3, 6, self.frame.size.width/4-6, 37);
+        [_sendBtn setTitle:@"确定" forState:UIControlStateNormal];
+        [_sendBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
+        [_sendBtn setBackgroundColor:[UIColor colorWithWhite:0.85 alpha:1]];
+        _sendBtn.titleLabel.font = [UIFont systemFontOfSize:14];
+        _sendBtn.layer.cornerRadius = 4;
+        _sendBtn.clipsToBounds = YES;
+        [_sendBtn addTarget:self action:@selector(sendBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+        
+    }
+    return _sendBtn;
+}
+
 -(void)editBtnClick:(UIButton*)button
 {
     
@@ -314,18 +339,53 @@
     }
 }
 
--(void)exampleImageCollectionViewTapRecognizer
+#pragma mark - 显示方法
+
+-(void)show
 {
-    [UIApplication sharedApplication].statusBarHidden = ![UIApplication sharedApplication].statusBarHidden;
-    if ([UIApplication sharedApplication].statusBarHidden) {
-        self.navigationController.navigationBar.alpha = 0;
-        self.bottomView.alpha = 0;
-        [self.navigationController.interactivePopGestureRecognizer setEnabled:NO];
+    [self.locationVC.view addSubview:self];
+    [self addSubview:[self exampleImageCollectionView]];
+    [self sendSubviewToBack:self.exampleImageCollectionView];
+    
+    [self showAnimate];
+}
+
+-(void)showAnimate
+{
+    CGRect tapImageViewFrame = [[self.tapImageView superview] convertRect:self.tapImageView.frame toView:self];
+    
+    UIImageView * tapImageView = [[UIImageView alloc]initWithFrame:tapImageViewFrame];
+    tapImageView.image = self.tapImageView.image;
+    [self addSubview:tapImageView];
+    [self bringSubviewToFront:self.topView];
+    [self bringSubviewToFront:self.bottomView];
+    
+    CGSize tapImageSize = tapImageView.image.size;
+    
+    CGFloat scale = tapImageSize.width / self.frame.size.width;
+    CGFloat height = tapImageSize.height / scale;
+    if (height > self.frame.size.height) {
+        tapImageViewFrame.size.height = self.frame.size.height;
+        scale = tapImageSize.height / tapImageViewFrame.size.height;
+        tapImageViewFrame.size.width = tapImageSize.width / scale;
+        tapImageViewFrame.origin.x = (self.frame.size.width - tapImageViewFrame.size.width) / 2.0f;
+        tapImageViewFrame.origin.y = 0;
     }else{
-        self.navigationController.navigationBar.alpha = 0.8;
-        self.bottomView.alpha = 0.8;
-        [self.navigationController.interactivePopGestureRecognizer setEnabled:YES];
+        tapImageViewFrame.size.height = height;
+        tapImageViewFrame.size.width = self.frame.size.width;
+        tapImageViewFrame.origin.x = 0;
+        tapImageViewFrame.origin.y = (self.frame.size.height-tapImageViewFrame.size.height)/2.0f;
     }
+    
+    [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        tapImageView.frame = tapImageViewFrame;
+        self.alpha = 1;
+        self.locationVC.navigationController.navigationBar.alpha = 0;
+    } completion:^(BOOL finished) {
+        [tapImageView removeFromSuperview];
+        self.exampleImageCollectionView.alpha = 1;
+        self.locationVC.navigationController.navigationBarHidden = YES;
+    }];
 }
 
 #pragma mark - UICollectionView
@@ -336,7 +396,7 @@
         BKShowExampleImageCollectionViewFlowLayout * flowLayout = [[BKShowExampleImageCollectionViewFlowLayout alloc]init];
         flowLayout.allImageCount = [self.imageAssetsArray count];
         
-        _exampleImageCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(-20, 0, self.view.frame.size.width+20*2, self.view.frame.size.height) collectionViewLayout:flowLayout];
+        _exampleImageCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(-20, 0, self.frame.size.width+20*2, self.frame.size.height) collectionViewLayout:flowLayout];
         _exampleImageCollectionView.delegate = self;
         _exampleImageCollectionView.dataSource = self;
         _exampleImageCollectionView.backgroundColor = [UIColor clearColor];
@@ -347,13 +407,26 @@
         
         [_exampleImageCollectionView registerClass:[BKShowExampleImageCollectionViewCell class] forCellWithReuseIdentifier:showExampleImageCell_identifier];
         
-        CGFloat contentOffX = (self.view.frame.size.width+20*2) * ([[self.title componentsSeparatedByString:@"/"][0] integerValue] - 1);
+        CGFloat contentOffX = (self.frame.size.width+20*2) * ([[self.title componentsSeparatedByString:@"/"][0] integerValue] - 1);
         [_exampleImageCollectionView setContentOffset:CGPointMake(contentOffX, 0) animated:NO];
         
         UITapGestureRecognizer * exampleImageCollectionViewTapRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(exampleImageCollectionViewTapRecognizer)];
         [_exampleImageCollectionView addGestureRecognizer:exampleImageCollectionViewTapRecognizer];
     }
     return _exampleImageCollectionView;
+}
+
+-(void)exampleImageCollectionViewTapRecognizer
+{
+    [UIApplication sharedApplication].statusBarHidden = ![UIApplication sharedApplication].statusBarHidden;
+    if ([UIApplication sharedApplication].statusBarHidden) {
+        self.topView.alpha = 0;
+        self.bottomView.alpha = 0;
+        
+    }else{
+        self.topView.alpha = 0.8;
+        self.bottomView.alpha = 0.8;
+    }
 }
 
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
@@ -392,7 +465,7 @@
         options.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
         options.synchronous = YES;
         
-        [[PHImageManager defaultManager] requestImageForAsset:self.imageAssetsArray[nowIndex] targetSize:CGSizeMake(self.view.frame.size.width/2.0f, self.view.frame.size.width/2.0f) contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+        [[PHImageManager defaultManager] requestImageForAsset:self.imageAssetsArray[nowIndex] targetSize:CGSizeMake(self.frame.size.width/2.0f, self.frame.size.width/2.0f) contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
             
             // 排除取消，错误，低清图三种情况，即已经获取到了高清图
             BOOL downImageloadFinined = ![[info objectForKey:PHImageCancelledKey] boolValue] && ![info objectForKey:PHImageErrorKey] && ![[info objectForKey:PHImageResultIsDegradedKey] boolValue];
@@ -480,7 +553,7 @@
 {
     if (scrollView == self.exampleImageCollectionView) {
         
-        CGPoint p = [self.view convertPoint:self.exampleImageCollectionView.center toView:self.exampleImageCollectionView];
+        CGPoint p = [self convertPoint:self.exampleImageCollectionView.center toView:self.exampleImageCollectionView];
         NSIndexPath * indexPath = [self.exampleImageCollectionView indexPathForItemAtPoint:p];
         NSInteger item = indexPath.item;
         

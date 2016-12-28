@@ -1,5 +1,5 @@
 //
-//  BKShowExampleImageViewController.h
+//  BKShowExampleImageView.h
 //  BKImagePicker
 //
 //  Created by 毕珂 on 16/10/15.
@@ -10,22 +10,12 @@
 #import <Photos/Photos.h>
 #import "BKImagePicker.h"
 
-@interface BKShowExampleImageViewController : UIViewController
+@interface BKShowExampleImageView : UIView
 
 /**
  点击的那张图片
  */
 @property (nonatomic,strong) UIImageView * tapImageView;
-
-/**
- 展示数组
- */
-@property (nonatomic,strong) NSArray * imageAssetsArray;
-
-/**
- 选取的照片
- */
-@property (nonatomic,strong) PHAsset * tap_asset;
 
 /**
  最大选取量
@@ -56,5 +46,9 @@
  完成选择
  */
 @property (nonatomic,copy) void (^finishSelectOption)(NSArray * imageArr,BKSelectPhotoType selectPhotoType);
+
+-(instancetype)initWithLocationVC:(UIViewController*)locationVC imageAssetsArray:(NSArray*)imageAssetsArray tapAsset:(PHAsset*)tapAsset;
+
+-(void)show;
 
 @end

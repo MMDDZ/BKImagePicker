@@ -12,7 +12,7 @@
 		2A1674081DB204A600BA7AE0 /* BKImagePickerCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1674011DB204A600BA7AE0 /* BKImagePickerCollectionViewCell.m */; };
 		2A1674091DB204A600BA7AE0 /* BKImagePickerFooterCollectionReusableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1674031DB204A600BA7AE0 /* BKImagePickerFooterCollectionReusableView.m */; };
 		2A16740A1DB204A600BA7AE0 /* BKImagePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1674051DB204A600BA7AE0 /* BKImagePickerViewController.m */; };
-		2A16740D1DB2056E00BA7AE0 /* BKShowExampleImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A16740C1DB2056E00BA7AE0 /* BKShowExampleImageViewController.m */; };
+		2A16740D1DB2056E00BA7AE0 /* BKShowExampleImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A16740C1DB2056E00BA7AE0 /* BKShowExampleImageView.m */; };
 		2A1674101DB2182200BA7AE0 /* BKShowExampleImageCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A16740F1DB2182200BA7AE0 /* BKShowExampleImageCollectionViewFlowLayout.m */; };
 		2A1674131DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1674121DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.m */; };
 		2A9AC3711E0FB09D00BD0EE1 /* UIViewController+BKExpand.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A9AC3701E0FB09D00BD0EE1 /* UIViewController+BKExpand.m */; };
@@ -46,8 +46,8 @@
 		2A1674031DB204A600BA7AE0 /* BKImagePickerFooterCollectionReusableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKImagePickerFooterCollectionReusableView.m; sourceTree = "<group>"; };
 		2A1674041DB204A600BA7AE0 /* BKImagePickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKImagePickerViewController.h; sourceTree = "<group>"; };
 		2A1674051DB204A600BA7AE0 /* BKImagePickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKImagePickerViewController.m; sourceTree = "<group>"; };
-		2A16740B1DB2056E00BA7AE0 /* BKShowExampleImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKShowExampleImageViewController.h; sourceTree = "<group>"; };
-		2A16740C1DB2056E00BA7AE0 /* BKShowExampleImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKShowExampleImageViewController.m; sourceTree = "<group>"; };
+		2A16740B1DB2056E00BA7AE0 /* BKShowExampleImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKShowExampleImageView.h; sourceTree = "<group>"; };
+		2A16740C1DB2056E00BA7AE0 /* BKShowExampleImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKShowExampleImageView.m; sourceTree = "<group>"; };
 		2A16740E1DB2182200BA7AE0 /* BKShowExampleImageCollectionViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKShowExampleImageCollectionViewFlowLayout.h; sourceTree = "<group>"; };
 		2A16740F1DB2182200BA7AE0 /* BKShowExampleImageCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKShowExampleImageCollectionViewFlowLayout.m; sourceTree = "<group>"; };
 		2A1674111DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKShowExampleImageCollectionViewCell.h; sourceTree = "<group>"; };
@@ -118,8 +118,8 @@
 				885DC5791DC9DD0C00FCEFD4 /* BKGIFAlbumItemView.m */,
 				2A1674021DB204A600BA7AE0 /* BKImagePickerFooterCollectionReusableView.h */,
 				2A1674031DB204A600BA7AE0 /* BKImagePickerFooterCollectionReusableView.m */,
-				2A16740B1DB2056E00BA7AE0 /* BKShowExampleImageViewController.h */,
-				2A16740C1DB2056E00BA7AE0 /* BKShowExampleImageViewController.m */,
+				2A16740B1DB2056E00BA7AE0 /* BKShowExampleImageView.h */,
+				2A16740C1DB2056E00BA7AE0 /* BKShowExampleImageView.m */,
 				2A16740E1DB2182200BA7AE0 /* BKShowExampleImageCollectionViewFlowLayout.h */,
 				2A16740F1DB2182200BA7AE0 /* BKShowExampleImageCollectionViewFlowLayout.m */,
 				2A1674111DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.h */,
@@ -276,7 +276,7 @@
 			files = (
 				2A1674081DB204A600BA7AE0 /* BKImagePickerCollectionViewCell.m in Sources */,
 				883BB4E41DC864F500952C2D /* BKShowExampleVideoView.m in Sources */,
-				2A16740D1DB2056E00BA7AE0 /* BKShowExampleImageViewController.m in Sources */,
+				2A16740D1DB2056E00BA7AE0 /* BKShowExampleImageView.m in Sources */,
 				2A1674061DB204A600BA7AE0 /* BKImageClassTableViewCell.m in Sources */,
 				2A1674101DB2182200BA7AE0 /* BKShowExampleImageCollectionViewFlowLayout.m in Sources */,
 				88500AB81DAF231500102A35 /* BKImagePicker.m in Sources */,
