@@ -391,7 +391,7 @@
         self.navigationController.navigationBarHidden = NO;
         self.navigationController.navigationBar.alpha = 0;
         
-        [UIView animateWithDuration:3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        [UIView animateWithDuration:0.5 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             newImageView.frame = cellImageFrame;
             exampleImageView.alpha = 0;
             self.navigationController.navigationBar.alpha = 1;

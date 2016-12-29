@@ -87,7 +87,8 @@
 {
     if (!_topView) {
         _topView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, 64)];
-        _topView.backgroundColor = [UIColor colorWithWhite:1 alpha:0];
+        _topView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.8];
+        _topView.alpha = 0;
         
         [_topView addSubview:[self titleLab]];
         
@@ -162,7 +163,7 @@
 -(BKImageAlbumItemSelectButton*)rightBtn
 {
     if (!_rightBtn) {
-        _rightBtn = [[BKImageAlbumItemSelectButton alloc]initWithFrame:CGRectMake(25, 28.5, 30, 30)];
+        _rightBtn = [[BKImageAlbumItemSelectButton alloc]initWithFrame:CGRectMake(25, 27, 30, 30)];
         __weak BKShowExampleImageView * mySelf = self;
         [_rightBtn setSelectButtonClick:^(BKImageAlbumItemSelectButton * button) {
             [mySelf rightBtnClick:button];
@@ -246,6 +247,7 @@
         
         NSIndexPath * indexPath = [NSIndexPath indexPathForItem:item inSection:0];
         BKShowExampleImageCollectionViewCell * cell = (BKShowExampleImageCollectionViewCell*)[self.exampleImageCollectionView  cellForItemAtIndexPath:indexPath];
+        cell.showImageView.alpha = 0;
         if (self.backOption) {
             self.backOption(asset,cell.showImageView,self);
         }
@@ -254,6 +256,7 @@
         
         NSIndexPath * indexPath = [NSIndexPath indexPathForItem:0 inSection:0];
         BKShowExampleImageCollectionViewCell * cell = (BKShowExampleImageCollectionViewCell*)[self.exampleImageCollectionView  cellForItemAtIndexPath:indexPath];
+        cell.showImageView.alpha = 0;
         if (self.backOption) {
             self.backOption(asset,cell.showImageView,self);
         }
@@ -267,7 +270,8 @@
     if (!_bottomView) {
         
         _bottomView = [[UIView alloc]initWithFrame:CGRectMake(0, self.frame.size.height-49, self.frame.size.width, 49)];
-        _bottomView.backgroundColor = [UIColor colorWithWhite:1 alpha:0];
+        _bottomView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.8];
+        _bottomView.alpha = 0;
         
         [_bottomView addSubview:[self editBtn]];
         [_bottomView addSubview:[self sendBtn]];
@@ -376,11 +380,11 @@
         beginOption();
     }
     
-    [UIView animateWithDuration:3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+    [UIView animateWithDuration:0.5 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         tapImageView.frame = tapImageViewFrame;
         self.backgroundColor = [UIColor colorWithWhite:0 alpha:1];
-        self.topView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.8];
-        self.bottomView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.8];
+        self.topView.alpha = 1;
+        self.bottomView.alpha = 1;
         self.locationVC.navigationController.navigationBar.alpha = 0;
     } completion:^(BOOL finished) {
         [tapImageView removeFromSuperview];
