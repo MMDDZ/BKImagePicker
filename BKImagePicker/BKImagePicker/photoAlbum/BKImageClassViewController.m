@@ -49,10 +49,65 @@
         // 获取所有资源的集合按照创建时间倒序排列
         PHFetchOptions * fetchOptions = [[PHFetchOptions alloc] init];
         fetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
+        fetchOptions.predicate = [NSPredicate predicateWithFormat:@"mediaType = %d || mediaType = %d",PHAssetMediaTypeImage,PHAssetMediaTypeVideo];
         
         PHFetchResult<PHAsset *> *assets  = [PHAsset fetchAssetsInAssetCollection:collection options:fetchOptions];
         if ([assets count] > 0) {
-            PHAsset * asset = assets[0];
+            
+            __block NSInteger coverCount = 0;
+            __block NSInteger assetsCount = [assets count];
+            [assets enumerateObjectsUsingBlock:^(PHAsset * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                
+                switch (self.photoType) {
+                    case BKPhotoTypeDefault:
+                        break;
+                    case BKPhotoTypeImageAndGif:
+                    {
+                        if (obj.mediaType == PHAssetMediaTypeVideo) {
+                            assetsCount--;
+                            
+                            if (idx == coverCount) {
+                                coverCount++;
+                            }
+                        }
+                    }
+                        break;
+                    case BKPhotoTypeImageAndVideo:
+                    {
+                        NSString * fileName = [obj valueForKey:@"filename"];
+                        if ([fileName rangeOfString:@"gif"].location != NSNotFound || [fileName rangeOfString:@"GIF"].location != NSNotFound) {
+                            assetsCount--;
+                            
+                            if (idx == coverCount) {
+                                coverCount++;
+                            }
+                        }
+                    }
+                        break;
+                    case BKPhotoTypeImage:
+                    {
+                        if (obj.mediaType == PHAssetMediaTypeImage) {
+                            
+                            NSString * fileName = [obj valueForKey:@"filename"];
+                            if ([fileName rangeOfString:@"gif"].location != NSNotFound || [fileName rangeOfString:@"GIF"].location != NSNotFound) {
+                                assetsCount--;
+                                
+                                if (idx == coverCount) {
+                                    coverCount++;
+                                }
+                            }
+                        }else{
+                            assetsCount--;
+                            
+                            if (idx == coverCount) {
+                                coverCount++;
+                            }
+                        }
+                    }
+                        break;
+                }
+            }];
+            PHAsset * asset = assets[coverCount];
             
             PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
             options.resizeMode = PHImageRequestOptionsResizeModeFast;
@@ -66,9 +121,11 @@
                 if (downImageloadFinined) {
                     if(result)
                     {
-                        NSDictionary * albumDic = @{@"album_name":collection.localizedTitle,@"album_example_image":result,@"album_image_count":[NSString stringWithFormat:@"%ld",[assets count]]};
-                        [self.imageClassArray addObject:albumDic];
-                        [self.imageClassTableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:[self.imageClassArray count]-1 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
+                        if (assetsCount > 0) {
+                            NSDictionary * albumDic = @{@"album_name":collection.localizedTitle,@"album_example_image":result,@"album_image_count":[NSString stringWithFormat:@"%ld",assetsCount]};
+                            [self.imageClassArray addObject:albumDic];
+                            [self.imageClassTableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:[self.imageClassArray count]-1 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
+                        }
                     }
                 }
             }];
@@ -173,6 +230,7 @@
     imageVC.title = dic[@"album_name"];
     imageVC.select_imageArray = [NSMutableArray arrayWithArray:self.select_imageArray];
     imageVC.max_select = self.max_select;
+    imageVC.photoType = self.photoType;
     
     [self.navigationController pushViewController:imageVC animated:YES];
 }

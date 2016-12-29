@@ -54,6 +54,7 @@
         if (handleFlag) {
             BKImageClassViewController * imageClassVC = [[BKImageClassViewController alloc]init];
             imageClassVC.max_select = maxSelect;
+            imageClassVC.photoType = photoType;
             BKImagePickerViewController * imageVC = [[BKImagePickerViewController alloc]init];
             imageVC.max_select = maxSelect;
             imageVC.photoType = photoType;
