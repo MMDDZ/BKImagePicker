@@ -361,9 +361,8 @@
 
 -(void)previewWithCell:(BKImagePickerCollectionViewCell*)cell imageAssetsArray:(NSArray*)imageAssetsArray tapAsset:(PHAsset*)tapAsset
 {
-    BKShowExampleImageView * exampleImageView = [[BKShowExampleImageView alloc]initWithLocationVC:self imageAssetsArray:[imageAssetsArray copy] tapAsset:tapAsset];
+    BKShowExampleImageView * exampleImageView = [[BKShowExampleImageView alloc]initWithLocationVC:self imageAssetsArray:[imageAssetsArray copy] selectImageArray:self.select_imageArray tapAsset:tapAsset];
     exampleImageView.tapImageView = cell.photoImageView;
-    exampleImageView.select_imageArray = [NSMutableArray arrayWithArray:self.select_imageArray];
     exampleImageView.max_select = self.max_select;
     [exampleImageView setRefreshLookAsset:^(PHAsset * asset) {
         NSIndexPath * indexPath = [NSIndexPath indexPathForItem:[self.albumAssetArray indexOfObject:asset] inSection:0];
@@ -404,6 +403,8 @@
     [exampleImageView setRefreshAlbumViewOption:^(NSMutableArray * select_imageArray) {
         self.select_imageArray = [NSMutableArray arrayWithArray:select_imageArray];
         [self.albumCollectionView reloadData];
+        
+        [self refreshClassSelectImageArray];
     }];
     [exampleImageView setFinishSelectOption:^(NSArray * imageArr, BKSelectPhotoType selectPhotoType) {
         if (self.finishSelectOption) {

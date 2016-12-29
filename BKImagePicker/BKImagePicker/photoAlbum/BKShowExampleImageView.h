@@ -23,11 +23,6 @@
 @property (nonatomic,assign) NSInteger max_select;
 
 /**
- 选取的PHAsset数组
- */
-@property (nonatomic,strong) NSMutableArray * select_imageArray;
-
-/**
  更新观看位置
  */
 @property (nonatomic,copy) void (^refreshLookAsset)(PHAsset * asset);
@@ -47,7 +42,7 @@
  */
 @property (nonatomic,copy) void (^finishSelectOption)(NSArray * imageArr,BKSelectPhotoType selectPhotoType);
 
--(instancetype)initWithLocationVC:(UIViewController*)locationVC imageAssetsArray:(NSArray*)imageAssetsArray tapAsset:(PHAsset*)tapAsset;
+-(instancetype)initWithLocationVC:(UIViewController*)locationVC imageAssetsArray:(NSArray*)imageAssetsArray selectImageArray:(NSArray*)selectImageArray tapAsset:(PHAsset*)tapAsset;
 
 -(void)showAndBeginAnimateOption:(void (^)())beginOption endAnimateOption:(void (^)())endOption;
 

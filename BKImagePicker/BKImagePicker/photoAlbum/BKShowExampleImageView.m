@@ -23,6 +23,10 @@
  */
 @property (nonatomic,strong) NSArray * imageAssetsArray;
 /**
+ 选取的PHAsset数组
+ */
+@property (nonatomic,strong) NSMutableArray * select_imageArray;
+/**
  选取的照片
  */
 @property (nonatomic,strong) PHAsset * tap_asset;
@@ -63,7 +67,7 @@
 
 #pragma mark - init
 
--(instancetype)initWithLocationVC:(UIViewController *)locationVC imageAssetsArray:(NSArray *)imageAssetsArray tapAsset:(PHAsset *)tapAsset
+-(instancetype)initWithLocationVC:(UIViewController *)locationVC imageAssetsArray:(NSArray *)imageAssetsArray selectImageArray:(NSArray *)selectImageArray tapAsset:(PHAsset *)tapAsset
 {
     self = [super initWithFrame:[UIScreen mainScreen].bounds];
     if (self) {
@@ -73,6 +77,7 @@
         self.locationVC = locationVC;
         
         self.imageAssetsArray = imageAssetsArray;
+        self.select_imageArray = [NSMutableArray arrayWithArray:selectImageArray];
         self.tap_asset = tapAsset;
         
         [self addSubview:[self topView]];
@@ -212,29 +217,13 @@
             }
         }
         
-        [self refreshClassSelectImageArray];
-    }];
-}
-
-//更新选取的PHAsset数组
--(void)refreshClassSelectImageArray
-{
-    [self.locationVC.navigationController.viewControllers enumerateObjectsUsingBlock:^(__kindof UIViewController * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ([obj isKindOfClass:[BKImageClassViewController class]]) {
-            BKImageClassViewController * vc = (BKImageClassViewController*)obj;
-            vc.select_imageArray = [NSArray arrayWithArray:self.select_imageArray];
-            
-            if ([self.select_imageArray count] == 0) {
-                [_sendBtn setTitle:@"确定" forState:UIControlStateNormal];
-            }else{
-                [_sendBtn setTitle:[NSString stringWithFormat:@"确定(%ld)",[self.select_imageArray count]] forState:UIControlStateNormal];
-            }
-            
-            if (self.refreshAlbumViewOption) {
-                self.refreshAlbumViewOption(self.select_imageArray);
-            }
-            
-            *stop = YES;
+        if ([self.select_imageArray count] == 0) {
+            [_sendBtn setTitle:@"确定" forState:UIControlStateNormal];
+        }else{
+            [_sendBtn setTitle:[NSString stringWithFormat:@"确定(%ld)",[self.select_imageArray count]] forState:UIControlStateNormal];
+        }
+        if (self.refreshAlbumViewOption) {
+            self.refreshAlbumViewOption(self.select_imageArray);
         }
     }];
 }
