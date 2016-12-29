@@ -107,28 +107,30 @@
                         break;
                 }
             }];
-            PHAsset * asset = assets[coverCount];
             
-            PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
-            options.resizeMode = PHImageRequestOptionsResizeModeFast;
-            options.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
-            options.synchronous = YES;
-            
-            [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake([UIScreen mainScreen].bounds.size.width/2.0f, [UIScreen mainScreen].bounds.size.width/2.0f) contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+            if (assetsCount > 0) {
                 
-                // 排除取消，错误，低清图三种情况，即已经获取到了高清图
-                BOOL downImageloadFinined = ![[info objectForKey:PHImageCancelledKey] boolValue] && ![info objectForKey:PHImageErrorKey] && ![[info objectForKey:PHImageResultIsDegradedKey] boolValue];
-                if (downImageloadFinined) {
-                    if(result)
-                    {
-                        if (assetsCount > 0) {
+                PHAsset * asset = assets[coverCount];
+                
+                PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+                options.resizeMode = PHImageRequestOptionsResizeModeFast;
+                options.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
+                options.synchronous = YES;
+                
+                [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake([UIScreen mainScreen].bounds.size.width/2.0f, [UIScreen mainScreen].bounds.size.width/2.0f) contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+                    
+                    // 排除取消，错误，低清图三种情况，即已经获取到了高清图
+                    BOOL downImageloadFinined = ![[info objectForKey:PHImageCancelledKey] boolValue] && ![info objectForKey:PHImageErrorKey] && ![[info objectForKey:PHImageResultIsDegradedKey] boolValue];
+                    if (downImageloadFinined) {
+                        if(result)
+                        {
                             NSDictionary * albumDic = @{@"album_name":collection.localizedTitle,@"album_example_image":result,@"album_image_count":[NSString stringWithFormat:@"%ld",assetsCount]};
                             [self.imageClassArray addObject:albumDic];
                             [self.imageClassTableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:[self.imageClassArray count]-1 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
                         }
                     }
-                }
-            }];
+                }];
+            }
         }
     }];
 }
