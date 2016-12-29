@@ -372,11 +372,12 @@
             [self.albumCollectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:YES];
         }
     }];
-    [exampleImageView setBackOption:^(PHAsset * asset, UIImageView * imageView) {
+    [exampleImageView setBackOption:^(PHAsset * asset, UIImageView * imageView, BKShowExampleImageView * exampleImageView) {
         NSIndexPath * indexPath = [NSIndexPath indexPathForItem:[self.albumAssetArray indexOfObject:asset] inSection:0];
         BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
         
         cell.alpha = 0;
+        
         CGRect cellImageFrame = [[cell.photoImageView superview] convertRect:cell.photoImageView.frame toView:self.view];
         
         CGRect imageViewFrame = [[imageView superview] convertRect:imageView.frame toView:self.view];
@@ -387,11 +388,17 @@
         newImageView.image = imageView.image;
         [self.view addSubview:newImageView];
         
-        [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        self.navigationController.navigationBarHidden = NO;
+        self.navigationController.navigationBar.alpha = 0;
+        
+        [UIView animateWithDuration:3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             newImageView.frame = cellImageFrame;
+            exampleImageView.alpha = 0;
+            self.navigationController.navigationBar.alpha = 1;
         } completion:^(BOOL finished) {
             [newImageView removeFromSuperview];
             cell.alpha = 1;
+            [exampleImageView removeFromSuperview];
         }];
     }];
     [exampleImageView setRefreshAlbumViewOption:^(NSMutableArray * select_imageArray) {
@@ -403,7 +410,11 @@
             self.finishSelectOption(self.select_imageArray.copy, BKSelectPhotoTypeImage);
         }
     }];
-    [exampleImageView show];
+    [exampleImageView showAndBeginAnimateOption:^{
+        cell.alpha = 0;
+    } endAnimateOption:^{
+        cell.alpha = 1;
+    }];
     
 //    BKShowExampleImageViewController * vc =[[BKShowExampleImageViewController alloc]init];
 //    vc.tapImageView = cell.photoImageView;

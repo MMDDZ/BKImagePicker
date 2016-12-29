@@ -68,8 +68,7 @@
     self = [super initWithFrame:[UIScreen mainScreen].bounds];
     if (self) {
         
-        self.backgroundColor = [UIColor blackColor];
-        self.alpha = 0;
+        self.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
         
         self.locationVC = locationVC;
         
@@ -88,7 +87,7 @@
 {
     if (!_topView) {
         _topView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, 64)];
-        _topView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.8];
+        _topView.backgroundColor = [UIColor colorWithWhite:1 alpha:0];
         
         [_topView addSubview:[self titleLab]];
         
@@ -241,30 +240,24 @@
 
 -(void)leftBtnClick
 {
-//    if ([self.title rangeOfString:@"/"].location != NSNotFound) {
-//        NSInteger item = [[self.title componentsSeparatedByString:@"/"][0] integerValue]-1;
-//        PHAsset * asset = (PHAsset*)(self.imageAssetsArray[item]);
-//        
-//        NSIndexPath * indexPath = [NSIndexPath indexPathForItem:item inSection:0];
-//        BKShowExampleImageCollectionViewCell * cell = (BKShowExampleImageCollectionViewCell*)[self.exampleImageCollectionView  cellForItemAtIndexPath:indexPath];
-//        if (self.backOption) {
-//            self.backOption(asset,cell.showImageView);
-//        }
-//    }else{
-//        PHAsset * asset = (PHAsset*)(self.imageAssetsArray[0]);
-//        
-//        NSIndexPath * indexPath = [NSIndexPath indexPathForItem:0 inSection:0];
-//        BKShowExampleImageCollectionViewCell * cell = (BKShowExampleImageCollectionViewCell*)[self.exampleImageCollectionView  cellForItemAtIndexPath:indexPath];
-//        if (self.backOption) {
-//            self.backOption(asset,cell.showImageView);
-//        }
-//    }
-    
-
-    
-    
-    [self removeFromSuperview];
-    self.locationVC.navigationController.navigationBarHidden = NO;
+    if ([self.title rangeOfString:@"/"].location != NSNotFound) {
+        NSInteger item = [[self.title componentsSeparatedByString:@"/"][0] integerValue]-1;
+        PHAsset * asset = (PHAsset*)(self.imageAssetsArray[item]);
+        
+        NSIndexPath * indexPath = [NSIndexPath indexPathForItem:item inSection:0];
+        BKShowExampleImageCollectionViewCell * cell = (BKShowExampleImageCollectionViewCell*)[self.exampleImageCollectionView  cellForItemAtIndexPath:indexPath];
+        if (self.backOption) {
+            self.backOption(asset,cell.showImageView,self);
+        }
+    }else{
+        PHAsset * asset = (PHAsset*)(self.imageAssetsArray[0]);
+        
+        NSIndexPath * indexPath = [NSIndexPath indexPathForItem:0 inSection:0];
+        BKShowExampleImageCollectionViewCell * cell = (BKShowExampleImageCollectionViewCell*)[self.exampleImageCollectionView  cellForItemAtIndexPath:indexPath];
+        if (self.backOption) {
+            self.backOption(asset,cell.showImageView,self);
+        }
+    }
 }
 
 #pragma mark - bottomView
@@ -274,7 +267,7 @@
     if (!_bottomView) {
         
         _bottomView = [[UIView alloc]initWithFrame:CGRectMake(0, self.frame.size.height-49, self.frame.size.width, 49)];
-        _bottomView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.8];
+        _bottomView.backgroundColor = [UIColor colorWithWhite:1 alpha:0];
         
         [_bottomView addSubview:[self editBtn]];
         [_bottomView addSubview:[self sendBtn]];
@@ -341,21 +334,23 @@
 
 #pragma mark - 显示方法
 
--(void)show
+-(void)showAndBeginAnimateOption:(void (^)())beginOption endAnimateOption:(void (^)())endOption
 {
     [self.locationVC.view addSubview:self];
     [self addSubview:[self exampleImageCollectionView]];
     [self sendSubviewToBack:self.exampleImageCollectionView];
     
-    [self showAnimate];
+    [self showAnimateOption:beginOption endAnimateOption:endOption];
 }
 
--(void)showAnimate
+-(void)showAnimateOption:(void (^)())beginOption endAnimateOption:(void (^)())endOption
 {
     CGRect tapImageViewFrame = [[self.tapImageView superview] convertRect:self.tapImageView.frame toView:self];
     
     UIImageView * tapImageView = [[UIImageView alloc]initWithFrame:tapImageViewFrame];
     tapImageView.image = self.tapImageView.image;
+    tapImageView.clipsToBounds = YES;
+    tapImageView.contentMode = UIViewContentModeScaleAspectFill;
     [self addSubview:tapImageView];
     [self bringSubviewToFront:self.topView];
     [self bringSubviewToFront:self.bottomView];
@@ -377,14 +372,24 @@
         tapImageViewFrame.origin.y = (self.frame.size.height-tapImageViewFrame.size.height)/2.0f;
     }
     
-    [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+    if (beginOption) {
+        beginOption();
+    }
+    
+    [UIView animateWithDuration:3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         tapImageView.frame = tapImageViewFrame;
-        self.alpha = 1;
+        self.backgroundColor = [UIColor colorWithWhite:0 alpha:1];
+        self.topView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.8];
+        self.bottomView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.8];
         self.locationVC.navigationController.navigationBar.alpha = 0;
     } completion:^(BOOL finished) {
         [tapImageView removeFromSuperview];
         self.exampleImageCollectionView.alpha = 1;
         self.locationVC.navigationController.navigationBarHidden = YES;
+        
+        if (endOption) {
+            endOption();
+        }
     }];
 }
 

@@ -35,7 +35,7 @@
 /**
  返回调用方法
  */
-@property (nonatomic,copy) void (^backOption)(PHAsset * asset,UIImageView * imageView);
+@property (nonatomic,copy) void (^backOption)(PHAsset * asset,UIImageView * imageView, BKShowExampleImageView * exampleImageView);
 
 /**
  更新选取相册数组
@@ -49,6 +49,6 @@
 
 -(instancetype)initWithLocationVC:(UIViewController*)locationVC imageAssetsArray:(NSArray*)imageAssetsArray tapAsset:(PHAsset*)tapAsset;
 
--(void)show;
+-(void)showAndBeginAnimateOption:(void (^)())beginOption endAnimateOption:(void (^)())endOption;
 
 @end
