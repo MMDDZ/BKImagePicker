@@ -170,6 +170,8 @@
             // 获取所有资源的集合按照创建时间排列
             PHFetchOptions * fetchOptions = [[PHFetchOptions alloc] init];
             fetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:YES]];
+            fetchOptions.predicate = [NSPredicate predicateWithFormat:@"mediaType = %d || mediaType = %d",PHAssetMediaTypeImage,PHAssetMediaTypeVideo];
+
             
             PHFetchResult<PHAsset *> * assets  = [PHAsset fetchAssetsInAssetCollection:collection options:fetchOptions];
             
@@ -186,9 +188,54 @@
                     }
                 }
                 
-                [self.albumImageArray addObject:@""];
-                [self.albumAssetArray addObject:obj];
-
+                switch (self.photoType) {
+                    case BKPhotoTypeDefault:
+                    {
+                        [self.albumImageArray addObject:@""];
+                        [self.albumAssetArray addObject:obj];
+                    }
+                        break;
+                    case BKPhotoTypeImageAndGif:
+                    {
+                        if (obj.mediaType != PHAssetMediaTypeVideo) {
+                            [self.albumImageArray addObject:@""];
+                            [self.albumAssetArray addObject:obj];
+                        }else{
+                            self.allAlbumImageNum--;
+                        }
+                    }
+                        break;
+                    case BKPhotoTypeImageAndVideo:
+                    {
+                        NSString * fileName = [obj valueForKey:@"filename"];
+                        if ([fileName rangeOfString:@"gif"].location == NSNotFound && [fileName rangeOfString:@"GIF"].location == NSNotFound) {
+                            
+                            [self.albumImageArray addObject:@""];
+                            [self.albumAssetArray addObject:obj];
+                        }else{
+                            self.allAlbumImageNum--;
+                        }
+                    }
+                        break;
+                    case BKPhotoTypeImage:
+                    {
+                        if (obj.mediaType == PHAssetMediaTypeImage) {
+                            
+                            NSString * fileName = [obj valueForKey:@"filename"];
+                            if ([fileName rangeOfString:@"gif"].location == NSNotFound && [fileName rangeOfString:@"GIF"].location == NSNotFound) {
+                                
+                                [self.albumImageArray addObject:@""];
+                                [self.albumAssetArray addObject:obj];
+                            }else{
+                                self.allAlbumImageNum--;
+                            }
+                        }else{
+                            self.allAlbumImageNum--;
+                        }
+                    }
+                        break;
+                }
+                
                 if ([self.albumAssetArray count] == self.allAlbumImageNum) {
                     [self.albumCollectionView reloadData];
                     [self moveAlbumViewToBottom];

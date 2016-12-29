@@ -10,9 +10,9 @@
 
 typedef NS_ENUM(NSInteger,BKPhotoType) {
     BKPhotoTypeDefault = 0,
-    BKPhotoTypeNotShowVideo,
-    BKPhotoTypeNotShowGif,
-    BKPhotoTypeNotShowVideoAndGif
+    BKPhotoTypeImageAndGif,
+    BKPhotoTypeImageAndVideo,
+    BKPhotoTypeImage
 };
 
 typedef NS_ENUM(NSInteger,BKSelectPhotoType) {
