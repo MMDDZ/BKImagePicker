@@ -14,7 +14,6 @@
 #import "BKImageClassViewController.h"
 #import "BKImageAlbumItemSelectButton.h"
 #import "BKTool.h"
-#import "UIViewController+BKExpand.h"
 
 @interface BKShowExampleImageView ()<UICollectionViewDataSource,UICollectionViewDelegate,UICollectionViewDelegateFlowLayout,UINavigationControllerDelegate>
 

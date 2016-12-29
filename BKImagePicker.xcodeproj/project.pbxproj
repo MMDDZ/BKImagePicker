@@ -15,7 +15,6 @@
 		2A16740D1DB2056E00BA7AE0 /* BKShowExampleImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A16740C1DB2056E00BA7AE0 /* BKShowExampleImageView.m */; };
 		2A1674101DB2182200BA7AE0 /* BKShowExampleImageCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A16740F1DB2182200BA7AE0 /* BKShowExampleImageCollectionViewFlowLayout.m */; };
 		2A1674131DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1674121DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.m */; };
-		2A9AC3711E0FB09D00BD0EE1 /* UIViewController+BKExpand.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A9AC3701E0FB09D00BD0EE1 /* UIViewController+BKExpand.m */; };
 		2AC73EC51DD8A01800CF5B5D /* BKShowExampleGIFView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AC73EC41DD8A01800CF5B5D /* BKShowExampleGIFView.m */; };
 		2ADC20A81DEADECA001DD97C /* FLAnimatedImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2ADC20A41DEADECA001DD97C /* FLAnimatedImage.m */; };
 		2ADC20A91DEADECA001DD97C /* FLAnimatedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2ADC20A61DEADECA001DD97C /* FLAnimatedImageView.m */; };
@@ -52,8 +51,6 @@
 		2A16740F1DB2182200BA7AE0 /* BKShowExampleImageCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKShowExampleImageCollectionViewFlowLayout.m; sourceTree = "<group>"; };
 		2A1674111DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKShowExampleImageCollectionViewCell.h; sourceTree = "<group>"; };
 		2A1674121DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKShowExampleImageCollectionViewCell.m; sourceTree = "<group>"; };
-		2A9AC36F1E0FB09D00BD0EE1 /* UIViewController+BKExpand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+BKExpand.h"; sourceTree = "<group>"; };
-		2A9AC3701E0FB09D00BD0EE1 /* UIViewController+BKExpand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+BKExpand.m"; sourceTree = "<group>"; };
 		2AC73EC31DD8A01800CF5B5D /* BKShowExampleGIFView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKShowExampleGIFView.h; sourceTree = "<group>"; };
 		2AC73EC41DD8A01800CF5B5D /* BKShowExampleGIFView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKShowExampleGIFView.m; sourceTree = "<group>"; };
 		2ADC20A31DEADECA001DD97C /* FLAnimatedImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FLAnimatedImage.h; sourceTree = "<group>"; };
@@ -130,8 +127,6 @@
 				2AC73EC41DD8A01800CF5B5D /* BKShowExampleGIFView.m */,
 				883BB4DF1DC828EB00952C2D /* UINavigationItem+BKExpand.h */,
 				883BB4E01DC828EB00952C2D /* UINavigationItem+BKExpand.m */,
-				2A9AC36F1E0FB09D00BD0EE1 /* UIViewController+BKExpand.h */,
-				2A9AC3701E0FB09D00BD0EE1 /* UIViewController+BKExpand.m */,
 				88291EF91DB7467600011A68 /* BKTool.h */,
 				88291EFA1DB7467600011A68 /* BKTool.m */,
 			);
@@ -283,7 +278,6 @@
 				887192D51DB61DD8007FED28 /* BKImageAlbumItemSelectButton.m in Sources */,
 				885DC57A1DC9DD0C00FCEFD4 /* BKGIFAlbumItemView.m in Sources */,
 				2A1674131DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.m in Sources */,
-				2A9AC3711E0FB09D00BD0EE1 /* UIViewController+BKExpand.m in Sources */,
 				2A1674071DB204A600BA7AE0 /* BKImageClassViewController.m in Sources */,
 				885DC5771DC9D5B400FCEFD4 /* BKVideoAlbumItemView.m in Sources */,
 				2AC73EC51DD8A01800CF5B5D /* BKShowExampleGIFView.m in Sources */,
