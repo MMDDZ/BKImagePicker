@@ -47,8 +47,8 @@
 
 -(NSArray*)imageAssetsArray
 {
-    if (!_imageAssetsArray && [_select_imageArray count] > 0) {
-        _imageAssetsArray = [NSArray arrayWithArray:_select_imageArray];
+    if (!_imageAssetsArray) {
+        _imageAssetsArray = [NSArray array];
     }
     return _imageAssetsArray;
 }

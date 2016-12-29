@@ -337,10 +337,10 @@
                 [self.albumCollectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:YES];
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                     BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
-                    [self tapWithCell:cell andAsset:asset];
+                    [self previewWithCell:cell imageAssetsArray:self.imageAlbumAssetArray tapAsset:asset];
                 });
             }else{
-                [self tapWithCell:cell andAsset:asset];
+                [self previewWithCell:cell imageAssetsArray:self.imageAlbumAssetArray tapAsset:asset];
             }
         }
     }else{
@@ -359,9 +359,9 @@
     }
 }
 
--(void)tapWithCell:(BKImagePickerCollectionViewCell*)cell andAsset:(PHAsset*)asset
+-(void)previewWithCell:(BKImagePickerCollectionViewCell*)cell imageAssetsArray:(NSArray*)imageAssetsArray tapAsset:(PHAsset*)tapAsset
 {
-    BKShowExampleImageView * exampleImageView = [[BKShowExampleImageView alloc]initWithLocationVC:self imageAssetsArray:[self.imageAlbumAssetArray copy] tapAsset:asset];
+    BKShowExampleImageView * exampleImageView = [[BKShowExampleImageView alloc]initWithLocationVC:self imageAssetsArray:[imageAssetsArray copy] tapAsset:tapAsset];
     exampleImageView.tapImageView = cell.photoImageView;
     exampleImageView.select_imageArray = [NSMutableArray arrayWithArray:self.select_imageArray];
     exampleImageView.max_select = self.max_select;
@@ -415,52 +415,6 @@
     } endAnimateOption:^{
         cell.alpha = 1;
     }];
-    
-//    BKShowExampleImageViewController * vc =[[BKShowExampleImageViewController alloc]init];
-//    vc.tapImageView = cell.photoImageView;
-//    vc.imageAssetsArray = [NSArray arrayWithArray:self.imageAlbumAssetArray];
-//    vc.select_imageArray = [NSMutableArray arrayWithArray:self.select_imageArray];
-//    vc.max_select = self.max_select;
-//    vc.tap_asset = asset;
-//    [vc setRefreshLookAsset:^(PHAsset * asset) {
-//        NSIndexPath * indexPath = [NSIndexPath indexPathForItem:[self.albumAssetArray indexOfObject:asset] inSection:0];
-//        BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
-//        if (!cell) {
-//            [self.albumCollectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:YES];
-//        }
-//    }];
-//    [vc setBackOption:^(PHAsset * asset, UIImageView * imageView) {
-//        NSIndexPath * indexPath = [NSIndexPath indexPathForItem:[self.albumAssetArray indexOfObject:asset] inSection:0];
-//        BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
-//
-//        cell.alpha = 0;
-//        CGRect cellImageFrame = [[cell.photoImageView superview] convertRect:cell.photoImageView.frame toView:self.view];
-//        
-//        CGRect imageViewFrame = [[imageView superview] convertRect:imageView.frame toView:self.view];
-//        
-//        UIImageView * newImageView = [[UIImageView alloc]initWithFrame:imageViewFrame];
-//        newImageView.clipsToBounds = YES;
-//        newImageView.contentMode = UIViewContentModeScaleAspectFill;
-//        newImageView.image = imageView.image;
-//        [self.view addSubview:newImageView];
-//        
-//        [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-//            newImageView.frame = cellImageFrame;
-//        } completion:^(BOOL finished) {
-//            [newImageView removeFromSuperview];
-//            cell.alpha = 1;
-//        }];
-//    }];
-//    [vc setRefreshAlbumViewOption:^(NSMutableArray * select_imageArray) {
-//        self.select_imageArray = [NSMutableArray arrayWithArray:select_imageArray];
-//        [self.albumCollectionView reloadData];
-//    }];
-//    [vc setFinishSelectOption:^(NSArray * imageArr, BKSelectPhotoType selectPhotoType) {
-//        if (self.finishSelectOption) {
-//            self.finishSelectOption(self.select_imageArray.copy, BKSelectPhotoTypeImage);
-//        }
-//    }];
-//    [self.navigationController pushViewController:vc animated:NO];
 }
 
 #pragma mark - BKImagePickerCollectionViewCellDelegate
@@ -600,66 +554,11 @@
         [self.albumCollectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:YES];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
-            [self previewWithCell:cell];
+            [self previewWithCell:cell imageAssetsArray:self.select_imageArray tapAsset:[self.select_imageArray lastObject]];
         });
     }else{
-        [self previewWithCell:cell];
+        [self previewWithCell:cell imageAssetsArray:self.select_imageArray tapAsset:[self.select_imageArray lastObject]];
     }
-}
-
--(void)previewWithCell:(BKImagePickerCollectionViewCell*)cell
-{
-//    BKShowExampleImageViewController * vc = [[BKShowExampleImageViewController alloc]init];
-//    vc.tapImageView = cell.photoImageView;
-//    vc.select_imageArray = [NSMutableArray arrayWithArray:self.select_imageArray];
-//    vc.max_select = self.max_select;
-//    vc.tap_asset = [self.select_imageArray lastObject];
-//    [vc setRefreshLookAsset:^(PHAsset * asset) {
-//        NSIndexPath * indexPath = [NSIndexPath indexPathForItem:[self.albumAssetArray indexOfObject:asset] inSection:0];
-//        BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
-//        if (!cell) {
-//            [self.albumCollectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:YES];
-//        }
-//    }];
-//    [vc setBackOption:^(PHAsset * asset, UIImageView * imageView) {
-//        NSIndexPath * indexPath = [NSIndexPath indexPathForItem:[self.albumAssetArray indexOfObject:asset] inSection:0];
-//        BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
-//        
-//        cell.alpha = 0;
-//        CGRect cellImageFrame = [[cell.photoImageView superview] convertRect:cell.photoImageView.frame toView:self.view];
-//        
-//        CGRect imageViewFrame = [[imageView superview] convertRect:imageView.frame toView:self.view];
-//        
-//        UIImageView * newImageView = [[UIImageView alloc]initWithFrame:imageViewFrame];
-//        newImageView.clipsToBounds = YES;
-//        newImageView.contentMode = UIViewContentModeScaleAspectFill;
-//        newImageView.image = imageView.image;
-//        [self.view addSubview:newImageView];
-//        
-//        [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-//            newImageView.frame = cellImageFrame;
-//        } completion:^(BOOL finished) {
-//            [newImageView removeFromSuperview];
-//            cell.alpha = 1;
-//        }];
-//    }];
-//    [vc setRefreshAlbumViewOption:^(NSMutableArray * select_imageArray) {
-//        
-//        NSArray * oldSelect_imageArr = [NSArray arrayWithArray:self.select_imageArray];
-//        
-//        self.select_imageArray = [NSMutableArray arrayWithArray:select_imageArray];
-//        
-//        [oldSelect_imageArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-//            NSIndexPath * indexPath = [NSIndexPath indexPathForItem:[self.albumAssetArray indexOfObject:obj] inSection:0];
-//            [self.albumCollectionView reloadItemsAtIndexPaths:@[indexPath]];
-//        }];
-//    }];
-//    [vc setFinishSelectOption:^(NSArray * imageArr, BKSelectPhotoType selectPhotoType) {
-//        if (self.finishSelectOption) {
-//            self.finishSelectOption(self.select_imageArray.copy, BKSelectPhotoTypeImage);
-//        }
-//    }];
-//    [self.navigationController pushViewController:vc animated:NO];
 }
 
 -(void)editBtnClick:(UIButton*)button
