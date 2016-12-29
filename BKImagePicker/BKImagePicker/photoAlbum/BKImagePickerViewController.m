@@ -102,6 +102,20 @@
             vc.select_imageArray = [NSArray arrayWithArray:self.select_imageArray];
             
             if ([self.select_imageArray count] == 0) {
+                [_previewBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
+                [_editBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
+                [_sendBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
+                [_sendBtn setBackgroundColor:[UIColor colorWithWhite:0.85 alpha:1]];
+            }else if ([self.select_imageArray count] == 1) {
+                [_previewBtn setTitleColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1] forState:UIControlStateNormal];
+                [_editBtn setTitleColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1] forState:UIControlStateNormal];
+                [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+                [_sendBtn setBackgroundColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1]];
+            }else if ([self.select_imageArray count] > 1) {
+                [_editBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
+            }
+            
+            if ([self.select_imageArray count] == 0) {
                 [_sendBtn setTitle:@"确定" forState:UIControlStateNormal];
             }else{
                 [_sendBtn setTitle:[NSString stringWithFormat:@"确定(%ld)",[self.select_imageArray count]] forState:UIControlStateNormal];
@@ -246,7 +260,7 @@
 
 -(void)initNav
 {
-    UIBarButtonItem * rightItem = [[UIBarButtonItem alloc]initWithTitle:@"取消   " style:UIBarButtonItemStylePlain target:self action:@selector(rightItemClick)];
+    UIBarButtonItem * rightItem = [[UIBarButtonItem alloc]initWithTitle:@"取消  " style:UIBarButtonItemStylePlain target:self action:@selector(rightItemClick)];
     self.navigationItem.rightBarButtonItem = rightItem;
 }
 
@@ -436,25 +450,8 @@
                 NSIndexPath * indexPath = [NSIndexPath indexPathForItem:[self.albumAssetArray indexOfObject:obj] inSection:0];
                 [self.albumCollectionView reloadItemsAtIndexPaths:@[indexPath]];
             }];
-            
-            if ([self.select_imageArray count] == 0) {
-                [_previewBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
-                [_editBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
-                [_sendBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
-                [_sendBtn setBackgroundColor:[UIColor colorWithWhite:0.85 alpha:1]];
-            }else if ([self.select_imageArray count] == 1) {
-                [_editBtn setTitleColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1] forState:UIControlStateNormal];
-            }
         }else{
             [self.select_imageArray addObject:asset];
-            if ([self.select_imageArray count] == 1) {
-                [_previewBtn setTitleColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1] forState:UIControlStateNormal];
-                [_editBtn setTitleColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1] forState:UIControlStateNormal];
-                [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-                [_sendBtn setBackgroundColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1]];
-            }else if ([self.select_imageArray count] > 1) {
-                [_editBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
-            }
         }
         
         [self refreshClassSelectImageArray];
