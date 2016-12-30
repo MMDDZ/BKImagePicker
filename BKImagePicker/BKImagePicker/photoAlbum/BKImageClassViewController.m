@@ -259,6 +259,7 @@
     imageVC.select_imageArray = [NSMutableArray arrayWithArray:self.select_imageArray];
     imageVC.max_select = self.max_select;
     imageVC.photoType = self.photoType;
+    imageVC.finishSelectOption = self.finishSelectOption;
     
     [self.navigationController pushViewController:imageVC animated:YES];
 }

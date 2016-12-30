@@ -55,6 +55,11 @@
             BKImageClassViewController * imageClassVC = [[BKImageClassViewController alloc]init];
             imageClassVC.max_select = maxSelect>999?999:maxSelect;
             imageClassVC.photoType = photoType;
+            imageClassVC.finishSelectOption = ^(NSArray * imageArray , BKSelectPhotoType selectPhotoType){
+                if (complete) {
+                    complete(imageArray,selectPhotoType);
+                }
+            };
             BKImagePickerViewController * imageVC = [[BKImagePickerViewController alloc]init];
             imageVC.max_select = maxSelect>999?999:maxSelect;
             imageVC.photoType = photoType;

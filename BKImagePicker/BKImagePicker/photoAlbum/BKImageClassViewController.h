@@ -26,4 +26,9 @@
  */
 @property (nonatomic,assign) BKPhotoType photoType;
 
+/**
+ 完成选择
+ */
+@property (nonatomic,copy) void (^finishSelectOption)(NSArray * imageArr,BKSelectPhotoType selectPhotoType);
+
 @end
