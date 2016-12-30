@@ -11,6 +11,7 @@
 
 #import <Foundation/Foundation.h>
 #import "UIView+BKExpand.h"
+#import "BKTool.h"
 
 typedef NS_ENUM(NSInteger,BKPhotoType) {
     BKPhotoTypeDefault = 0,
@@ -30,11 +31,12 @@ typedef NS_ENUM(NSInteger,BKSelectPhotoType) {
 #define UISCREEN_WIDTH ([UIScreen mainScreen].bounds.size.width)
 #define UISCREEN_HEIGHT ([UIScreen mainScreen].bounds.size.height)
 
-#define Language [[[NSBundle mainBundle] infoDictionary][@"CFBundleDevelopmentRegion"] rangeOfString:@"zh"].location != NSNotFound
-
-extern const NSString * BKDismissTitle;
-extern const NSString * BKPreviewImageTitle;
-extern const NSString * BKEditImageTitle;
-extern const NSString * BKConfirmTitle;
+#define String(string) [BKTool adaptLanguage:string]
+//
+//extern const NSString * BKDismissTitle;
+//extern const NSString * BKPreviewImageTitle;
+//extern const NSString * BKEditImageTitle;
+//extern const NSString * BKConfirmTitle;
 
 #endif /* BKImagePickerConst_h */
+

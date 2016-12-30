@@ -85,6 +85,7 @@
 		88C5ACAC1E1640330044FDAA /* BKImagePickerConst.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BKImagePickerConst.h; sourceTree = "<group>"; };
 		88C5ACAD1E164B310044FDAA /* BKTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKTool.m; sourceTree = "<group>"; };
 		88C5ACAE1E164B310044FDAA /* BKTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKTool.h; sourceTree = "<group>"; };
+		88C5ACB61E164DB70044FDAA /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -194,8 +195,8 @@
 				88C5ACA21E163BA70044FDAA /* UIView+BKExpand.m */,
 				88C5ACAC1E1640330044FDAA /* BKImagePickerConst.h */,
 				88C5ACA91E163F240044FDAA /* BKImagePickerConst.m */,
-				88C5ACAD1E164B310044FDAA /* BKTool.m */,
 				88C5ACAE1E164B310044FDAA /* BKTool.h */,
+				88C5ACAD1E164B310044FDAA /* BKTool.m */,
 				88506A7B1DB9B5AF0043F3E0 /* BKImage.bundle */,
 			);
 			path = BKImagePicker;
@@ -244,6 +245,7 @@
 			knownRegions = (
 				en,
 				Base,
+				"zh-Hans",
 			);
 			mainGroup = 88500A911DAF1D2300102A35;
 			productRefGroup = 88500A9B1DAF1D2300102A35 /* Products */;
@@ -306,6 +308,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				88500AAC1DAF1D2300102A35 /* Base */,
+				88C5ACB61E164DB70044FDAA /* zh-Hans */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -317,6 +320,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -364,6 +368,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";

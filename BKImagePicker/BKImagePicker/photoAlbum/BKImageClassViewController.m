@@ -143,13 +143,7 @@
     
     self.automaticallyAdjustsScrollViewInsets = NO;
     
-    NSDictionary * info_dic = [[NSBundle mainBundle] infoDictionary];
-    NSString * info_language = info_dic[@"CFBundleDevelopmentRegion"];
-    if ([info_language rangeOfString:@"zh"].location != NSNotFound) {
-        self.title = @"相册";
-    }else{
-        self.title = @"Albums";
-    }
+    self.title = String(@"Albums");
     self.view.backgroundColor = [UIColor whiteColor];
     
     [self.view addSubview:[self topView]];
@@ -174,7 +168,7 @@
         
         UIButton * rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         rightBtn.frame = CGRectMake(self.view.frame.size.width - 64, 20, 64, 44);
-        [rightBtn setTitle:@"取消" forState:UIControlStateNormal];
+        [rightBtn setTitle:String(@"Cancel") forState:UIControlStateNormal];
         [rightBtn setTitleColor:[UIColor colorWithRed:21/255.0f green:126/255.0f blue:251/255.0f alpha:1] forState:UIControlStateNormal];
         rightBtn.titleLabel.font = [UIFont systemFontOfSize:17];
         [rightBtn addTarget:self action:@selector(rightBtnClick:) forControlEvents:UIControlEventTouchUpInside];

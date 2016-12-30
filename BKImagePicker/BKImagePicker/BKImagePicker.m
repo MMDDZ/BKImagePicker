@@ -69,13 +69,8 @@
                 }
             };
             
-            if (Language) {
-                imageClassVC.title = @"相册";
-                imageVC.title = @"相机胶卷";
-            }else{
-                imageClassVC.title = @"Albums";
-                imageVC.title = @"Camera Roll";
-            }
+            imageClassVC.title = String(@"Albums");
+            imageVC.title = String(@"Camera Roll");
             
             UINavigationController * nav = [[UINavigationController alloc]initWithRootViewController:imageClassVC];
             nav.navigationBarHidden = YES;

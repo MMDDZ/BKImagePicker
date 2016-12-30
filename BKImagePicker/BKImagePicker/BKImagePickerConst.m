@@ -8,7 +8,11 @@
 
 #import <Foundation/Foundation.h>
 
-NSString * const BKDismissTitle = @"取消";
-NSString * const BKPreviewImageTitle = @"预览";
-NSString * const BKEditImageTitle = @"编辑";
-NSString * const BKConfirmTitle = @"确定";
+
+//
+//
+//NSString * const BKDismissTitle = String(@"cancel");
+//NSString * const BKPreviewImageTitle = @"预览";
+//NSString * const BKEditImageTitle = @"编辑";
+//NSString * const BKConfirmTitle = @"确定";
+
