@@ -17,37 +17,18 @@
 
 @implementation BKImagePicker
 
-+(UIViewController *)vc
-{
-    UIWindow * window = [[UIApplication sharedApplication] keyWindow];
-    if (window.windowLevel != UIWindowLevelNormal) {
-        NSArray *windows = [[UIApplication sharedApplication] windows];
-        for(UIWindow * tmpWin in windows) {
-            if (tmpWin.windowLevel == UIWindowLevelNormal) {
-                window = tmpWin;
-                break;
-            }
-        }
-    }
-    
-    UIView *frontView = [[window subviews] objectAtIndex:0];
-    id nextResponder = [frontView nextResponder];
-    
-    UIViewController * vc;
-    if ([nextResponder isKindOfClass:[UIViewController class]]) {
-        vc = nextResponder;
-    }else {
-        vc = window.rootViewController;
-    }
-    
-    return vc;
-}
-
 -(void)takePhoto
 {
     NSLog(@"1");
 }
 
+/**
+ 相册
+ 
+ @param photoType 相册类型
+ @param maxSelect 最大选择数 (最大999)
+ @param complete  选择图片数组
+ */
 +(void)showPhotoAlbumWithTypePhoto:(BKPhotoType)photoType maxSelect:(NSInteger)maxSelect complete:(void (^)(NSArray * imageArray , BKSelectPhotoType selectPhotoType))complete
 {
     [self checkAllowVisitPhotoAlbumHandler:^(BOOL handleFlag) {
@@ -75,7 +56,7 @@
             UINavigationController * nav = [[UINavigationController alloc]initWithRootViewController:imageClassVC];
             nav.navigationBarHidden = YES;
             [nav pushViewController:imageVC animated:NO];
-            [self.vc presentViewController:nav animated:YES completion:nil];
+            [[BKTool locationVC] presentViewController:nav animated:YES completion:nil];
         }
     }];
 }
@@ -105,7 +86,7 @@
                         }
                     }];
                     [alert addAction:ok];
-                    [self.vc presentViewController:alert animated:YES completion:nil];
+                    [[BKTool locationVC] presentViewController:alert animated:YES completion:nil];
                 }
             }];
         }
@@ -119,7 +100,7 @@
                 }
             }];
             [alert addAction:ok];
-            [self.vc presentViewController:alert animated:YES completion:nil];
+            [[BKTool locationVC] presentViewController:alert animated:YES completion:nil];
         }
             break;
         case PHAuthorizationStatusDenied:
@@ -131,7 +112,7 @@
                 }
             }];
             [alert addAction:ok];
-            [self.vc presentViewController:alert animated:YES completion:nil];
+            [[BKTool locationVC] presentViewController:alert animated:YES completion:nil];
         }
             break;
         case PHAuthorizationStatusAuthorized:

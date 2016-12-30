@@ -26,6 +26,32 @@
     return shareInstance;
 }
 
++(UIViewController *)locationVC
+{
+    UIWindow * window = [[UIApplication sharedApplication] keyWindow];
+    if (window.windowLevel != UIWindowLevelNormal) {
+        NSArray *windows = [[UIApplication sharedApplication] windows];
+        for(UIWindow * tmpWin in windows) {
+            if (tmpWin.windowLevel == UIWindowLevelNormal) {
+                window = tmpWin;
+                break;
+            }
+        }
+    }
+    
+    UIView *frontView = [[window subviews] objectAtIndex:0];
+    id nextResponder = [frontView nextResponder];
+    
+    UIViewController * vc;
+    if ([nextResponder isKindOfClass:[UIViewController class]]) {
+        vc = nextResponder;
+    }else {
+        vc = window.rootViewController;
+    }
+    
+    return vc;
+}
+
 #pragma mark - Remind
 
 +(void)showRemind:(NSString*)text
@@ -141,6 +167,8 @@
     [[BKTool shareInstance].loadLayer removeFromSuperlayer];
     [BKTool shareInstance].loadLayer = nil;
 }
+
+#pragma mark - 国际化
 
 +(NSString*)adaptLanguage:(NSString*)str
 {

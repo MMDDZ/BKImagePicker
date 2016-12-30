@@ -11,6 +11,8 @@
 
 @interface BKTool : NSObject
 
++(UIViewController *)locationVC;
+
 +(void)showRemind:(NSString*)text;
 
 +(void)showLoadInView:(UIView*)view;
