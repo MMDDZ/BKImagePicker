@@ -12,6 +12,9 @@
 
 @interface BKShowExampleImageView : UIView
 
+@property (nonatomic,strong) UIView * topView;
+@property (nonatomic,strong) UIView * bottomView;
+
 /**
  点击的那张图片
  */
@@ -25,7 +28,7 @@
 /**
  返回调用方法
  */
-@property (nonatomic,copy) void (^backOption)(PHAsset * asset,UIImageView * imageView, BKShowExampleImageView * exampleImageView);
+@property (nonatomic,copy) void (^backOption)(PHAsset * asset,UIImageView * imageView);
 
 /**
  更新选取相册数组

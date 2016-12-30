@@ -431,7 +431,8 @@
             [self.albumCollectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:YES];
         }
     }];
-    [exampleImageView setBackOption:^(PHAsset * asset, UIImageView * imageView, BKShowExampleImageView * exampleImageView) {
+    __weak BKShowExampleImageView * copyExampleImageView = exampleImageView;
+    [exampleImageView setBackOption:^(PHAsset * asset, UIImageView * imageView) {
         NSIndexPath * indexPath = [NSIndexPath indexPathForItem:[self.albumAssetArray indexOfObject:asset] inSection:0];
         BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
         
@@ -439,25 +440,25 @@
         
         CGRect cellImageFrame = [[cell.photoImageView superview] convertRect:cell.photoImageView.frame toView:self.view];
         
-        CGRect imageViewFrame = [[imageView superview] convertRect:imageView.frame toView:self.view];
+        CGRect imageViewFrame = [[imageView superview] convertRect:imageView.frame toView:copyExampleImageView];
         
         UIImageView * newImageView = [[UIImageView alloc]initWithFrame:imageViewFrame];
         newImageView.clipsToBounds = YES;
         newImageView.contentMode = UIViewContentModeScaleAspectFill;
         newImageView.image = imageView.image;
-        [self.view addSubview:newImageView];
-        
-//        self.navigationController.navigationBarHidden = NO;
-//        self.navigationController.navigationBar.alpha = 0;
+        [copyExampleImageView addSubview:newImageView];
+        [copyExampleImageView bringSubviewToFront:copyExampleImageView.topView];
+        [copyExampleImageView bringSubviewToFront:copyExampleImageView.bottomView];
         
         [UIView animateWithDuration:0.5 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             newImageView.frame = cellImageFrame;
-            exampleImageView.alpha = 0;
-//            self.navigationController.navigationBar.alpha = 1;
+            copyExampleImageView.backgroundColor = [UIColor colorWithWhite:1 alpha:0];
+            copyExampleImageView.topView.alpha = 0;
+            copyExampleImageView.bottomView.alpha = 0;
         } completion:^(BOOL finished) {
             [newImageView removeFromSuperview];
             cell.alpha = 1;
-            [exampleImageView removeFromSuperview];
+            [copyExampleImageView removeFromSuperview];
         }];
     }];
     [exampleImageView setRefreshAlbumViewOption:^(NSMutableArray * select_imageArray) {
@@ -547,6 +548,10 @@
         rightBtn.titleLabel.font = [UIFont systemFontOfSize:17];
         [rightBtn addTarget:self action:@selector(rightBtnClick:) forControlEvents:UIControlEventTouchUpInside];
         [_topView addSubview:rightBtn];
+        
+        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 63.7, self.view.frame.size.width, 0.3)];
+        line.backgroundColor = [UIColor colorWithWhite:0.75 alpha:1];
+        [_topView addSubview:line];
     }
     return _topView;
 }

@@ -41,7 +41,7 @@
     }];
     [alert addAction:takePhoto];
     UIAlertAction * photoAlbum = [UIAlertAction actionWithTitle:@"从相册中选择" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        [BKImagePicker showPhotoAlbumWithTypePhoto:BKPhotoTypeDefault maxSelect:1 complete:^(NSArray * imageArray , BKSelectPhotoType selectPhotoType) {
+        [BKImagePicker showPhotoAlbumWithTypePhoto:BKPhotoTypeDefault maxSelect:100 complete:^(NSArray * imageArray , BKSelectPhotoType selectPhotoType) {
             NSLog(@"%@ %ld",imageArray,selectPhotoType);
         }];
     }];

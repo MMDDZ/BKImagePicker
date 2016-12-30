@@ -179,6 +179,10 @@
         rightBtn.titleLabel.font = [UIFont systemFontOfSize:17];
         [rightBtn addTarget:self action:@selector(rightBtnClick:) forControlEvents:UIControlEventTouchUpInside];
         [_topView addSubview:rightBtn];
+        
+        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 63.7, self.view.frame.size.width, 0.3)];
+        line.backgroundColor = [UIColor colorWithWhite:0.75 alpha:1];
+        [_topView addSubview:line];
     }
     return _topView;
 }

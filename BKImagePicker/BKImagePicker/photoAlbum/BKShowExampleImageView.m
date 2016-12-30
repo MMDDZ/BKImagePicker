@@ -37,14 +37,14 @@
 
 @property (nonatomic,strong) UICollectionView * exampleImageCollectionView;
 
-@property (nonatomic,strong) UIView * topView;
+
 @property (nonatomic,strong) UILabel * titleLab;
 @property (nonatomic,copy) NSString * title;
 @property (nonatomic,weak) UIViewController * locationVC;
 
 @property (nonatomic,strong) BKImageAlbumItemSelectButton * rightBtn;
 
-@property (nonatomic,strong) UIView * bottomView;
+
 @property (nonatomic,strong) UIButton * editBtn;
 @property (nonatomic,strong) UIButton * sendBtn;
 
@@ -127,6 +127,10 @@
             
             [rightBtn addSubview:[self rightBtn]];
         }
+        
+        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 63.7, self.frame.size.width, 0.3)];
+        line.backgroundColor = [UIColor colorWithWhite:0.75 alpha:1];
+        [_topView addSubview:line];
     }
     return _topView;
 }
@@ -243,7 +247,7 @@
         BKShowExampleImageCollectionViewCell * cell = (BKShowExampleImageCollectionViewCell*)[self.exampleImageCollectionView  cellForItemAtIndexPath:indexPath];
         cell.showImageView.alpha = 0;
         if (self.backOption) {
-            self.backOption(asset,cell.showImageView,self);
+            self.backOption(asset,cell.showImageView);
         }
     }else{
         PHAsset * asset = (PHAsset*)(self.imageAssetsArray[0]);
@@ -252,7 +256,7 @@
         BKShowExampleImageCollectionViewCell * cell = (BKShowExampleImageCollectionViewCell*)[self.exampleImageCollectionView  cellForItemAtIndexPath:indexPath];
         cell.showImageView.alpha = 0;
         if (self.backOption) {
-            self.backOption(asset,cell.showImageView,self);
+            self.backOption(asset,cell.showImageView);
         }
     }
 }
@@ -400,11 +404,9 @@
         self.backgroundColor = [UIColor colorWithWhite:0 alpha:1];
         self.topView.alpha = 1;
         self.bottomView.alpha = 1;
-//        self.locationVC.navigationController.navigationBar.alpha = 0;
     } completion:^(BOOL finished) {
         [tapImageView removeFromSuperview];
         self.exampleImageCollectionView.alpha = 1;
-//        self.locationVC.navigationController.navigationBarHidden = YES;
         
         if (endOption) {
             endOption();
