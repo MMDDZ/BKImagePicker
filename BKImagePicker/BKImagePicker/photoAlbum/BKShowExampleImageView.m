@@ -334,7 +334,20 @@
 -(void)sendBtnClick:(UIButton*)button
 {
     if (self.finishSelectOption) {
-        self.finishSelectOption(self.select_imageArray.copy, BKSelectPhotoTypeImage);
+        if (self.max_select == 1) {
+            
+            PHAsset * asset;
+            if ([self.title rangeOfString:@"/"].location != NSNotFound) {
+                NSInteger item = [[self.title componentsSeparatedByString:@"/"][0] integerValue]-1;
+                asset = (PHAsset*)(self.imageAssetsArray[item]);
+            }else{
+                asset = (PHAsset*)(self.imageAssetsArray[0]);
+            }
+            self.finishSelectOption(@[asset], BKSelectPhotoTypeImage);
+            
+        }else{
+            self.finishSelectOption(self.select_imageArray.copy, BKSelectPhotoTypeImage);
+        }
     }
 }
 
