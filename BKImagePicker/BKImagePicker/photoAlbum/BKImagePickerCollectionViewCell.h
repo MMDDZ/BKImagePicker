@@ -24,6 +24,8 @@
 
 @property (nonatomic,strong) UIView * instanceView;
 
+@property (nonatomic,assign) NSInteger max_select;
+
 -(void)revaluateIndexPath:(NSIndexPath *)indexPath exampleAssetArr:(NSArray *)exampleAssetArr selectImageArr:(NSArray *)selectImageArr photoImage:(UIImage *)photoImage;
 
 @end

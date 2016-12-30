@@ -300,7 +300,9 @@
     
     [self initNav];
     [self.view addSubview:[self albumCollectionView]];
-    [self.view addSubview:[self bottomView]];
+    if (self.max_select != 1) {
+        [self.view addSubview:[self bottomView]];
+    }
     
     [self getAllImageClassData];
 }
@@ -329,7 +331,12 @@
         flowLayout.sectionInset = UIEdgeInsetsMake(item_space, item_space, item_space, item_space);
         [flowLayout setFooterReferenceSize:CGSizeMake(self.view.frame.size.width, 40)];
         
-        _albumCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 64, self.view.frame.size.width, self.view.frame.size.height-64-49) collectionViewLayout:flowLayout];
+        if (self.max_select == 1) {
+            _albumCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 64, self.view.frame.size.width, self.view.frame.size.height-64) collectionViewLayout:flowLayout];
+        }else{
+            _albumCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 64, self.view.frame.size.width, self.view.frame.size.height-64-49) collectionViewLayout:flowLayout];
+        }
+        
         _albumCollectionView.delegate = self;
         _albumCollectionView.dataSource = self;
         _albumCollectionView.backgroundColor = [UIColor clearColor];
@@ -348,6 +355,7 @@
 {
     BKImagePickerCollectionViewCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:imagePickerCell_identifier forIndexPath:indexPath];
     cell.delegate = self;
+    cell.max_select = self.max_select;
     
     [self getImageWithIndex:indexPath.item complete:^(UIImage *image) {
         [cell revaluateIndexPath:indexPath exampleAssetArr:[NSArray arrayWithArray:self.albumAssetArray] selectImageArr:[NSArray arrayWithArray:self.select_imageArray] photoImage:image];
@@ -422,9 +430,8 @@
 
 -(void)previewWithCell:(BKImagePickerCollectionViewCell*)cell imageAssetsArray:(NSArray*)imageAssetsArray tapAsset:(PHAsset*)tapAsset
 {
-    BKShowExampleImageView * exampleImageView = [[BKShowExampleImageView alloc]initWithLocationVC:self imageAssetsArray:[imageAssetsArray copy] selectImageArray:self.select_imageArray tapAsset:tapAsset];
+    BKShowExampleImageView * exampleImageView = [[BKShowExampleImageView alloc]initWithLocationVC:self imageAssetsArray:[imageAssetsArray copy] selectImageArray:self.select_imageArray tapAsset:tapAsset maxSelect:self.max_select];
     exampleImageView.tapImageView = cell.photoImageView;
-    exampleImageView.max_select = self.max_select;
     [exampleImageView setRefreshLookAsset:^(PHAsset * asset) {
         NSIndexPath * indexPath = [NSIndexPath indexPathForItem:[self.albumAssetArray indexOfObject:asset] inSection:0];
         BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
@@ -469,7 +476,7 @@
     }];
     [exampleImageView setFinishSelectOption:^(NSArray * imageArr, BKSelectPhotoType selectPhotoType) {
         if (self.finishSelectOption) {
-            self.finishSelectOption(self.select_imageArray.copy, BKSelectPhotoTypeImage);
+            self.finishSelectOption(imageArr, selectPhotoType);
         }
     }];
     [exampleImageView showAndBeginAnimateOption:^{

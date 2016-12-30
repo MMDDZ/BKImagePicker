@@ -29,6 +29,10 @@
  选取的照片
  */
 @property (nonatomic,strong) PHAsset * tap_asset;
+/**
+ 最大选取量
+ */
+@property (nonatomic,assign) NSInteger max_select;
 
 
 @property (nonatomic,strong) UICollectionView * exampleImageCollectionView;
@@ -66,7 +70,7 @@
 
 #pragma mark - init
 
--(instancetype)initWithLocationVC:(UIViewController *)locationVC imageAssetsArray:(NSArray *)imageAssetsArray selectImageArray:(NSArray *)selectImageArray tapAsset:(PHAsset *)tapAsset
+-(instancetype)initWithLocationVC:(UIViewController *)locationVC imageAssetsArray:(NSArray *)imageAssetsArray selectImageArray:(NSArray *)selectImageArray tapAsset:(PHAsset *)tapAsset maxSelect:(NSInteger)maxSelect
 {
     self = [super initWithFrame:[UIScreen mainScreen].bounds];
     if (self) {
@@ -78,6 +82,7 @@
         self.imageAssetsArray = imageAssetsArray;
         self.select_imageArray = [NSMutableArray arrayWithArray:selectImageArray];
         self.tap_asset = tapAsset;
+        self.max_select = maxSelect;
         
         [self addSubview:[self topView]];
         [self addSubview:[self bottomView]];
@@ -116,11 +121,12 @@
         leftImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/blue_back.png",backPath]];
         [leftBtn addSubview:leftImageView];
         
-        UIView * rightBtn = [[UIView alloc]initWithFrame:CGRectMake(self.frame.size.width-64, 0, 64, 64)];
-        [_topView addSubview:rightBtn];
-        
-        [rightBtn addSubview:[self rightBtn]];
-        
+        if (self.max_select != 1) {
+            UIView * rightBtn = [[UIView alloc]initWithFrame:CGRectMake(self.frame.size.width-64, 0, 64, 64)];
+            [_topView addSubview:rightBtn];
+            
+            [rightBtn addSubview:[self rightBtn]];
+        }
     }
     return _topView;
 }
@@ -264,18 +270,26 @@
         [_bottomView addSubview:[self editBtn]];
         [_bottomView addSubview:[self sendBtn]];
         
-        if ([self.select_imageArray count] == 1) {
+        if (self.max_select == 1) {
             [_editBtn setTitleColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1] forState:UIControlStateNormal];
             [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
             [_sendBtn setBackgroundColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1]];
             
-            [_sendBtn setTitle:[NSString stringWithFormat:@"确定(%ld)",[self.select_imageArray count]] forState:UIControlStateNormal];
-        }else if ([self.select_imageArray count] > 1) {
-            [_editBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
-            [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-            [_sendBtn setBackgroundColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1]];
-            
-            [_sendBtn setTitle:[NSString stringWithFormat:@"确定(%ld)",[self.select_imageArray count]] forState:UIControlStateNormal];
+            [_sendBtn setTitle:@"确定" forState:UIControlStateNormal];
+        }else{
+            if ([self.select_imageArray count] == 1) {
+                [_editBtn setTitleColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1] forState:UIControlStateNormal];
+                [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+                [_sendBtn setBackgroundColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1]];
+                
+                [_sendBtn setTitle:[NSString stringWithFormat:@"确定(%ld)",[self.select_imageArray count]] forState:UIControlStateNormal];
+            }else if ([self.select_imageArray count] > 1) {
+                [_editBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
+                [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+                [_sendBtn setBackgroundColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1]];
+                
+                [_sendBtn setTitle:[NSString stringWithFormat:@"确定(%ld)",[self.select_imageArray count]] forState:UIControlStateNormal];
+            }
         }
     }
     return _bottomView;

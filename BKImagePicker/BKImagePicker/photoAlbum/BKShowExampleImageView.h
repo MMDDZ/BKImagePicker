@@ -18,11 +18,6 @@
 @property (nonatomic,strong) UIImageView * tapImageView;
 
 /**
- 最大选取量
- */
-@property (nonatomic,assign) NSInteger max_select;
-
-/**
  更新观看位置
  */
 @property (nonatomic,copy) void (^refreshLookAsset)(PHAsset * asset);
@@ -42,7 +37,7 @@
  */
 @property (nonatomic,copy) void (^finishSelectOption)(NSArray * imageArr,BKSelectPhotoType selectPhotoType);
 
--(instancetype)initWithLocationVC:(UIViewController*)locationVC imageAssetsArray:(NSArray*)imageAssetsArray selectImageArray:(NSArray*)selectImageArray tapAsset:(PHAsset*)tapAsset;
+-(instancetype)initWithLocationVC:(UIViewController*)locationVC imageAssetsArray:(NSArray*)imageAssetsArray selectImageArray:(NSArray*)selectImageArray tapAsset:(PHAsset*)tapAsset maxSelect:(NSInteger)maxSelect;
 
 -(void)showAndBeginAnimateOption:(void (^)())beginOption endAnimateOption:(void (^)())endOption;
 

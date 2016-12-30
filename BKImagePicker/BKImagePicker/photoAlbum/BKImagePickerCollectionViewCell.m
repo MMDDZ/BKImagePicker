@@ -50,21 +50,24 @@
             
         }else{
             
-            BKImageAlbumItemSelectButton * selectButton = [[BKImageAlbumItemSelectButton alloc]initWithFrame:CGRectMake(self.frame.size.width - 30, 0, 30, 30)];
-            __weak BKImagePickerCollectionViewCell * mySelf = self;
-            [selectButton setSelectButtonClick:^(BKImageAlbumItemSelectButton * button) {
-                [mySelf selectButton:button];
-            }];
-            [self.instanceView addSubview:selectButton];
-            
-            if ([selectImageArr containsObject:asset]) {
-                NSInteger select_num = [selectImageArr indexOfObject:asset]+1;
-                selectButton.title = [NSString stringWithFormat:@"%ld",select_num];
-            }else{
-                selectButton.title = @"";
+            if (self.max_select != 1) {
+                
+                BKImageAlbumItemSelectButton * selectButton = [[BKImageAlbumItemSelectButton alloc]initWithFrame:CGRectMake(self.frame.size.width - 30, 0, 30, 30)];
+                __weak BKImagePickerCollectionViewCell * mySelf = self;
+                [selectButton setSelectButtonClick:^(BKImageAlbumItemSelectButton * button) {
+                    [mySelf selectButton:button];
+                }];
+                [self.instanceView addSubview:selectButton];
+                
+                if ([selectImageArr containsObject:asset]) {
+                    NSInteger select_num = [selectImageArr indexOfObject:asset]+1;
+                    selectButton.title = [NSString stringWithFormat:@"%ld",select_num];
+                }else{
+                    selectButton.title = @"";
+                }
+                
+                selectButton.tag = indexPath.item;
             }
-            
-            selectButton.tag = indexPath.item;
         }
         
     }else{
