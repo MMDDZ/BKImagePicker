@@ -295,6 +295,10 @@
                 [_sendBtn setTitle:[NSString stringWithFormat:@"确定(%ld)",[self.select_imageArray count]] forState:UIControlStateNormal];
             }
         }
+        
+        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, 0.3)];
+        line.backgroundColor = [UIColor colorWithWhite:0.75 alpha:1];
+        [_bottomView addSubview:line];
     }
     return _bottomView;
 }

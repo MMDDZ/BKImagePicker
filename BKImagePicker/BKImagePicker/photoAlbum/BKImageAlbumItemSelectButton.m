@@ -76,8 +76,13 @@
     paragraphStyle.lineBreakMode = NSLineBreakByCharWrapping;
     paragraphStyle.alignment = NSTextAlignmentCenter;
     
-    NSDictionary * attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:12],NSParagraphStyleAttributeName:paragraphStyle,NSForegroundColorAttributeName:[UIColor whiteColor]};
-    [self.showTitle drawWithRect:CGRectMake(5, 7.5, self.frame.size.width - 10, self.frame.size.height - 15) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil];
+    if ([self.showTitle integerValue] > 99) {
+        NSDictionary * attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:8],NSParagraphStyleAttributeName:paragraphStyle,NSForegroundColorAttributeName:[UIColor whiteColor]};
+        [self.showTitle drawWithRect:CGRectMake(5, 10, self.frame.size.width - 10, self.frame.size.height - 20) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil];
+    }else{
+        NSDictionary * attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:12],NSParagraphStyleAttributeName:paragraphStyle,NSForegroundColorAttributeName:[UIColor whiteColor]};
+        [self.showTitle drawWithRect:CGRectMake(5, 7.5, self.frame.size.width - 10, self.frame.size.height - 15) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil];
+    }
 }
 
 -(void)selfRecognizer

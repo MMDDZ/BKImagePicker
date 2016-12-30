@@ -53,10 +53,10 @@
     [self checkAllowVisitPhotoAlbumHandler:^(BOOL handleFlag) {
         if (handleFlag) {
             BKImageClassViewController * imageClassVC = [[BKImageClassViewController alloc]init];
-            imageClassVC.max_select = maxSelect;
+            imageClassVC.max_select = maxSelect>999?999:maxSelect;
             imageClassVC.photoType = photoType;
             BKImagePickerViewController * imageVC = [[BKImagePickerViewController alloc]init];
-            imageVC.max_select = maxSelect;
+            imageVC.max_select = maxSelect>999?999:maxSelect;
             imageVC.photoType = photoType;
             imageVC.finishSelectOption = ^(NSArray * imageArray , BKSelectPhotoType selectPhotoType){
                 if (complete) {
