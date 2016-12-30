@@ -7,19 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-
-typedef NS_ENUM(NSInteger,BKPhotoType) {
-    BKPhotoTypeDefault = 0,
-    BKPhotoTypeImageAndGif,
-    BKPhotoTypeImageAndVideo,
-    BKPhotoTypeImage
-};
-
-typedef NS_ENUM(NSInteger,BKSelectPhotoType) {
-    BKSelectPhotoTypeImage = 0,
-    BKSelectPhotoTypeGIF,
-    BKSelectPhotoTypeVideo,
-};
+#import "BKImagePickerConst.h"
 
 @interface BKImagePicker : NSObject
 

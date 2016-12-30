@@ -69,9 +69,7 @@
                 }
             };
             
-            NSDictionary * info_dic = [[NSBundle mainBundle] infoDictionary];
-            NSString * info_language = info_dic[@"CFBundleDevelopmentRegion"];
-            if ([info_language rangeOfString:@"zh"].location != NSNotFound) {
+            if (Language) {
                 imageClassVC.title = @"相册";
                 imageVC.title = @"相机胶卷";
             }else{
