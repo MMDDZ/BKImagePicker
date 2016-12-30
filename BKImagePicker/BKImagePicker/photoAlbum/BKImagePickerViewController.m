@@ -51,6 +51,19 @@
  该相簿中所有照片和视频总数
  */
 @property (nonatomic,assign) NSInteger allAlbumImageNum;
+/**
+ 该相簿中所有普通照片总数
+ */
+@property (nonatomic,assign) NSInteger allNormalImageNum;
+/**
+ 该相簿中所有GIF照片总数
+ */
+@property (nonatomic,assign) NSInteger allGifImageNum;
+/**
+ 该相簿中所有视频总数
+ */
+@property (nonatomic,assign) NSInteger allVideoNum;
+
 
 @property (nonatomic,strong) UIView * topView;
 
@@ -187,7 +200,13 @@
                     if ([fileName rangeOfString:@"gif"].location == NSNotFound && [fileName rangeOfString:@"GIF"].location == NSNotFound) {
                         
                         [self.imageAlbumAssetArray addObject:obj];
+                        
+                        self.allNormalImageNum++;
+                    }else{
+                        self.allGifImageNum++;
                     }
+                }else{
+                    self.allVideoNum++;
                 }
                 
                 switch (self.photoType) {
@@ -297,6 +316,9 @@
     // Do any additional setup after loading the view.
     
     self.automaticallyAdjustsScrollViewInsets = NO;
+    self.allNormalImageNum = 0;
+    self.allGifImageNum = 0;
+    self.allVideoNum = 0;
     
     self.view.backgroundColor = [UIColor whiteColor];
     
@@ -364,7 +386,28 @@
         
         BKImagePickerFooterCollectionReusableView * footerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:imagePickerFooter_identifier forIndexPath:indexPath];
         
-        footerView.titleLab.text = [NSString stringWithFormat:@"共%ld张照片",self.allAlbumImageNum];
+        switch (self.photoType) {
+            case BKPhotoTypeDefault:
+            {
+                footerView.titleLab.text = [NSString stringWithFormat:@"共%ld张照片、%ld个GIF、%ld个视频",self.allNormalImageNum,self.allGifImageNum,self.allVideoNum];
+            }
+                break;
+            case BKPhotoTypeImageAndGif:
+            {
+                footerView.titleLab.text = [NSString stringWithFormat:@"共%ld张照片、%ld个GIF",self.allNormalImageNum,self.allGifImageNum];
+            }
+                break;
+            case BKPhotoTypeImageAndVideo:
+            {
+                footerView.titleLab.text = [NSString stringWithFormat:@"共%ld张照片、%ld个视频",self.allNormalImageNum,self.allVideoNum];
+            }
+                break;
+            case BKPhotoTypeImage:
+            {
+                footerView.titleLab.text = [NSString stringWithFormat:@"共%ld张照片",self.allNormalImageNum];
+            }
+                break;
+        }
         
         reusableview = footerView;
     }
