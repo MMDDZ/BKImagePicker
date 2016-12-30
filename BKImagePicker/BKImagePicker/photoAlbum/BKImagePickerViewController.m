@@ -576,7 +576,7 @@
         [leftBtn addSubview:leftImageView];
         
         UILabel * leftLab = [[UILabel alloc]initWithFrame:CGRectMake(CGRectGetMaxX(leftImageView.frame), 0, 70, 30)];
-        leftLab.textColor = [UIColor colorWithRed:21/255.0f green:126/255.0f blue:251/255.0f alpha:1];
+        leftLab.textColor = BKNavTitleColor;
         leftLab.font = [UIFont systemFontOfSize:17];
         leftLab.text = self.navigationController.viewControllers[0].title;
         CGPoint leftLabCenter = leftLab.center;
@@ -587,13 +587,13 @@
         UIButton * rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         rightBtn.frame = CGRectMake(self.view.frame.size.width - 64, 20, 64, 44);
         [rightBtn setTitle:String(@"Cancel") forState:UIControlStateNormal];
-        [rightBtn setTitleColor:[UIColor colorWithRed:21/255.0f green:126/255.0f blue:251/255.0f alpha:1] forState:UIControlStateNormal];
+        [rightBtn setTitleColor:BKNavTitleColor forState:UIControlStateNormal];
         rightBtn.titleLabel.font = [UIFont systemFontOfSize:17];
         [rightBtn addTarget:self action:@selector(rightBtnClick:) forControlEvents:UIControlEventTouchUpInside];
         [_topView addSubview:rightBtn];
         
-        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 63.7, self.view.frame.size.width, 0.3)];
-        line.backgroundColor = [UIColor colorWithWhite:0.75 alpha:1];
+        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 64-BKLineHeight, self.view.frame.size.width, BKLineHeight)];
+        line.backgroundColor = BKLineColor;
         [_topView addSubview:line];
     }
     return _topView;
@@ -618,8 +618,8 @@
         _bottomView = [[UIView alloc]initWithFrame:CGRectMake(0, self.view.frame.size.height-49, self.view.frame.size.width, 49)];
         _bottomView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1];
         
-        UIImageView * lineView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 0.3)];
-        lineView.backgroundColor = [UIColor colorWithWhite:0.75 alpha:1];
+        UIImageView * lineView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, BKLineHeight)];
+        lineView.backgroundColor = BKLineColor;
         [_bottomView addSubview:lineView];
         
         [_bottomView addSubview:[self previewBtn]];

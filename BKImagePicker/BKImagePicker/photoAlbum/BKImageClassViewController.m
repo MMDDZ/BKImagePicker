@@ -119,7 +119,7 @@
                 options.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
                 options.synchronous = YES;
                 
-                [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake([UIScreen mainScreen].bounds.size.width/2.0f, [UIScreen mainScreen].bounds.size.width/2.0f) contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+                [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(UISCREEN_WIDTH/2.0f, UISCREEN_WIDTH/2.0f) contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
                     
                     // 排除取消，错误，低清图三种情况，即已经获取到了高清图
                     BOOL downImageloadFinined = ![[info objectForKey:PHImageCancelledKey] boolValue] && ![info objectForKey:PHImageErrorKey] && ![[info objectForKey:PHImageResultIsDegradedKey] boolValue];
@@ -156,10 +156,10 @@
 -(UIView*)topView
 {
     if (!_topView) {
-        _topView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 64)];
+        _topView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, UISCREEN_WIDTH, 64)];
         _topView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.8];
         
-        UILabel * titleLab = [[UILabel alloc]initWithFrame:CGRectMake(64, 20, self.view.frame.size.width - 64*2, 44)];
+        UILabel * titleLab = [[UILabel alloc]initWithFrame:CGRectMake(64, 20, UISCREEN_WIDTH - 64*2, 44)];
         titleLab.font = [UIFont boldSystemFontOfSize:17];
         titleLab.textColor = [UIColor blackColor];
         titleLab.textAlignment = NSTextAlignmentCenter;
@@ -167,15 +167,15 @@
         [_topView addSubview:titleLab];
         
         UIButton * rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        rightBtn.frame = CGRectMake(self.view.frame.size.width - 64, 20, 64, 44);
+        rightBtn.frame = CGRectMake(UISCREEN_WIDTH - 64, 20, 64, 44);
         [rightBtn setTitle:String(@"Cancel") forState:UIControlStateNormal];
-        [rightBtn setTitleColor:[UIColor colorWithRed:21/255.0f green:126/255.0f blue:251/255.0f alpha:1] forState:UIControlStateNormal];
+        [rightBtn setTitleColor:BKNavTitleColor forState:UIControlStateNormal];
         rightBtn.titleLabel.font = [UIFont systemFontOfSize:17];
         [rightBtn addTarget:self action:@selector(rightBtnClick:) forControlEvents:UIControlEventTouchUpInside];
         [_topView addSubview:rightBtn];
         
-        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 63.7, self.view.frame.size.width, 0.3)];
-        line.backgroundColor = [UIColor colorWithWhite:0.75 alpha:1];
+        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 64-BKLineHeight, UISCREEN_WIDTH, BKLineHeight)];
+        line.backgroundColor = BKLineColor;
         [_topView addSubview:line];
     }
     return _topView;
@@ -191,7 +191,7 @@
 -(UITableView*)imageClassTableView
 {
     if (!_imageClassTableView) {
-        _imageClassTableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 64, self.view.frame.size.width, self.view.frame.size.height - 64) style:UITableViewStylePlain];
+        _imageClassTableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 64, UISCREEN_WIDTH, UISCREEN_HEIGHT - 64) style:UITableViewStylePlain];
         _imageClassTableView.delegate = self;
         _imageClassTableView.dataSource = self;
         _imageClassTableView.showsVerticalScrollIndicator = NO;
@@ -217,8 +217,8 @@
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         
-        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(ROW_HEIGHT+ROW_HEIGHT/3, ROW_HEIGHT-0.3, self.view.frame.size.width-(ROW_HEIGHT+ROW_HEIGHT/3), 0.3)];
-        line.backgroundColor = [UIColor colorWithWhite:0.75 alpha:1];
+        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(ROW_HEIGHT+ROW_HEIGHT/3, ROW_HEIGHT-BKLineHeight, UISCREEN_WIDTH-(ROW_HEIGHT+ROW_HEIGHT/3), BKLineHeight)];
+        line.backgroundColor = BKLineColor;
         [cell addSubview:line];
     }
     

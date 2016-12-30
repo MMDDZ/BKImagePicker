@@ -128,8 +128,8 @@
             [rightBtn addSubview:[self rightBtn]];
         }
         
-        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 63.7, self.frame.size.width, 0.3)];
-        line.backgroundColor = [UIColor colorWithWhite:0.75 alpha:1];
+        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 64-BKLineHeight, self.frame.size.width, BKLineHeight)];
+        line.backgroundColor = BKLineColor;
         [_topView addSubview:line];
     }
     return _topView;
@@ -296,8 +296,8 @@
             }
         }
         
-        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, 0.3)];
-        line.backgroundColor = [UIColor colorWithWhite:0.75 alpha:1];
+        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, BKLineHeight)];
+        line.backgroundColor = BKLineColor;
         [_bottomView addSubview:line];
     }
     return _bottomView;

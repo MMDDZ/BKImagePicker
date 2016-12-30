@@ -27,13 +27,15 @@ typedef NS_ENUM(NSInteger,BKSelectPhotoType) {
 };
 
 #define Color(R,G,B,A) [UIColor colorWithRed:R/255.0f green:G/255.0f blue:B/255.0f alpha:A]
+#define BKNavTitleColor Color(21,126,251,1)
+#define BKLineColor [UIColor colorWithWhite:0.75 alpha:1]
 
 #define UISCREEN_WIDTH ([UIScreen mainScreen].bounds.size.width)
 #define UISCREEN_HEIGHT ([UIScreen mainScreen].bounds.size.height)
 
 #define String(string) [BKTool adaptLanguage:string]
-//
-//extern const NSString * BKDismissTitle;
+
+UIKIT_EXTERN const float BKLineHeight;
 //extern const NSString * BKPreviewImageTitle;
 //extern const NSString * BKEditImageTitle;
 //extern const NSString * BKConfirmTitle;

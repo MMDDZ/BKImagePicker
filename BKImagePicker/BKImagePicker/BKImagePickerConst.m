@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-
+float const BKLineHeight = 0.3;
 //
 //
 //NSString * const BKDismissTitle = String(@"cancel");
