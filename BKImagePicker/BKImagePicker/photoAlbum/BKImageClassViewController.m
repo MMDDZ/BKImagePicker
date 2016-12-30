@@ -15,6 +15,8 @@
 
 @interface BKImageClassViewController ()<UITableViewDelegate,UITableViewDataSource>
 
+@property (nonatomic,strong) UIView * topView;
+
 @property (nonatomic,strong) UITableView * imageClassTableView;
 @property (nonatomic,strong) NSMutableArray * imageClassArray;
 
@@ -150,18 +152,38 @@
     }
     self.view.backgroundColor = [UIColor whiteColor];
     
-    [self initNav];
+    [self.view addSubview:[self topView]];
     [self.view addSubview:[self imageClassTableView]];
     [self getAllImageClassData];
 }
 
--(void)initNav
+#pragma mark - topView
+
+-(UIView*)topView
 {
-    UIBarButtonItem * rightItem = [[UIBarButtonItem alloc]initWithTitle:@"取消  " style:UIBarButtonItemStylePlain target:self action:@selector(rightItemClick)];
-    self.navigationItem.rightBarButtonItem = rightItem;
+    if (!_topView) {
+        _topView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 64)];
+        _topView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.8];
+        
+        UILabel * titleLab = [[UILabel alloc]initWithFrame:CGRectMake(64, 20, self.view.frame.size.width - 64*2, 44)];
+        titleLab.font = [UIFont boldSystemFontOfSize:17];
+        titleLab.textColor = [UIColor blackColor];
+        titleLab.textAlignment = NSTextAlignmentCenter;
+        titleLab.text = self.title;
+        [_topView addSubview:titleLab];
+        
+        UIButton * rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        rightBtn.frame = CGRectMake(self.view.frame.size.width - 64, 20, 64, 44);
+        [rightBtn setTitle:@"取消" forState:UIControlStateNormal];
+        [rightBtn setTitleColor:[UIColor colorWithRed:21/255.0f green:126/255.0f blue:251/255.0f alpha:1] forState:UIControlStateNormal];
+        rightBtn.titleLabel.font = [UIFont systemFontOfSize:17];
+        [rightBtn addTarget:self action:@selector(rightBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+        [_topView addSubview:rightBtn];
+    }
+    return _topView;
 }
 
--(void)rightItemClick
+-(void)rightBtnClick:(UIButton*)button
 {
     [self dismissViewControllerAnimated:YES completion:nil];
 }

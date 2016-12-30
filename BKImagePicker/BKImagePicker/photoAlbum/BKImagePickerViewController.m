@@ -52,6 +52,8 @@
  */
 @property (nonatomic,assign) NSInteger allAlbumImageNum;
 
+@property (nonatomic,strong) UIView * topView;
+
 @property (nonatomic,strong) UIView * bottomView;
 @property (nonatomic,strong) UIButton * previewBtn;
 @property (nonatomic,strong) UIButton * editBtn;
@@ -298,24 +300,13 @@
     
     self.view.backgroundColor = [UIColor whiteColor];
     
-    [self initNav];
     [self.view addSubview:[self albumCollectionView]];
+    [self.view addSubview:[self topView]];
     if (self.max_select != 1) {
         [self.view addSubview:[self bottomView]];
     }
     
     [self getAllImageClassData];
-}
-
--(void)initNav
-{
-    UIBarButtonItem * rightItem = [[UIBarButtonItem alloc]initWithTitle:@"取消  " style:UIBarButtonItemStylePlain target:self action:@selector(rightItemClick)];
-    self.navigationItem.rightBarButtonItem = rightItem;
-}
-
--(void)rightItemClick
-{
-    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - UICollectionView
@@ -332,11 +323,12 @@
         [flowLayout setFooterReferenceSize:CGSizeMake(self.view.frame.size.width, 40)];
         
         if (self.max_select == 1) {
-            _albumCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 64, self.view.frame.size.width, self.view.frame.size.height-64) collectionViewLayout:flowLayout];
+            _albumCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) collectionViewLayout:flowLayout];
         }else{
-            _albumCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 64, self.view.frame.size.width, self.view.frame.size.height-64-49) collectionViewLayout:flowLayout];
+            _albumCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height-49) collectionViewLayout:flowLayout];
         }
-        
+        _albumCollectionView.scrollIndicatorInsets = UIEdgeInsetsMake(64, 0, 0, 0);
+        _albumCollectionView.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
         _albumCollectionView.delegate = self;
         _albumCollectionView.dataSource = self;
         _albumCollectionView.backgroundColor = [UIColor clearColor];
@@ -455,13 +447,13 @@
         newImageView.image = imageView.image;
         [self.view addSubview:newImageView];
         
-        self.navigationController.navigationBarHidden = NO;
-        self.navigationController.navigationBar.alpha = 0;
+//        self.navigationController.navigationBarHidden = NO;
+//        self.navigationController.navigationBar.alpha = 0;
         
         [UIView animateWithDuration:0.5 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             newImageView.frame = cellImageFrame;
             exampleImageView.alpha = 0;
-            self.navigationController.navigationBar.alpha = 1;
+//            self.navigationController.navigationBar.alpha = 1;
         } completion:^(BOOL finished) {
             [newImageView removeFromSuperview];
             cell.alpha = 1;
@@ -510,6 +502,63 @@
         
         [self refreshClassSelectImageArray];
     }];
+}
+
+#pragma mark - topView
+
+-(UIView*)topView
+{
+    if (!_topView) {
+        _topView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 64)];
+        _topView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.8];
+        
+        UILabel * titleLab = [[UILabel alloc]initWithFrame:CGRectMake(64, 20, self.view.frame.size.width - 64*2, 44)];
+        titleLab.font = [UIFont boldSystemFontOfSize:17];
+        titleLab.textColor = [UIColor blackColor];
+        titleLab.textAlignment = NSTextAlignmentCenter;
+        titleLab.text = self.title;
+        [_topView addSubview:titleLab];
+        
+        UIButton * leftBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        leftBtn.frame = CGRectMake(0, 0, 64, 64);
+        [leftBtn addTarget:self action:@selector(leftBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+        [_topView addSubview:leftBtn];
+        
+        NSString * backPath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
+        UIImageView * leftImageView = [[UIImageView alloc]initWithFrame:CGRectMake(10, 20 + 12, 20, 20)];
+        leftImageView.clipsToBounds = YES;
+        leftImageView.contentMode = UIViewContentModeScaleAspectFit;
+        leftImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/blue_back.png",backPath]];
+        [leftBtn addSubview:leftImageView];
+        
+        UILabel * leftLab = [[UILabel alloc]initWithFrame:CGRectMake(CGRectGetMaxX(leftImageView.frame), 0, 40, 30)];
+        leftLab.textColor = [UIColor colorWithRed:21/255.0f green:126/255.0f blue:251/255.0f alpha:1];
+        leftLab.font = [UIFont systemFontOfSize:17];
+        leftLab.text = self.navigationController.viewControllers[0].title;
+        CGPoint leftLabCenter = leftLab.center;
+        leftLabCenter.y = leftImageView.center.y;
+        leftLab.center = leftLabCenter;
+        [leftBtn addSubview:leftLab];
+        
+        UIButton * rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        rightBtn.frame = CGRectMake(self.view.frame.size.width - 64, 20, 64, 44);
+        [rightBtn setTitle:@"取消" forState:UIControlStateNormal];
+        [rightBtn setTitleColor:[UIColor colorWithRed:21/255.0f green:126/255.0f blue:251/255.0f alpha:1] forState:UIControlStateNormal];
+        rightBtn.titleLabel.font = [UIFont systemFontOfSize:17];
+        [rightBtn addTarget:self action:@selector(rightBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+        [_topView addSubview:rightBtn];
+    }
+    return _topView;
+}
+
+-(void)leftBtnClick:(UIButton*)button
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+-(void)rightBtnClick:(UIButton*)button
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - BottomView

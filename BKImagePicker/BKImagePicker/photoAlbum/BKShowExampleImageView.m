@@ -115,7 +115,7 @@
         [_topView addSubview:leftBtn];
         
         NSString * backPath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
-        UIImageView * leftImageView = [[UIImageView alloc]initWithFrame:CGRectMake(12, 20 + 12, 20, 20)];
+        UIImageView * leftImageView = [[UIImageView alloc]initWithFrame:CGRectMake(10, 20 + 12, 20, 20)];
         leftImageView.clipsToBounds = YES;
         leftImageView.contentMode = UIViewContentModeScaleAspectFit;
         leftImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/blue_back.png",backPath]];
@@ -400,11 +400,11 @@
         self.backgroundColor = [UIColor colorWithWhite:0 alpha:1];
         self.topView.alpha = 1;
         self.bottomView.alpha = 1;
-        self.locationVC.navigationController.navigationBar.alpha = 0;
+//        self.locationVC.navigationController.navigationBar.alpha = 0;
     } completion:^(BOOL finished) {
         [tapImageView removeFromSuperview];
         self.exampleImageCollectionView.alpha = 1;
-        self.locationVC.navigationController.navigationBarHidden = YES;
+//        self.locationVC.navigationController.navigationBarHidden = YES;
         
         if (endOption) {
             endOption();

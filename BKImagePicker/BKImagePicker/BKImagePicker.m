@@ -75,6 +75,7 @@
             }
             
             UINavigationController * nav = [[UINavigationController alloc]initWithRootViewController:imageClassVC];
+            nav.navigationBarHidden = YES;
             [nav pushViewController:imageVC animated:NO];
             [self.vc presentViewController:nav animated:YES completion:nil];
         }

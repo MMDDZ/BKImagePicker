@@ -20,7 +20,6 @@
 		2ADC20A91DEADECA001DD97C /* FLAnimatedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2ADC20A61DEADECA001DD97C /* FLAnimatedImageView.m */; };
 		2ADC20AA1DEADECA001DD97C /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2ADC20A71DEADECA001DD97C /* Info.plist */; };
 		88291EFB1DB7467600011A68 /* BKTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 88291EFA1DB7467600011A68 /* BKTool.m */; };
-		883BB4E11DC828EB00952C2D /* UINavigationItem+BKExpand.m in Sources */ = {isa = PBXBuildFile; fileRef = 883BB4E01DC828EB00952C2D /* UINavigationItem+BKExpand.m */; };
 		883BB4E41DC864F500952C2D /* BKShowExampleVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 883BB4E31DC864F500952C2D /* BKShowExampleVideoView.m */; };
 		88500A9F1DAF1D2300102A35 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 88500A9E1DAF1D2300102A35 /* main.m */; };
 		88500AA21DAF1D2300102A35 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 88500AA11DAF1D2300102A35 /* AppDelegate.m */; };
@@ -60,8 +59,6 @@
 		2ADC20A71DEADECA001DD97C /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		88291EF91DB7467600011A68 /* BKTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKTool.h; sourceTree = "<group>"; };
 		88291EFA1DB7467600011A68 /* BKTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKTool.m; sourceTree = "<group>"; };
-		883BB4DF1DC828EB00952C2D /* UINavigationItem+BKExpand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UINavigationItem+BKExpand.h"; sourceTree = "<group>"; };
-		883BB4E01DC828EB00952C2D /* UINavigationItem+BKExpand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationItem+BKExpand.m"; sourceTree = "<group>"; };
 		883BB4E21DC864F500952C2D /* BKShowExampleVideoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKShowExampleVideoView.h; sourceTree = "<group>"; };
 		883BB4E31DC864F500952C2D /* BKShowExampleVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKShowExampleVideoView.m; sourceTree = "<group>"; };
 		88500A9A1DAF1D2300102A35 /* BKImagePicker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BKImagePicker.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -125,8 +122,6 @@
 				883BB4E31DC864F500952C2D /* BKShowExampleVideoView.m */,
 				2AC73EC31DD8A01800CF5B5D /* BKShowExampleGIFView.h */,
 				2AC73EC41DD8A01800CF5B5D /* BKShowExampleGIFView.m */,
-				883BB4DF1DC828EB00952C2D /* UINavigationItem+BKExpand.h */,
-				883BB4E01DC828EB00952C2D /* UINavigationItem+BKExpand.m */,
 				88291EF91DB7467600011A68 /* BKTool.h */,
 				88291EFA1DB7467600011A68 /* BKTool.m */,
 			);
@@ -288,7 +283,6 @@
 				2A16740A1DB204A600BA7AE0 /* BKImagePickerViewController.m in Sources */,
 				2A1674091DB204A600BA7AE0 /* BKImagePickerFooterCollectionReusableView.m in Sources */,
 				88500AA21DAF1D2300102A35 /* AppDelegate.m in Sources */,
-				883BB4E11DC828EB00952C2D /* UINavigationItem+BKExpand.m in Sources */,
 				88500A9F1DAF1D2300102A35 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
