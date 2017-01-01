@@ -50,8 +50,8 @@
                 }
             };
             
-            imageClassVC.title = String(@"Albums");
-            imageVC.title = String(@"Camera Roll");
+            imageClassVC.title = @"相册";
+            imageVC.title = @"相机胶卷";
             
             UINavigationController * nav = [[UINavigationController alloc]initWithRootViewController:imageClassVC];
             nav.navigationBarHidden = YES;
@@ -80,7 +80,7 @@
                     }
                 }else{
                     UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"提示" message:@"此应用程序没有权限访问您的相册\n在“设置-隐私-照片”中开启即可查看" preferredStyle:UIAlertControllerStyleAlert];
-                    UIAlertAction * ok = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                    UIAlertAction * ok = [UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
                         if (handler) {
                             handler(NO);
                         }
@@ -94,7 +94,7 @@
         case PHAuthorizationStatusRestricted:
         {
             UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"提示" message:@"此应用程序没有访问相册的权限" preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction * ok = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            UIAlertAction * ok = [UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
                 if (handler) {
                     handler(NO);
                 }
@@ -106,7 +106,7 @@
         case PHAuthorizationStatusDenied:
         {
             UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"提示" message:@"此应用程序没有权限访问您的相册\n在“设置-隐私-照片”中开启即可查看" preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction * ok = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            UIAlertAction * ok = [UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
                 if (handler) {
                     handler(NO);
                 }

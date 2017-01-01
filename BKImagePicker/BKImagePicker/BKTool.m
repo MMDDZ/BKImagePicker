@@ -168,29 +168,5 @@
     [BKTool shareInstance].loadLayer = nil;
 }
 
-#pragma mark - 国际化
-
-+(NSString*)adaptLanguage:(NSString*)str
-{
-    NSDictionary * infoDictionary = [[NSBundle mainBundle] infoDictionary];
-    NSString * lanuageStr = infoDictionary[@"CFBundleDevelopmentRegion"];
-    
-    NSString * BKImagePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
-    
-    NSString * languagePath;
-    if ([lanuageStr rangeOfString:@"zh"].location != NSNotFound) {
-        languagePath = [[NSBundle bundleWithPath:BKImagePath] pathForResource:@"zh-Hans" ofType:@"lproj"];
-    }else{
-        languagePath = [[NSBundle bundleWithPath:BKImagePath] pathForResource:@"en" ofType:@"lproj"];
-    }
-    NSBundle * languageBundle = [NSBundle bundleWithPath:languagePath];
-    
-    NSString * newStr = [languageBundle localizedStringForKey:str value:@"" table:nil];
-    if (!newStr) {
-        newStr = str;
-    }
-    
-    return newStr;
-}
 
 @end

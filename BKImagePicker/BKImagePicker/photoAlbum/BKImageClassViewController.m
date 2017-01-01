@@ -143,7 +143,7 @@
     
     self.automaticallyAdjustsScrollViewInsets = NO;
     
-    self.title = String(@"Albums");
+    self.title = @"相册";
     self.view.backgroundColor = [UIColor whiteColor];
     
     [self.view addSubview:[self topView]];
@@ -168,7 +168,7 @@
         
         UIButton * rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         rightBtn.frame = CGRectMake(UISCREEN_WIDTH - 64, 20, 64, 44);
-        [rightBtn setTitle:String(@"Cancel") forState:UIControlStateNormal];
+        [rightBtn setTitle:@"取消" forState:UIControlStateNormal];
         [rightBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
         rightBtn.titleLabel.font = [UIFont systemFontOfSize:17];
         [rightBtn addTarget:self action:@selector(rightBtnClick:) forControlEvents:UIControlEventTouchUpInside];

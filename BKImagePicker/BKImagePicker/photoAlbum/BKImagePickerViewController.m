@@ -12,7 +12,7 @@
 #define imagePickerCell_identifier @"BKImagePickerCollectionViewCell"
 #define imagePickerFooter_identifier @"BKImagePickerFooterCollectionReusableView"
 
-#define imageSize CGSizeMake([UIScreen mainScreen].bounds.size.width/2.0f, [UIScreen mainScreen].bounds.size.width/2.0f)
+#define imageSize CGSizeMake(UISCREEN_WIDTH/2.0f, UISCREEN_WIDTH/2.0f)
 
 #import "BKImageClassViewController.h"
 
@@ -131,9 +131,9 @@
             }
             
             if ([self.select_imageArray count] == 0) {
-                [_sendBtn setTitle:@"确定" forState:UIControlStateNormal];
+                [_sendBtn setTitle:@"确认" forState:UIControlStateNormal];
             }else{
-                [_sendBtn setTitle:[NSString stringWithFormat:@"确定(%ld)",[self.select_imageArray count]] forState:UIControlStateNormal];
+                [_sendBtn setTitle:[NSString stringWithFormat:@"确认(%ld)",[self.select_imageArray count]] forState:UIControlStateNormal];
             }
             
             *stop = YES;
@@ -586,7 +586,7 @@
         
         UIButton * rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         rightBtn.frame = CGRectMake(UISCREEN_WIDTH - 64, 20, 64, 44);
-        [rightBtn setTitle:String(@"Cancel") forState:UIControlStateNormal];
+        [rightBtn setTitle:@"取消" forState:UIControlStateNormal];
         [rightBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
         rightBtn.titleLabel.font = [UIFont systemFontOfSize:17];
         [rightBtn addTarget:self action:@selector(rightBtnClick:) forControlEvents:UIControlEventTouchUpInside];
@@ -622,8 +622,8 @@
         lineView.backgroundColor = BKLineColor;
         [_bottomView addSubview:lineView];
         
-        [_bottomView addSubview:[self previewBtn]];
         [_bottomView addSubview:[self editBtn]];
+        [_bottomView addSubview:[self previewBtn]];
         [_bottomView addSubview:[self sendBtn]];
         
         if ([self.select_imageArray count] == 1) {
@@ -632,7 +632,7 @@
             [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
             [_sendBtn setBackgroundColor:BKNavHighlightTitleColor];
             
-            [_sendBtn setTitle:[NSString stringWithFormat:@"确定(%ld)",[self.select_imageArray count]] forState:UIControlStateNormal];
+            [_sendBtn setTitle:[NSString stringWithFormat:@"确认(%ld)",[self.select_imageArray count]] forState:UIControlStateNormal];
         }else if ([self.select_imageArray count] > 1) {
             
             [_previewBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
@@ -640,31 +640,18 @@
             [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
             [_sendBtn setBackgroundColor:BKNavHighlightTitleColor];
             
-            [_sendBtn setTitle:[NSString stringWithFormat:@"确定(%ld)",[self.select_imageArray count]] forState:UIControlStateNormal];
+            [_sendBtn setTitle:[NSString stringWithFormat:@"确认(%ld)",[self.select_imageArray count]] forState:UIControlStateNormal];
         }
         
     }
     return _bottomView;
 }
 
--(UIButton*)previewBtn
-{
-    if (!_previewBtn) {
-        _previewBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _previewBtn.frame = CGRectMake(0, 0, UISCREEN_WIDTH/6, 49);
-        [_previewBtn setTitle:@"预览" forState:UIControlStateNormal];
-        [_previewBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
-        _previewBtn.titleLabel.font = [UIFont systemFontOfSize:15];
-        [_previewBtn addTarget:self action:@selector(previewBtnClick:) forControlEvents:UIControlEventTouchUpInside];
-    }
-    return _previewBtn;
-}
-
 -(UIButton*)editBtn
 {
     if (!_editBtn) {
         _editBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _editBtn.frame = CGRectMake(UISCREEN_WIDTH/6, 0, UISCREEN_WIDTH/6, 49);
+        _editBtn.frame = CGRectMake(0, 0, UISCREEN_WIDTH/6, 49);
         [_editBtn setTitle:@"编辑" forState:UIControlStateNormal];
         [_editBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
         _editBtn.titleLabel.font = [UIFont systemFontOfSize:15];
@@ -673,13 +660,26 @@
     return _editBtn;
 }
 
+-(UIButton*)previewBtn
+{
+    if (!_previewBtn) {
+        _previewBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        _previewBtn.frame = CGRectMake(UISCREEN_WIDTH/6, 0, UISCREEN_WIDTH/6, 49);
+        [_previewBtn setTitle:@"预览" forState:UIControlStateNormal];
+        [_previewBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
+        _previewBtn.titleLabel.font = [UIFont systemFontOfSize:15];
+        [_previewBtn addTarget:self action:@selector(previewBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+    }
+    return _previewBtn;
+}
+
 -(UIButton*)sendBtn
 {
     if (!_sendBtn) {
         
         _sendBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         _sendBtn.frame = CGRectMake(UISCREEN_WIDTH/4*3, 6, UISCREEN_WIDTH/4-6, 37);
-        [_sendBtn setTitle:@"确定" forState:UIControlStateNormal];
+        [_sendBtn setTitle:@"确认" forState:UIControlStateNormal];
         [_sendBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
         [_sendBtn setBackgroundColor:BKNavSendGrayBackgroundColor];
         _sendBtn.titleLabel.font = [UIFont systemFontOfSize:14];

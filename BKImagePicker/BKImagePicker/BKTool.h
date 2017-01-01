@@ -19,6 +19,4 @@
 
 +(void)hideLoad;
 
-+(NSString*)adaptLanguage:(NSString*)str;
-
 @end
