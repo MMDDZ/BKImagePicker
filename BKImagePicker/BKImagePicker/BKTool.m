@@ -7,6 +7,7 @@
 //
 
 #import "BKTool.h"
+#import "BKImagePickerConst.h"
 
 @interface BKTool()
 
@@ -166,6 +167,28 @@
     }];
     [[BKTool shareInstance].loadLayer removeFromSuperlayer];
     [BKTool shareInstance].loadLayer = nil;
+}
+
+#pragma mark - 图片压缩
+
++(UIImage *)compressImage:(UIImage *)image
+{
+    if (!image) {
+        return nil;
+    }
+    
+    float imageWidth = image.size.width;
+    float imageHeight = image.size.height;
+    
+    float width = imageWidth*BKThumbImageCompressSizeMultiplier;
+    float height = imageHeight*BKThumbImageCompressSizeMultiplier;
+    
+    UIGraphicsBeginImageContext(CGSizeMake(width, height));
+    [image drawInRect:CGRectMake(0, 0, width , height)];
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return newImage;
 }
 
 

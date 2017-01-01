@@ -360,6 +360,23 @@
     }
 }
 
+#pragma mark - 算图片大小
+
+-(void)getOriginalImageSizeWithAsset:(PHAsset*)asset complete:(void (^)(double size))complete
+{
+    PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+    options.resizeMode = PHImageRequestOptionsResizeModeExact;
+    options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+    options.synchronous = NO;
+    
+    [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
+        
+        if (complete) {
+            complete((double)imageData.length/1024/1024);
+        }
+    }];
+}
+
 #pragma mark - 显示方法
 
 -(void)showAndBeginAnimateOption:(void (^)())beginOption endAnimateOption:(void (^)())endOption
@@ -479,6 +496,10 @@
     [self getMaximumSizeImageOption:^(UIImage *originalImage) {
         [self editImageView:cell.showImageView image:originalImage scrollView:cell.imageScrollView];
     } nowIndex:indexPath.item];
+    
+    [self getOriginalImageSizeWithAsset:self.imageAssetsArray[indexPath.item] complete:^(double size) {
+        NSLog(@"%f",size);
+    }];
     
     return cell;
 }

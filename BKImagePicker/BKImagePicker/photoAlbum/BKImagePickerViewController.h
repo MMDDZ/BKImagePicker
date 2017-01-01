@@ -23,6 +23,21 @@
 @property (nonatomic,strong) NSMutableArray * select_imageArray;
 
 /**
+ 原图大小数组
+ */
+@property (nonatomic,strong) NSMutableArray * imageSizeArray;
+
+/**
+ 选取的缩略图+原图数组 (每项包含1个字典 字典包含 thumb和original)
+ */
+@property (nonatomic,strong) NSMutableArray * selectResultImageArray;
+
+/**
+ 是否选择原图
+ */
+@property (nonatomic,assign) BOOL isOriginal;
+
+/**
  相册显示类型
  */
 @property (nonatomic,assign) BKPhotoType photoType;

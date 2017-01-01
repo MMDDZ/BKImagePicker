@@ -11,6 +11,6 @@
 float const BKLineHeight = 0.3;
 float const BKCheckExampleImageAnimateTime = 0.5;
 float const BKCheckExampleGifAndVideoAnimateTime = 0.3;
-
+float const BKThumbImageCompressSizeMultiplier = 0.5;
 
 

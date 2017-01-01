@@ -251,6 +251,9 @@
     NSDictionary * dic = self.imageClassArray[indexPath.row];
     imageVC.title = dic[@"album_name"];
     imageVC.select_imageArray = [NSMutableArray arrayWithArray:self.select_imageArray];
+    imageVC.selectResultImageArray = [NSMutableArray arrayWithArray:self.selectResultImageArray];
+    imageVC.imageSizeArray = [NSMutableArray arrayWithArray:self.imageSizeArray];
+    imageVC.isOriginal = self.isOriginal;
     imageVC.max_select = self.max_select;
     imageVC.photoType = self.photoType;
     imageVC.finishSelectOption = self.finishSelectOption;
