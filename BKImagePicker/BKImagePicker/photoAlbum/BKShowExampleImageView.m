@@ -97,7 +97,7 @@
 {
     if (!_topView) {
         _topView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.bk_width, 64)];
-        _topView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.8];
+        _topView.backgroundColor = BKNavBackgroundColor;
         _topView.alpha = 0;
         
         [_topView addSubview:[self titleLab]];
@@ -209,21 +209,21 @@
             [self.select_imageArray removeObject:asset];
             
             if ([self.select_imageArray count] == 0) {
-                [_editBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
-                [_sendBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
+                [_editBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
+                [_sendBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
                 [_sendBtn setBackgroundColor:[UIColor colorWithWhite:0.85 alpha:1]];
             }else if ([self.select_imageArray count] == 1) {
-                [_editBtn setTitleColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1] forState:UIControlStateNormal];
+                [_editBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
             }
         }else{
             [self.select_imageArray addObject:asset];
             if ([self.select_imageArray count] == 1) {
                 
-                [_editBtn setTitleColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1] forState:UIControlStateNormal];
+                [_editBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
                 [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-                [_sendBtn setBackgroundColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1]];
+                [_sendBtn setBackgroundColor:BKNavHighlightTitleColor];
             }else if ([self.select_imageArray count] > 1) {
-                [_editBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
+                [_editBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
             }
         }
         
@@ -269,29 +269,29 @@
     if (!_bottomView) {
         
         _bottomView = [[UIView alloc]initWithFrame:CGRectMake(0, self.bk_height-49, self.bk_width, 49)];
-        _bottomView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.8];
+        _bottomView.backgroundColor = BKNavBackgroundColor;
         _bottomView.alpha = 0;
         
         [_bottomView addSubview:[self editBtn]];
         [_bottomView addSubview:[self sendBtn]];
         
         if (self.max_select == 1) {
-            [_editBtn setTitleColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1] forState:UIControlStateNormal];
+            [_editBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
             [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-            [_sendBtn setBackgroundColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1]];
+            [_sendBtn setBackgroundColor:BKNavHighlightTitleColor];
             
             [_sendBtn setTitle:@"确定" forState:UIControlStateNormal];
         }else{
             if ([self.select_imageArray count] == 1) {
-                [_editBtn setTitleColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1] forState:UIControlStateNormal];
+                [_editBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
                 [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-                [_sendBtn setBackgroundColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1]];
+                [_sendBtn setBackgroundColor:BKNavHighlightTitleColor];
                 
                 [_sendBtn setTitle:[NSString stringWithFormat:@"确定(%ld)",[self.select_imageArray count]] forState:UIControlStateNormal];
             }else if ([self.select_imageArray count] > 1) {
-                [_editBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
+                [_editBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
                 [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-                [_sendBtn setBackgroundColor:[UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1]];
+                [_sendBtn setBackgroundColor:BKNavHighlightTitleColor];
                 
                 [_sendBtn setTitle:[NSString stringWithFormat:@"确定(%ld)",[self.select_imageArray count]] forState:UIControlStateNormal];
             }
@@ -310,7 +310,7 @@
         _editBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         _editBtn.frame = CGRectMake(0, 0, self.bk_width / 6, 49);
         [_editBtn setTitle:@"编辑" forState:UIControlStateNormal];
-        [_editBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
+        [_editBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
         _editBtn.titleLabel.font = [UIFont systemFontOfSize:15];
         [_editBtn addTarget:self action:@selector(editBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     }
@@ -324,7 +324,7 @@
         _sendBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         _sendBtn.frame = CGRectMake(self.bk_width/4*3, 6, self.bk_width/4-6, 37);
         [_sendBtn setTitle:@"确定" forState:UIControlStateNormal];
-        [_sendBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
+        [_sendBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
         [_sendBtn setBackgroundColor:[UIColor colorWithWhite:0.85 alpha:1]];
         _sendBtn.titleLabel.font = [UIFont systemFontOfSize:14];
         _sendBtn.layer.cornerRadius = 4;

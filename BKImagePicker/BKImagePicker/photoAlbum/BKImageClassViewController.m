@@ -157,7 +157,7 @@
 {
     if (!_topView) {
         _topView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, UISCREEN_WIDTH, 64)];
-        _topView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.8];
+        _topView.backgroundColor = BKNavBackgroundColor;
         
         UILabel * titleLab = [[UILabel alloc]initWithFrame:CGRectMake(64, 20, UISCREEN_WIDTH - 64*2, 44)];
         titleLab.font = [UIFont boldSystemFontOfSize:17];
@@ -169,7 +169,7 @@
         UIButton * rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         rightBtn.frame = CGRectMake(UISCREEN_WIDTH - 64, 20, 64, 44);
         [rightBtn setTitle:String(@"Cancel") forState:UIControlStateNormal];
-        [rightBtn setTitleColor:BKNavTitleColor forState:UIControlStateNormal];
+        [rightBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
         rightBtn.titleLabel.font = [UIFont systemFontOfSize:17];
         [rightBtn addTarget:self action:@selector(rightBtnClick:) forControlEvents:UIControlEventTouchUpInside];
         [_topView addSubview:rightBtn];
