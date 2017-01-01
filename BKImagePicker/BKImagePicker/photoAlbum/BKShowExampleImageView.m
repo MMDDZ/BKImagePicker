@@ -13,7 +13,8 @@
 #import "BKShowExampleImageCollectionViewCell.h"
 #import "BKImageClassViewController.h"
 #import "BKImageAlbumItemSelectButton.h"
-#import "BKTool.h"
+#import "BKImagePickerConst.h"
+
 
 @interface BKShowExampleImageView ()<UICollectionViewDataSource,UICollectionViewDelegate,UICollectionViewDelegateFlowLayout,UINavigationControllerDelegate>
 
@@ -95,7 +96,7 @@
 -(UIView*)topView
 {
     if (!_topView) {
-        _topView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, 64)];
+        _topView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.bk_width, 64)];
         _topView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.8];
         _topView.alpha = 0;
         
@@ -122,13 +123,13 @@
         [leftBtn addSubview:leftImageView];
         
         if (self.max_select != 1) {
-            UIView * rightBtn = [[UIView alloc]initWithFrame:CGRectMake(self.frame.size.width-64, 0, 64, 64)];
+            UIView * rightBtn = [[UIView alloc]initWithFrame:CGRectMake(self.bk_width-64, 0, 64, 64)];
             [_topView addSubview:rightBtn];
             
             [rightBtn addSubview:[self rightBtn]];
         }
         
-        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 64-BKLineHeight, self.frame.size.width, BKLineHeight)];
+        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 64-BKLineHeight, self.bk_width, BKLineHeight)];
         line.backgroundColor = BKLineColor;
         [_topView addSubview:line];
     }
@@ -138,7 +139,7 @@
 -(UILabel*)titleLab
 {
     if (!_titleLab) {
-        _titleLab = [[UILabel alloc]initWithFrame:CGRectMake(64, 20, self.frame.size.width - 64*2, 44)];
+        _titleLab = [[UILabel alloc]initWithFrame:CGRectMake(64, 20, self.bk_width - 64*2, 44)];
         _titleLab.font = [UIFont boldSystemFontOfSize:17];
         _titleLab.textColor = [UIColor blackColor];
         _titleLab.textAlignment = NSTextAlignmentCenter;
@@ -267,7 +268,7 @@
 {
     if (!_bottomView) {
         
-        _bottomView = [[UIView alloc]initWithFrame:CGRectMake(0, self.frame.size.height-49, self.frame.size.width, 49)];
+        _bottomView = [[UIView alloc]initWithFrame:CGRectMake(0, self.bk_height-49, self.bk_width, 49)];
         _bottomView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.8];
         _bottomView.alpha = 0;
         
@@ -296,7 +297,7 @@
             }
         }
         
-        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, BKLineHeight)];
+        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.bk_width, BKLineHeight)];
         line.backgroundColor = BKLineColor;
         [_bottomView addSubview:line];
     }
@@ -307,7 +308,7 @@
 {
     if (!_editBtn) {
         _editBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _editBtn.frame = CGRectMake(0, 0, self.frame.size.width / 6, 49);
+        _editBtn.frame = CGRectMake(0, 0, self.bk_width / 6, 49);
         [_editBtn setTitle:@"编辑" forState:UIControlStateNormal];
         [_editBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
         _editBtn.titleLabel.font = [UIFont systemFontOfSize:15];
@@ -321,7 +322,7 @@
     if (!_sendBtn) {
         
         _sendBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _sendBtn.frame = CGRectMake(self.frame.size.width/4*3, 6, self.frame.size.width/4-6, 37);
+        _sendBtn.frame = CGRectMake(self.bk_width/4*3, 6, self.bk_width/4-6, 37);
         [_sendBtn setTitle:@"确定" forState:UIControlStateNormal];
         [_sendBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
         [_sendBtn setBackgroundColor:[UIColor colorWithWhite:0.85 alpha:1]];
@@ -384,26 +385,26 @@
     
     CGSize tapImageSize = tapImageView.image.size;
     
-    CGFloat scale = tapImageSize.width / self.frame.size.width;
+    CGFloat scale = tapImageSize.width / self.bk_width;
     CGFloat height = tapImageSize.height / scale;
-    if (height > self.frame.size.height) {
-        tapImageViewFrame.size.height = self.frame.size.height;
+    if (height > self.bk_height) {
+        tapImageViewFrame.size.height = self.bk_height;
         scale = tapImageSize.height / tapImageViewFrame.size.height;
         tapImageViewFrame.size.width = tapImageSize.width / scale;
-        tapImageViewFrame.origin.x = (self.frame.size.width - tapImageViewFrame.size.width) / 2.0f;
+        tapImageViewFrame.origin.x = (self.bk_width - tapImageViewFrame.size.width) / 2.0f;
         tapImageViewFrame.origin.y = 0;
     }else{
         tapImageViewFrame.size.height = height;
-        tapImageViewFrame.size.width = self.frame.size.width;
+        tapImageViewFrame.size.width = self.bk_width;
         tapImageViewFrame.origin.x = 0;
-        tapImageViewFrame.origin.y = (self.frame.size.height-tapImageViewFrame.size.height)/2.0f;
+        tapImageViewFrame.origin.y = (self.bk_height-tapImageViewFrame.size.height)/2.0f;
     }
     
     if (beginOption) {
         beginOption();
     }
     
-    [UIView animateWithDuration:0.5 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+    [UIView animateWithDuration:BKCheckExampleImageAnimateTime delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         tapImageView.frame = tapImageViewFrame;
         self.backgroundColor = [UIColor colorWithWhite:0 alpha:1];
         self.topView.alpha = 1;
@@ -426,7 +427,7 @@
         BKShowExampleImageCollectionViewFlowLayout * flowLayout = [[BKShowExampleImageCollectionViewFlowLayout alloc]init];
         flowLayout.allImageCount = [self.imageAssetsArray count];
         
-        _exampleImageCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(-20, 0, self.frame.size.width+20*2, self.frame.size.height) collectionViewLayout:flowLayout];
+        _exampleImageCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(-20, 0, self.bk_width+20*2, self.bk_height) collectionViewLayout:flowLayout];
         _exampleImageCollectionView.delegate = self;
         _exampleImageCollectionView.dataSource = self;
         _exampleImageCollectionView.backgroundColor = [UIColor clearColor];
@@ -437,7 +438,7 @@
         
         [_exampleImageCollectionView registerClass:[BKShowExampleImageCollectionViewCell class] forCellWithReuseIdentifier:showExampleImageCell_identifier];
         
-        CGFloat contentOffX = (self.frame.size.width+20*2) * ([[self.title componentsSeparatedByString:@"/"][0] integerValue] - 1);
+        CGFloat contentOffX = (self.bk_width+20*2) * ([[self.title componentsSeparatedByString:@"/"][0] integerValue] - 1);
         [_exampleImageCollectionView setContentOffset:CGPointMake(contentOffX, 0) animated:NO];
         
         UITapGestureRecognizer * exampleImageCollectionViewTapRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(exampleImageCollectionViewTapRecognizer)];
@@ -468,7 +469,7 @@
 {
     BKShowExampleImageCollectionViewCell * cell = (BKShowExampleImageCollectionViewCell*)[collectionView dequeueReusableCellWithReuseIdentifier:showExampleImageCell_identifier forIndexPath:indexPath];
     
-    cell.imageScrollView.contentSize = CGSizeMake(cell.frame.size.width-20*2, cell.frame.size.height);
+    cell.imageScrollView.contentSize = CGSizeMake(cell.bk_width-20*2, cell.bk_height);
     cell.showImageView.transform = CGAffineTransformMakeScale(1, 1);
     
     [self getThumbSizeImageOption:^(UIImage *thumbImage) {
@@ -495,7 +496,7 @@
         options.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
         options.synchronous = YES;
         
-        [[PHImageManager defaultManager] requestImageForAsset:self.imageAssetsArray[nowIndex] targetSize:CGSizeMake(self.frame.size.width/2.0f, self.frame.size.width/2.0f) contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+        [[PHImageManager defaultManager] requestImageForAsset:self.imageAssetsArray[nowIndex] targetSize:CGSizeMake(self.bk_width/2.0f, self.bk_width/2.0f) contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
             
             // 排除取消，错误，低清图三种情况，即已经获取到了高清图
             BOOL downImageloadFinined = ![[info objectForKey:PHImageCancelledKey] boolValue] && ![info objectForKey:PHImageErrorKey] && ![[info objectForKey:PHImageResultIsDegradedKey] boolValue];
@@ -557,19 +558,19 @@
     
     CGRect showImageViewFrame = showImageView.frame;
     
-    CGFloat scale = image.size.width / imageScrollView.frame.size.width;
+    CGFloat scale = image.size.width / imageScrollView.bk_width;
     CGFloat height = image.size.height / scale;
-    if (height > imageScrollView.frame.size.height) {
-        showImageViewFrame.size.height = imageScrollView.frame.size.height;
+    if (height > imageScrollView.bk_height) {
+        showImageViewFrame.size.height = imageScrollView.bk_height;
         scale = image.size.height / showImageViewFrame.size.height;
         showImageViewFrame.size.width = image.size.width / scale;
-        showImageViewFrame.origin.x = (imageScrollView.frame.size.width - showImageViewFrame.size.width) / 2.0f;
+        showImageViewFrame.origin.x = (imageScrollView.bk_width - showImageViewFrame.size.width) / 2.0f;
         showImageViewFrame.origin.y = 0;
     }else{
         showImageViewFrame.size.height = height;
-        showImageViewFrame.size.width = imageScrollView.frame.size.width;
+        showImageViewFrame.size.width = imageScrollView.bk_width;
         showImageViewFrame.origin.x = 0;
-        showImageViewFrame.origin.y = (imageScrollView.frame.size.height-showImageViewFrame.size.height)/2.0f;
+        showImageViewFrame.origin.y = (imageScrollView.bk_height-showImageViewFrame.size.height)/2.0f;
     }
     
     imageScrollView.maximumZoomScale = scale<2?2:scale;

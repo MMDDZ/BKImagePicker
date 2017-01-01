@@ -28,7 +28,7 @@
 -(UIView*)bottomView
 {
     if (!_bottomView) {
-        _bottomView = [[UIView alloc]initWithFrame:CGRectMake(0, self.frame.size.height - 64, self.frame.size.width, 64)];
+        _bottomView = [[UIView alloc]initWithFrame:CGRectMake(0, self.bk_height - 64, self.bk_width, 64)];
         _bottomView.backgroundColor = [UIColor colorWithWhite:0.2 alpha:0.5];
         
         UIButton * back = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -43,7 +43,7 @@
         [_bottomView addSubview:[self start_pause]];
         
         UIButton * select = [UIButton buttonWithType:UIButtonTypeCustom];
-        select.frame = CGRectMake(self.frame.size.width - 64 - 10, 0, 64, 64);
+        select.frame = CGRectMake(self.bk_width - 64 - 10, 0, 64, 64);
         [select setBackgroundColor:[UIColor clearColor]];
         [select setTitle:@"选取" forState:UIControlStateNormal];
         [select setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
@@ -61,7 +61,7 @@
         UIImage * start_image = [UIImage imageWithContentsOfFile:[bundlePath stringByAppendingString:@"/video_start.png"]];
         
         _start_pause = [UIButton buttonWithType:UIButtonTypeCustom];
-        _start_pause.frame = CGRectMake((self.frame.size.width - 64)/2.0f, 0, 64, 64);
+        _start_pause.frame = CGRectMake((self.bk_width - 64)/2.0f, 0, 64, 64);
         [_start_pause setImage:start_image forState:UIControlStateNormal];
         [_start_pause setImageEdgeInsets:UIEdgeInsetsMake(16, 16, 16, 16)];
         _start_pause.clipsToBounds = YES;
@@ -78,9 +78,9 @@
     CGRect currentRect = self.currentView.frame;
     CGRect selfRect = self.frame;
     currentRect.origin.x = 0;
-    selfRect.origin.x = self.frame.size.width;
+    selfRect.origin.x = self.bk_width;
     
-    [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+    [UIView animateWithDuration:BKCheckExampleGifAndVideoAnimateTime delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         
         self.currentView.frame = currentRect;
         self.frame = selfRect;
@@ -192,10 +192,10 @@
     [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
     CGRect currentRect = self.currentView.frame;
     CGRect selfRect = self.frame;
-    currentRect.origin.x = -self.frame.size.width/2.0f;
+    currentRect.origin.x = -self.bk_width/2.0f;
     selfRect.origin.x = 0;
     
-    [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+    [UIView animateWithDuration:BKCheckExampleGifAndVideoAnimateTime delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         
         self.currentView.frame = currentRect;
         self.frame = selfRect;

@@ -8,6 +8,7 @@
 
 #import "BKShowExampleGIFView.h"
 #import "FLAnimatedImage.h"
+#import "BKImagePickerConst.h"
 
 @interface BKShowExampleGIFView()
 
@@ -24,7 +25,7 @@
 -(UIView*)bottomView
 {
     if (!_bottomView) {
-        _bottomView = [[UIView alloc]initWithFrame:CGRectMake(0, self.frame.size.height - 64, self.frame.size.width, 64)];
+        _bottomView = [[UIView alloc]initWithFrame:CGRectMake(0, self.bk_height - 64, self.bk_width, 64)];
         _bottomView.backgroundColor = [UIColor colorWithWhite:0.2 alpha:0.5];
         
         UIButton * back = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -37,7 +38,7 @@
         [_bottomView addSubview:back];
         
         UIButton * select = [UIButton buttonWithType:UIButtonTypeCustom];
-        select.frame = CGRectMake(self.frame.size.width - 64 - 10, 0, 64, 64);
+        select.frame = CGRectMake(self.bk_width - 64 - 10, 0, 64, 64);
         [select setBackgroundColor:[UIColor clearColor]];
         [select setTitle:@"选取" forState:UIControlStateNormal];
         [select setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
@@ -55,9 +56,9 @@
     CGRect currentRect = self.currentView.frame;
     CGRect selfRect = self.frame;
     currentRect.origin.x = 0;
-    selfRect.origin.x = self.frame.size.width;
+    selfRect.origin.x = self.bk_width;
     
-    [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+    [UIView animateWithDuration:BKCheckExampleGifAndVideoAnimateTime delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         
         self.currentView.frame = currentRect;
         self.frame = selfRect;
@@ -99,7 +100,7 @@
             FLAnimatedImage * gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfFile:urlStr]];
             FLAnimatedImageView *gifImageView = [[FLAnimatedImageView alloc] init];
             gifImageView.animatedImage = gifImage;
-            gifImageView.frame = CGRectMake((self.frame.size.width - size.width)/2.0f, (self.frame.size.height - size.height)/2.0f, size.width, size.height);
+            gifImageView.frame = CGRectMake((self.bk_width - size.width)/2.0f, (self.bk_height - size.height)/2.0f, size.width, size.height);
             [self addSubview:gifImageView];
             
             [self addSubview:[self bottomView]];
@@ -144,10 +145,10 @@
     [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
     CGRect currentRect = self.currentView.frame;
     CGRect selfRect = self.frame;
-    currentRect.origin.x = -self.frame.size.width/2.0f;
+    currentRect.origin.x = -self.bk_width/2.0f;
     selfRect.origin.x = 0;
     
-    [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+    [UIView animateWithDuration:BKCheckExampleGifAndVideoAnimateTime delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         
         self.currentView.frame = currentRect;
         self.frame = selfRect;

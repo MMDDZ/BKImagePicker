@@ -7,6 +7,7 @@
 //
 
 #import "BKShowExampleImageCollectionViewFlowLayout.h"
+#import "BKImagePickerConst.h"
 
 @implementation BKShowExampleImageCollectionViewFlowLayout
 
@@ -15,14 +16,14 @@
     [super prepareLayout];
     
     self.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-    self.itemSize = CGSizeMake([UIScreen mainScreen].bounds.size.width+20*2, [UIScreen mainScreen].bounds.size.height);
+    self.itemSize = CGSizeMake(UISCREEN_WIDTH+20*2, UISCREEN_HEIGHT);
     self.minimumInteritemSpacing = 0;
     self.minimumLineSpacing = 0;
 }
 
 - (CGSize)collectionViewContentSize
 {
-    return CGSizeMake(([UIScreen mainScreen].bounds.size.width+20*2)*_allImageCount, [UIScreen mainScreen].bounds.size.height);
+    return CGSizeMake((UISCREEN_WIDTH+20*2)*_allImageCount, UISCREEN_HEIGHT);
 }
 
 @end

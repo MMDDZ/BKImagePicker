@@ -7,7 +7,7 @@
 //
 
 #define item_space 6
-#define item_Size CGSizeMake((self.view.frame.size.width-item_space*5)/4, (self.view.frame.size.width-item_space*5)/4)
+#define item_Size CGSizeMake((UISCREEN_WIDTH-item_space*5)/4, (UISCREEN_WIDTH-item_space*5)/4)
 
 #define imagePickerCell_identifier @"BKImagePickerCollectionViewCell"
 #define imagePickerFooter_identifier @"BKImagePickerFooterCollectionReusableView"
@@ -342,12 +342,12 @@
         flowLayout.minimumLineSpacing = item_space;
         flowLayout.minimumInteritemSpacing = 0;
         flowLayout.sectionInset = UIEdgeInsetsMake(item_space, item_space, item_space, item_space);
-        [flowLayout setFooterReferenceSize:CGSizeMake(self.view.frame.size.width, 40)];
+        [flowLayout setFooterReferenceSize:CGSizeMake(UISCREEN_WIDTH, 40)];
         
         if (self.max_select == 1) {
-            _albumCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) collectionViewLayout:flowLayout];
+            _albumCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 0, UISCREEN_WIDTH, UISCREEN_HEIGHT) collectionViewLayout:flowLayout];
         }else{
-            _albumCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height-49) collectionViewLayout:flowLayout];
+            _albumCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 0, UISCREEN_WIDTH, UISCREEN_HEIGHT-49) collectionViewLayout:flowLayout];
         }
         _albumCollectionView.scrollIndicatorInsets = UIEdgeInsetsMake(64, 0, 0, 0);
         _albumCollectionView.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
@@ -493,7 +493,7 @@
         [copyExampleImageView bringSubviewToFront:copyExampleImageView.topView];
         [copyExampleImageView bringSubviewToFront:copyExampleImageView.bottomView];
         
-        [UIView animateWithDuration:0.5 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        [UIView animateWithDuration:BKCheckExampleImageAnimateTime delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             newImageView.frame = cellImageFrame;
             copyExampleImageView.backgroundColor = [UIColor colorWithWhite:1 alpha:0];
             copyExampleImageView.topView.alpha = 0;
@@ -553,10 +553,10 @@
 -(UIView*)topView
 {
     if (!_topView) {
-        _topView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 64)];
+        _topView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, UISCREEN_WIDTH, 64)];
         _topView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.8];
         
-        UILabel * titleLab = [[UILabel alloc]initWithFrame:CGRectMake(100, 20, self.view.frame.size.width - 100*2, 44)];
+        UILabel * titleLab = [[UILabel alloc]initWithFrame:CGRectMake(100, 20, UISCREEN_WIDTH - 100*2, 44)];
         titleLab.font = [UIFont boldSystemFontOfSize:17];
         titleLab.textColor = [UIColor blackColor];
         titleLab.textAlignment = NSTextAlignmentCenter;
@@ -585,14 +585,14 @@
         [leftBtn addSubview:leftLab];
         
         UIButton * rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        rightBtn.frame = CGRectMake(self.view.frame.size.width - 64, 20, 64, 44);
+        rightBtn.frame = CGRectMake(UISCREEN_WIDTH - 64, 20, 64, 44);
         [rightBtn setTitle:String(@"Cancel") forState:UIControlStateNormal];
         [rightBtn setTitleColor:BKNavTitleColor forState:UIControlStateNormal];
         rightBtn.titleLabel.font = [UIFont systemFontOfSize:17];
         [rightBtn addTarget:self action:@selector(rightBtnClick:) forControlEvents:UIControlEventTouchUpInside];
         [_topView addSubview:rightBtn];
         
-        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 64-BKLineHeight, self.view.frame.size.width, BKLineHeight)];
+        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 64-BKLineHeight, UISCREEN_WIDTH, BKLineHeight)];
         line.backgroundColor = BKLineColor;
         [_topView addSubview:line];
     }
@@ -615,10 +615,10 @@
 {
     if (!_bottomView) {
         
-        _bottomView = [[UIView alloc]initWithFrame:CGRectMake(0, self.view.frame.size.height-49, self.view.frame.size.width, 49)];
+        _bottomView = [[UIView alloc]initWithFrame:CGRectMake(0, UISCREEN_HEIGHT-49, UISCREEN_WIDTH, 49)];
         _bottomView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1];
         
-        UIImageView * lineView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, BKLineHeight)];
+        UIImageView * lineView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, UISCREEN_WIDTH, BKLineHeight)];
         lineView.backgroundColor = BKLineColor;
         [_bottomView addSubview:lineView];
         
@@ -651,7 +651,7 @@
 {
     if (!_previewBtn) {
         _previewBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _previewBtn.frame = CGRectMake(0, 0, self.view.frame.size.width/6, 49);
+        _previewBtn.frame = CGRectMake(0, 0, UISCREEN_WIDTH/6, 49);
         [_previewBtn setTitle:@"预览" forState:UIControlStateNormal];
         [_previewBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
         _previewBtn.titleLabel.font = [UIFont systemFontOfSize:15];
@@ -664,7 +664,7 @@
 {
     if (!_editBtn) {
         _editBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _editBtn.frame = CGRectMake(self.view.frame.size.width/6, 0, self.view.frame.size.width/6, 49);
+        _editBtn.frame = CGRectMake(UISCREEN_WIDTH/6, 0, UISCREEN_WIDTH/6, 49);
         [_editBtn setTitle:@"编辑" forState:UIControlStateNormal];
         [_editBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
         _editBtn.titleLabel.font = [UIFont systemFontOfSize:15];
@@ -678,7 +678,7 @@
     if (!_sendBtn) {
         
         _sendBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _sendBtn.frame = CGRectMake(self.view.frame.size.width/4*3, 6, self.view.frame.size.width/4-6, 37);
+        _sendBtn.frame = CGRectMake(UISCREEN_WIDTH/4*3, 6, UISCREEN_WIDTH/4-6, 37);
         [_sendBtn setTitle:@"确定" forState:UIControlStateNormal];
         [_sendBtn setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateNormal];
         [_sendBtn setBackgroundColor:[UIColor colorWithWhite:0.85 alpha:1]];

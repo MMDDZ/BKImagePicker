@@ -7,6 +7,7 @@
 //
 
 #import "BKImageAlbumItemSelectButton.h"
+#import "BKImagePickerConst.h"
 
 @interface BKImageAlbumItemSelectButton()
 
@@ -23,10 +24,10 @@
 {
     if ([title length] == 0) {
         self.showTitle = @"";
-        self.fillColor = [UIColor colorWithWhite:0.2 alpha:0.5];
+        self.fillColor = BKSelectImageCircleNormalColor;
     }else{
         self.showTitle = title;
-        self.fillColor = [UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1];
+        self.fillColor = BKSelectImageCircleHighlightColor;
     }
     
     [self setNeedsDisplay];
@@ -43,7 +44,7 @@
 -(UIColor*)fillColor
 {
     if (!_fillColor) {
-        _fillColor = [UIColor colorWithWhite:0.2 alpha:0.5];
+        _fillColor = BKSelectImageCircleNormalColor;
     }
     return _fillColor;
 }
@@ -65,11 +66,11 @@
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetStrokeColorWithColor(context, [[UIColor whiteColor] CGColor]);
     CGContextSetLineWidth(context, 1.5);
-    CGContextAddArc(context, self.frame.size.width/2.0f, self.frame.size.height/2.0f, self.frame.size.width/2.0f - 4, 0, 2*M_PI, 0);
+    CGContextAddArc(context, self.bk_width/2.0f, self.bk_height/2.0f, self.bk_width/2.0f - 4, 0, 2*M_PI, 0);
     CGContextDrawPath(context, kCGPathStroke);
 
     CGContextSetFillColorWithColor(context, [self.fillColor CGColor]);
-    CGContextAddArc(context, self.frame.size.width/2.0f, self.frame.size.height/2.0f, self.frame.size.width/2.0f - 4.5, 0, 2*M_PI, 0);
+    CGContextAddArc(context, self.bk_width/2.0f, self.bk_height/2.0f, self.bk_width/2.0f - 4.5, 0, 2*M_PI, 0);
     CGContextDrawPath(context, kCGPathFill);
     
     NSMutableParagraphStyle* paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
@@ -78,10 +79,10 @@
     
     if ([self.showTitle integerValue] > 99) {
         NSDictionary * attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:8],NSParagraphStyleAttributeName:paragraphStyle,NSForegroundColorAttributeName:[UIColor whiteColor]};
-        [self.showTitle drawWithRect:CGRectMake(5, 10, self.frame.size.width - 10, self.frame.size.height - 20) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil];
+        [self.showTitle drawWithRect:CGRectMake(5, 10, self.bk_width - 10, self.bk_height - 20) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil];
     }else{
         NSDictionary * attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:12],NSParagraphStyleAttributeName:paragraphStyle,NSForegroundColorAttributeName:[UIColor whiteColor]};
-        [self.showTitle drawWithRect:CGRectMake(5, 7.5, self.frame.size.width - 10, self.frame.size.height - 15) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil];
+        [self.showTitle drawWithRect:CGRectMake(5, 7.5, self.bk_width - 10, self.bk_height - 15) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil];
     }
 }
 
@@ -101,7 +102,7 @@
     if ([self.showTitle length] == 0) {
         
         self.showTitle = [NSString stringWithFormat:@"%ld",num];
-        self.fillColor = [UIColor colorWithRed:45/255.0f green:150/255.0f blue:250/255.0f alpha:1];
+        self.fillColor = BKSelectImageCircleHighlightColor;
         [self setNeedsDisplay];
         
         self.isAnimate = YES;
@@ -119,7 +120,7 @@
         });
     }else{
         self.showTitle = @"";
-        self.fillColor = [UIColor colorWithWhite:0.2 alpha:0.5];
+        self.fillColor = BKSelectImageCircleNormalColor;
         [self setNeedsDisplay];
     }
     

@@ -9,6 +9,7 @@
 #import "BKImagePickerCollectionViewCell.h"
 #import "BKVideoAlbumItemView.h"
 #import "BKGIFAlbumItemView.h"
+#import "BKImagePickerConst.h"
 
 @implementation BKImagePickerCollectionViewCell
 
@@ -52,7 +53,7 @@
             
             if (self.max_select != 1) {
                 
-                BKImageAlbumItemSelectButton * selectButton = [[BKImageAlbumItemSelectButton alloc]initWithFrame:CGRectMake(self.frame.size.width - 30, 0, 30, 30)];
+                BKImageAlbumItemSelectButton * selectButton = [[BKImageAlbumItemSelectButton alloc]initWithFrame:CGRectMake(self.bk_width - 30, 0, 30, 30)];
                 __weak BKImagePickerCollectionViewCell * mySelf = self;
                 [selectButton setSelectButtonClick:^(BKImageAlbumItemSelectButton * button) {
                     [mySelf selectButton:button];

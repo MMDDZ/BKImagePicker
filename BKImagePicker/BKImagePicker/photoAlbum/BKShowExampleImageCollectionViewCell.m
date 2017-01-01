@@ -7,6 +7,7 @@
 //
 
 #import "BKShowExampleImageCollectionViewCell.h"
+#import "BKImagePickerConst.h"
 
 @interface BKShowExampleImageCollectionViewCell()<UIScrollViewDelegate>
 
@@ -51,14 +52,10 @@
 
 -(void)scrollViewScale
 {
-    _imageScrollView.contentSize = CGSizeMake(_showImageView.frame.size.width, _showImageView.frame.size.height);
+    _imageScrollView.contentSize = CGSizeMake(_showImageView.bk_width, _showImageView.bk_height);
     
-    CGPoint center = _showImageView.center;
-    
-    center.x = _showImageView.frame.size.width>_imageScrollView.frame.size.width?_imageScrollView.contentSize.width/2.0f:_imageScrollView.center.x-20;
-    center.y = _showImageView.frame.size.height>_imageScrollView.frame.size.height?_imageScrollView.contentSize.height/2.0f:_imageScrollView.center.y;
-    
-    _showImageView.center = center;
+    _showImageView.bk_centerX = _showImageView.bk_width>_imageScrollView.bk_width?_imageScrollView.contentSize.width/2.0f:_imageScrollView.bk_centerX-20;
+    _showImageView.bk_centerY = _showImageView.bk_height>_imageScrollView.bk_height?_imageScrollView.contentSize.height/2.0f:_imageScrollView.bk_centerY;
 }
 
 

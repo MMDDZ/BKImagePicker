@@ -7,6 +7,7 @@
 //
 
 #import "BKGIFAlbumItemView.h"
+#import "BKImagePickerConst.h"
 
 @implementation BKGIFAlbumItemView
 
@@ -39,8 +40,8 @@
     CGGradientRef gradient = CGGradientCreateWithColorComponents(rgb, colors, NULL, sizeof(colors)/(sizeof(colors[0])*4));
     CGColorSpaceRelease(rgb);
     
-    CGPoint start = CGPointMake(0,self.frame.size.height - 20);
-    CGPoint end = CGPointMake(0,self.frame.size.height);
+    CGPoint start = CGPointMake(0,self.bk_height - 20);
+    CGPoint end = CGPointMake(0,self.bk_height);
     
     CGContextDrawLinearGradient(context, gradient ,start ,end ,kCGGradientDrawsBeforeStartLocation);
     CGGradientRelease(gradient);
@@ -50,7 +51,7 @@
     paragraphStyle.alignment = NSTextAlignmentCenter;
     
     NSDictionary * attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:12],NSParagraphStyleAttributeName:paragraphStyle,NSForegroundColorAttributeName:[UIColor whiteColor]};
-    [@"GIF" drawWithRect:CGRectMake(0, self.frame.size.height-16, self.frame.size.width, 14) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil];
+    [@"GIF" drawWithRect:CGRectMake(0, self.bk_height-16, self.bk_width, 14) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil];
 }
 
 @end
