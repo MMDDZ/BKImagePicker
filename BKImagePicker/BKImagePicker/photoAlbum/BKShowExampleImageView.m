@@ -211,7 +211,7 @@
             if ([self.select_imageArray count] == 0) {
                 [_editBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
                 [_sendBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
-                [_sendBtn setBackgroundColor:[UIColor colorWithWhite:0.85 alpha:1]];
+                [_sendBtn setBackgroundColor:BKNavSendGrayBackgroundColor];
             }else if ([self.select_imageArray count] == 1) {
                 [_editBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
             }
@@ -325,7 +325,7 @@
         _sendBtn.frame = CGRectMake(self.bk_width/4*3, 6, self.bk_width/4-6, 37);
         [_sendBtn setTitle:@"确定" forState:UIControlStateNormal];
         [_sendBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
-        [_sendBtn setBackgroundColor:[UIColor colorWithWhite:0.85 alpha:1]];
+        [_sendBtn setBackgroundColor:BKNavSendGrayBackgroundColor];
         _sendBtn.titleLabel.font = [UIFont systemFontOfSize:14];
         _sendBtn.layer.cornerRadius = 4;
         _sendBtn.clipsToBounds = YES;
