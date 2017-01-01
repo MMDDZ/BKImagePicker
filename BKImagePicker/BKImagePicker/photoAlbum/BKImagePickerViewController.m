@@ -647,30 +647,30 @@
     return _bottomView;
 }
 
--(UIButton*)editBtn
-{
-    if (!_editBtn) {
-        _editBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _editBtn.frame = CGRectMake(0, 0, UISCREEN_WIDTH/6, 49);
-        [_editBtn setTitle:@"编辑" forState:UIControlStateNormal];
-        [_editBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
-        _editBtn.titleLabel.font = [UIFont systemFontOfSize:15];
-        [_editBtn addTarget:self action:@selector(editBtnClick:) forControlEvents:UIControlEventTouchUpInside];
-    }
-    return _editBtn;
-}
-
 -(UIButton*)previewBtn
 {
     if (!_previewBtn) {
         _previewBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _previewBtn.frame = CGRectMake(UISCREEN_WIDTH/6, 0, UISCREEN_WIDTH/6, 49);
+        _previewBtn.frame = CGRectMake(0, 0, UISCREEN_WIDTH/6, 49);
         [_previewBtn setTitle:@"预览" forState:UIControlStateNormal];
         [_previewBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
         _previewBtn.titleLabel.font = [UIFont systemFontOfSize:15];
         [_previewBtn addTarget:self action:@selector(previewBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _previewBtn;
+}
+
+-(UIButton*)editBtn
+{
+    if (!_editBtn) {
+        _editBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        _editBtn.frame = CGRectMake(UISCREEN_WIDTH/6, 0, UISCREEN_WIDTH/6, 49);
+        [_editBtn setTitle:@"编辑" forState:UIControlStateNormal];
+        [_editBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
+        _editBtn.titleLabel.font = [UIFont systemFontOfSize:15];
+        [_editBtn addTarget:self action:@selector(editBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+    }
+    return _editBtn;
 }
 
 -(UIButton*)sendBtn

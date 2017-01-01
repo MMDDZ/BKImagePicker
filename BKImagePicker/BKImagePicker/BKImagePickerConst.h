@@ -41,9 +41,7 @@ typedef NS_ENUM(NSInteger,BKSelectPhotoType) {
 UIKIT_EXTERN const float BKLineHeight;
 UIKIT_EXTERN const float BKCheckExampleImageAnimateTime;
 UIKIT_EXTERN const float BKCheckExampleGifAndVideoAnimateTime;
-//extern const NSString * BKPreviewImageTitle;
-//extern const NSString * BKEditImageTitle;
-//extern const NSString * BKConfirmTitle;
+
 
 #endif /* BKImagePickerConst_h */
 
