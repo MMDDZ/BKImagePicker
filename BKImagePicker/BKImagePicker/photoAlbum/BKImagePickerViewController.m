@@ -242,7 +242,7 @@
                         break;
                     case BKPhotoTypeImageAndGif:
                     {
-                        if (obj.mediaType != PHAssetMediaTypeVideo) {
+                        if (obj.mediaType == PHAssetMediaTypeImage) {
                             [self.albumImageArray addObject:@""];
                             [self.albumAssetArray addObject:obj];
                         }else{
@@ -820,6 +820,10 @@
 
 -(void)sendBtnClick:(UIButton*)button
 {
+    if ([self.selectResultImageDataArray count] == 0) {
+        return;
+    }
+    
     for (NSDictionary * dic in self.selectResultImageDataArray) {
         if (self.finishSelectOption) {
             if (self.isOriginal) {

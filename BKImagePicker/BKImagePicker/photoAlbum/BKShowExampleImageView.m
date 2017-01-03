@@ -472,6 +472,10 @@
 
 -(void)sendBtnClick:(UIButton*)button
 {
+    if ([self.selectResultImageDataArray count] == 0) {
+        return;
+    }
+    
     if (self.finishSelectOption) {
         for (NSDictionary * dic in self.selectResultImageDataArray) {
             if (self.finishSelectOption) {
