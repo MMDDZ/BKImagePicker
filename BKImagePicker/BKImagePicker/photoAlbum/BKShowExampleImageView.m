@@ -34,6 +34,20 @@
  最大选取量
  */
 @property (nonatomic,assign) NSInteger max_select;
+/**
+ 图片大小数组
+ */
+@property (nonatomic,strong) NSMutableArray * imageSizeArray;
+
+/**
+ 选取的原图data数组 包含@{@"original":@"",@"thumb":@""}
+ */
+@property (nonatomic,strong) NSMutableArray * selectResultImageDataArray;
+
+/**
+ 是否选择原图
+ */
+@property (nonatomic,assign) BOOL isOriginal;
 
 
 @property (nonatomic,strong) UICollectionView * exampleImageCollectionView;
@@ -47,6 +61,7 @@
 
 
 @property (nonatomic,strong) UIButton * editBtn;
+@property (nonatomic,strong) UIButton * originalBtn;
 @property (nonatomic,strong) UIButton * sendBtn;
 
 @end
@@ -69,9 +84,25 @@
     return _select_imageArray;
 }
 
+-(NSMutableArray*)imageSizeArray
+{
+    if (!_imageSizeArray) {
+        _imageSizeArray = [NSMutableArray array];
+    }
+    return _imageSizeArray;
+}
+
+-(NSMutableArray*)selectResultImageDataArray
+{
+    if (!_selectResultImageDataArray) {
+        _selectResultImageDataArray = [NSMutableArray array];
+    }
+    return _selectResultImageDataArray;
+}
+
 #pragma mark - init
 
--(instancetype)initWithLocationVC:(UIViewController *)locationVC imageAssetsArray:(NSArray *)imageAssetsArray selectImageArray:(NSArray *)selectImageArray tapAsset:(PHAsset *)tapAsset maxSelect:(NSInteger)maxSelect
+-(instancetype)initWithLocationVC:(UIViewController *)locationVC imageAssetsArray:(NSArray *)imageAssetsArray selectImageArray:(NSArray *)selectImageArray tapAsset:(PHAsset *)tapAsset maxSelect:(NSInteger)maxSelect imageSizeArray:(NSArray *)imageSizeArray selectResultImageDataArray:(NSArray *)selectResultImageDataArray isOriginal:(BOOL)isOriginal
 {
     self = [super initWithFrame:[UIScreen mainScreen].bounds];
     if (self) {
@@ -84,6 +115,9 @@
         self.select_imageArray = [NSMutableArray arrayWithArray:selectImageArray];
         self.tap_asset = tapAsset;
         self.max_select = maxSelect;
+        self.imageSizeArray = [NSMutableArray arrayWithArray:imageSizeArray];
+        self.selectResultImageDataArray = [NSMutableArray arrayWithArray:selectResultImageDataArray];
+        self.isOriginal = isOriginal;
         
         [self addSubview:[self topView]];
         [self addSubview:[self bottomView]];
@@ -206,7 +240,17 @@
     
     [button selectClickNum:[self.select_imageArray count]+1 addMethod:^{
         if (isHave) {
-            [self.select_imageArray removeObject:asset];
+            NSInteger index = [self.select_imageArray indexOfObject:asset];
+            [self.select_imageArray removeObjectAtIndex:index];
+            [self.imageSizeArray removeObjectAtIndex:index];
+            [self.selectResultImageDataArray removeObjectAtIndex:index];
+            if (self.isOriginal) {
+                [self calculataImageSize];
+            }
+            
+            if (self.refreshAlbumViewOption) {
+                self.refreshAlbumViewOption([self.select_imageArray copy],[self.imageSizeArray copy],[self.selectResultImageDataArray copy],self.isOriginal);
+            }
             
             if ([self.select_imageArray count] == 0) {
                 [_editBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
@@ -217,6 +261,20 @@
             }
         }else{
             [self.select_imageArray addObject:asset];
+            
+            [self getOriginalImageSizeWithAsset:asset complete:^(NSData *originalImageData, double originalImageSize, NSData *thumbImageData) {
+                [self.imageSizeArray addObject:[NSString stringWithFormat:@"%f",originalImageSize]];
+                if (self.isOriginal) {
+                    [self calculataImageSize];
+                }
+                
+                [self.selectResultImageDataArray addObject:@{@"original":originalImageData,@"thumb":thumbImageData}];
+                
+                if (self.refreshAlbumViewOption) {
+                    self.refreshAlbumViewOption([self.select_imageArray copy],[self.imageSizeArray copy],[self.selectResultImageDataArray copy],self.isOriginal);
+                }
+            }];
+            
             if ([self.select_imageArray count] == 1) {
                 
                 [_editBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
@@ -232,9 +290,8 @@
         }else{
             [_sendBtn setTitle:[NSString stringWithFormat:@"确认(%ld)",[self.select_imageArray count]] forState:UIControlStateNormal];
         }
-        if (self.refreshAlbumViewOption) {
-            self.refreshAlbumViewOption(self.select_imageArray);
-        }
+        
+        
     }];
 }
 
@@ -273,6 +330,7 @@
         _bottomView.alpha = 0;
         
         [_bottomView addSubview:[self editBtn]];
+        [_bottomView addSubview:[self originalBtn]];
         [_bottomView addSubview:[self sendBtn]];
         
         if (self.max_select == 1) {
@@ -317,6 +375,26 @@
     return _editBtn;
 }
 
+-(UIButton*)originalBtn
+{
+    if (!_originalBtn) {
+        _originalBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        _originalBtn.frame = CGRectMake(UISCREEN_WIDTH/6, 0, UISCREEN_WIDTH/7*3, 49);
+        if (self.isOriginal) {
+            [_originalBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
+            [self calculataImageSize];
+        }else{
+            [_originalBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
+            [_originalBtn setTitle:@"原图" forState:UIControlStateNormal];
+        }
+        _originalBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+        _originalBtn.titleEdgeInsets = UIEdgeInsetsMake(0, 10, 0, 0);
+        _originalBtn.titleLabel.font = [UIFont systemFontOfSize:15];
+        [_originalBtn addTarget:self action:@selector(originalBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+    }
+    return _originalBtn;
+}
+
 -(UIButton*)sendBtn
 {
     if (!_sendBtn) {
@@ -340,29 +418,59 @@
     
 }
 
--(void)sendBtnClick:(UIButton*)button
+-(void)originalBtnClick:(UIButton*)button
 {
-    if (self.finishSelectOption) {
-        if (self.max_select == 1) {
-            
-            PHAsset * asset;
-            if ([self.title rangeOfString:@"/"].location != NSNotFound) {
-                NSInteger item = [[self.title componentsSeparatedByString:@"/"][0] integerValue]-1;
-                asset = (PHAsset*)(self.imageAssetsArray[item]);
-            }else{
-                asset = (PHAsset*)(self.imageAssetsArray[0]);
-            }
-            self.finishSelectOption(@[asset], BKSelectPhotoTypeImage);
-            
-        }else{
-            self.finishSelectOption(self.select_imageArray.copy, BKSelectPhotoTypeImage);
-        }
+    if (!self.isOriginal) {
+        [button setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
+        [self calculataImageSize];
+    }else{
+        [button setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
+        [button setTitle:@"原图" forState:UIControlStateNormal];
+    }
+    self.isOriginal = !self.isOriginal;
+    if (self.refreshAlbumViewOption) {
+        self.refreshAlbumViewOption([self.select_imageArray copy],[self.imageSizeArray copy],[self.selectResultImageDataArray copy],self.isOriginal);
     }
 }
 
-#pragma mark - 算图片大小
+-(void)calculataImageSize
+{
+    __block double allSize = 0.0;
+    [self.imageSizeArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        allSize = allSize + [obj doubleValue];
+    }];
+    if (allSize>1024) {
+        allSize = allSize / 1024;
+        if (allSize > 1024) {
+            allSize = allSize / 1024;
+            [_originalBtn setTitle:[NSString stringWithFormat:@"原图(%.1fT)",allSize] forState:UIControlStateNormal];
+        }else{
+            [_originalBtn setTitle:[NSString stringWithFormat:@"原图(%.1fG)",allSize] forState:UIControlStateNormal];
+        }
+    }else{
+        [_originalBtn setTitle:[NSString stringWithFormat:@"原图(%.1fM)",allSize] forState:UIControlStateNormal];
+    }
+}
 
--(void)getOriginalImageSizeWithAsset:(PHAsset*)asset complete:(void (^)(double size))complete
+-(void)sendBtnClick:(UIButton*)button
+{
+    if (self.finishSelectOption) {
+        for (NSDictionary * dic in self.selectResultImageDataArray) {
+            if (self.finishSelectOption) {
+                if (self.isOriginal) {
+                    self.finishSelectOption([UIImage imageWithData:dic[@"original"]], BKSelectPhotoTypeImage);
+                }else{
+                    self.finishSelectOption([UIImage imageWithData:dic[@"thumb"]], BKSelectPhotoTypeImage);
+                }
+            }
+        }
+        [self.locationVC dismissViewControllerAnimated:YES completion:nil];
+    }
+}
+
+#pragma mark - 算图片大小和高清图data/缩略图data
+
+-(void)getOriginalImageSizeWithAsset:(PHAsset*)asset complete:(void (^)(NSData * originalImageData , double originalImageSize , NSData * thumbImageData))complete
 {
     PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
     options.resizeMode = PHImageRequestOptionsResizeModeExact;
@@ -372,7 +480,8 @@
     [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
         
         if (complete) {
-            complete((double)imageData.length/1024/1024);
+            NSData * thumbImageData = [BKTool compressImageData:imageData];
+            complete(imageData,(double)imageData.length/1024/1024,thumbImageData);
         }
     }];
 }
@@ -497,10 +606,6 @@
         [self editImageView:cell.showImageView image:originalImage scrollView:cell.imageScrollView];
     } nowIndex:indexPath.item];
     
-    [self getOriginalImageSizeWithAsset:self.imageAssetsArray[indexPath.item] complete:^(double size) {
-        NSLog(@"%f",size);
-    }];
-    
     return cell;
 }
 
@@ -511,28 +616,24 @@
  */
 -(void)getThumbSizeImageOption:(void (^)(UIImage * thumbImage))imageOption nowIndex:(NSInteger)nowIndex
 {
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
-        options.resizeMode = PHImageRequestOptionsResizeModeFast;
-        options.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
-        options.synchronous = YES;
+    PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+    options.resizeMode = PHImageRequestOptionsResizeModeFast;
+    options.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
+    options.synchronous = NO;
+    
+    [[PHImageManager defaultManager] requestImageForAsset:self.imageAssetsArray[nowIndex] targetSize:CGSizeMake(self.bk_width/2.0f, self.bk_width/2.0f) contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
         
-        [[PHImageManager defaultManager] requestImageForAsset:self.imageAssetsArray[nowIndex] targetSize:CGSizeMake(self.bk_width/2.0f, self.bk_width/2.0f) contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
-            
-            // 排除取消，错误，低清图三种情况，即已经获取到了高清图
-            BOOL downImageloadFinined = ![[info objectForKey:PHImageCancelledKey] boolValue] && ![info objectForKey:PHImageErrorKey] && ![[info objectForKey:PHImageResultIsDegradedKey] boolValue];
-            if (downImageloadFinined) {
-                if(result)
-                {
-                    if (imageOption) {
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            imageOption(result);
-                        });
-                    }
+        // 排除取消，错误，低清图三种情况，即已经获取到了高清图
+        BOOL downImageloadFinined = ![[info objectForKey:PHImageCancelledKey] boolValue] && ![info objectForKey:PHImageErrorKey] && ![[info objectForKey:PHImageResultIsDegradedKey] boolValue];
+        if (downImageloadFinined) {
+            if(result)
+            {
+                if (imageOption) {
+                    imageOption(result);
                 }
             }
-        }];
-    });
+        }
+    }];
 }
 
 /**
@@ -542,28 +643,24 @@
  */
 -(void)getMaximumSizeImageOption:(void (^)(UIImage * originalImage))imageOption nowIndex:(NSInteger)nowIndex
 {
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
-        options.resizeMode = PHImageRequestOptionsResizeModeExact;
-        options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
-        options.synchronous = YES;
+    PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+    options.resizeMode = PHImageRequestOptionsResizeModeExact;
+    options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+    options.synchronous = NO;
+    
+    [[PHImageManager defaultManager] requestImageForAsset:self.imageAssetsArray[nowIndex] targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
         
-        [[PHImageManager defaultManager] requestImageForAsset:self.imageAssetsArray[nowIndex] targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
-            
-            // 排除取消，错误，低清图三种情况，即已经获取到了高清图
-            BOOL downImageloadFinined = ![[info objectForKey:PHImageCancelledKey] boolValue] && ![info objectForKey:PHImageErrorKey] && ![[info objectForKey:PHImageResultIsDegradedKey] boolValue];
-            if (downImageloadFinined) {
-                if(result)
-                {
-                    if (imageOption) {
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            imageOption(result);
-                        });
-                    }
+        // 排除取消，错误，低清图三种情况，即已经获取到了高清图
+        BOOL downImageloadFinined = ![[info objectForKey:PHImageCancelledKey] boolValue] && ![info objectForKey:PHImageErrorKey] && ![[info objectForKey:PHImageResultIsDegradedKey] boolValue];
+        if (downImageloadFinined) {
+            if(result)
+            {
+                if (imageOption) {
+                    imageOption(result);
                 }
             }
-        }];
-    });
+        }
+    }];
 }
 
 /**

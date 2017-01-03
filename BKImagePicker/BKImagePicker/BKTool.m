@@ -171,11 +171,13 @@
 
 #pragma mark - 图片压缩
 
-+(UIImage *)compressImage:(UIImage *)image
++(NSData *)compressImageData:(NSData *)imageData
 {
-    if (!image) {
+    if (!imageData) {
         return nil;
     }
+    
+    UIImage * image = [UIImage imageWithData:imageData];
     
     float imageWidth = image.size.width;
     float imageHeight = image.size.height;
@@ -188,7 +190,7 @@
     UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
-    return newImage;
+    return UIImageJPEGRepresentation(newImage, BKThumbImageCompressSizeMultiplier);
 }
 
 

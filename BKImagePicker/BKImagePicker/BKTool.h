@@ -19,6 +19,6 @@
 
 +(void)hideLoad;
 
-+(UIImage *)compressImage:(UIImage *)image;
++(NSData *)compressImageData:(NSData *)imageData;
 
 @end

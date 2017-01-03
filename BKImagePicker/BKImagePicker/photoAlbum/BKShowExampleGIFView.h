@@ -15,7 +15,7 @@
 /**
  完成选择
  */
-@property (nonatomic,copy) void (^finishSelectOption)(NSArray * imageArr,BKSelectPhotoType selectPhotoType);
+@property (nonatomic,copy) void (^finishSelectOption)(id result,BKSelectPhotoType selectPhotoType);
 
 -(instancetype)initWithAsset:(PHAsset*)asset;
 

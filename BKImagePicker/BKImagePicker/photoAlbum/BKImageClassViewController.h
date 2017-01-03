@@ -22,14 +22,14 @@
 @property (nonatomic,strong) NSArray * select_imageArray;
 
 /**
- 原图大小数组
+ 图片大小数组
  */
 @property (nonatomic,strong) NSArray * imageSizeArray;
 
 /**
- 选取的缩略图+原图数组 (每项包含1个字典 字典包含 thumb和original)
+ 选取的原图data数组 包含@{@"original":@"",@"thumb":@""}
  */
-@property (nonatomic,strong) NSArray * selectResultImageArray;
+@property (nonatomic,strong) NSArray * selectResultImageDataArray;
 
 /**
  是否选择原图

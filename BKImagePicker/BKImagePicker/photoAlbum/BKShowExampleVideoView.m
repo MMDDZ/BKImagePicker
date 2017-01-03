@@ -14,12 +14,12 @@
 @property (nonatomic ,strong) AVPlayer * player;
 @property (nonatomic ,strong) AVPlayerLayer * playerLayer;
 
-@property (nonatomic ,strong) UIView * currentView;
-
 @property (nonatomic ,strong) UIView * bottomView;
 @property (nonatomic ,strong) UIButton * start_pause;
 
 @property (nonatomic ,strong) PHAsset * asset;
+
+@property (nonatomic,weak) UIViewController * locationVC;
 
 @end
 
@@ -75,15 +75,12 @@
 {
     [UIApplication sharedApplication].statusBarHidden = NO;
     
-    CGRect currentRect = self.currentView.frame;
-    CGRect selfRect = self.frame;
-    currentRect.origin.x = 0;
-    selfRect.origin.x = self.bk_width;
+    self.locationVC.view.bk_x = - UISCREEN_WIDTH/2.0f;
     
     [UIView animateWithDuration:BKCheckExampleGifAndVideoAnimateTime delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         
-        self.currentView.frame = currentRect;
-        self.frame = selfRect;
+        self.locationVC.view.bk_x = 0;
+        self.bk_x = UISCREEN_WIDTH;
         
     } completion:^(BOOL finished) {
         
@@ -94,7 +91,8 @@
 -(void)selectBtnClick
 {
     if (self.finishSelectOption) {
-        self.finishSelectOption(@[self.asset],BKSelectPhotoTypeVideo);
+        self.finishSelectOption(((AVURLAsset*)self.player.currentItem.asset).URL,BKSelectPhotoTypeVideo);
+        [self.locationVC dismissViewControllerAnimated:YES completion:nil];
     }
 }
 
@@ -131,7 +129,7 @@
 
 -(instancetype)initWithAsset:(PHAsset*)asset
 {
-    self = [super initWithFrame:CGRectMake([UIScreen mainScreen].bounds.size.width, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height)];
+    self = [super initWithFrame:CGRectMake(UISCREEN_WIDTH, 0, UISCREEN_WIDTH, UISCREEN_HEIGHT)];
     if (self) {
         
         self.asset = asset;
@@ -181,24 +179,20 @@
     return _playerLayer;
 }
 
--(void)showInVC:(UIViewController *)vc
+-(void)showInVC:(UIViewController *)locationVC
 {
-    self.currentView = vc.navigationController.view;
-    [[self.currentView superview] addSubview:self];
+    self.locationVC = locationVC;
+    [[self.locationVC.view superview] addSubview:self];
 }
 
 -(void)animateShow
 {
     [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
-    CGRect currentRect = self.currentView.frame;
-    CGRect selfRect = self.frame;
-    currentRect.origin.x = -self.bk_width/2.0f;
-    selfRect.origin.x = 0;
     
     [UIView animateWithDuration:BKCheckExampleGifAndVideoAnimateTime delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         
-        self.currentView.frame = currentRect;
-        self.frame = selfRect;
+        self.locationVC.view.bk_x = -UISCREEN_WIDTH/2.0f;
+        self.bk_x = 0;
         
     } completion:^(BOOL finished) {
         

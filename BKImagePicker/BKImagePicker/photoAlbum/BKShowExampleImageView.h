@@ -33,14 +33,14 @@
 /**
  更新选取相册数组
  */
-@property (nonatomic,copy) void (^refreshAlbumViewOption)(NSMutableArray * select_imageArray);
+@property (nonatomic,copy) void (^refreshAlbumViewOption)(NSArray * select_imageArray,NSArray * imageSizeArray,NSArray * selectResultImageDataArray,BOOL isOriginal);
 
 /**
  完成选择
  */
-@property (nonatomic,copy) void (^finishSelectOption)(NSArray * imageArr,BKSelectPhotoType selectPhotoType);
+@property (nonatomic,copy) void (^finishSelectOption)(id result,BKSelectPhotoType selectPhotoType);
 
--(instancetype)initWithLocationVC:(UIViewController*)locationVC imageAssetsArray:(NSArray*)imageAssetsArray selectImageArray:(NSArray*)selectImageArray tapAsset:(PHAsset*)tapAsset maxSelect:(NSInteger)maxSelect;
+-(instancetype)initWithLocationVC:(UIViewController*)locationVC imageAssetsArray:(NSArray*)imageAssetsArray selectImageArray:(NSArray*)selectImageArray tapAsset:(PHAsset*)tapAsset maxSelect:(NSInteger)maxSelect imageSizeArray:(NSArray*)imageSizeArray selectResultImageDataArray:(NSArray*)selectResultImageDataArray isOriginal:(BOOL)isOriginal;
 
 -(void)showAndBeginAnimateOption:(void (^)())beginOption endAnimateOption:(void (^)())endOption;
 

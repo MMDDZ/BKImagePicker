@@ -18,6 +18,8 @@
 
 @property (nonatomic ,strong) PHAsset * asset;
 
+@property (nonatomic ,strong) UIImage * selectImage;
+
 @end
 
 @implementation BKShowExampleGIFView
@@ -72,7 +74,7 @@
 -(void)selectBtnClick
 {
     if (self.finishSelectOption) {
-        self.finishSelectOption(@[self.asset],BKSelectPhotoTypeGIF);
+        self.finishSelectOption(self.selectImage,BKSelectPhotoTypeGIF);
     }
 }
 
@@ -96,6 +98,8 @@
         
         dispatch_async(dispatch_get_main_queue(), ^{
             
+            self.selectImage = image;
+            
             CGSize size = [FLAnimatedImage sizeForImage:image];
             FLAnimatedImage * gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfFile:urlStr]];
             FLAnimatedImageView *gifImageView = [[FLAnimatedImageView alloc] init];
@@ -117,7 +121,7 @@
     PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
     options.resizeMode = PHImageRequestOptionsResizeModeExact;
     options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
-    options.synchronous = YES;
+    options.synchronous = NO;
     
     [[PHImageManager defaultManager] requestImageForAsset:self.asset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
         

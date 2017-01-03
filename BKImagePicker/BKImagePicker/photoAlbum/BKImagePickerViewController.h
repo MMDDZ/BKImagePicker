@@ -23,14 +23,14 @@
 @property (nonatomic,strong) NSMutableArray * select_imageArray;
 
 /**
- 原图大小数组
+ 图片大小数组
  */
 @property (nonatomic,strong) NSMutableArray * imageSizeArray;
 
 /**
- 选取的缩略图+原图数组 (每项包含1个字典 字典包含 thumb和original)
+ 选取的原图data数组 包含@{@"original":@"",@"thumb":@""}
  */
-@property (nonatomic,strong) NSMutableArray * selectResultImageArray;
+@property (nonatomic,strong) NSMutableArray * selectResultImageDataArray;
 
 /**
  是否选择原图
@@ -45,6 +45,6 @@
 /**
  完成选择
  */
-@property (nonatomic,copy) void (^finishSelectOption)(NSArray * imageArr,BKSelectPhotoType selectPhotoType);
+@property (nonatomic,copy) void (^finishSelectOption)(id result,BKSelectPhotoType selectPhotoType);
 
 @end

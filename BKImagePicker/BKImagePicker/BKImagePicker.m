@@ -27,26 +27,26 @@
  
  @param photoType 相册类型
  @param maxSelect 最大选择数 (最大999)
- @param complete  选择图片数组
+ @param complete  选择图片/GIF/视频
  */
-+(void)showPhotoAlbumWithTypePhoto:(BKPhotoType)photoType maxSelect:(NSInteger)maxSelect complete:(void (^)(NSArray * imageArray , BKSelectPhotoType selectPhotoType))complete
++(void)showPhotoAlbumWithTypePhoto:(BKPhotoType)photoType maxSelect:(NSInteger)maxSelect complete:(void (^)(id result , BKSelectPhotoType selectPhotoType))complete
 {
     [self checkAllowVisitPhotoAlbumHandler:^(BOOL handleFlag) {
         if (handleFlag) {
             BKImageClassViewController * imageClassVC = [[BKImageClassViewController alloc]init];
             imageClassVC.max_select = maxSelect>999?999:maxSelect;
             imageClassVC.photoType = photoType;
-            imageClassVC.finishSelectOption = ^(NSArray * imageArray , BKSelectPhotoType selectPhotoType){
+            imageClassVC.finishSelectOption = ^(id result , BKSelectPhotoType selectPhotoType){
                 if (complete) {
-                    complete(imageArray,selectPhotoType);
+                    complete(result,selectPhotoType);
                 }
             };
             BKImagePickerViewController * imageVC = [[BKImagePickerViewController alloc]init];
             imageVC.max_select = maxSelect>999?999:maxSelect;
             imageVC.photoType = photoType;
-            imageVC.finishSelectOption = ^(NSArray * imageArray , BKSelectPhotoType selectPhotoType){
+            imageVC.finishSelectOption = ^(id result , BKSelectPhotoType selectPhotoType){
                 if (complete) {
-                    complete(imageArray,selectPhotoType);
+                    complete(result,selectPhotoType);
                 }
             };
             
