@@ -23,7 +23,6 @@
 #import "BKTool.h"
 #import "BKShowExampleImageView.h"
 #import "BKShowExampleVideoView.h"
-#import "BKShowExampleGIFView.h"
 
 @interface BKImagePickerViewController ()<UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout,BKImagePickerCollectionViewCellDelegate>
 
@@ -32,17 +31,17 @@
 @property (nonatomic,strong) UICollectionView * albumCollectionView;
 
 /**
- 该相簿中所有image数组 包括视频 & GIF
+ 该相簿中所有image数组 包括视频
  */
 @property (nonatomic,strong) NSMutableArray * albumImageArray;
 
 /**
- 该相簿中所有PHAsset数组 包括视频 & GIF
+ 该相簿中所有PHAsset数组 包括视频
  */
 @property (nonatomic,strong) NSMutableArray * albumAssetArray;
 
 /**
- 该相簿中所有PHAsset数组 不包括视频 & GIF
+ 该相簿中所有PHAsset数组 不包括视频
  */
 @property (nonatomic,strong) NSMutableArray * imageAlbumAssetArray;
 
@@ -217,11 +216,10 @@
                 
                 if (obj.mediaType == PHAssetMediaTypeImage) {
                     
+                    [self.imageAlbumAssetArray addObject:obj];
+                    
                     NSString * fileName = [obj valueForKey:@"filename"];
                     if ([fileName rangeOfString:@"gif"].location == NSNotFound && [fileName rangeOfString:@"GIF"].location == NSNotFound) {
-                        
-                        [self.imageAlbumAssetArray addObject:obj];
-                        
                         self.allNormalImageNum++;
                     }else{
                         self.allGifImageNum++;
@@ -441,33 +439,18 @@
     PHAsset * asset = (PHAsset*)(self.albumAssetArray[indexPath.row]);
     
     if (asset.mediaType == PHAssetMediaTypeImage) {
-        NSString * fileName = [asset valueForKey:@"filename"];
-        if ([fileName rangeOfString:@"gif"].location != NSNotFound || [fileName rangeOfString:@"GIF"].location != NSNotFound) {
-            if ([self.select_imageArray count] > 0) {
-                [BKTool showRemind:@"不能同时选择照片和GIF"];
-                return;
-            }
-            
-            BKShowExampleGIFView * gifView = [[BKShowExampleGIFView alloc]initWithAsset:asset];
-            [gifView setFinishSelectOption:^(NSArray * imageArr, BKSelectPhotoType selectPhotoType) {
-                if (self.finishSelectOption) {
-                    self.finishSelectOption(imageArr,selectPhotoType);
-                }
-            }];
-            [gifView showInVC:self];
-        }else{
-            
-            BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
-            if (!cell) {
-                [self.albumCollectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:YES];
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
-                    [self previewWithCell:cell imageAssetsArray:self.imageAlbumAssetArray tapAsset:asset];
-                });
-            }else{
+        
+        BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
+        if (!cell) {
+            [self.albumCollectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:YES];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
                 [self previewWithCell:cell imageAssetsArray:self.imageAlbumAssetArray tapAsset:asset];
-            }
+            });
+        }else{
+            [self previewWithCell:cell imageAssetsArray:self.imageAlbumAssetArray tapAsset:asset];
         }
+        
     }else{
         if ([self.select_imageArray count] > 0) {
             [BKTool showRemind:@"不能同时选择照片和视频"];
@@ -592,7 +575,15 @@
                     [self calculataImageSize];
                 }
                 
-                [self.selectResultImageDataArray addObject:@{@"original":originalImageData,@"thumb":thumbImageData}];
+                NSString * assetType = @"";
+                NSString * fileName = [asset valueForKey:@"filename"];
+                if ([fileName rangeOfString:@"gif"].location == NSNotFound && [fileName rangeOfString:@"GIF"].location == NSNotFound) {
+                    assetType = [NSString stringWithFormat:@"%ld",BKSelectPhotoTypeImage];
+                }else{
+                    assetType = [NSString stringWithFormat:@"%ld",BKSelectPhotoTypeGIF];
+                }
+                
+                [self.selectResultImageDataArray addObject:@{@"original":originalImageData,@"thumb":thumbImageData,@"type":assetType}];
                 
                 [self refreshClassSelectImageArray];
             }];
@@ -827,9 +818,9 @@
     for (NSDictionary * dic in self.selectResultImageDataArray) {
         if (self.finishSelectOption) {
             if (self.isOriginal) {
-                self.finishSelectOption([UIImage imageWithData:dic[@"original"]], BKSelectPhotoTypeImage);
+                self.finishSelectOption([UIImage imageWithData:dic[@"original"]], [dic[@"type"] integerValue]);
             }else{
-                self.finishSelectOption([UIImage imageWithData:dic[@"thumb"]], BKSelectPhotoTypeImage);
+                self.finishSelectOption([UIImage imageWithData:dic[@"thumb"]], [dic[@"type"] integerValue]);
             }
         }
     }

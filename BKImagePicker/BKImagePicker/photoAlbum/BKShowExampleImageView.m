@@ -268,7 +268,15 @@
                     [self calculataImageSize];
                 }
                 
-                [self.selectResultImageDataArray addObject:@{@"original":originalImageData,@"thumb":thumbImageData}];
+                NSString * assetType = @"";
+                NSString * fileName = [asset valueForKey:@"filename"];
+                if ([fileName rangeOfString:@"gif"].location == NSNotFound && [fileName rangeOfString:@"GIF"].location == NSNotFound) {
+                    assetType = [NSString stringWithFormat:@"%ld",BKSelectPhotoTypeImage];
+                }else{
+                    assetType = [NSString stringWithFormat:@"%ld",BKSelectPhotoTypeGIF];
+                }
+                
+                [self.selectResultImageDataArray addObject:@{@"original":originalImageData,@"thumb":thumbImageData,@"type":assetType}];
                 
                 if (self.refreshAlbumViewOption) {
                     self.refreshAlbumViewOption([self.select_imageArray copy],[self.imageSizeArray copy],[self.selectResultImageDataArray copy],self.isOriginal);
@@ -458,9 +466,9 @@
         for (NSDictionary * dic in self.selectResultImageDataArray) {
             if (self.finishSelectOption) {
                 if (self.isOriginal) {
-                    self.finishSelectOption([UIImage imageWithData:dic[@"original"]], BKSelectPhotoTypeImage);
+                    self.finishSelectOption([UIImage imageWithData:dic[@"original"]], [dic[@"type"] integerValue]);
                 }else{
-                    self.finishSelectOption([UIImage imageWithData:dic[@"thumb"]], BKSelectPhotoTypeImage);
+                    self.finishSelectOption([UIImage imageWithData:dic[@"thumb"]], [dic[@"type"] integerValue]);
                 }
             }
         }
@@ -598,12 +606,12 @@
     cell.imageScrollView.contentSize = CGSizeMake(cell.bk_width-20*2, cell.bk_height);
     cell.showImageView.transform = CGAffineTransformMakeScale(1, 1);
     
-    [self getThumbSizeImageOption:^(UIImage *thumbImage) {
-        [self editImageView:cell.showImageView image:thumbImage scrollView:cell.imageScrollView];
+    [self getThumbSizeImageOption:^(UIImage *thumbImage,NSString * imageUrl) {
+        [self editImageView:cell.showImageView image:thumbImage imageUrl:imageUrl scrollView:cell.imageScrollView];
     } nowIndex:indexPath.item];
     
-    [self getMaximumSizeImageOption:^(UIImage *originalImage) {
-        [self editImageView:cell.showImageView image:originalImage scrollView:cell.imageScrollView];
+    [self getMaximumSizeImageOption:^(UIImage *originalImage,NSString * imageUrl) {
+        [self editImageView:cell.showImageView image:originalImage imageUrl:imageUrl scrollView:cell.imageScrollView];
     } nowIndex:indexPath.item];
     
     return cell;
@@ -614,7 +622,7 @@
  
  @param imageOption 缩略图
  */
--(void)getThumbSizeImageOption:(void (^)(UIImage * thumbImage))imageOption nowIndex:(NSInteger)nowIndex
+-(void)getThumbSizeImageOption:(void (^)(UIImage * thumbImage , NSString * imageUrl))imageOption nowIndex:(NSInteger)nowIndex
 {
     PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
     options.resizeMode = PHImageRequestOptionsResizeModeFast;
@@ -629,7 +637,7 @@
             if(result)
             {
                 if (imageOption) {
-                    imageOption(result);
+                    imageOption(result,info[@"PHImageFileURLKey"]);
                 }
             }
         }
@@ -641,7 +649,7 @@
  
  @param imageOption 大图
  */
--(void)getMaximumSizeImageOption:(void (^)(UIImage * originalImage))imageOption nowIndex:(NSInteger)nowIndex
+-(void)getMaximumSizeImageOption:(void (^)(UIImage * originalImage , NSString * imageUrl))imageOption nowIndex:(NSInteger)nowIndex
 {
     PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
     options.resizeMode = PHImageRequestOptionsResizeModeExact;
@@ -656,7 +664,7 @@
             if(result)
             {
                 if (imageOption) {
-                    imageOption(result);
+                    imageOption(result,info[@"PHImageFileURLKey"]);
                 }
             }
         }
@@ -668,11 +676,17 @@
  
  @param showImageView   image所在的imageVIew
  @param image           image
+ @param imageUrl        imageUrl
  @param imageScrollView image所在的scrollView
  */
--(void)editImageView:(UIImageView*)showImageView image:(UIImage*)image scrollView:(UIScrollView*)imageScrollView
+-(void)editImageView:(FLAnimatedImageView*)showImageView image:(UIImage*)image imageUrl:(NSString*)imageUrl scrollView:(UIScrollView*)imageScrollView
 {
-    showImageView.image = image;
+    FLAnimatedImage * gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfFile:imageUrl]];
+    if (gifImage) {
+        showImageView.animatedImage = gifImage;
+    }else{
+        showImageView.image = image;
+    }
     
     CGRect showImageViewFrame = showImageView.frame;
     

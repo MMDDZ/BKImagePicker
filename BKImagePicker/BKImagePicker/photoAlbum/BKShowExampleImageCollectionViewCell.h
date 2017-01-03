@@ -7,10 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "FLAnimatedImage.h"
 
 @interface BKShowExampleImageCollectionViewCell : UICollectionViewCell
 
-@property (nonatomic,strong) UIImageView * showImageView;
+@property (nonatomic,strong) FLAnimatedImageView * showImageView;
 
 @property (nonatomic,strong) UIScrollView * imageScrollView;
 

@@ -15,7 +15,6 @@
 		2A16740D1DB2056E00BA7AE0 /* BKShowExampleImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A16740C1DB2056E00BA7AE0 /* BKShowExampleImageView.m */; };
 		2A1674101DB2182200BA7AE0 /* BKShowExampleImageCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A16740F1DB2182200BA7AE0 /* BKShowExampleImageCollectionViewFlowLayout.m */; };
 		2A1674131DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1674121DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.m */; };
-		2AC73EC51DD8A01800CF5B5D /* BKShowExampleGIFView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AC73EC41DD8A01800CF5B5D /* BKShowExampleGIFView.m */; };
 		2ADC20A81DEADECA001DD97C /* FLAnimatedImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2ADC20A41DEADECA001DD97C /* FLAnimatedImage.m */; };
 		2ADC20A91DEADECA001DD97C /* FLAnimatedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2ADC20A61DEADECA001DD97C /* FLAnimatedImageView.m */; };
 		2ADC20AA1DEADECA001DD97C /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2ADC20A71DEADECA001DD97C /* Info.plist */; };
@@ -52,8 +51,6 @@
 		2A16740F1DB2182200BA7AE0 /* BKShowExampleImageCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKShowExampleImageCollectionViewFlowLayout.m; sourceTree = "<group>"; };
 		2A1674111DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKShowExampleImageCollectionViewCell.h; sourceTree = "<group>"; };
 		2A1674121DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKShowExampleImageCollectionViewCell.m; sourceTree = "<group>"; };
-		2AC73EC31DD8A01800CF5B5D /* BKShowExampleGIFView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKShowExampleGIFView.h; sourceTree = "<group>"; };
-		2AC73EC41DD8A01800CF5B5D /* BKShowExampleGIFView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKShowExampleGIFView.m; sourceTree = "<group>"; };
 		2ADC20A31DEADECA001DD97C /* FLAnimatedImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FLAnimatedImage.h; sourceTree = "<group>"; };
 		2ADC20A41DEADECA001DD97C /* FLAnimatedImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FLAnimatedImage.m; sourceTree = "<group>"; };
 		2ADC20A51DEADECA001DD97C /* FLAnimatedImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FLAnimatedImageView.h; sourceTree = "<group>"; };
@@ -127,8 +124,6 @@
 				2A1674121DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.m */,
 				883BB4E21DC864F500952C2D /* BKShowExampleVideoView.h */,
 				883BB4E31DC864F500952C2D /* BKShowExampleVideoView.m */,
-				2AC73EC31DD8A01800CF5B5D /* BKShowExampleGIFView.h */,
-				2AC73EC41DD8A01800CF5B5D /* BKShowExampleGIFView.m */,
 			);
 			path = photoAlbum;
 			sourceTree = "<group>";
@@ -289,7 +284,6 @@
 				2A1674071DB204A600BA7AE0 /* BKImageClassViewController.m in Sources */,
 				885DC5771DC9D5B400FCEFD4 /* BKVideoAlbumItemView.m in Sources */,
 				88C5ACA31E163BA70044FDAA /* UIView+BKExpand.m in Sources */,
-				2AC73EC51DD8A01800CF5B5D /* BKShowExampleGIFView.m in Sources */,
 				88C5ACAA1E163F240044FDAA /* BKImagePickerConst.m in Sources */,
 				2ADC20A81DEADECA001DD97C /* FLAnimatedImage.m in Sources */,
 				2ADC20A91DEADECA001DD97C /* FLAnimatedImageView.m in Sources */,

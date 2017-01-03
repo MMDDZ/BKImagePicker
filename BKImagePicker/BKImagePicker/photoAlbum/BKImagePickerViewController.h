@@ -28,7 +28,7 @@
 @property (nonatomic,strong) NSMutableArray * imageSizeArray;
 
 /**
- 选取的原图data数组 包含@{@"original":@"",@"thumb":@""}
+ 选取的原图data数组 包含@{@"original":@"",@"thumb":@"",@"type":@""}
  */
 @property (nonatomic,strong) NSMutableArray * selectResultImageDataArray;
 

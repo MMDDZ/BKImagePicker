@@ -31,7 +31,7 @@
         _imageScrollView.minimumZoomScale = 1.0;
         [self addSubview:_imageScrollView];
         
-        _showImageView = [[UIImageView alloc]init];
+        _showImageView = [[FLAnimatedImageView alloc]init];
         _showImageView.userInteractionEnabled = YES;
         _showImageView.tag = 1;
         [_imageScrollView addSubview:_showImageView];

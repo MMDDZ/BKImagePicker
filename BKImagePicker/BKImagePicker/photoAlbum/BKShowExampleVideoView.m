@@ -25,6 +25,96 @@
 
 @implementation BKShowExampleVideoView
 
+-(void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+-(void)playbackFinished:(NSNotification *)notification
+{
+    NSString * bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
+    UIImage * start_image = [UIImage imageWithContentsOfFile:[bundlePath stringByAppendingString:@"/video_start.png"]];
+    [_start_pause setImage:start_image forState:UIControlStateNormal];
+    
+    [self.player seekToTime:CMTimeMake(0, 1)];
+}
+
+-(instancetype)initWithAsset:(PHAsset*)asset
+{
+    self = [super initWithFrame:CGRectMake(UISCREEN_WIDTH, 0, UISCREEN_WIDTH, UISCREEN_HEIGHT)];
+    if (self) {
+        
+        self.asset = asset;
+        
+        self.backgroundColor = [UIColor blackColor];
+        
+        [self initPrepareVideo];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playbackFinished:) name:AVPlayerItemDidPlayToEndTimeNotification object:self.player.currentItem];
+    }
+    return self;
+}
+
+-(void)showInVC:(UIViewController *)locationVC
+{
+    self.locationVC = locationVC;
+    [[self.locationVC.view superview] addSubview:self];
+}
+
+#pragma mark - initVideo
+
+-(void)initPrepareVideo
+{
+    [self requestPlayerItemHandler:^(AVPlayerItem *playerItem) {
+        self.player = [AVPlayer playerWithPlayerItem:playerItem];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.layer addSublayer:[self playerLayer]];
+            [self addSubview:[self bottomView]];
+            
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [self animateShow];
+            });
+        });
+    }];
+}
+
+-(void)animateShow
+{
+    [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
+    
+    [UIView animateWithDuration:BKCheckExampleGifAndVideoAnimateTime delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        
+        self.locationVC.view.bk_x = -UISCREEN_WIDTH/2.0f;
+        self.bk_x = 0;
+        
+    } completion:^(BOOL finished) {
+        
+    }];
+}
+
+-(void)requestPlayerItemHandler:(void (^)(AVPlayerItem * playerItem))handler
+{
+    PHVideoRequestOptions * options = [[PHVideoRequestOptions alloc]init];
+    
+    [[PHImageManager defaultManager] requestPlayerItemForVideo:self.asset options:options resultHandler:^(AVPlayerItem * _Nullable playerItem, NSDictionary * _Nullable info) {
+        if (handler) {
+            handler(playerItem);
+        }
+    }];
+}
+
+-(AVPlayerLayer*)playerLayer
+{
+    if (!_playerLayer) {
+        _playerLayer = [AVPlayerLayer playerLayerWithPlayer:self.player];
+        _playerLayer.frame = self.bounds;
+        _playerLayer.videoGravity = AVLayerVideoGravityResizeAspect;
+    }
+    return _playerLayer;
+}
+
+#pragma mark - bottomView
+
 -(UIView*)bottomView
 {
     if (!_bottomView) {
@@ -111,92 +201,6 @@
         
         [self.player pause];
     }
-}
-
--(void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
--(void)playbackFinished:(NSNotification *)notification
-{
-    NSString * bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
-    UIImage * start_image = [UIImage imageWithContentsOfFile:[bundlePath stringByAppendingString:@"/video_start.png"]];
-    [_start_pause setImage:start_image forState:UIControlStateNormal];
-    
-    [self.player seekToTime:CMTimeMake(0, 1)];
-}
-
--(instancetype)initWithAsset:(PHAsset*)asset
-{
-    self = [super initWithFrame:CGRectMake(UISCREEN_WIDTH, 0, UISCREEN_WIDTH, UISCREEN_HEIGHT)];
-    if (self) {
-        
-        self.asset = asset;
-        
-        self.backgroundColor = [UIColor blackColor];
-        
-        [self initPrepareVideo];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playbackFinished:) name:AVPlayerItemDidPlayToEndTimeNotification object:self.player.currentItem];
-    }
-    return self;
-}
-
--(void)initPrepareVideo
-{
-    [self requestPlayerItemHandler:^(AVPlayerItem *playerItem) {
-        self.player = [AVPlayer playerWithPlayerItem:playerItem];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.layer addSublayer:[self playerLayer]];
-            [self addSubview:[self bottomView]];
-            
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [self animateShow];
-            });
-        });
-    }];
-}
-
--(void)requestPlayerItemHandler:(void (^)(AVPlayerItem * playerItem))handler
-{
-    PHVideoRequestOptions * options = [[PHVideoRequestOptions alloc]init];
-    
-    [[PHImageManager defaultManager] requestPlayerItemForVideo:self.asset options:options resultHandler:^(AVPlayerItem * _Nullable playerItem, NSDictionary * _Nullable info) {
-        if (handler) {
-            handler(playerItem);
-        }
-    }];
-}
-
--(AVPlayerLayer*)playerLayer
-{
-    if (!_playerLayer) {
-        _playerLayer = [AVPlayerLayer playerLayerWithPlayer:self.player];
-        _playerLayer.frame = self.bounds;
-        _playerLayer.videoGravity = AVLayerVideoGravityResizeAspect;
-    }
-    return _playerLayer;
-}
-
--(void)showInVC:(UIViewController *)locationVC
-{
-    self.locationVC = locationVC;
-    [[self.locationVC.view superview] addSubview:self];
-}
-
--(void)animateShow
-{
-    [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
-    
-    [UIView animateWithDuration:BKCheckExampleGifAndVideoAnimateTime delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-        
-        self.locationVC.view.bk_x = -UISCREEN_WIDTH/2.0f;
-        self.bk_x = 0;
-        
-    } completion:^(BOOL finished) {
-        
-    }];
 }
 
 @end
