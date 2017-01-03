@@ -7,8 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "BKImageAlbumItemSelectButton.h"
 #import <Photos/Photos.h>
+#import "BKImageAlbumItemSelectButton.h"
 
 @protocol BKImagePickerCollectionViewCellDelegate <NSObject>
 

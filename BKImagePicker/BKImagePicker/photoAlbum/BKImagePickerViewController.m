@@ -142,7 +142,12 @@
                 [_sendBtn setBackgroundColor:BKNavSendGrayBackgroundColor];
             }else if ([self.select_imageArray count] == 1) {
                 [_previewBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
-                [_editBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
+                NSString * fileName = [self.select_imageArray[0] valueForKey:@"filename"];
+                if ([fileName rangeOfString:@"gif"].location == NSNotFound && [fileName rangeOfString:@"GIF"].location == NSNotFound) {
+                    [_editBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
+                }else{
+                    [_editBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
+                }
                 [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
                 [_sendBtn setBackgroundColor:BKNavHighlightTitleColor];
             }else if ([self.select_imageArray count] > 1) {

@@ -257,7 +257,12 @@
                 [_sendBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
                 [_sendBtn setBackgroundColor:BKNavSendGrayBackgroundColor];
             }else if ([self.select_imageArray count] == 1) {
-                [_editBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
+                NSString * fileName = [self.select_imageArray[0] valueForKey:@"filename"];
+                if ([fileName rangeOfString:@"gif"].location == NSNotFound && [fileName rangeOfString:@"GIF"].location == NSNotFound) {
+                    [_editBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
+                }else{
+                    [_editBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
+                }
             }
         }else{
             [self.select_imageArray addObject:asset];
@@ -285,7 +290,12 @@
             
             if ([self.select_imageArray count] == 1) {
                 
-                [_editBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
+                NSString * fileName = [self.select_imageArray[0] valueForKey:@"filename"];
+                if ([fileName rangeOfString:@"gif"].location == NSNotFound && [fileName rangeOfString:@"GIF"].location == NSNotFound) {
+                    [_editBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
+                }else{
+                    [_editBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
+                }
                 [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
                 [_sendBtn setBackgroundColor:BKNavHighlightTitleColor];
             }else if ([self.select_imageArray count] > 1) {
@@ -606,8 +616,8 @@
     cell.imageScrollView.contentSize = CGSizeMake(cell.bk_width-20*2, cell.bk_height);
     cell.showImageView.transform = CGAffineTransformMakeScale(1, 1);
     
-    [self getThumbSizeImageOption:^(UIImage *thumbImage,NSString * imageUrl) {
-        [self editImageView:cell.showImageView image:thumbImage imageUrl:imageUrl scrollView:cell.imageScrollView];
+    [self getThumbSizeImageOption:^(UIImage *thumbImage) {
+        [self editImageView:cell.showImageView image:thumbImage imageUrl:nil scrollView:cell.imageScrollView];
     } nowIndex:indexPath.item];
     
     [self getMaximumSizeImageOption:^(UIImage *originalImage,NSString * imageUrl) {
@@ -622,8 +632,15 @@
  
  @param imageOption 缩略图
  */
--(void)getThumbSizeImageOption:(void (^)(UIImage * thumbImage , NSString * imageUrl))imageOption nowIndex:(NSInteger)nowIndex
+-(void)getThumbSizeImageOption:(void (^)(UIImage * thumbImage))imageOption nowIndex:(NSInteger)nowIndex
 {
+    NSString * fileName = [self.imageAssetsArray[nowIndex] valueForKey:@"filename"];
+    if ([fileName rangeOfString:@"gif"].location == NSNotFound && [fileName rangeOfString:@"GIF"].location == NSNotFound) {
+        [_editBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
+    }else{
+        [_editBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
+    }
+    
     PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
     options.resizeMode = PHImageRequestOptionsResizeModeFast;
     options.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
@@ -637,7 +654,7 @@
             if(result)
             {
                 if (imageOption) {
-                    imageOption(result,info[@"PHImageFileURLKey"]);
+                    imageOption(result);
                 }
             }
         }
