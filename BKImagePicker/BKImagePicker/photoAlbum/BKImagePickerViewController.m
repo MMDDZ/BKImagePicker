@@ -671,7 +671,9 @@
         
         [_bottomView addSubview:[self editBtn]];
         [_bottomView addSubview:[self previewBtn]];
-        [_bottomView addSubview:[self originalBtn]];
+        if (BKComfirmHaveOriginalOption) {
+            [_bottomView addSubview:[self originalBtn]];
+        }
         [_bottomView addSubview:[self sendBtn]];
         
         if ([self.select_imageArray count] == 1) {

@@ -356,7 +356,9 @@
         _bottomView.alpha = 0;
         
         [_bottomView addSubview:[self editBtn]];
-        [_bottomView addSubview:[self originalBtn]];
+        if (BKComfirmHaveOriginalOption) {
+            [_bottomView addSubview:[self originalBtn]];
+        }
         [_bottomView addSubview:[self sendBtn]];
         
         if (self.max_select == 1) {
