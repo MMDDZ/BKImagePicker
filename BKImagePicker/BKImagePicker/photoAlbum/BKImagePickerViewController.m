@@ -6,8 +6,7 @@
 //  Copyright © 2016年 BIKE. All rights reserved.
 //
 
-#define item_space 6
-#define item_Size CGSizeMake((UISCREEN_WIDTH-item_space*5)/4, (UISCREEN_WIDTH-item_space*5)/4)
+#define item_Size CGSizeMake((UISCREEN_WIDTH-BKAlbumImagesSpacing*5)/4, (UISCREEN_WIDTH-BKAlbumImagesSpacing*5)/4)
 
 #define imagePickerCell_identifier @"BKImagePickerCollectionViewCell"
 #define imagePickerFooter_identifier @"BKImagePickerFooterCollectionReusableView"
@@ -363,9 +362,9 @@
         
         UICollectionViewFlowLayout * flowLayout = [[UICollectionViewFlowLayout alloc]init];
         flowLayout.itemSize = item_Size;
-        flowLayout.minimumLineSpacing = item_space;
+        flowLayout.minimumLineSpacing = BKAlbumImagesSpacing;
         flowLayout.minimumInteritemSpacing = 0;
-        flowLayout.sectionInset = UIEdgeInsetsMake(item_space, item_space, item_space, item_space);
+        flowLayout.sectionInset = UIEdgeInsetsMake(BKAlbumImagesSpacing, BKAlbumImagesSpacing, BKAlbumImagesSpacing, BKAlbumImagesSpacing);
         [flowLayout setFooterReferenceSize:CGSizeMake(UISCREEN_WIDTH, 40)];
         
         if (self.max_select == 1) {

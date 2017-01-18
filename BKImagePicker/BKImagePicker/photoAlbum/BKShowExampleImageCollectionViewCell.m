@@ -22,11 +22,11 @@
         
         self.backgroundColor = [UIColor clearColor];
         
-        _imageScrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(20, 0, frame.size.width-20*2, frame.size.height)];
+        _imageScrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(BKExampleImagesSpacing, 0, frame.size.width-BKExampleImagesSpacing*2, frame.size.height)];
         _imageScrollView.showsHorizontalScrollIndicator = NO;
         _imageScrollView.showsVerticalScrollIndicator = NO;
         _imageScrollView.delegate=self;
-        _imageScrollView.contentSize = CGSizeMake(frame.size.width-20*2, frame.size.height);
+        _imageScrollView.contentSize = CGSizeMake(frame.size.width-BKExampleImagesSpacing*2, frame.size.height);
         _imageScrollView.backgroundColor = [UIColor clearColor];
         _imageScrollView.minimumZoomScale = 1.0;
         [self addSubview:_imageScrollView];
@@ -54,7 +54,7 @@
 {
     _imageScrollView.contentSize = CGSizeMake(_showImageView.bk_width, _showImageView.bk_height);
     
-    _showImageView.bk_centerX = _showImageView.bk_width>_imageScrollView.bk_width?_imageScrollView.contentSize.width/2.0f:_imageScrollView.bk_centerX-20;
+    _showImageView.bk_centerX = _showImageView.bk_width>_imageScrollView.bk_width?_imageScrollView.contentSize.width/2.0f:_imageScrollView.bk_centerX-BKExampleImagesSpacing;
     _showImageView.bk_centerY = _showImageView.bk_height>_imageScrollView.bk_height?_imageScrollView.contentSize.height/2.0f:_imageScrollView.bk_centerY;
 }
 

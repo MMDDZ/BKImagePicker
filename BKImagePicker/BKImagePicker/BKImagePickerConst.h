@@ -39,6 +39,8 @@ typedef NS_ENUM(NSInteger,BKSelectPhotoType) {
 #define UISCREEN_HEIGHT ([UIScreen mainScreen].bounds.size.height)
 
 UIKIT_EXTERN const float BKLineHeight;
+UIKIT_EXTERN const float BKAlbumImagesSpacing;
+UIKIT_EXTERN const float BKExampleImagesSpacing;
 UIKIT_EXTERN const float BKCheckExampleImageAnimateTime;
 UIKIT_EXTERN const float BKCheckExampleGifAndVideoAnimateTime;
 UIKIT_EXTERN const float BKThumbImageCompressSizeMultiplier;

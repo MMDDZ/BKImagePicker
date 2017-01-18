@@ -604,7 +604,7 @@
         BKShowExampleImageCollectionViewFlowLayout * flowLayout = [[BKShowExampleImageCollectionViewFlowLayout alloc]init];
         flowLayout.allImageCount = [self.imageAssetsArray count];
         
-        _exampleImageCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(-20, 0, self.bk_width+20*2, self.bk_height) collectionViewLayout:flowLayout];
+        _exampleImageCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(-BKExampleImagesSpacing, 0, self.bk_width+BKExampleImagesSpacing*2, self.bk_height) collectionViewLayout:flowLayout];
         _exampleImageCollectionView.delegate = self;
         _exampleImageCollectionView.dataSource = self;
         _exampleImageCollectionView.backgroundColor = [UIColor clearColor];
@@ -615,7 +615,7 @@
         
         [_exampleImageCollectionView registerClass:[BKShowExampleImageCollectionViewCell class] forCellWithReuseIdentifier:showExampleImageCell_identifier];
         
-        CGFloat contentOffX = (self.bk_width+20*2) * ([[self.title componentsSeparatedByString:@"/"][0] integerValue] - 1);
+        CGFloat contentOffX = (self.bk_width+BKExampleImagesSpacing*2) * ([[self.title componentsSeparatedByString:@"/"][0] integerValue] - 1);
         [_exampleImageCollectionView setContentOffset:CGPointMake(contentOffX, 0) animated:NO];
         
         UITapGestureRecognizer * exampleImageCollectionViewTapRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(exampleImageCollectionViewTapRecognizer)];
@@ -646,7 +646,7 @@
 {
     BKShowExampleImageCollectionViewCell * cell = (BKShowExampleImageCollectionViewCell*)[collectionView dequeueReusableCellWithReuseIdentifier:showExampleImageCell_identifier forIndexPath:indexPath];
     
-    cell.imageScrollView.contentSize = CGSizeMake(cell.bk_width-20*2, cell.bk_height);
+    cell.imageScrollView.contentSize = CGSizeMake(cell.bk_width-BKExampleImagesSpacing*2, cell.bk_height);
     cell.showImageView.transform = CGAffineTransformMakeScale(1, 1);
     
     [self getThumbSizeImageOption:^(UIImage *thumbImage) {
