@@ -64,6 +64,14 @@
 @property (nonatomic,strong) UIButton * originalBtn;
 @property (nonatomic,strong) UIButton * sendBtn;
 
+/**
+ 当max_select == 1时有效
+ */
+@property (nonatomic,copy) NSString * nowImageSize;
+@property (nonatomic,strong) NSData * originalData;
+@property (nonatomic,strong) NSData * thumbImageData;
+@property (nonatomic,copy) NSString * assetType;
+
 @end
 
 @implementation BKShowExampleImageView
@@ -454,9 +462,14 @@
 -(void)calculataImageSize
 {
     __block double allSize = 0.0;
-    [self.imageSizeArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        allSize = allSize + [obj doubleValue];
-    }];
+    if (self.max_select == 1) {
+        allSize = allSize + [self.nowImageSize doubleValue];
+    }else{
+        [self.imageSizeArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            allSize = allSize + [obj doubleValue];
+        }];
+    }
+    
     if (allSize>1024) {
         allSize = allSize / 1024;
         if (allSize > 1024) {
@@ -473,6 +486,17 @@
 -(void)sendBtnClick:(UIButton*)button
 {
     if ([self.selectResultImageDataArray count] == 0) {
+        if (self.max_select == 1) {
+            
+            if (self.finishSelectOption) {
+                if (self.isOriginal) {
+                    self.finishSelectOption([UIImage imageWithData:self.originalData], [self.assetType integerValue]);
+                }else{
+                    self.finishSelectOption([UIImage imageWithData:self.thumbImageData], [self.assetType integerValue]);
+                }
+            }
+            [self.locationVC dismissViewControllerAnimated:YES completion:nil];
+        }
         return;
     }
     
@@ -502,8 +526,13 @@
     [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
         
         if (complete) {
-            NSData * thumbImageData = [BKTool compressImageData:imageData];
-            complete(imageData,(double)imageData.length/1024/1024,thumbImageData);
+            
+            if (self.max_select == 1) {
+                complete(imageData,(double)imageData.length/1024/1024,nil);
+            }else{
+                NSData * thumbImageData = [BKTool compressImageData:imageData];
+                complete(imageData,(double)imageData.length/1024/1024,thumbImageData);
+            }
         }
     }];
 }
@@ -627,6 +656,31 @@
     [self getMaximumSizeImageOption:^(UIImage *originalImage,NSString * imageUrl) {
         [self editImageView:cell.showImageView image:originalImage imageUrl:imageUrl scrollView:cell.imageScrollView];
     } nowIndex:indexPath.item];
+    
+    if (self.max_select == 1) {
+        
+        PHAsset * asset = self.imageAssetsArray[indexPath.item];
+        [self getOriginalImageSizeWithAsset:asset complete:^(NSData *originalImageData, double originalImageSize, NSData *thumbImageData) {
+            
+            self.nowImageSize = [NSString stringWithFormat:@"%f",originalImageSize];
+            if (self.isOriginal) {
+                [self calculataImageSize];
+            }
+            
+            NSString * fileName = [asset valueForKey:@"filename"];
+            if ([fileName rangeOfString:@"gif"].location == NSNotFound && [fileName rangeOfString:@"GIF"].location == NSNotFound) {
+                self.assetType = [NSString stringWithFormat:@"%ld",BKSelectPhotoTypeImage];
+            }else{
+                self.assetType = [NSString stringWithFormat:@"%ld",BKSelectPhotoTypeGIF];
+            }
+            
+            self.originalData = originalImageData;
+            dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                self.thumbImageData = [BKTool compressImageData:originalImageData];
+            });
+            
+        }];
+    }
     
     return cell;
 }

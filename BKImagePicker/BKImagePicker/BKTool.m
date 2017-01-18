@@ -177,8 +177,32 @@
         return nil;
     }
     
-    UIImage * image = [UIImage imageWithData:imageData];
+    if (imageData.length < 200*1024) {
+        return imageData;
+    }
     
+    UIImage * image = [UIImage imageWithData:imageData];
+    UIImage *newImage;
+    
+    if (image.size.width > image.size.height) {
+        if (image.size.width < 1000) {
+            newImage = image;
+        }else{
+            newImage = [self compressImage:image];
+        }
+    }else{
+        if (image.size.height < 1500) {
+            newImage = image;
+        }else{
+            newImage = [self compressImage:image];
+        }
+    }
+    
+    return UIImageJPEGRepresentation(newImage, BKThumbImageCompressSizeMultiplier);
+}
+
++(UIImage*)compressImage:(UIImage*)image
+{
     float imageWidth = image.size.width;
     float imageHeight = image.size.height;
     
@@ -187,10 +211,10 @@
     
     UIGraphicsBeginImageContext(CGSizeMake(width, height));
     [image drawInRect:CGRectMake(0, 0, width , height)];
-    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIImage * newImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
-    return UIImageJPEGRepresentation(newImage, BKThumbImageCompressSizeMultiplier);
+    return newImage;
 }
 
 
