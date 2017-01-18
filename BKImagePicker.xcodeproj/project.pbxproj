@@ -32,6 +32,7 @@
 		88C5ACA31E163BA70044FDAA /* UIView+BKExpand.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C5ACA21E163BA70044FDAA /* UIView+BKExpand.m */; };
 		88C5ACAA1E163F240044FDAA /* BKImagePickerConst.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C5ACA91E163F240044FDAA /* BKImagePickerConst.m */; };
 		88C5ACAF1E164B310044FDAA /* BKTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C5ACAD1E164B310044FDAA /* BKTool.m */; };
+		88D953011E2F510500D583D0 /* EditPhotoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 88D953001E2F510500D583D0 /* EditPhotoView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -83,6 +84,8 @@
 		88C5ACAD1E164B310044FDAA /* BKTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKTool.m; sourceTree = "<group>"; };
 		88C5ACAE1E164B310044FDAA /* BKTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKTool.h; sourceTree = "<group>"; };
 		88C5ACB61E164DB70044FDAA /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
+		88D952FF1E2F510500D583D0 /* EditPhotoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditPhotoView.h; sourceTree = "<group>"; };
+		88D953001E2F510500D583D0 /* EditPhotoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditPhotoView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,7 +99,7 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		2A1673FB1DB204A600BA7AE0 /* photoAlbum */ = {
+		2A1673FB1DB204A600BA7AE0 /* PhotoAlbum */ = {
 			isa = PBXGroup;
 			children = (
 				2ADC20A21DEADECA001DD97C /* FLAnimatedImage */,
@@ -125,6 +128,7 @@
 				883BB4E21DC864F500952C2D /* BKShowExampleVideoView.h */,
 				883BB4E31DC864F500952C2D /* BKShowExampleVideoView.m */,
 			);
+			name = PhotoAlbum;
 			path = photoAlbum;
 			sourceTree = "<group>";
 		};
@@ -183,7 +187,8 @@
 		88500AB41DAF1FB000102A35 /* BKImagePicker */ = {
 			isa = PBXGroup;
 			children = (
-				2A1673FB1DB204A600BA7AE0 /* photoAlbum */,
+				2A1673FB1DB204A600BA7AE0 /* PhotoAlbum */,
+				88D952FE1E2F4FDC00D583D0 /* EditPhoto */,
 				88500AB61DAF231500102A35 /* BKImagePicker.h */,
 				88500AB71DAF231500102A35 /* BKImagePicker.m */,
 				88C5ACAC1E1640330044FDAA /* BKImagePickerConst.h */,
@@ -195,6 +200,15 @@
 				88506A7B1DB9B5AF0043F3E0 /* BKImage.bundle */,
 			);
 			path = BKImagePicker;
+			sourceTree = "<group>";
+		};
+		88D952FE1E2F4FDC00D583D0 /* EditPhoto */ = {
+			isa = PBXGroup;
+			children = (
+				88D952FF1E2F510500D583D0 /* EditPhotoView.h */,
+				88D953001E2F510500D583D0 /* EditPhotoView.m */,
+			);
+			path = EditPhoto;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -282,6 +296,7 @@
 				88C5ACAF1E164B310044FDAA /* BKTool.m in Sources */,
 				2A1674131DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.m in Sources */,
 				2A1674071DB204A600BA7AE0 /* BKImageClassViewController.m in Sources */,
+				88D953011E2F510500D583D0 /* EditPhotoView.m in Sources */,
 				885DC5771DC9D5B400FCEFD4 /* BKVideoAlbumItemView.m in Sources */,
 				88C5ACA31E163BA70044FDAA /* UIView+BKExpand.m in Sources */,
 				88C5ACAA1E163F240044FDAA /* BKImagePickerConst.m in Sources */,
