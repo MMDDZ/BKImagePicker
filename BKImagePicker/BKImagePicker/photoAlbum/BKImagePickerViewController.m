@@ -440,6 +440,12 @@
 
 -(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
+    if (self.view.userInteractionEnabled) {
+        self.view.userInteractionEnabled = NO;
+    }else{
+        return;
+    }
+    
     PHAsset * asset = (PHAsset*)(self.albumAssetArray[indexPath.row]);
     
     if (asset.mediaType == PHAssetMediaTypeImage) {
@@ -458,6 +464,9 @@
     }else{
         if ([self.select_imageArray count] > 0) {
             [BKTool showRemind:@"不能同时选择照片和视频"];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                self.view.userInteractionEnabled = YES;
+            });
             return;
         }
         
@@ -469,6 +478,10 @@
         }];
         [exampleVideoView showInVC:self];
     }
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        self.view.userInteractionEnabled = YES;
+    });
 }
 
 -(void)previewWithCell:(BKImagePickerCollectionViewCell*)cell imageAssetsArray:(NSArray*)imageAssetsArray tapAsset:(PHAsset*)tapAsset
@@ -546,10 +559,19 @@
 
 -(void)selectImageBtnClick:(BKImageAlbumItemSelectButton*)button
 {
+    if (self.view.userInteractionEnabled) {
+        self.view.userInteractionEnabled = NO;
+    }else{
+        return;
+    }
+    
     PHAsset * asset = (PHAsset*)self.albumAssetArray[button.tag];
     BOOL isHave = [self.select_imageArray containsObject:asset];
     if (!isHave && [self.select_imageArray count] >= self.max_select) {
         [BKTool showRemind:[NSString stringWithFormat:@"最多只能选择%ld张照片",self.max_select]];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            self.view.userInteractionEnabled = YES;
+        });
         return;
     }
     
@@ -592,6 +614,10 @@
                 [self refreshClassSelectImageArray];
             }];
         }
+        
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            self.view.userInteractionEnabled = YES;
+        });
     }];
 }
 
@@ -763,7 +789,16 @@
 
 -(void)previewBtnClick:(UIButton*)button
 {
+    if (self.view.userInteractionEnabled) {
+        self.view.userInteractionEnabled = NO;
+    }else{
+        return;
+    }
+    
     if ([self.select_imageArray count] == 0) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            self.view.userInteractionEnabled = YES;
+        });
         return;
     }
     
@@ -778,6 +813,10 @@
     }else{
         [self previewWithCell:cell imageAssetsArray:self.select_imageArray tapAsset:[self.select_imageArray lastObject]];
     }
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        self.view.userInteractionEnabled = YES;
+    });
 }
 
 -(void)editBtnClick:(UIButton*)button
