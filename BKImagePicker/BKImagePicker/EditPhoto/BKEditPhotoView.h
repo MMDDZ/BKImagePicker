@@ -1,5 +1,5 @@
 //
-//  EditPhotoView.h
+//  BKEditPhotoView.h
 //  BKImagePicker
 //
 //  Created by iMac on 17/1/18.
@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
-@interface EditPhotoView : UIView
+@interface BKEditPhotoView : UIView
+
+-(instancetype)initWithImage:(UIImage*)image;
 
 @end

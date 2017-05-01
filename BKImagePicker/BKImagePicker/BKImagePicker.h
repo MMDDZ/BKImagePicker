@@ -29,4 +29,11 @@
  */
 +(void)checkAllowVisitPhotoAlbumHandler:(void (^)(BOOL handleFlag))handler;
 
+/**
+ 保存图片
+
+ @param image 图片
+ */
++(void)saveImage:(UIImage*)image;
+
 @end

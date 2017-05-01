@@ -14,7 +14,7 @@
 #import "BKImageClassViewController.h"
 #import "BKImageAlbumItemSelectButton.h"
 #import "BKImagePickerConst.h"
-
+#import "BKEditPhotoView.h"
 
 @interface BKShowExampleImageView ()<UICollectionViewDataSource,UICollectionViewDelegate,UICollectionViewDelegateFlowLayout,UINavigationControllerDelegate>
 
@@ -40,7 +40,7 @@
 @property (nonatomic,strong) NSMutableArray * imageSizeArray;
 
 /**
- 选取的原图data数组 包含@{@"original":@"",@"thumb":@""}
+ 选取的原图data数组 包含@{@"original":@"",@"thumb":@"",@"type":@""}
  */
 @property (nonatomic,strong) NSMutableArray * selectResultImageDataArray;
 
@@ -64,13 +64,12 @@
 @property (nonatomic,strong) UIButton * originalBtn;
 @property (nonatomic,strong) UIButton * sendBtn;
 
-/**
- 当max_select == 1时有效
- */
+//当前看见image的信息
 @property (nonatomic,copy) NSString * nowImageSize;
 @property (nonatomic,strong) NSData * originalData;
 @property (nonatomic,strong) NSData * thumbImageData;
 @property (nonatomic,copy) NSString * assetType;
+@property (nonatomic,strong) UIImage * originalImage;
 
 @end
 
@@ -187,34 +186,6 @@
         _titleLab.textAlignment = NSTextAlignmentCenter;
     }
     return _titleLab;
-}
-
--(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
-{
-    if ([keyPath isEqualToString:@"title"]) {
-        
-        self.titleLab.text = change[@"new"];
-        
-        NSInteger item = [[change[@"new"] componentsSeparatedByString:@"/"][0] integerValue]-1;
-        
-        PHAsset * asset = (PHAsset*)(self.imageAssetsArray[item]);
-        if (self.refreshLookAsset) {
-            self.refreshLookAsset(asset);
-        }
-        
-        if ([self.select_imageArray containsObject:asset]) {
-            NSInteger select_num = [self.select_imageArray indexOfObject:asset]+1;
-            self.rightBtn.title = [NSString stringWithFormat:@"%ld",select_num];
-        }else{
-            self.rightBtn.title = @"";
-        }
-        self.rightBtn.tag = item;
-    }
-}
-
--(void)dealloc
-{
-    [self removeObserver:self forKeyPath:@"title"];
 }
 
 -(BKImageAlbumItemSelectButton*)rightBtn
@@ -434,7 +405,10 @@
 
 -(void)editBtnClick:(UIButton*)button
 {
-    
+    if (self.originalImage) {
+        BKEditPhotoView * editView = [[BKEditPhotoView alloc]initWithImage:self.originalImage];
+        [self addSubview:editView];
+    }
 }
 
 -(void)originalBtnClick:(UIButton*)button
@@ -619,6 +593,8 @@
     cell.imageScrollView.contentSize = CGSizeMake(cell.bk_width-BKExampleImagesSpacing*2, cell.bk_height);
     cell.showImageView.transform = CGAffineTransformMakeScale(1, 1);
     
+    self.originalImage = nil;
+    
     PHAsset * asset = self.imageAssetsArray[indexPath.item];
     
     [self getThumbImageSizeWithAsset:asset complete:^(UIImage *thumbImage) {
@@ -631,6 +607,8 @@
             
             [self getOriginalImageSizeWithAsset:asset complete:^(UIImage *originalImage) {
                 [self editImageView:cell.showImageView image:originalImage imageData:nil scrollView:cell.imageScrollView];
+                
+                self.originalImage = originalImage;
             }];
             
             [self getOriginalImageDataSizeWithAsset:asset complete:^(NSData *originalImageData) {
@@ -665,7 +643,6 @@
                 }
             }];
         }
-        
         
     }];
     
@@ -806,6 +783,36 @@
             self.title = [NSString stringWithFormat:@"%ld/%ld",item+1,[self.imageAssetsArray count]];
         }
     }
+}
+
+#pragma mark - KVO
+
+-(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:@"title"]) {
+        
+        self.titleLab.text = change[@"new"];
+        
+        NSInteger item = [[change[@"new"] componentsSeparatedByString:@"/"][0] integerValue]-1;
+        
+        PHAsset * asset = (PHAsset*)(self.imageAssetsArray[item]);
+        if (self.refreshLookAsset) {
+            self.refreshLookAsset(asset);
+        }
+        
+        if ([self.select_imageArray containsObject:asset]) {
+            NSInteger select_num = [self.select_imageArray indexOfObject:asset]+1;
+            self.rightBtn.title = [NSString stringWithFormat:@"%ld",select_num];
+        }else{
+            self.rightBtn.title = @"";
+        }
+        self.rightBtn.tag = item;
+    }
+}
+
+-(void)dealloc
+{
+    [self removeObserver:self forKeyPath:@"title"];
 }
 
 @end
