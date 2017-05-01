@@ -73,7 +73,7 @@
     }
 }
 
--(void)dealloc
+-(void)cancelThings
 {
     [self removeObserver:self forKeyPath:@"isDrawLine"];
     [_drawTimer invalidate];
@@ -146,6 +146,7 @@
 {
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
     
+    [self cancelThings];
     [self removeFromSuperview];
 }
 
