@@ -15,7 +15,7 @@
 
 @implementation BKShowExampleImageCollectionViewCell
 
--(instancetype)initWithFrame:(CGRect)frame
+- (instancetype)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
@@ -25,7 +25,7 @@
         _imageScrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(BKExampleImagesSpacing, 0, frame.size.width-BKExampleImagesSpacing*2, frame.size.height)];
         _imageScrollView.showsHorizontalScrollIndicator = NO;
         _imageScrollView.showsVerticalScrollIndicator = NO;
-        _imageScrollView.delegate=self;
+        _imageScrollView.delegate = self;
         _imageScrollView.contentSize = CGSizeMake(frame.size.width-BKExampleImagesSpacing*2, frame.size.height);
         _imageScrollView.backgroundColor = [UIColor clearColor];
         _imageScrollView.minimumZoomScale = 1.0;
@@ -50,7 +50,7 @@
     return _showImageView;
 }
 
--(void)scrollViewScale
+- (void)scrollViewScale
 {
     _imageScrollView.contentSize = CGSizeMake(_showImageView.bk_width, _showImageView.bk_height);
     

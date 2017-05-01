@@ -275,26 +275,13 @@
         }else{
             [self.select_imageArray addObject:asset];
             
-            [self getOriginalImageSizeWithAsset:asset complete:^(NSData *originalImageData, double originalImageSize, NSData *thumbImageData) {
-                [self.imageSizeArray addObject:[NSString stringWithFormat:@"%f",originalImageSize]];
-                if (self.isOriginal) {
-                    [self calculataImageSize];
-                }
-                
-                NSString * assetType = @"";
-                NSString * fileName = [asset valueForKey:@"filename"];
-                if ([fileName rangeOfString:@"gif"].location == NSNotFound && [fileName rangeOfString:@"GIF"].location == NSNotFound) {
-                    assetType = [NSString stringWithFormat:@"%ld",BKSelectPhotoTypeImage];
-                }else{
-                    assetType = [NSString stringWithFormat:@"%ld",BKSelectPhotoTypeGIF];
-                }
-                
-                [self.selectResultImageDataArray addObject:@{@"original":originalImageData,@"thumb":thumbImageData,@"type":assetType}];
-                
-                if (self.refreshAlbumViewOption) {
-                    self.refreshAlbumViewOption([self.select_imageArray copy],[self.imageSizeArray copy],[self.selectResultImageDataArray copy],self.isOriginal);
-                }
-            }];
+            [self.imageSizeArray addObject:self.nowImageSize];
+        
+            [self.selectResultImageDataArray addObject:@{@"original":self.originalData,@"thumb":self.thumbImageData,@"type":self.assetType}];
+            
+            if (self.refreshAlbumViewOption) {
+                self.refreshAlbumViewOption([self.select_imageArray copy],[self.imageSizeArray copy],[self.selectResultImageDataArray copy],self.isOriginal);
+            }
             
             if ([self.select_imageArray count] == 1) {
                 
@@ -516,29 +503,6 @@
     }
 }
 
-#pragma mark - 算图片大小和高清图data/缩略图data
-
--(void)getOriginalImageSizeWithAsset:(PHAsset*)asset complete:(void (^)(NSData * originalImageData , double originalImageSize , NSData * thumbImageData))complete
-{
-    PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
-    options.resizeMode = PHImageRequestOptionsResizeModeExact;
-    options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
-    options.synchronous = NO;
-    
-    [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
-        
-        if (complete) {
-            
-            if (self.max_select == 1) {
-                complete(imageData,(double)imageData.length/1024/1024,nil);
-            }else{
-                NSData * thumbImageData = [BKTool compressImageData:imageData];
-                complete(imageData,(double)imageData.length/1024/1024,thumbImageData);
-            }
-        }
-    }];
-}
-
 #pragma mark - 显示方法
 
 -(void)showAndBeginAnimateOption:(void (^)())beginOption endAnimateOption:(void (^)())endOption
@@ -651,70 +615,82 @@
     cell.imageScrollView.contentSize = CGSizeMake(cell.bk_width-BKExampleImagesSpacing*2, cell.bk_height);
     cell.showImageView.transform = CGAffineTransformMakeScale(1, 1);
     
-    [self getThumbSizeImageOption:^(UIImage *thumbImage) {
-        [self editImageView:cell.showImageView image:thumbImage imageUrl:nil scrollView:cell.imageScrollView];
-    } nowIndex:indexPath.item];
+    PHAsset * asset = self.imageAssetsArray[indexPath.item];
     
-    [self getMaximumSizeImageOption:^(UIImage *originalImage,NSString * imageUrl) {
-        [self editImageView:cell.showImageView image:originalImage imageUrl:imageUrl scrollView:cell.imageScrollView];
-    } nowIndex:indexPath.item];
-    
-    if (self.max_select == 1) {
+    [self getThumbImageSizeWithAsset:asset complete:^(UIImage *thumbImage) {
+        [self editImageView:cell.showImageView image:thumbImage imageData:nil scrollView:cell.imageScrollView];
         
-        PHAsset * asset = self.imageAssetsArray[indexPath.item];
-        [self getOriginalImageSizeWithAsset:asset complete:^(NSData *originalImageData, double originalImageSize, NSData *thumbImageData) {
+        NSString * fileName = [asset valueForKey:@"filename"];
+        if ([fileName rangeOfString:@"gif"].location == NSNotFound && [fileName rangeOfString:@"GIF"].location == NSNotFound) {
+            [_editBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
+            self.assetType = [NSString stringWithFormat:@"%ld",BKSelectPhotoTypeImage];
             
-            self.nowImageSize = [NSString stringWithFormat:@"%f",originalImageSize];
-            if (self.isOriginal) {
-                [self calculataImageSize];
-            }
+            [self getOriginalImageSizeWithAsset:asset complete:^(UIImage *originalImage) {
+                [self editImageView:cell.showImageView image:originalImage imageData:nil scrollView:cell.imageScrollView];
+            }];
             
-            NSString * fileName = [asset valueForKey:@"filename"];
-            if ([fileName rangeOfString:@"gif"].location == NSNotFound && [fileName rangeOfString:@"GIF"].location == NSNotFound) {
-                self.assetType = [NSString stringWithFormat:@"%ld",BKSelectPhotoTypeImage];
-            }else{
-                self.assetType = [NSString stringWithFormat:@"%ld",BKSelectPhotoTypeGIF];
-            }
+            [self getOriginalImageDataSizeWithAsset:asset complete:^(NSData *originalImageData) {
+                
+                self.originalData = originalImageData;
+                dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                    self.thumbImageData = [BKTool compressImageData:originalImageData];
+                });
+                
+                CGFloat originalImageSize = (double)originalImageData.length/1024/1024;
+                self.nowImageSize = [NSString stringWithFormat:@"%f",originalImageSize];
+                if (self.isOriginal) {
+                    [self calculataImageSize];
+                }
+            }];
+        }else{
+            [_editBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
+            self.assetType = [NSString stringWithFormat:@"%ld",BKSelectPhotoTypeGIF];
             
-            self.originalData = originalImageData;
-            dispatch_async(dispatch_get_global_queue(0, 0), ^{
-                self.thumbImageData = [BKTool compressImageData:originalImageData];
-            });
-            
-        }];
-    }
+            [self getOriginalImageDataSizeWithAsset:asset complete:^(NSData *originalImageData) {
+                [self editImageView:cell.showImageView image:thumbImage imageData:originalImageData scrollView:cell.imageScrollView];
+                
+                self.originalData = originalImageData;
+                dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                    self.thumbImageData = [BKTool compressImageData:originalImageData];
+                });
+                
+                CGFloat originalImageSize = (double)originalImageData.length/1024/1024;
+                self.nowImageSize = [NSString stringWithFormat:@"%f",originalImageSize];
+                if (self.isOriginal) {
+                    [self calculataImageSize];
+                }
+            }];
+        }
+        
+        
+    }];
     
     return cell;
 }
 
+#pragma mark - 缩略图 、 原图 、 原图data
+
 /**
  获取对应缩略图
- 
- @param imageOption 缩略图
+
+ @param asset 相簿
+ @param complete 完成方法
  */
--(void)getThumbSizeImageOption:(void (^)(UIImage * thumbImage))imageOption nowIndex:(NSInteger)nowIndex
+-(void)getThumbImageSizeWithAsset:(PHAsset*)asset complete:(void (^)(UIImage * thumbImage))complete
 {
-    NSString * fileName = [self.imageAssetsArray[nowIndex] valueForKey:@"filename"];
-    if ([fileName rangeOfString:@"gif"].location == NSNotFound && [fileName rangeOfString:@"GIF"].location == NSNotFound) {
-        [_editBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
-    }else{
-        [_editBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
-    }
-    
     PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
     options.resizeMode = PHImageRequestOptionsResizeModeFast;
     options.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
     options.synchronous = NO;
     
-    [[PHImageManager defaultManager] requestImageForAsset:self.imageAssetsArray[nowIndex] targetSize:CGSizeMake(self.bk_width/2.0f, self.bk_width/2.0f) contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+    [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(self.bk_width/2.0f, self.bk_width/2.0f) contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
         
         // 排除取消，错误，低清图三种情况，即已经获取到了高清图
         BOOL downImageloadFinined = ![[info objectForKey:PHImageCancelledKey] boolValue] && ![info objectForKey:PHImageErrorKey] && ![[info objectForKey:PHImageResultIsDegradedKey] boolValue];
         if (downImageloadFinined) {
-            if(result)
-            {
-                if (imageOption) {
-                    imageOption(result);
+            if(result) {
+                if (complete) {
+                    complete(result);
                 }
             }
         }
@@ -722,47 +698,72 @@
 }
 
 /**
- 获取对应缩略图大图
+ 获取对应原图
  
- @param imageOption 大图
+ @param asset 相簿
+ @param complete 完成方法
  */
--(void)getMaximumSizeImageOption:(void (^)(UIImage * originalImage , NSString * imageUrl))imageOption nowIndex:(NSInteger)nowIndex
+-(void)getOriginalImageSizeWithAsset:(PHAsset*)asset complete:(void (^)(UIImage * originalImage))complete
+{
+    PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+    options.resizeMode = PHImageRequestOptionsResizeModeFast;
+    options.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
+    options.synchronous = NO;
+    
+    [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+        
+        // 排除取消，错误，低清图三种情况，即已经获取到了高清图
+        BOOL downImageloadFinined = ![[info objectForKey:PHImageCancelledKey] boolValue] && ![info objectForKey:PHImageErrorKey] && ![[info objectForKey:PHImageResultIsDegradedKey] boolValue];
+        if (downImageloadFinined) {
+            if(result) {
+                if (complete) {
+                    complete(result);
+                }
+            }
+        }
+    }];
+}
+
+/**
+ 获取对应原图data
+ 
+ @param asset 相簿
+ @param complete 完成方法
+ */
+-(void)getOriginalImageDataSizeWithAsset:(PHAsset*)asset complete:(void (^)(NSData * originalImageData))complete
 {
     PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
     options.resizeMode = PHImageRequestOptionsResizeModeExact;
     options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
     options.synchronous = NO;
     
-    [[PHImageManager defaultManager] requestImageForAsset:self.imageAssetsArray[nowIndex] targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+    [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
         
-        // 排除取消，错误，低清图三种情况，即已经获取到了高清图
-        BOOL downImageloadFinined = ![[info objectForKey:PHImageCancelledKey] boolValue] && ![info objectForKey:PHImageErrorKey] && ![[info objectForKey:PHImageResultIsDegradedKey] boolValue];
-        if (downImageloadFinined) {
-            if(result)
-            {
-                if (imageOption) {
-                    imageOption(result,info[@"PHImageFileURLKey"]);
-                }
-            }
+        if (complete) {
+            complete(imageData);
         }
     }];
 }
+
+#pragma mark - 整合image与imageView
 
 /**
  修改图frame
  
  @param showImageView   image所在的imageVIew
  @param image           image
- @param imageUrl        imageUrl
+ @param imageData       imageData
  @param imageScrollView image所在的scrollView
  */
--(void)editImageView:(FLAnimatedImageView*)showImageView image:(UIImage*)image imageUrl:(NSString*)imageUrl scrollView:(UIScrollView*)imageScrollView
+-(void)editImageView:(FLAnimatedImageView*)showImageView image:(UIImage*)image imageData:(NSData*)imageData scrollView:(UIScrollView*)imageScrollView
 {
-    FLAnimatedImage * gifImage = [FLAnimatedImage animatedImageWithGIFData:[NSData dataWithContentsOfFile:imageUrl]];
-    if (gifImage) {
-        showImageView.animatedImage = gifImage;
-    }else{
-        showImageView.image = image;
+    showImageView.image = image;
+    
+    if (imageData) {
+        FLAnimatedImage * gifImage = [FLAnimatedImage animatedImageWithGIFData:imageData];
+        if (gifImage) {
+            showImageView.animatedImage = gifImage;
+        }
     }
     
     CGRect showImageViewFrame = showImageView.frame;
