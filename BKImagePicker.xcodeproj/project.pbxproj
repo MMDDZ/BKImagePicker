@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2A06DE381EB6C67500C2CCDF /* FLAnimatedImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A06DE341EB6C67500C2CCDF /* FLAnimatedImage.m */; };
+		2A06DE391EB6C67500C2CCDF /* FLAnimatedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A06DE361EB6C67500C2CCDF /* FLAnimatedImageView.m */; };
+		2A06DE3A1EB6C67500C2CCDF /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2A06DE371EB6C67500C2CCDF /* Info.plist */; };
 		2A1674061DB204A600BA7AE0 /* BKImageClassTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1673FD1DB204A600BA7AE0 /* BKImageClassTableViewCell.m */; };
 		2A1674071DB204A600BA7AE0 /* BKImageClassViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1673FF1DB204A600BA7AE0 /* BKImageClassViewController.m */; };
 		2A1674081DB204A600BA7AE0 /* BKImagePickerCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1674011DB204A600BA7AE0 /* BKImagePickerCollectionViewCell.m */; };
@@ -15,9 +18,6 @@
 		2A16740D1DB2056E00BA7AE0 /* BKShowExampleImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A16740C1DB2056E00BA7AE0 /* BKShowExampleImageView.m */; };
 		2A1674101DB2182200BA7AE0 /* BKShowExampleImageCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A16740F1DB2182200BA7AE0 /* BKShowExampleImageCollectionViewFlowLayout.m */; };
 		2A1674131DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1674121DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.m */; };
-		2ADC20A81DEADECA001DD97C /* FLAnimatedImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2ADC20A41DEADECA001DD97C /* FLAnimatedImage.m */; };
-		2ADC20A91DEADECA001DD97C /* FLAnimatedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2ADC20A61DEADECA001DD97C /* FLAnimatedImageView.m */; };
-		2ADC20AA1DEADECA001DD97C /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2ADC20A71DEADECA001DD97C /* Info.plist */; };
 		883BB4E41DC864F500952C2D /* BKShowExampleVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 883BB4E31DC864F500952C2D /* BKShowExampleVideoView.m */; };
 		88500A9F1DAF1D2300102A35 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 88500A9E1DAF1D2300102A35 /* main.m */; };
 		88500AA21DAF1D2300102A35 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 88500AA11DAF1D2300102A35 /* AppDelegate.m */; };
@@ -36,6 +36,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2A06DE331EB6C67500C2CCDF /* FLAnimatedImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FLAnimatedImage.h; sourceTree = "<group>"; };
+		2A06DE341EB6C67500C2CCDF /* FLAnimatedImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FLAnimatedImage.m; sourceTree = "<group>"; };
+		2A06DE351EB6C67500C2CCDF /* FLAnimatedImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FLAnimatedImageView.h; sourceTree = "<group>"; };
+		2A06DE361EB6C67500C2CCDF /* FLAnimatedImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FLAnimatedImageView.m; sourceTree = "<group>"; };
+		2A06DE371EB6C67500C2CCDF /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2A1673FC1DB204A600BA7AE0 /* BKImageClassTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKImageClassTableViewCell.h; sourceTree = "<group>"; };
 		2A1673FD1DB204A600BA7AE0 /* BKImageClassTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKImageClassTableViewCell.m; sourceTree = "<group>"; };
 		2A1673FE1DB204A600BA7AE0 /* BKImageClassViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKImageClassViewController.h; sourceTree = "<group>"; };
@@ -52,11 +57,6 @@
 		2A16740F1DB2182200BA7AE0 /* BKShowExampleImageCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKShowExampleImageCollectionViewFlowLayout.m; sourceTree = "<group>"; };
 		2A1674111DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKShowExampleImageCollectionViewCell.h; sourceTree = "<group>"; };
 		2A1674121DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKShowExampleImageCollectionViewCell.m; sourceTree = "<group>"; };
-		2ADC20A31DEADECA001DD97C /* FLAnimatedImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FLAnimatedImage.h; sourceTree = "<group>"; };
-		2ADC20A41DEADECA001DD97C /* FLAnimatedImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FLAnimatedImage.m; sourceTree = "<group>"; };
-		2ADC20A51DEADECA001DD97C /* FLAnimatedImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FLAnimatedImageView.h; sourceTree = "<group>"; };
-		2ADC20A61DEADECA001DD97C /* FLAnimatedImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FLAnimatedImageView.m; sourceTree = "<group>"; };
-		2ADC20A71DEADECA001DD97C /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		883BB4E21DC864F500952C2D /* BKShowExampleVideoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKShowExampleVideoView.h; sourceTree = "<group>"; };
 		883BB4E31DC864F500952C2D /* BKShowExampleVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKShowExampleVideoView.m; sourceTree = "<group>"; };
 		88500A9A1DAF1D2300102A35 /* BKImagePicker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BKImagePicker.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -99,10 +99,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2A06DE321EB6C67500C2CCDF /* FLAnimatedImage */ = {
+			isa = PBXGroup;
+			children = (
+				2A06DE331EB6C67500C2CCDF /* FLAnimatedImage.h */,
+				2A06DE341EB6C67500C2CCDF /* FLAnimatedImage.m */,
+				2A06DE351EB6C67500C2CCDF /* FLAnimatedImageView.h */,
+				2A06DE361EB6C67500C2CCDF /* FLAnimatedImageView.m */,
+				2A06DE371EB6C67500C2CCDF /* Info.plist */,
+			);
+			path = FLAnimatedImage;
+			sourceTree = "<group>";
+		};
 		2A1673FB1DB204A600BA7AE0 /* PhotoAlbum */ = {
 			isa = PBXGroup;
 			children = (
-				2ADC20A21DEADECA001DD97C /* FLAnimatedImage */,
 				2A1673FE1DB204A600BA7AE0 /* BKImageClassViewController.h */,
 				2A1673FF1DB204A600BA7AE0 /* BKImageClassViewController.m */,
 				2A1673FC1DB204A600BA7AE0 /* BKImageClassTableViewCell.h */,
@@ -132,18 +143,6 @@
 			path = photoAlbum;
 			sourceTree = "<group>";
 		};
-		2ADC20A21DEADECA001DD97C /* FLAnimatedImage */ = {
-			isa = PBXGroup;
-			children = (
-				2ADC20A31DEADECA001DD97C /* FLAnimatedImage.h */,
-				2ADC20A41DEADECA001DD97C /* FLAnimatedImage.m */,
-				2ADC20A51DEADECA001DD97C /* FLAnimatedImageView.h */,
-				2ADC20A61DEADECA001DD97C /* FLAnimatedImageView.m */,
-				2ADC20A71DEADECA001DD97C /* Info.plist */,
-			);
-			path = FLAnimatedImage;
-			sourceTree = "<group>";
-		};
 		88500A911DAF1D2300102A35 = {
 			isa = PBXGroup;
 			children = (
@@ -163,6 +162,7 @@
 		88500A9C1DAF1D2300102A35 /* BKImagePicker */ = {
 			isa = PBXGroup;
 			children = (
+				2A06DE321EB6C67500C2CCDF /* FLAnimatedImage */,
 				88500AB41DAF1FB000102A35 /* BKImagePicker */,
 				88500AA01DAF1D2300102A35 /* AppDelegate.h */,
 				88500AA11DAF1D2300102A35 /* AppDelegate.m */,
@@ -271,7 +271,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2ADC20AA1DEADECA001DD97C /* Info.plist in Resources */,
+				2A06DE3A1EB6C67500C2CCDF /* Info.plist in Resources */,
 				88500AAD1DAF1D2300102A35 /* LaunchScreen.storyboard in Resources */,
 				88500AAA1DAF1D2300102A35 /* Assets.xcassets in Resources */,
 				88506A7C1DB9B5AF0043F3E0 /* BKImage.bundle in Resources */,
@@ -293,6 +293,7 @@
 				88500AB81DAF231500102A35 /* BKImagePicker.m in Sources */,
 				887192D51DB61DD8007FED28 /* BKImageAlbumItemSelectButton.m in Sources */,
 				885DC57A1DC9DD0C00FCEFD4 /* BKGIFAlbumItemView.m in Sources */,
+				2A06DE381EB6C67500C2CCDF /* FLAnimatedImage.m in Sources */,
 				88C5ACAF1E164B310044FDAA /* BKTool.m in Sources */,
 				2A1674131DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.m in Sources */,
 				2A1674071DB204A600BA7AE0 /* BKImageClassViewController.m in Sources */,
@@ -300,11 +301,10 @@
 				885DC5771DC9D5B400FCEFD4 /* BKVideoAlbumItemView.m in Sources */,
 				88C5ACA31E163BA70044FDAA /* UIView+BKExpand.m in Sources */,
 				88C5ACAA1E163F240044FDAA /* BKImagePickerConst.m in Sources */,
-				2ADC20A81DEADECA001DD97C /* FLAnimatedImage.m in Sources */,
-				2ADC20A91DEADECA001DD97C /* FLAnimatedImageView.m in Sources */,
 				88500AA51DAF1D2300102A35 /* ViewController.m in Sources */,
 				2A16740A1DB204A600BA7AE0 /* BKImagePickerViewController.m in Sources */,
 				2A1674091DB204A600BA7AE0 /* BKImagePickerFooterCollectionReusableView.m in Sources */,
+				2A06DE391EB6C67500C2CCDF /* FLAnimatedImageView.m in Sources */,
 				88500AA21DAF1D2300102A35 /* AppDelegate.m in Sources */,
 				88500A9F1DAF1D2300102A35 /* main.m in Sources */,
 			);
