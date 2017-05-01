@@ -221,9 +221,9 @@
 {
     if (!_rightBtn) {
         _rightBtn = [[BKImageAlbumItemSelectButton alloc]initWithFrame:CGRectMake(25, 27, 30, 30)];
-        __weak BKShowExampleImageView * mySelf = self;
+        __weak typeof(self) weakSelf = self;
         [_rightBtn setSelectButtonClick:^(BKImageAlbumItemSelectButton * button) {
-            [mySelf rightBtnClick:button];
+            [weakSelf rightBtnClick:button];
         }];
         
         if ([self.imageAssetsArray count] == 1) {
@@ -281,6 +281,10 @@
             
             if (self.refreshAlbumViewOption) {
                 self.refreshAlbumViewOption([self.select_imageArray copy],[self.imageSizeArray copy],[self.selectResultImageDataArray copy],self.isOriginal);
+            }
+            
+            if (self.isOriginal) {
+                [self calculataImageSize];
             }
             
             if ([self.select_imageArray count] == 1) {
@@ -638,7 +642,7 @@
                 
                 CGFloat originalImageSize = (double)originalImageData.length/1024/1024;
                 self.nowImageSize = [NSString stringWithFormat:@"%f",originalImageSize];
-                if (self.isOriginal) {
+                if (self.isOriginal && self.max_select == 1) {
                     [self calculataImageSize];
                 }
             }];
@@ -656,7 +660,7 @@
                 
                 CGFloat originalImageSize = (double)originalImageData.length/1024/1024;
                 self.nowImageSize = [NSString stringWithFormat:@"%f",originalImageSize];
-                if (self.isOriginal) {
+                if (self.isOriginal && self.max_select == 1) {
                     [self calculataImageSize];
                 }
             }];
