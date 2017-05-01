@@ -139,6 +139,9 @@
  */
 + (void)saveImage:(UIImage*)image
 {
+    UIWindow * window = [[[UIApplication sharedApplication] delegate] window];
+    [BKTool showLoadInView:window];
+    
     [BKImagePicker checkAllowVisitPhotoAlbumHandler:^(BOOL handleFlag) {
         if (handleFlag) {
          
@@ -148,7 +151,10 @@
                 assetId = [PHAssetCreationRequest creationRequestForAssetFromImage:image].placeholderForCreatedAsset.localIdentifier;
             } completionHandler:^(BOOL success, NSError * _Nullable error) {
                 if (error) {
-                    [BKTool showRemind:@"图片保存失败"];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [BKTool hideLoad];
+                        [BKTool showRemind:@"图片保存失败"];
+                    });
                     return;
                 }
                 
@@ -161,12 +167,16 @@
                     [request addAssets:@[asset]];
                     
                 } completionHandler:^(BOOL success, NSError * _Nullable error) {
-                    if (error) {
-                        [BKTool showRemind:@"图片保存失败"];
-                        return;
-                    }
                     
                     dispatch_async(dispatch_get_main_queue(), ^{
+                        
+                        [BKTool hideLoad];
+                        
+                        if (error) {
+                            [BKTool showRemind:@"图片保存失败"];
+                            return;
+                        }
+                        
                         [BKTool showRemind:@"保存成功"];
                     });
                 }];

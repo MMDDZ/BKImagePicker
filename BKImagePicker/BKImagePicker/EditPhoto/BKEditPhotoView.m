@@ -11,16 +11,23 @@
 #import "BKImagePickerConst.h"
 #import <Photos/Photos.h>
 #import "BKImagePicker.h"
+#import "BKDrawLineView.h"
 
 @interface BKEditPhotoView()
 
 @property (nonatomic,strong) UIImage * editImage;
 @property (nonatomic,strong) UIImageView * editImageView;
 
+@property (nonatomic,assign) BOOL isDrawLine;
+@property (nonatomic,assign) NSInteger afterDrawTime;
+@property (nonatomic,strong) NSTimer * drawTimer;
+
 @property (nonatomic,strong) BKEditGradientView * topView;
 @property (nonatomic,strong) BKEditGradientView * bottomView;
 
 @property (nonatomic,strong) UIButton * selectEditBtn;
+
+@property (nonatomic,strong) BKDrawLineView * drawLineView;
 
 @end
 
@@ -38,21 +45,75 @@
         self.backgroundColor = [UIColor blackColor];
         
         [self addSubview:self.editImageView];
+        
         [self addSubview:self.topView];
         [self addSubview:self.bottomView];
+        
+        [self addObserver:self forKeyPath:@"isDrawLine" options:NSKeyValueObservingOptionNew context:nil];
+        _drawTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(drawThingsTimer) userInfo:nil repeats:YES];
     }
     return self;
+}
+
+-(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:@"isDrawLine"]) {
+        if ([change[@"new"] boolValue]) {
+            
+            [UIView animateWithDuration:0.25 animations:^{
+                _topView.alpha = 0;
+                _bottomView.alpha = 0;
+            }];
+        }else{
+            [UIView animateWithDuration:0.25 animations:^{
+                _topView.alpha = 1;
+                _bottomView.alpha = 1;
+            }];
+        }
+    }
+}
+
+-(void)dealloc
+{
+    [self removeObserver:self forKeyPath:@"isDrawLine"];
+    [_drawTimer invalidate];
+    _drawTimer = nil;
 }
 
 -(UIImageView*)editImageView
 {
     if (!_editImageView) {
-        _editImageView = [[UIImageView alloc]initWithFrame:self.bounds];
+        _editImageView = [[UIImageView alloc]initWithFrame:[self calculataImageRect]];
         _editImageView.image = self.editImage;
         _editImageView.contentMode = UIViewContentModeScaleAspectFit;
         _editImageView.clipsToBounds = YES;
     }
     return _editImageView;
+}
+
+#pragma mark - 算imageView 的 rect
+
+-(CGRect)calculataImageRect
+{
+    CGRect imageRect = CGRectZero;
+    
+    CGFloat scale = self.editImage.size.width / self.bk_width;
+    CGFloat height = self.editImage.size.height / scale;
+    
+    if (height > self.bk_height) {
+        imageRect.size.height = self.bk_height;
+        scale = self.editImage.size.height / self.bk_height;
+        imageRect.size.width = self.editImage.size.width / scale;
+        imageRect.origin.x = (self.bk_width - imageRect.size.width) / 2.0f;
+        imageRect.origin.y = 0;
+    }else{
+        imageRect.size.height = height;
+        imageRect.size.width = self.bk_width;
+        imageRect.origin.x = 0;
+        imageRect.origin.y = (self.bk_height - imageRect.size.height) / 2.0f;
+    }
+    
+    return imageRect;
 }
 
 #pragma mark - topView
@@ -135,9 +196,24 @@
 
 -(void)editBtnClick:(UIButton*)button
 {
+    if (self.selectEditBtn == button) {
+        return;
+    }
+    
     self.selectEditBtn.selected = NO;
     self.selectEditBtn = button;
     self.selectEditBtn.selected = YES;
+    
+    switch (button.tag) {
+        case 0:
+        {
+            [self drawLineView];
+        }
+            break;
+            
+        default:
+            break;
+    }
 }
 
 -(void)sendBtnClick
@@ -145,6 +221,51 @@
     
 }
 
+#pragma mark - 画线
+
+-(BKDrawLineView*)drawLineView
+{
+    if (!_drawLineView) {
+        _drawLineView = [[BKDrawLineView alloc]initWithFrame:self.editImageView.frame];
+        __weak typeof(self) weakSelf = self;
+        [_drawLineView setMovedOption:^{
+            weakSelf.isDrawLine = YES;
+        }];
+        [_drawLineView setMoveEndOption:^{
+            
+            if (weakSelf.isDrawLine) {
+                weakSelf.afterDrawTime = 5;
+            }else {
+                weakSelf.isDrawLine = YES;
+            }
+            
+        }];
+        [self insertSubview:_drawLineView aboveSubview:self.editImageView];
+    }
+    return _drawLineView;
+}
+
+-(void)drawThingsTimer
+{
+    self.afterDrawTime = self.afterDrawTime - 1;
+    if (self.afterDrawTime == 0) {
+        self.isDrawLine = NO;
+    }
+}
+
+-(UIImage *)addImage:(UIImage *)image1 toImage:(UIImage *)image2
+{
+    UIGraphicsBeginImageContext(image1.size);
+    
+    [image1 drawInRect:CGRectMake(0, 0, image1.size.width, image1.size.height)];
+    [image2 drawInRect:CGRectMake(0, 0, image2.size.width, image2.size.height)];
+    
+    UIImage *resultingImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+    UIGraphicsEndImageContext();
+    
+    return resultingImage;
+}
 
 
 @end

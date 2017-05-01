@@ -11,6 +11,8 @@
 		2A06DE391EB6C67500C2CCDF /* FLAnimatedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A06DE361EB6C67500C2CCDF /* FLAnimatedImageView.m */; };
 		2A06DE3A1EB6C67500C2CCDF /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2A06DE371EB6C67500C2CCDF /* Info.plist */; };
 		2A06DE3D1EB6F91E00C2CCDF /* BKEditGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A06DE3C1EB6F91E00C2CCDF /* BKEditGradientView.m */; };
+		2A06DE411EB730F600C2CCDF /* BKDrawLineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A06DE401EB730F600C2CCDF /* BKDrawLineView.m */; };
+		2A06DE441EB7417800C2CCDF /* BKSelectColorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A06DE431EB7417800C2CCDF /* BKSelectColorView.m */; };
 		2A1674061DB204A600BA7AE0 /* BKImageClassTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1673FD1DB204A600BA7AE0 /* BKImageClassTableViewCell.m */; };
 		2A1674071DB204A600BA7AE0 /* BKImageClassViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1673FF1DB204A600BA7AE0 /* BKImageClassViewController.m */; };
 		2A1674081DB204A600BA7AE0 /* BKImagePickerCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1674011DB204A600BA7AE0 /* BKImagePickerCollectionViewCell.m */; };
@@ -44,6 +46,10 @@
 		2A06DE371EB6C67500C2CCDF /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2A06DE3B1EB6F91E00C2CCDF /* BKEditGradientView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKEditGradientView.h; sourceTree = "<group>"; };
 		2A06DE3C1EB6F91E00C2CCDF /* BKEditGradientView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKEditGradientView.m; sourceTree = "<group>"; };
+		2A06DE3F1EB730F600C2CCDF /* BKDrawLineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKDrawLineView.h; sourceTree = "<group>"; };
+		2A06DE401EB730F600C2CCDF /* BKDrawLineView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKDrawLineView.m; sourceTree = "<group>"; };
+		2A06DE421EB7417800C2CCDF /* BKSelectColorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSelectColorView.h; sourceTree = "<group>"; };
+		2A06DE431EB7417800C2CCDF /* BKSelectColorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSelectColorView.m; sourceTree = "<group>"; };
 		2A1673FC1DB204A600BA7AE0 /* BKImageClassTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKImageClassTableViewCell.h; sourceTree = "<group>"; };
 		2A1673FD1DB204A600BA7AE0 /* BKImageClassTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKImageClassTableViewCell.m; sourceTree = "<group>"; };
 		2A1673FE1DB204A600BA7AE0 /* BKImageClassViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKImageClassViewController.h; sourceTree = "<group>"; };
@@ -212,6 +218,10 @@
 				88D953001E2F510500D583D0 /* BKEditPhotoView.m */,
 				2A06DE3B1EB6F91E00C2CCDF /* BKEditGradientView.h */,
 				2A06DE3C1EB6F91E00C2CCDF /* BKEditGradientView.m */,
+				2A06DE3F1EB730F600C2CCDF /* BKDrawLineView.h */,
+				2A06DE401EB730F600C2CCDF /* BKDrawLineView.m */,
+				2A06DE421EB7417800C2CCDF /* BKSelectColorView.h */,
+				2A06DE431EB7417800C2CCDF /* BKSelectColorView.m */,
 			);
 			path = EditPhoto;
 			sourceTree = "<group>";
@@ -242,6 +252,7 @@
 		88500A921DAF1D2300102A35 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				CLASSPREFIX = BK;
 				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = BIKE;
 				TargetAttributes = {
@@ -291,6 +302,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				2A1674081DB204A600BA7AE0 /* BKImagePickerCollectionViewCell.m in Sources */,
+				2A06DE411EB730F600C2CCDF /* BKDrawLineView.m in Sources */,
+				2A06DE441EB7417800C2CCDF /* BKSelectColorView.m in Sources */,
 				883BB4E41DC864F500952C2D /* BKShowExampleVideoView.m in Sources */,
 				2A16740D1DB2056E00BA7AE0 /* BKShowExampleImageView.m in Sources */,
 				2A1674061DB204A600BA7AE0 /* BKImageClassTableViewCell.m in Sources */,

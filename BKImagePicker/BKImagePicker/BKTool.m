@@ -119,6 +119,10 @@
 
 +(void)showLoadInView:(UIView*)view
 {
+    if ([BKTool shareInstance].loadLayer) {
+        [self hideLoad];
+    }
+    
     CALayer * loadLayer = [CALayer layer];
     loadLayer.bounds = CGRectMake(0, 0, view.bounds.size.width/4.0f, view.bounds.size.width/4.0f);
     loadLayer.position = view.center;
