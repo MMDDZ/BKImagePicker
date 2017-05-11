@@ -10,4 +10,6 @@
 
 @interface BKSelectColorView : UIView
 
+-(instancetype)initWithStartPosition:(CGPoint)point;
+
 @end

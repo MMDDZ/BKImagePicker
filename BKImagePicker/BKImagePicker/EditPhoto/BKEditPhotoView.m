@@ -12,6 +12,7 @@
 #import <Photos/Photos.h>
 #import "BKImagePicker.h"
 #import "BKDrawLineView.h"
+#import "BKSelectColorView.h"
 
 @interface BKEditPhotoView()
 
@@ -28,6 +29,7 @@
 @property (nonatomic,strong) UIButton * selectEditBtn;
 
 @property (nonatomic,strong) BKDrawLineView * drawLineView;
+@property (nonatomic,strong) BKSelectColorView * selectColorView;
 
 @end
 
@@ -49,6 +51,8 @@
         [self addSubview:self.topView];
         [self addSubview:self.bottomView];
         
+        [self addSubview:self.selectColorView];
+        
         [self addObserver:self forKeyPath:@"isDrawLine" options:NSKeyValueObservingOptionNew context:nil];
         _drawTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(drawThingsTimer) userInfo:nil repeats:YES];
     }
@@ -63,11 +67,13 @@
             [UIView animateWithDuration:0.25 animations:^{
                 _topView.alpha = 0;
                 _bottomView.alpha = 0;
+                _selectColorView.alpha = 0;
             }];
         }else{
             [UIView animateWithDuration:0.25 animations:^{
                 _topView.alpha = 1;
                 _bottomView.alpha = 1;
+                _selectColorView.alpha = 1;
             }];
         }
     }
@@ -235,7 +241,7 @@
         [_drawLineView setMoveEndOption:^{
             
             if (weakSelf.isDrawLine) {
-                weakSelf.afterDrawTime = 5;
+                weakSelf.afterDrawTime = 10;
             }else {
                 weakSelf.isDrawLine = YES;
             }
@@ -266,6 +272,16 @@
     UIGraphicsEndImageContext();
     
     return resultingImage;
+}
+
+#pragma mark - 选颜色
+
+-(BKSelectColorView*)selectColorView
+{
+    if (!_selectColorView) {
+        _selectColorView = [[BKSelectColorView alloc]initWithStartPosition:CGPointMake(UISCREEN_WIDTH/8, UISCREEN_HEIGHT - _bottomView.bk_height - 30)];
+    }
+    return _selectColorView;
 }
 
 
