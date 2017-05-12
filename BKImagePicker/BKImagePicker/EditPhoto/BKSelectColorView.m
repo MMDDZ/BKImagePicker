@@ -8,10 +8,13 @@
 
 #import "BKSelectColorView.h"
 #import "BKImagePickerConst.h"
+#import "BKSelectColorMarkView.h"
 
 @interface BKSelectColorView()
 
-@property(nonatomic,strong) UIImageView * selectImageView;
+@property (nonatomic,strong) UIImageView * selectImageView;
+
+@property (nonatomic,strong) BKSelectColorMarkView * markView;
 
 @end
 
@@ -42,6 +45,7 @@
             case 0:
             {
                 colorImageView.backgroundColor = [UIColor redColor];
+                _selectImageView = colorImageView;
             }
                 break;
             case 1:
@@ -100,6 +104,14 @@
     }
     
     self.bk_width = CGRectGetMaxX(lastView.frame);
+    
+    _selectImageView.transform = CGAffineTransformMakeScale(1.5, 1.5);
+    [self bringSubviewToFront:_selectImageView];
+    
+    [self addSubview:self.markView];
+    _markView.selectColor = _selectImageView.backgroundColor;
+    _markView.bk_centerX = _selectImageView.bk_centerX;
+    _markView.bk_y = _selectImageView.bk_y - 10 - _markView.bk_height;
 }
 
 -(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
@@ -120,8 +132,19 @@
     for (UIView * view in [self subviews]) {
         if (CGRectContainsPoint(view.frame, currentPoint) && view.tag == 1) {
             _selectImageView = (UIImageView*)view;
+
             [self bringSubviewToFront:_selectImageView];
             view.transform = CGAffineTransformMakeScale(1.5, 1.5);
+            
+            if (!_selectImageView.image) {
+                _markView.selectColor = _selectImageView.backgroundColor;
+            }else{
+                _markView.selectType = BKSelectTypeMaSaiKe;
+            }
+            
+            _markView.bk_centerX = _selectImageView.bk_centerX;
+            _markView.bk_y = _selectImageView.bk_y - 10 - _markView.bk_height;
+            
             break;
         }
     }
@@ -131,6 +154,16 @@
             view.transform = CGAffineTransformMakeScale(1, 1);
         }
     }
+}
+
+#pragma mark - 标记
+
+-(BKSelectColorMarkView*)markView
+{
+    if (!_markView) {
+        _markView = [[BKSelectColorMarkView alloc]init];
+    }
+    return _markView;
 }
 
 @end

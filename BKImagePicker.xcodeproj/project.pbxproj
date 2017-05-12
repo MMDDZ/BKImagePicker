@@ -21,6 +21,7 @@
 		2A16740D1DB2056E00BA7AE0 /* BKShowExampleImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A16740C1DB2056E00BA7AE0 /* BKShowExampleImageView.m */; };
 		2A1674101DB2182200BA7AE0 /* BKShowExampleImageCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A16740F1DB2182200BA7AE0 /* BKShowExampleImageCollectionViewFlowLayout.m */; };
 		2A1674131DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1674121DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.m */; };
+		2AF9F44D1EC5F71200C216AD /* BKSelectColorMarkView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AF9F44C1EC5F71200C216AD /* BKSelectColorMarkView.m */; };
 		883BB4E41DC864F500952C2D /* BKShowExampleVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 883BB4E31DC864F500952C2D /* BKShowExampleVideoView.m */; };
 		88500A9F1DAF1D2300102A35 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 88500A9E1DAF1D2300102A35 /* main.m */; };
 		88500AA21DAF1D2300102A35 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 88500AA11DAF1D2300102A35 /* AppDelegate.m */; };
@@ -66,6 +67,8 @@
 		2A16740F1DB2182200BA7AE0 /* BKShowExampleImageCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKShowExampleImageCollectionViewFlowLayout.m; sourceTree = "<group>"; };
 		2A1674111DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKShowExampleImageCollectionViewCell.h; sourceTree = "<group>"; };
 		2A1674121DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKShowExampleImageCollectionViewCell.m; sourceTree = "<group>"; };
+		2AF9F44B1EC5F71200C216AD /* BKSelectColorMarkView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSelectColorMarkView.h; sourceTree = "<group>"; };
+		2AF9F44C1EC5F71200C216AD /* BKSelectColorMarkView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSelectColorMarkView.m; sourceTree = "<group>"; };
 		883BB4E21DC864F500952C2D /* BKShowExampleVideoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKShowExampleVideoView.h; sourceTree = "<group>"; };
 		883BB4E31DC864F500952C2D /* BKShowExampleVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKShowExampleVideoView.m; sourceTree = "<group>"; };
 		88500A9A1DAF1D2300102A35 /* BKImagePicker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BKImagePicker.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -222,6 +225,8 @@
 				2A06DE401EB730F600C2CCDF /* BKDrawLineView.m */,
 				2A06DE421EB7417800C2CCDF /* BKSelectColorView.h */,
 				2A06DE431EB7417800C2CCDF /* BKSelectColorView.m */,
+				2AF9F44B1EC5F71200C216AD /* BKSelectColorMarkView.h */,
+				2AF9F44C1EC5F71200C216AD /* BKSelectColorMarkView.m */,
 			);
 			path = EditPhoto;
 			sourceTree = "<group>";
@@ -312,6 +317,7 @@
 				887192D51DB61DD8007FED28 /* BKImageAlbumItemSelectButton.m in Sources */,
 				885DC57A1DC9DD0C00FCEFD4 /* BKGIFAlbumItemView.m in Sources */,
 				2A06DE381EB6C67500C2CCDF /* FLAnimatedImage.m in Sources */,
+				2AF9F44D1EC5F71200C216AD /* BKSelectColorMarkView.m in Sources */,
 				2A06DE3D1EB6F91E00C2CCDF /* BKEditGradientView.m in Sources */,
 				88C5ACAF1E164B310044FDAA /* BKTool.m in Sources */,
 				2A1674131DB219D200BA7AE0 /* BKShowExampleImageCollectionViewCell.m in Sources */,
