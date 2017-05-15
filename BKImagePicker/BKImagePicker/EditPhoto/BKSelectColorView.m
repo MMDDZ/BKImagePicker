@@ -22,7 +22,7 @@
 
 -(instancetype)initWithStartPosition:(CGPoint)point
 {
-    self = [super initWithFrame:CGRectMake(point.x, point.y, 0, 30)];
+    self = [super initWithFrame:CGRectMake(point.x, point.y, 40, 0)];
     if (self) {
         
         self.backgroundColor = [UIColor clearColor];
@@ -39,7 +39,7 @@
     UIView * lastView;
     for (int i = 0; i < 10 ; i++) {
         
-        UIImageView * colorImageView = [[UIImageView alloc]initWithFrame:CGRectMake(16*i, (self.bk_height - 16)/2, 16, 16)];
+        UIImageView * colorImageView = [[UIImageView alloc]initWithFrame:CGRectMake(8, 16*i, 16, 16)];
         colorImageView.tag = 1;
         switch (i) {
             case 0:
@@ -103,15 +103,10 @@
         lastView = colorImageView;
     }
     
-    self.bk_width = CGRectGetMaxX(lastView.frame);
+    self.bk_height = CGRectGetMaxY(lastView.frame);
     
     _selectImageView.transform = CGAffineTransformMakeScale(1.5, 1.5);
     [self bringSubviewToFront:_selectImageView];
-    
-    [self addSubview:self.markView];
-    _markView.selectColor = _selectImageView.backgroundColor;
-    _markView.bk_centerX = _selectImageView.bk_centerX;
-    _markView.bk_y = _selectImageView.bk_y - 10 - _markView.bk_height;
 }
 
 -(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
@@ -124,26 +119,34 @@
     [self currentTouches:touches];
 }
 
+-(void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+    [_markView removeFromSuperview];
+}
+
 -(void)currentTouches:(NSSet *)touches
 {
     UITouch * touch = [touches anyObject];
     CGPoint currentPoint = [touch locationInView:self];
     
     for (UIView * view in [self subviews]) {
-        if (CGRectContainsPoint(view.frame, currentPoint) && view.tag == 1) {
+        if (CGRectContainsPoint(CGRectMake(0, view.bk_y, self.bk_width, 16) , currentPoint) && view.tag == 1) {
             _selectImageView = (UIImageView*)view;
 
             [self bringSubviewToFront:_selectImageView];
             view.transform = CGAffineTransformMakeScale(1.5, 1.5);
             
+            if (![[self subviews] containsObject:self.markView]) {
+                [self addSubview:self.markView];
+            }
             if (!_selectImageView.image) {
                 _markView.selectColor = _selectImageView.backgroundColor;
             }else{
                 _markView.selectType = BKSelectTypeMaSaiKe;
             }
             
-            _markView.bk_centerX = _selectImageView.bk_centerX;
-            _markView.bk_y = _selectImageView.bk_y - 10 - _markView.bk_height;
+            _markView.bk_centerY = _selectImageView.bk_centerY;
+            _markView.bk_x = _selectImageView.bk_x - 10 - _markView.bk_width;
             
             break;
         }

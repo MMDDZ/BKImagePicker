@@ -12,12 +12,12 @@
 
 -(instancetype)init
 {
-    self = [super initWithFrame:CGRectMake(0, 0, 30, 40)];
+    self = [super initWithFrame:CGRectMake(0, 0, 40, 30)];
     if (self) {
         
         UIBezierPath * path = [UIBezierPath bezierPath];
-        [path addArcWithCenter:CGPointMake(15, 15) radius:15 startAngle:M_PI/4*3 endAngle:M_PI*2+M_PI/4 clockwise:YES];
-        [path addLineToPoint:CGPointMake(15, 40)];
+        [path addArcWithCenter:CGPointMake(15, 15) radius:15 startAngle:M_PI/4 endAngle:M_PI*2-M_PI/4 clockwise:YES];
+        [path addLineToPoint:CGPointMake(37.5, 15)];
         [path closePath];
         
         CAShapeLayer * layer = [CAShapeLayer layer];

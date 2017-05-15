@@ -279,7 +279,7 @@
 -(BKSelectColorView*)selectColorView
 {
     if (!_selectColorView) {
-        _selectColorView = [[BKSelectColorView alloc]initWithStartPosition:CGPointMake(UISCREEN_WIDTH/8, UISCREEN_HEIGHT - _bottomView.bk_height - 30)];
+        _selectColorView = [[BKSelectColorView alloc]initWithStartPosition:CGPointMake(UISCREEN_WIDTH - 40,  UISCREEN_HEIGHT - 64 - 200)];
     }
     return _selectColorView;
 }
