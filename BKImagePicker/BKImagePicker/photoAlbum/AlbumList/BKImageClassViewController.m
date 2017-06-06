@@ -11,6 +11,7 @@
 #import "BKImageClassViewController.h"
 #import "BKImagePickerViewController.h"
 #import <Photos/Photos.h>
+#import "BKImageClassModel.h"
 #import "BKImageClassTableViewCell.h"
 
 @interface BKImageClassViewController ()<UITableViewDelegate,UITableViewDataSource>
@@ -45,8 +46,9 @@
 
 -(void)getSingleAlbum:(PHFetchResult*)fetchResult
 {
-    [fetchResult enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [fetchResult enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         PHAssetCollection *collection = obj;
+        BKImageClassModel * model = [[BKImageClassModel alloc]init];
         
         // 获取所有资源的集合按照创建时间倒序排列
         PHFetchOptions * fetchOptions = [[PHFetchOptions alloc] init];
@@ -126,8 +128,11 @@
                     if (downImageloadFinined) {
                         if(result)
                         {
-                            NSDictionary * albumDic = @{@"album_name":collection.localizedTitle,@"album_example_image":result,@"album_image_count":[NSString stringWithFormat:@"%ld",assetsCount]};
-                            [self.imageClassArray addObject:albumDic];
+                            model.albumName = collection.localizedTitle;
+                            model.albumFirstImage = result;
+                            model.albumImageCount = assetsCount;
+                            
+                            [self.imageClassArray addObject:model];
                             [self.imageClassTableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:[self.imageClassArray count]-1 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
                         }
                     }
@@ -222,20 +227,20 @@
         [cell addSubview:line];
     }
     
-    NSDictionary * dic = self.imageClassArray[indexPath.row];
+    BKImageClassModel * model = self.imageClassArray[indexPath.row];
     
     cell.exampleImageView.frame = CGRectMake(ROW_HEIGHT/3, 3, ROW_HEIGHT-6, ROW_HEIGHT-6);
-    cell.exampleImageView.image = dic[@"album_example_image"];
+    cell.exampleImageView.image = model.albumFirstImage;
     
     cell.titleLab.frame = CGRectMake(CGRectGetMaxX(cell.exampleImageView.frame)+ROW_HEIGHT/3, 0, 0, 0);
-    cell.titleLab.text = dic[@"album_name"];
+    cell.titleLab.text = model.albumName;
     [cell.titleLab sizeToFit];
     CGPoint titleLabCenter = cell.titleLab.center;
     titleLabCenter.y = cell.exampleImageView.center.y;
     cell.titleLab.center = titleLabCenter;
     
     cell.countLab.frame = CGRectMake(CGRectGetMaxX(cell.titleLab.frame)+5, 0, 0, 0);
-    cell.countLab.text = [NSString stringWithFormat:@"(%@)",dic[@"album_image_count"]];
+    cell.countLab.text = [NSString stringWithFormat:@"(%ld)",model.albumImageCount];
     [cell.countLab sizeToFit];
     CGPoint countLabCenter = cell.countLab.center;
     countLabCenter.y = cell.exampleImageView.center.y;

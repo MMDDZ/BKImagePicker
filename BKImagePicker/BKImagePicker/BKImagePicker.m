@@ -33,6 +33,25 @@
 {
     [self checkAllowVisitPhotoAlbumHandler:^(BOOL handleFlag) {
         if (handleFlag) {
+            
+            __block NSString * albumName = @"";
+            //系统的相簿
+            PHFetchResult * smartAlbums = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
+            [smartAlbums enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                PHAssetCollection *collection = obj;
+                
+                // 获取所有资源的集合按照创建时间倒序排列
+                PHFetchOptions * fetchOptions = [[PHFetchOptions alloc] init];
+                fetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
+                fetchOptions.predicate = [NSPredicate predicateWithFormat:@"mediaType = %d || mediaType = %d",PHAssetMediaTypeImage,PHAssetMediaTypeVideo];
+                
+                PHFetchResult<PHAsset *> *assets  = [PHAsset fetchAssetsInAssetCollection:collection options:fetchOptions];
+                
+                if ([assets count] > 0) {
+                    albumName = collection.localizedTitle;
+                }
+            }];
+            
             BKImageClassViewController * imageClassVC = [[BKImageClassViewController alloc]init];
             imageClassVC.max_select = maxSelect>999?999:maxSelect;
             imageClassVC.photoType = photoType;
@@ -51,7 +70,7 @@
             };
             
             imageClassVC.title = @"相册";
-            imageVC.title = @"相机胶卷";
+            imageVC.title = albumName;
             
             UINavigationController * nav = [[UINavigationController alloc]initWithRootViewController:imageClassVC];
             nav.navigationBarHidden = YES;

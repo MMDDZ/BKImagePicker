@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <Photos/Photos.h>
 #import "BKImagePicker.h"
+#import "BKImageModel.h"
 
 @interface BKImagePickerViewController : UIViewController
 
