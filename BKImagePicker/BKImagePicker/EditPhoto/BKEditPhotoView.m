@@ -91,8 +91,6 @@
     if (!_editImageView) {
         _editImageView = [[UIImageView alloc]initWithFrame:[self calculataImageRect]];
         _editImageView.image = self.editImage;
-        _editImageView.contentMode = UIViewContentModeScaleAspectFit;
-        _editImageView.clipsToBounds = YES;
     }
     return _editImageView;
 }

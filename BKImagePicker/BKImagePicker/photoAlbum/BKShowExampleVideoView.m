@@ -17,7 +17,7 @@
 @property (nonatomic ,strong) UIView * bottomView;
 @property (nonatomic ,strong) UIButton * start_pause;
 
-@property (nonatomic ,strong) PHAsset * asset;
+@property (nonatomic ,strong) BKImageModel * model;
 
 @property (nonatomic,weak) UIViewController * locationVC;
 
@@ -39,16 +39,17 @@
     [self.player seekToTime:CMTimeMake(0, 1)];
 }
 
--(instancetype)initWithAsset:(PHAsset*)asset
+-(instancetype)initWithModel:(BKImageModel*)model
 {
     self = [super initWithFrame:CGRectMake(UISCREEN_WIDTH, 0, UISCREEN_WIDTH, UISCREEN_HEIGHT)];
     if (self) {
         
-        self.asset = asset;
+        self.model = model;
         
         self.backgroundColor = [UIColor blackColor];
         
         [self initPrepareVideo];
+        [self getOriginalImageDataSizeWithAsset:self.model.asset];
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playbackFinished:) name:AVPlayerItemDidPlayToEndTimeNotification object:self.player.currentItem];
     }
@@ -59,6 +60,26 @@
 {
     self.locationVC = locationVC;
     [[self.locationVC.view superview] addSubview:self];
+}
+
+#pragma mark - 原图属性
+
+/**
+ 获取对应原图data
+ 
+ @param asset 相簿
+ */
+-(void)getOriginalImageDataSizeWithAsset:(PHAsset*)asset
+{
+    PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+    options.resizeMode = PHImageRequestOptionsResizeModeExact;
+    options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+    options.synchronous = NO;
+    
+    [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
+        
+        self.model.originalImageData = imageData;
+    }];
 }
 
 #pragma mark - initVideo
@@ -96,7 +117,7 @@
 {
     PHVideoRequestOptions * options = [[PHVideoRequestOptions alloc]init];
     
-    [[PHImageManager defaultManager] requestPlayerItemForVideo:self.asset options:options resultHandler:^(AVPlayerItem * _Nullable playerItem, NSDictionary * _Nullable info) {
+    [[PHImageManager defaultManager] requestPlayerItemForVideo:self.model.asset options:options resultHandler:^(AVPlayerItem * _Nullable playerItem, NSDictionary * _Nullable info) {
         if (handler) {
             handler(playerItem);
         }
@@ -180,10 +201,10 @@
 
 -(void)selectBtnClick
 {
-    if (self.finishSelectOption) {
-        self.finishSelectOption(((AVURLAsset*)self.player.currentItem.asset).URL,BKSelectPhotoTypeVideo);
-        [self.locationVC dismissViewControllerAnimated:YES completion:nil];
-    }
+    self.model.url = ((AVURLAsset*)self.player.currentItem.asset).URL;
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:BKFinishSelectImageNotification object:nil userInfo:@{@"object":self.model}];
+    [self.locationVC dismissViewControllerAnimated:YES completion:nil];
 }
 
 -(void)start_pauseBtnClick:(UIButton*)button

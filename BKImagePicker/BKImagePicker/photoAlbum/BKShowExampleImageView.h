@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <Photos/Photos.h>
 #import "BKImagePicker.h"
+#import "BKImageModel.h"
 
 @interface BKShowExampleImageView : UIView
 
@@ -16,32 +17,22 @@
 @property (nonatomic,strong) UIView * bottomView;
 
 /**
- 点击的那张图片
- */
-@property (nonatomic,strong) UIImageView * tapImageView;
-
-/**
  更新观看位置
  */
-@property (nonatomic,copy) void (^refreshLookAsset)(PHAsset * asset);
+@property (nonatomic,copy) void (^refreshLookLocationOption)(BKImageModel * model);
 
 /**
  返回调用方法
  */
-@property (nonatomic,copy) void (^backOption)(PHAsset * asset,UIImageView * imageView);
+@property (nonatomic,copy) void (^backOption)(BKImageModel * model, UIImageView * imageView);
 
 /**
  更新选取相册数组
  */
-@property (nonatomic,copy) void (^refreshAlbumViewOption)(NSArray * select_imageArray,NSArray * imageSizeArray,NSArray * selectResultImageDataArray,BOOL isOriginal);
+@property (nonatomic,copy) void (^refreshAlbumViewOption)(NSArray * selectImageArray,BOOL isOriginal);
 
-/**
- 完成选择
- */
-@property (nonatomic,copy) void (^finishSelectOption)(id result,BKSelectPhotoType selectPhotoType);
+-(instancetype)initWithLocationVC:(UIViewController*)locationVC imageListArray:(NSArray*)imageListArray selectImageArray:(NSArray*)selectImageArray tapModel:(BKImageModel*)tapModel maxSelect:(NSInteger)maxSelect isOriginal:(BOOL)isOriginal;
 
--(instancetype)initWithLocationVC:(UIViewController*)locationVC imageAssetsArray:(NSArray*)imageAssetsArray selectImageArray:(NSArray*)selectImageArray tapAsset:(PHAsset*)tapAsset maxSelect:(NSInteger)maxSelect imageSizeArray:(NSArray*)imageSizeArray selectResultImageDataArray:(NSArray*)selectResultImageDataArray isOriginal:(BOOL)isOriginal;
-
--(void)showAndBeginAnimateOption:(void (^)())beginOption endAnimateOption:(void (^)())endOption;
+-(void)showImageAnimate:(UIImageView*)tapImageView beginAnimateOption:(void (^)())beginOption endAnimateOption:(void (^)())endOption;
 
 @end

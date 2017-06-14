@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <Photos/Photos.h>
 #import "BKImageAlbumItemSelectButton.h"
+#import "FLAnimatedImage.h"
 
 @protocol BKImagePickerCollectionViewCellDelegate <NSObject>
 
@@ -20,12 +21,12 @@
 
 @property (nonatomic,assign) id<BKImagePickerCollectionViewCellDelegate> delegate;
 
-@property (nonatomic,strong) UIImageView * photoImageView;
+@property (nonatomic,strong) FLAnimatedImageView * photoImageView;
 
 @property (nonatomic,strong) UIView * instanceView;
 
 @property (nonatomic,assign) NSInteger max_select;
 
--(void)revaluateIndexPath:(NSIndexPath *)indexPath exampleAssetArr:(NSArray *)exampleAssetArr selectImageArr:(NSArray *)selectImageArr photoImage:(UIImage *)photoImage;
+-(void)revaluateIndexPath:(NSIndexPath *)indexPath listArr:(NSArray *)listArr selectImageArr:(NSArray *)selectImageArr;
 
 @end

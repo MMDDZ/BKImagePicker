@@ -251,17 +251,14 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    BKImagePickerViewController * imageVC = [[BKImagePickerViewController alloc]init];
+    BKImageClassModel * model = self.imageClassArray[indexPath.row];
     
-    NSDictionary * dic = self.imageClassArray[indexPath.row];
-    imageVC.title = dic[@"album_name"];
-    imageVC.select_imageArray = [NSMutableArray arrayWithArray:self.select_imageArray];
-    imageVC.selectResultImageDataArray = [NSMutableArray arrayWithArray:self.selectResultImageDataArray];
+    BKImagePickerViewController * imageVC = [[BKImagePickerViewController alloc]init];
+    imageVC.title = model.albumName;
+    imageVC.selectImageArray = [NSMutableArray arrayWithArray:self.selectImageArray];
     imageVC.isOriginal = self.isOriginal;
-    imageVC.imageSizeArray = [NSMutableArray arrayWithArray:self.imageSizeArray];
     imageVC.max_select = self.max_select;
     imageVC.photoType = self.photoType;
-    imageVC.finishSelectOption = self.finishSelectOption;
     
     [self.navigationController pushViewController:imageVC animated:YES];
 }

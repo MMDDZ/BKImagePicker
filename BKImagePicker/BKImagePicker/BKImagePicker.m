@@ -29,7 +29,7 @@
  @param maxSelect 最大选择数 (最大999)
  @param complete  选择图片/GIF/视频
  */
-+(void)showPhotoAlbumWithTypePhoto:(BKPhotoType)photoType maxSelect:(NSInteger)maxSelect complete:(void (^)(id result , BKSelectPhotoType selectPhotoType))complete
++(void)showPhotoAlbumWithTypePhoto:(BKPhotoType)photoType maxSelect:(NSInteger)maxSelect complete:(void (^)(UIImage * image , NSData * data , NSURL * url , BKSelectPhotoType selectPhotoType))complete
 {
     [self checkAllowVisitPhotoAlbumHandler:^(BOOL handleFlag) {
         if (handleFlag) {
@@ -55,22 +55,50 @@
             BKImageClassViewController * imageClassVC = [[BKImageClassViewController alloc]init];
             imageClassVC.max_select = maxSelect>999?999:maxSelect;
             imageClassVC.photoType = photoType;
-            imageClassVC.finishSelectOption = ^(id result , BKSelectPhotoType selectPhotoType){
-                if (complete) {
-                    complete(result,selectPhotoType);
-                }
-            };
+          
             BKImagePickerViewController * imageVC = [[BKImagePickerViewController alloc]init];
             imageVC.max_select = maxSelect>999?999:maxSelect;
             imageVC.photoType = photoType;
-            imageVC.finishSelectOption = ^(id result , BKSelectPhotoType selectPhotoType){
-                if (complete) {
-                    complete(result,selectPhotoType);
-                }
-            };
-            
+          
             imageClassVC.title = @"相册";
             imageVC.title = albumName;
+            
+            __block id observer = [[NSNotificationCenter defaultCenter] addObserverForName:BKFinishSelectImageNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
+                
+                NSDictionary * userInfo = note.userInfo;
+                
+                if ([userInfo[@"object"] isKindOfClass:[NSArray class]]) {
+                    NSArray * selectImageArray = userInfo[@"object"];
+                    BOOL isOriginal = [userInfo[@"isOriginal"] boolValue];
+                    for (BKImageModel * model in selectImageArray) {
+                        if (complete) {
+                            if (isOriginal) {
+                                complete([UIImage imageWithData:model.originalImageData], model.originalImageData, model.url, model.photoType);
+                            }else{
+                                complete([UIImage imageWithData:model.thumbImageData], model.thumbImageData, model.url, model.photoType);
+                            }
+                        }
+                    }
+                }else{
+                    BKImageModel * model = userInfo[@"object"];
+                    if (model.photoType != BKSelectPhotoTypeVideo) {
+                        BOOL isOriginal = [userInfo[@"isOriginal"] boolValue];
+                        if (complete) {
+                            if (isOriginal) {
+                                complete([UIImage imageWithData:model.originalImageData], model.originalImageData, model.url, model.photoType);
+                            }else{
+                                complete([UIImage imageWithData:model.thumbImageData], model.thumbImageData, model.url, model.photoType);
+                            }
+                        }
+                    }else{
+                        if (complete) {
+                            complete([UIImage imageWithData:model.originalImageData], [NSData dataWithContentsOfURL:model.url], model.url, model.photoType);
+                        }
+                    }
+                }
+                
+                [[NSNotificationCenter defaultCenter] removeObserver:observer];
+            }];
             
             UINavigationController * nav = [[UINavigationController alloc]initWithRootViewController:imageClassVC];
             nav.navigationBarHidden = YES;

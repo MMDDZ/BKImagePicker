@@ -45,6 +45,8 @@ typedef NS_ENUM(NSInteger,BKSelectPhotoType) {
 #define UISCREEN_WIDTH ([UIScreen mainScreen].bounds.size.width)
 #define UISCREEN_HEIGHT ([UIScreen mainScreen].bounds.size.height)
 
+UIKIT_EXTERN NSString * const BKFinishSelectImageNotification;
+
 UIKIT_EXTERN const float BKLineHeight;
 UIKIT_EXTERN const float BKAlbumImagesSpacing;
 UIKIT_EXTERN const float BKExampleImagesSpacing;

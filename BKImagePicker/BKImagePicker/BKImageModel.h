@@ -17,28 +17,33 @@
  */
 @property (nonatomic,strong) PHAsset * asset;
 /**
+ 图片名称
+ */
+@property (nonatomic,copy) NSString * fileName;
+/**
  图片类型
  */
-@property (nonatomic,assign) BKSelectPhotoType * photoType;
+@property (nonatomic,assign) BKSelectPhotoType photoType;
 /**
  缩略图
  */
 @property (nonatomic,strong) UIImage * thumbImage;
 /**
- 原图
- */
-@property (nonatomic,strong) UIImage * originalImage;
-/**
  缩略图data
  */
 @property (nonatomic,strong) NSData * thumbImageData;
 /**
- 原图data
+ 原图data (当photoType == BKSelectPhotoTypeVideo时 为封面图data)
  */
 @property (nonatomic,strong) NSData * originalImageData;
 /**
  原图大小
  */
-@property (nonatomic,assign) CGFloat originalImageSize;
+@property (nonatomic,assign) double originalImageSize;
+/**
+ URL
+ */
+@property (nonatomic,strong) NSURL * url;
+
 
 @end

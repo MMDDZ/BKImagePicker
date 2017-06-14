@@ -20,7 +20,7 @@
  @param maxSelect 最大选择数 (最大999)
  @param complete  选择图片/GIF/视频
  */
-+(void)showPhotoAlbumWithTypePhoto:(BKPhotoType)photoType maxSelect:(NSInteger)maxSelect complete:(void (^)(id result , BKSelectPhotoType selectPhotoType))complete;
++(void)showPhotoAlbumWithTypePhoto:(BKPhotoType)photoType maxSelect:(NSInteger)maxSelect complete:(void (^)(UIImage * image , NSData * data , NSURL * url , BKSelectPhotoType selectPhotoType))complete;
 
 /**
  检测是否允许调用相册

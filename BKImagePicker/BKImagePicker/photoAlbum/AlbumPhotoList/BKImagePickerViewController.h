@@ -19,19 +19,9 @@
 @property (nonatomic,assign) NSInteger max_select;
 
 /**
- 选取的PHAsset数组
+ 选取的数组
  */
-@property (nonatomic,strong) NSMutableArray * select_imageArray;
-
-/**
- 图片大小数组
- */
-@property (nonatomic,strong) NSMutableArray * imageSizeArray;
-
-/**
- 选取的原图data数组 包含@{@"original":@"",@"thumb":@"",@"type":@""}
- */
-@property (nonatomic,strong) NSMutableArray * selectResultImageDataArray;
+@property (nonatomic,strong) NSMutableArray * selectImageArray;
 
 /**
  是否选择原图
@@ -42,10 +32,5 @@
  相册显示类型
  */
 @property (nonatomic,assign) BKPhotoType photoType;
-
-/**
- 完成选择
- */
-@property (nonatomic,copy) void (^finishSelectOption)(id result,BKSelectPhotoType selectPhotoType);
 
 @end

@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+NSString * const BKFinishSelectImageNotification = @"BKFinishSelectImageNotification";//选择完成通知
+
 float const BKLineHeight = 0.3;//所有线的高度
 float const BKAlbumImagesSpacing = 1;//相簿图片间距
 float const BKExampleImagesSpacing = 10;//查看的大图图片间距

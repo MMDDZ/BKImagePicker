@@ -10,6 +10,7 @@
 #import "BKVideoAlbumItemView.h"
 #import "BKGIFAlbumItemView.h"
 #import "BKImagePickerConst.h"
+#import "BKImageModel.h"
 
 @implementation BKImagePickerCollectionViewCell
 
@@ -18,7 +19,8 @@
     self = [super initWithFrame:frame];
     if (self) {
         
-        _photoImageView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
+        _photoImageView = [[FLAnimatedImageView alloc]initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
+        _photoImageView.runLoopMode = NSDefaultRunLoopMode;
         _photoImageView.clipsToBounds = YES;
         _photoImageView.contentMode = UIViewContentModeScaleAspectFill;
         [self addSubview:_photoImageView];
@@ -31,23 +33,28 @@
     return self;
 }
 
--(void)revaluateIndexPath:(NSIndexPath *)indexPath exampleAssetArr:(NSArray *)exampleAssetArr selectImageArr:(NSArray *)selectImageArr photoImage:(UIImage *)photoImage
+-(void)revaluateIndexPath:(NSIndexPath *)indexPath listArr:(NSArray *)listArr selectImageArr:(NSArray *)selectImageArr
 {
-    self.photoImageView.image = photoImage;
-    
     [[self.instanceView subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         [obj removeFromSuperview];
     }];
     
-    PHAsset * asset = (PHAsset*)exampleAssetArr[indexPath.item];
+    BKImageModel * model = listArr[indexPath.item];
+    self.photoImageView.image = model.thumbImage;
     
-    if (asset.mediaType == PHAssetMediaTypeImage) {
+    if (model.asset.mediaType == PHAssetMediaTypeImage) {
         
-        NSString * fileName = [asset valueForKey:@"filename"];
-        if ([fileName rangeOfString:@"gif"].location != NSNotFound || [fileName rangeOfString:@"GIF"].location != NSNotFound) {
+        if (model.photoType == BKSelectPhotoTypeGIF) {
             
             BKGIFAlbumItemView * gifAlbumItemView = [[BKGIFAlbumItemView alloc]initWithFrame:self.instanceView.bounds];
             [self.instanceView addSubview:gifAlbumItemView];
+            
+            if (model.thumbImageData) {
+                FLAnimatedImage * gifImage = [FLAnimatedImage animatedImageWithGIFData:model.thumbImageData];
+                if (gifImage) {
+                    self.photoImageView.animatedImage = gifImage;
+                }
+            }
             
         }
             
@@ -60,9 +67,19 @@
             }];
             [self.instanceView addSubview:selectButton];
             
-            if ([selectImageArr containsObject:asset]) {
-                NSInteger select_num = [selectImageArr indexOfObject:asset]+1;
-                selectButton.title = [NSString stringWithFormat:@"%ld",select_num];
+            __block BOOL isHaveFlag = NO;
+            __block NSInteger item = 0;
+            [selectImageArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                BKImageModel * listModel = obj;
+                if ([listModel.fileName isEqualToString: model.fileName]) {
+                    item = idx;
+                    isHaveFlag = YES;
+                    *stop = YES;
+                }
+            }];
+            
+            if (isHaveFlag) {
+                selectButton.title = [NSString stringWithFormat:@"%ld",item+1];
             }else{
                 selectButton.title = @"";
             }
@@ -72,7 +89,7 @@
         
     }else{
         
-        NSInteger allSecond = [[asset valueForKey:@"duration"] integerValue];
+        NSInteger allSecond = [[model.asset valueForKey:@"duration"] integerValue];
         
         BKVideoAlbumItemView * videoAlbumItemView = [[BKVideoAlbumItemView alloc]initWithFrame:self.instanceView.bounds allSecond:allSecond];
         [self.instanceView addSubview:videoAlbumItemView];

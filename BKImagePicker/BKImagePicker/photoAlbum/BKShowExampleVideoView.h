@@ -9,15 +9,11 @@
 #import <UIKit/UIKit.h>
 #import <Photos/Photos.h>
 #import "BKImagePicker.h"
+#import "BKImageModel.h"
 
 @interface BKShowExampleVideoView : UIView
 
-/**
- 完成选择
- */
-@property (nonatomic,copy) void (^finishSelectOption)(id result,BKSelectPhotoType selectPhotoType);
-
--(instancetype)initWithAsset:(PHAsset*)asset;
+-(instancetype)initWithModel:(BKImageModel*)model;
 
 -(void)showInVC:(UIViewController *)locationVC;
 
