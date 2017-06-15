@@ -366,7 +366,6 @@
         _albumCollectionView.delegate = self;
         _albumCollectionView.dataSource = self;
         _albumCollectionView.backgroundColor = [UIColor clearColor];
-        _albumCollectionView.scrollsToTop = NO;
         [_albumCollectionView registerClass:[BKImagePickerCollectionViewCell class] forCellWithReuseIdentifier:imagePickerCell_identifier];
         [_albumCollectionView registerClass:[BKImagePickerFooterCollectionReusableView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:imagePickerFooter_identifier];
     }
@@ -478,46 +477,47 @@
 
 -(void)previewWithCell:(BKImagePickerCollectionViewCell*)cell imageListArray:(NSArray*)imageListArray tapModel:(BKImageModel*)tapModel
 {
+    _albumCollectionView.scrollsToTop = NO;
+    
     BKShowExampleImageView * exampleImageView = [[BKShowExampleImageView alloc] initWithLocationVC:self imageListArray:imageListArray selectImageArray:_selectImageArray tapModel:tapModel maxSelect:_max_select isOriginal:_isOriginal];
     __weak typeof(self) weakSelf = self;
     __weak typeof(exampleImageView) weakExampleImageView = exampleImageView;
     
     [exampleImageView setRefreshLookLocationOption:^(BKImageModel * model) {
-        __block typeof(self) strongSelf = weakSelf;
+        __strong typeof(self) strongSelf = weakSelf;
         __block NSInteger item = 0;
+        __block BOOL isHaveFlag = NO;
         [strongSelf.listArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             BKImageModel * listModel = obj;
             if ([listModel.fileName isEqualToString: model.fileName]) {
                 item = idx;
+                isHaveFlag = YES;
                 *stop = YES;
             }
         }];
         
-        NSIndexPath * indexPath = [NSIndexPath indexPathForItem:item inSection:0];
-        BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
-        if (!cell) {
-            [self.albumCollectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
+        if (isHaveFlag) {
+            NSIndexPath * indexPath = [NSIndexPath indexPathForItem:item inSection:0];
+            BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
+            if (!cell) {
+                [self.albumCollectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
+            }
         }
+        
     }];
     [exampleImageView setBackOption:^(BKImageModel * model, UIImageView * imageView) {
-        __block typeof(self) strongSelf = weakSelf;
-        __block typeof(weakExampleImageView) strongExampleImageView = weakExampleImageView;
+        __strong typeof(self) strongSelf = weakSelf;
+        __strong typeof(weakExampleImageView) strongExampleImageView = weakExampleImageView;
+        __block BOOL isHaveFlag = NO;
         __block NSInteger item = 0;
         [strongSelf.listArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             BKImageModel * listModel = obj;
             if ([listModel.fileName isEqualToString: model.fileName]) {
                 item = idx;
+                isHaveFlag = YES;
                 *stop = YES;
             }
         }];
-        
-        NSIndexPath * indexPath = [NSIndexPath indexPathForItem:item inSection:0];
-        
-        BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[strongSelf.albumCollectionView cellForItemAtIndexPath:indexPath];
-        
-        cell.alpha = 0;
-        
-        CGRect cellImageFrame = [[cell.photoImageView superview] convertRect:cell.photoImageView.frame toView:self.view];
         
         CGRect imageViewFrame = [[imageView superview] convertRect:imageView.frame toView:strongExampleImageView];
         
@@ -529,19 +529,44 @@
         [strongExampleImageView bringSubviewToFront:strongExampleImageView.topView];
         [strongExampleImageView bringSubviewToFront:strongExampleImageView.bottomView];
         
-        [UIView animateWithDuration:BKCheckExampleImageAnimateTime delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-            newImageView.frame = cellImageFrame;
-            strongExampleImageView.backgroundColor = [UIColor colorWithWhite:1 alpha:0];
-            strongExampleImageView.topView.alpha = 0;
-            strongExampleImageView.bottomView.alpha = 0;
-        } completion:^(BOOL finished) {
-            [newImageView removeFromSuperview];
-            cell.alpha = 1;
+        if (isHaveFlag) {
+            NSIndexPath * indexPath = [NSIndexPath indexPathForItem:item inSection:0];
+            
+            BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[strongSelf.albumCollectionView cellForItemAtIndexPath:indexPath];
+            CGRect cellImageFrame = [[cell.photoImageView superview] convertRect:cell.photoImageView.frame toView:self.view];
+            
+            cell.alpha = 0;
+            
+            [UIView animateWithDuration:BKCheckExampleImageAnimateTime delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+                newImageView.frame = cellImageFrame;
+                strongExampleImageView.backgroundColor = [UIColor colorWithWhite:1 alpha:0];
+                strongExampleImageView.topView.alpha = 0;
+                strongExampleImageView.bottomView.alpha = 0;
+            } completion:^(BOOL finished) {
+                [newImageView removeFromSuperview];
+                cell.alpha = 1;
+                [strongExampleImageView removeFromSuperview];
+            }];
+        }else{
+            
             [strongExampleImageView removeFromSuperview];
-        }];
+            [[strongSelf.view superview] addSubview:strongExampleImageView];
+            strongSelf.view.bk_x = - UISCREEN_WIDTH/2.0f;
+            
+            [UIView animateWithDuration:BKCheckExampleGifAndVideoAnimateTime delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+                
+                strongSelf.view.bk_x = 0;
+                strongExampleImageView.bk_x = UISCREEN_WIDTH;
+                
+            } completion:^(BOOL finished) {
+                [strongExampleImageView removeFromSuperview];
+            }];
+        }
+        
+        _albumCollectionView.scrollsToTop = YES;
     }];
     [exampleImageView setRefreshAlbumViewOption:^(NSArray * selectImageArray,BOOL isOriginal) {
-        __block typeof(self) strongSelf = weakSelf;
+        __strong typeof(self) strongSelf = weakSelf;
         
         strongSelf.selectImageArray = [NSMutableArray arrayWithArray:selectImageArray];
         [strongSelf.albumCollectionView reloadData];
@@ -575,7 +600,18 @@
     }
     
     BKImageModel * model = self.listArray[button.tag];
-    BOOL isHave = [self.selectImageArray containsObject:model];
+    
+    __block BOOL isHave = NO;
+    __block NSInteger item = 0;
+    [self.selectImageArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        BKImageModel * selectModel = obj;
+        if ([selectModel.fileName isEqualToString: model.fileName]) {
+            item = idx;
+            isHave = YES;
+            *stop = YES;
+        }
+    }];
+    
     if (!isHave && [self.selectImageArray count] >= self.max_select) {
         [BKTool showRemind:[NSString stringWithFormat:@"最多只能选择%ld张照片",self.max_select]];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -587,7 +623,7 @@
     [button selectClickNum:[self.selectImageArray count]+1 addMethod:^{
         if (isHave) {
             
-            [self.selectImageArray removeObject:model];
+            [self.selectImageArray removeObjectAtIndex:item];
             
             if (self.isOriginal) {
                 [self calculataImageSize];

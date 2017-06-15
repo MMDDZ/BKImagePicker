@@ -36,7 +36,7 @@
             
             __block NSString * albumName = @"";
             //系统的相簿
-            PHFetchResult * smartAlbums = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
+            PHFetchResult * smartAlbums = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeSmartAlbumUserLibrary options:nil];
             [smartAlbums enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 PHAssetCollection *collection = obj;
                 
@@ -49,6 +49,7 @@
                 
                 if ([assets count] > 0) {
                     albumName = collection.localizedTitle;
+                    *stop = YES;
                 }
             }];
             

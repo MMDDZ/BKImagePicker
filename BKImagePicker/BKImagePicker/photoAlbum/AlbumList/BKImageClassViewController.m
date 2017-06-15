@@ -46,7 +46,7 @@
 
 -(void)getSingleAlbum:(PHFetchResult*)fetchResult
 {
-    [fetchResult enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [fetchResult enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         PHAssetCollection *collection = obj;
         BKImageClassModel * model = [[BKImageClassModel alloc]init];
         

@@ -466,6 +466,8 @@
         newTapImageView.clipsToBounds = YES;
         newTapImageView.contentMode = UIViewContentModeScaleAspectFill;
         [self addSubview:newTapImageView];
+        [self bringSubviewToFront:self.topView];
+        [self bringSubviewToFront:self.bottomView];
         
         [UIView animateWithDuration:BKCheckExampleGifAndVideoAnimateTime delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             
