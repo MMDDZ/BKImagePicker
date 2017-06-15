@@ -261,7 +261,7 @@
     return flag;
 }
 
--(void)getImageWithIndex:(NSInteger)index getThumbComplete:(void (^)())getThumbComplete getOriginalDataComplete:(void (^)(BKImageModel * model))getOriginalDataComplete
+-(void)getImageWithIndex:(NSInteger)index getThumbComplete:(void (^)())getThumbComplete getOriginalDataComplete:(void (^)(BKImageModel * model ,NSInteger index))getOriginalDataComplete
 {
     BKImageModel * model = self.listArray[index];
     if (model.thumbImageData) {
@@ -287,21 +287,23 @@
                     
                     if (model.photoType == BKSelectPhotoTypeGIF) {
                         
-                        PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
-                        options.resizeMode = PHImageRequestOptionsResizeModeFast;
-                        options.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
-                        options.synchronous = NO;
-                        
-                        [[PHImageManager defaultManager] requestImageDataForAsset:model.asset options:options resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
+                        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                            PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+                            options.resizeMode = PHImageRequestOptionsResizeModeFast;
+                            options.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
+                            options.synchronous = NO;
                             
-                            model.thumbImageData = imageData;
-                            
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                                if (getOriginalDataComplete) {
-                                    getOriginalDataComplete(model);
-                                }
-                            });
-                        }];
+                            [[PHImageManager defaultManager] requestImageDataForAsset:model.asset options:options resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
+                                
+                                model.thumbImageData = imageData;
+                                
+                                dispatch_async(dispatch_get_main_queue(), ^{
+                                    if (getOriginalDataComplete) {
+                                        getOriginalDataComplete(model,index);
+                                    }
+                                });
+                            }];
+                        });
                     }
                 }
             }
@@ -383,13 +385,19 @@
     cell.delegate = self;
     cell.max_select = self.max_select;
     
+    cell.photoImageView.image = nil;
+    cell.photoImageView.animatedImage = nil;
+    
     [self getImageWithIndex:indexPath.item getThumbComplete:^{
         [cell revaluateIndexPath:indexPath listArr:[self.listArray copy] selectImageArr:[self.selectImageArray copy]];
-    } getOriginalDataComplete:^(BKImageModel * model){
-        if (model.thumbImageData) {
-            FLAnimatedImage * gifImage = [FLAnimatedImage animatedImageWithGIFData:model.thumbImageData];
-            if (gifImage) {
-                cell.photoImageView.animatedImage = gifImage;
+    } getOriginalDataComplete:^(BKImageModel * model ,NSInteger index){
+        UICollectionViewCell * currentCell = [_albumCollectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:index inSection:0]];
+        if (currentCell) {
+            if (model.thumbImageData) {
+                FLAnimatedImage * gifImage = [FLAnimatedImage animatedImageWithGIFData:model.thumbImageData];
+                if (gifImage) {
+                    cell.photoImageView.animatedImage = gifImage;
+                }
             }
         }
     }];
@@ -477,6 +485,10 @@
 
 -(void)previewWithCell:(BKImagePickerCollectionViewCell*)cell imageListArray:(NSArray*)imageListArray tapModel:(BKImageModel*)tapModel
 {
+    if (!cell.photoImageView.image && !cell.photoImageView.animatedImage) {
+        return;
+    }
+    
     _albumCollectionView.scrollsToTop = NO;
     
     BKShowExampleImageView * exampleImageView = [[BKShowExampleImageView alloc] initWithLocationVC:self imageListArray:imageListArray selectImageArray:_selectImageArray tapModel:tapModel maxSelect:_max_select isOriginal:_isOriginal];

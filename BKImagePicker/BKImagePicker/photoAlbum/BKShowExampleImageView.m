@@ -583,8 +583,12 @@
 {
     BKShowExampleImageCollectionViewCell * cell = (BKShowExampleImageCollectionViewCell*)[collectionView dequeueReusableCellWithReuseIdentifier:showExampleImageCell_identifier forIndexPath:indexPath];
     
-    cell.imageScrollView.contentSize = CGSizeMake(cell.bk_width-BKExampleImagesSpacing*2, cell.bk_height);
-    cell.showImageView.transform = CGAffineTransformMakeScale(1, 1);
+    return cell;
+}
+
+- (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    BKShowExampleImageCollectionViewCell * currentCell = (BKShowExampleImageCollectionViewCell*)cell;
     
     BKImageModel * model = self.imageListArray[indexPath.item];
     
@@ -592,17 +596,17 @@
         [_editBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
         
         if (model.thumbImage){
-            [self editImageView:cell.showImageView image:model.thumbImage imageData:nil scrollView:cell.imageScrollView];
+            [self editImageView:currentCell.showImageView image:model.thumbImage imageData:nil scrollView:currentCell.imageScrollView];
             [self getOriginalImageSizeWithAsset:model.asset complete:^(UIImage *originalImage) {
-                [self editImageView:cell.showImageView image:originalImage imageData:nil scrollView:cell.imageScrollView];
+                [self editImageView:currentCell.showImageView image:originalImage imageData:nil scrollView:currentCell.imageScrollView];
             }];
         }else{
             [self getThumbImageSizeWithAsset:model.asset complete:^(UIImage *thumbImage) {
-                [self editImageView:cell.showImageView image:thumbImage imageData:nil scrollView:cell.imageScrollView];
+                [self editImageView:currentCell.showImageView image:thumbImage imageData:nil scrollView:currentCell.imageScrollView];
                 model.thumbImage = thumbImage;
                 
                 [self getOriginalImageSizeWithAsset:model.asset complete:^(UIImage *originalImage) {
-                    [self editImageView:cell.showImageView image:originalImage imageData:nil scrollView:cell.imageScrollView];
+                    [self editImageView:currentCell.showImageView image:originalImage imageData:nil scrollView:currentCell.imageScrollView];
                 }];
             }];
         }
@@ -645,21 +649,19 @@
         [_editBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
         
         if (model.thumbImage){
-            [self editImageView:cell.showImageView image:model.thumbImage imageData:nil scrollView:cell.imageScrollView];
+            [self editImageView:currentCell.showImageView image:model.thumbImage imageData:nil scrollView:currentCell.imageScrollView];
             
-            [self initCell:cell gifImageModel:model];
+            [self initCell:currentCell gifImageModel:model];
             
         }else{
             [self getThumbImageSizeWithAsset:model.asset complete:^(UIImage *thumbImage) {
-                [self editImageView:cell.showImageView image:thumbImage imageData:nil scrollView:cell.imageScrollView];
+                [self editImageView:currentCell.showImageView image:thumbImage imageData:nil scrollView:currentCell.imageScrollView];
                 model.thumbImage = thumbImage;
                 
-                [self initCell:cell gifImageModel:model];
+                [self initCell:currentCell gifImageModel:model];
             }];
         }
     }
-    
-    return cell;
 }
 
 -(void)initCell:(BKShowExampleImageCollectionViewCell*)cell gifImageModel:(BKImageModel*)model
@@ -704,6 +706,14 @@
             }
         }];
     }
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didEndDisplayingCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    BKShowExampleImageCollectionViewCell * currentCell = (BKShowExampleImageCollectionViewCell*)cell;
+    
+    currentCell.imageScrollView.zoomScale = 1;
+    currentCell.imageScrollView.contentSize = CGSizeMake(currentCell.bk_width-BKExampleImagesSpacing*2, currentCell.bk_height);
 }
 
 #pragma mark - 缩略图 、 原图 、 原图data
@@ -842,6 +852,19 @@
         NSInteger item = indexPath.item;
         
         self.nowImageIndex = item;
+    }
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    if (scrollView == self.exampleImageCollectionView) {
+        
+        [[_exampleImageCollectionView visibleCells] enumerateObjectsUsingBlock:^(__kindof UICollectionViewCell * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            
+            BKShowExampleImageCollectionViewCell * cell = (BKShowExampleImageCollectionViewCell*)obj;
+            
+            
+        }];
     }
 }
 
