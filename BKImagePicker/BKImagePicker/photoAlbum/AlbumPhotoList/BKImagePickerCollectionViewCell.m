@@ -48,14 +48,7 @@
             
             BKGIFAlbumItemView * gifAlbumItemView = [[BKGIFAlbumItemView alloc]initWithFrame:self.instanceView.bounds];
             [self.instanceView addSubview:gifAlbumItemView];
-            
-            if (model.thumbImageData) {
-                FLAnimatedImage * gifImage = [FLAnimatedImage animatedImageWithGIFData:model.thumbImageData];
-                if (gifImage) {
-                    self.photoImageView.animatedImage = gifImage;
-                }
-            }
-            
+
         }
             
         if (self.max_select != 1) {

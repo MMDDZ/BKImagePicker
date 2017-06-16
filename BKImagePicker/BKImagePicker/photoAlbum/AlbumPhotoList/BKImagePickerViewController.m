@@ -261,7 +261,7 @@
     return flag;
 }
 
--(void)getImageWithIndex:(NSInteger)index getThumbComplete:(void (^)())getThumbComplete getOriginalDataComplete:(void (^)(BKImageModel * model ,NSInteger index))getOriginalDataComplete
+-(void)getImageWithIndex:(NSInteger)index getThumbComplete:(void (^)())getThumbComplete
 {
     BKImageModel * model = self.listArray[index];
     if (model.thumbImageData) {
@@ -297,11 +297,6 @@
                                 
                                 model.thumbImageData = imageData;
                                 
-                                dispatch_async(dispatch_get_main_queue(), ^{
-                                    if (getOriginalDataComplete) {
-                                        getOriginalDataComplete(model,index);
-                                    }
-                                });
                             }];
                         });
                     }
@@ -390,16 +385,6 @@
     
     [self getImageWithIndex:indexPath.item getThumbComplete:^{
         [cell revaluateIndexPath:indexPath listArr:[self.listArray copy] selectImageArr:[self.selectImageArray copy]];
-    } getOriginalDataComplete:^(BKImageModel * model ,NSInteger index){
-        UICollectionViewCell * currentCell = [_albumCollectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:index inSection:0]];
-        if (currentCell) {
-            if (model.thumbImageData) {
-                FLAnimatedImage * gifImage = [FLAnimatedImage animatedImageWithGIFData:model.thumbImageData];
-                if (gifImage) {
-                    cell.photoImageView.animatedImage = gifImage;
-                }
-            }
-        }
     }];
     
     return cell;
@@ -598,6 +583,41 @@
         cell.alpha = 0;
     } endAnimateOption:^{
         cell.alpha = 1;
+    }];
+}
+
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    if (scrollView == _albumCollectionView) {
+        [self scrollStopAnimate];
+    }
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
+{
+    if (!decelerate) {
+        if (scrollView == _albumCollectionView) {
+            [self scrollStopAnimate];
+        }
+    }
+}
+
+-(void)scrollStopAnimate
+{
+    [[_albumCollectionView visibleCells] enumerateObjectsUsingBlock:^(__kindof UICollectionViewCell * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        BKImagePickerCollectionViewCell * currentCell = (BKImagePickerCollectionViewCell*)obj;
+        if (currentCell) {
+            NSIndexPath * indexPath = [_albumCollectionView indexPathForCell:currentCell];
+            BKImageModel * model = self.listArray[indexPath.item];
+            if (model.thumbImageData && model.photoType == BKSelectPhotoTypeGIF) {
+                FLAnimatedImage * gifImage = [FLAnimatedImage animatedImageWithGIFData:model.thumbImageData];
+                if (gifImage) {
+                    currentCell.photoImageView.animatedImage = gifImage;
+                }
+            }
+        }
     }];
 }
 
