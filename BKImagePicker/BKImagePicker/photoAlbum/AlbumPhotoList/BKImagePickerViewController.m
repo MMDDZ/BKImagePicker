@@ -65,6 +65,11 @@
 @property (nonatomic,strong) UIButton * originalBtn;
 @property (nonatomic,strong) UIButton * sendBtn;
 
+/**
+ 是否移动过
+ */
+@property (nonatomic,assign) BOOL isDidScroll;
+
 @end
 
 @implementation BKImagePickerViewController
@@ -261,7 +266,7 @@
     return flag;
 }
 
--(void)getImageWithIndex:(NSInteger)index getThumbComplete:(void (^)())getThumbComplete
+-(void)getImageWithIndex:(NSInteger)index getThumbComplete:(void (^)())getThumbComplete getOriginalDataComplete:(void (^)(BKImageModel * model ,NSInteger index))getOriginalDataComplete
 {
     BKImageModel * model = self.listArray[index];
     if (model.thumbImageData) {
@@ -296,6 +301,14 @@
                             [[PHImageManager defaultManager] requestImageDataForAsset:model.asset options:options resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
                                 
                                 model.thumbImageData = imageData;
+                                
+                                if (!self.isDidScroll) {
+                                    dispatch_async(dispatch_get_main_queue(), ^{
+                                        if (getOriginalDataComplete) {
+                                            getOriginalDataComplete(model,index);
+                                        }
+                                    });
+                                }
                                 
                             }];
                         });
@@ -380,11 +393,20 @@
     cell.delegate = self;
     cell.max_select = self.max_select;
     
-    cell.photoImageView.image = nil;
-    cell.photoImageView.animatedImage = nil;
-    
     [self getImageWithIndex:indexPath.item getThumbComplete:^{
         [cell revaluateIndexPath:indexPath listArr:[self.listArray copy] selectImageArr:[self.selectImageArray copy]];
+    } getOriginalDataComplete:^(BKImageModel * model ,NSInteger index) {
+        NSIndexPath * currentIndexPath = [NSIndexPath indexPathForItem:index inSection:0];
+        BKImagePickerCollectionViewCell * currentCell = (BKImagePickerCollectionViewCell*)[_albumCollectionView cellForItemAtIndexPath:currentIndexPath];
+        if (currentCell) {
+            BKImageModel * model = self.listArray[currentIndexPath.item];
+            if (model.thumbImageData && model.photoType == BKSelectPhotoTypeGIF) {
+                FLAnimatedImage * gifImage = [FLAnimatedImage animatedImageWithGIFData:model.thumbImageData];
+                if (gifImage) {
+                    currentCell.photoImageView.animatedImage = gifImage;
+                }
+            }
+        }
     }];
     
     return cell;
@@ -587,6 +609,13 @@
 }
 
 #pragma mark - UIScrollViewDelegate
+
+-(void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+    if (scrollView == _albumCollectionView) {
+        _isDidScroll = YES;
+    }
+}
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
