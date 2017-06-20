@@ -52,16 +52,21 @@
     
     CGContextSetLineCap(context, kCGLineCapRound);
     CGContextSetLineJoin(context, kCGLineJoinRound);
-    CGContextSetStrokeColorWithColor(context, [UIColor redColor].CGColor);
     CGContextSetLineWidth(context, 5);
     
     //之前画的线
     if ([self.lineArray count]>0) {
         for (int i=0; i<[self.lineArray count]; i++) {
-            NSArray * array=[NSArray arrayWithArray:[self.lineArray objectAtIndex:i]];
             
-            if ([array count]>0)
-            {
+            NSDictionary * dic = self.lineArray[i];
+            NSArray * array = [NSArray arrayWithArray:dic[@"point"]];
+            
+            if ([dic[@"type"] integerValue] == BKSelectTypeColor) {
+                CGContextSetStrokeColorWithColor(context, ((UIColor*)dic[@"color"]).CGColor);
+            }
+            
+            if ([array count]>0)  {
+                
                 CGContextBeginPath(context);
                 CGPoint myStartPoint=CGPointFromString([array objectAtIndex:0]);
                 CGContextMoveToPoint(context, myStartPoint.x, myStartPoint.y);
@@ -77,15 +82,17 @@
         }
     }
     
+    CGContextSetStrokeColorWithColor(context, self.selectColor.CGColor);
+    
     //画当前的线
-    if ([self.pointArray count]>0)
-    {
+    if ([self.pointArray count]>0) {
+        
         CGContextBeginPath(context);
         CGPoint myStartPoint=CGPointFromString([self.pointArray objectAtIndex:0]);
         CGContextMoveToPoint(context, myStartPoint.x, myStartPoint.y);
         
-        for (int j=0; j<[self.pointArray count]-1; j++)
-        {
+        for (int j=0; j<[self.pointArray count]-1; j++) {
+            
             CGPoint myEndPoint=CGPointFromString([self.pointArray objectAtIndex:j+1]);
             CGContextAddLineToPoint(context, myEndPoint.x,myEndPoint.y);
         }
@@ -121,7 +128,7 @@
 {
     if ([self.pointArray count] > 0) {
         NSArray * array= [NSArray arrayWithArray:self.pointArray];
-        [self.lineArray addObject:array];
+        [self.lineArray addObject:@{@"point":array,@"color":self.selectColor,@"type":@(self.selectType)}];
         [self.pointArray removeAllObjects];
     }
     

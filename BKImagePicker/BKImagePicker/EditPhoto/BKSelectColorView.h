@@ -7,9 +7,18 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "BKSelectColorMarkView.h"
+
+@protocol BKSelectColorViewDelegate <NSObject>
+
+-(void)selectColor:(UIColor*)color orSelectType:(BKSelectType)selectType;
+
+@end
 
 @interface BKSelectColorView : UIView
 
--(instancetype)initWithStartPosition:(CGPoint)point;
+@property (nonatomic,assign) id<BKSelectColorViewDelegate> delegate;
+
+-(instancetype)initWithStartPosition:(CGPoint)point delegate:(id)delegate;
 
 @end

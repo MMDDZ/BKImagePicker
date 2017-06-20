@@ -14,7 +14,7 @@
 #import "BKDrawLineView.h"
 #import "BKSelectColorView.h"
 
-@interface BKEditPhotoView()
+@interface BKEditPhotoView()<BKSelectColorViewDelegate>
 
 @property (nonatomic,strong) UIImage * editImage;
 @property (nonatomic,strong) UIImageView * editImageView;
@@ -235,11 +235,12 @@
         __weak typeof(self) weakSelf = self;
         [_drawLineView setMovedOption:^{
             weakSelf.isDrawLine = YES;
+            weakSelf.afterDrawTime = 5;
         }];
         [_drawLineView setMoveEndOption:^{
             
             if (weakSelf.isDrawLine) {
-                weakSelf.afterDrawTime = 10;
+                weakSelf.afterDrawTime = 5;
             }else {
                 weakSelf.isDrawLine = YES;
             }
@@ -277,10 +278,19 @@
 -(BKSelectColorView*)selectColorView
 {
     if (!_selectColorView) {
-        _selectColorView = [[BKSelectColorView alloc]initWithStartPosition:CGPointMake(UISCREEN_WIDTH - 40,  UISCREEN_HEIGHT - 64 - 200)];
+        _selectColorView = [[BKSelectColorView alloc]initWithStartPosition:CGPointMake(UISCREEN_WIDTH - 40,  UISCREEN_HEIGHT - 64 - 200) delegate:self];
     }
     return _selectColorView;
 }
 
+#pragma mark - BKSelectColorViewDelegate
+
+-(void)selectColor:(UIColor*)color orSelectType:(BKSelectType)selectType
+{
+    if (selectType == BKSelectTypeColor) {
+        _drawLineView.selectColor = color;
+        _drawLineView.selectType = selectType;
+    }
+}
 
 @end

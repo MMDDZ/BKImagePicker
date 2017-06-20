@@ -9,7 +9,8 @@
 #import <UIKit/UIKit.h>
 
 typedef enum : NSUInteger {
-    BKSelectTypeMaSaiKe = 0,
+    BKSelectTypeColor = 0,
+    BKSelectTypeMaSaiKe,
 } BKSelectType;
 
 @interface BKSelectColorMarkView : UIImageView

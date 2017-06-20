@@ -8,7 +8,7 @@
 
 #import "BKSelectColorView.h"
 #import "BKImagePickerConst.h"
-#import "BKSelectColorMarkView.h"
+
 
 @interface BKSelectColorView()
 
@@ -20,10 +20,12 @@
 
 @implementation BKSelectColorView
 
--(instancetype)initWithStartPosition:(CGPoint)point
+-(instancetype)initWithStartPosition:(CGPoint)point delegate:(id)delegate
 {
     self = [super initWithFrame:CGRectMake(point.x, point.y, 40, 0)];
     if (self) {
+        
+        self.delegate = delegate;
         
         self.backgroundColor = [UIColor clearColor];
         self.clipsToBounds = NO;
@@ -46,6 +48,10 @@
             {
                 colorImageView.backgroundColor = [UIColor redColor];
                 _selectImageView = colorImageView;
+                
+                if ([self.delegate respondsToSelector:@selector(selectColor:orSelectType:)]) {
+                    [self.delegate selectColor:_selectImageView.backgroundColor orSelectType:BKSelectTypeColor];
+                }
             }
                 break;
             case 1:
@@ -141,8 +147,14 @@
             }
             if (!_selectImageView.image) {
                 _markView.selectColor = _selectImageView.backgroundColor;
+                if ([self.delegate respondsToSelector:@selector(selectColor:orSelectType:)]) {
+                    [self.delegate selectColor:_markView.selectColor orSelectType:BKSelectTypeColor];
+                }
             }else{
                 _markView.selectType = BKSelectTypeMaSaiKe;
+                if ([self.delegate respondsToSelector:@selector(selectColor:orSelectType:)]) {
+                    [self.delegate selectColor:nil orSelectType:BKSelectTypeMaSaiKe];
+                }
             }
             
             _markView.bk_centerY = _selectImageView.bk_centerY;

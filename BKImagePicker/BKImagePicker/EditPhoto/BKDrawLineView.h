@@ -7,12 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "BKSelectColorMarkView.h"
 
 @interface BKDrawLineView : UIView
 
 @property (nonatomic,copy) void (^movedOption)();
 @property (nonatomic,copy) void (^moveEndOption)();
 
+@property (nonatomic,strong) UIColor * selectColor;
+@property (nonatomic,assign) BKSelectType selectType;
 
 /**
  清除所有
