@@ -7,10 +7,16 @@
 //
 
 #import "BKImagePickerCollectionViewCell.h"
-#import "BKVideoAlbumItemView.h"
-#import "BKGIFAlbumItemView.h"
+#import "BKImageAlbumItemView.h"
 #import "BKImagePickerConst.h"
 #import "BKImageModel.h"
+
+@interface BKImagePickerCollectionViewCell()
+
+@property (nonatomic,strong) BKImageAlbumItemSelectButton * selectButton;
+@property (nonatomic,strong) BKImageAlbumItemView * itemView;
+
+@end
 
 @implementation BKImagePickerCollectionViewCell
 
@@ -19,46 +25,46 @@
     self = [super initWithFrame:frame];
     if (self) {
         
-        _photoImageView = [[FLAnimatedImageView alloc]initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
-        _photoImageView.runLoopMode = NSDefaultRunLoopMode;
+        _photoImageView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
+//        _photoImageView.runLoopMode = NSDefaultRunLoopMode;
         _photoImageView.clipsToBounds = YES;
         _photoImageView.contentMode = UIViewContentModeScaleAspectFill;
-        [self addSubview:_photoImageView];
+        [self.contentView addSubview:_photoImageView];
         
-        _instanceView = [[UIView alloc]initWithFrame:_photoImageView.bounds];
-        _instanceView.backgroundColor = [UIColor clearColor];
-        [self addSubview:_instanceView];
-
+        _itemView = [[BKImageAlbumItemView alloc]initWithFrame:_photoImageView.bounds];
+        [self.contentView addSubview:_itemView];
+        
+        _selectButton = [[BKImageAlbumItemSelectButton alloc]initWithFrame:CGRectMake(self.bk_width - 30, 0, 30, 30)];
+        __weak typeof(self) weakSelf = self;
+        [_selectButton setSelectButtonClick:^(BKImageAlbumItemSelectButton * button) {
+            __strong typeof(self) strongSelf = weakSelf;
+            [strongSelf selectButton:button];
+        }];
+        [self.contentView addSubview:_selectButton];
+        
     }
     return self;
 }
 
 -(void)revaluateIndexPath:(NSIndexPath *)indexPath listArr:(NSArray *)listArr selectImageArr:(NSArray *)selectImageArr
 {
-    [[self.instanceView subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        [obj removeFromSuperview];
-    }];
+    _selectButton.hidden = YES;
     
     BKImageModel * model = listArr[indexPath.item];
     self.photoImageView.image = model.thumbImage;
     
-    if (model.asset.mediaType == PHAssetMediaTypeImage) {
+    if (model.photoType != BKSelectPhotoTypeVideo) {
         
         if (model.photoType == BKSelectPhotoTypeGIF) {
-            
-            BKGIFAlbumItemView * gifAlbumItemView = [[BKGIFAlbumItemView alloc]initWithFrame:self.instanceView.bounds];
-            [self.instanceView addSubview:gifAlbumItemView];
-
+            [_itemView photoType:BKSelectPhotoTypeGIF allSecond:0];
+        }else{
+            [_itemView photoType:BKSelectPhotoTypeImage allSecond:0];
         }
-            
+        
         if (self.max_select != 1) {
             
-            BKImageAlbumItemSelectButton * selectButton = [[BKImageAlbumItemSelectButton alloc]initWithFrame:CGRectMake(self.bk_width - 30, 0, 30, 30)];
-            __weak BKImagePickerCollectionViewCell * mySelf = self;
-            [selectButton setSelectButtonClick:^(BKImageAlbumItemSelectButton * button) {
-                [mySelf selectButton:button];
-            }];
-            [self.instanceView addSubview:selectButton];
+            _selectButton.hidden = NO;
+            _selectButton.tag = indexPath.item;
             
             __block BOOL isHaveFlag = NO;
             __block NSInteger item = 0;
@@ -72,21 +78,15 @@
             }];
             
             if (isHaveFlag) {
-                selectButton.title = [NSString stringWithFormat:@"%ld",item+1];
+                _selectButton.title = [NSString stringWithFormat:@"%ld",item+1];
             }else{
-                selectButton.title = @"";
+                _selectButton.title = @"";
             }
-            
-            selectButton.tag = indexPath.item;
         }
         
     }else{
-        
         NSInteger allSecond = [[model.asset valueForKey:@"duration"] integerValue];
-        
-        BKVideoAlbumItemView * videoAlbumItemView = [[BKVideoAlbumItemView alloc]initWithFrame:self.instanceView.bounds allSecond:allSecond];
-        [self.instanceView addSubview:videoAlbumItemView];
-        
+        [_itemView photoType:BKSelectPhotoTypeVideo allSecond:allSecond];
     }
 }
 

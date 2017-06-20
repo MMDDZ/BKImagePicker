@@ -21,9 +21,7 @@
 
 @property (nonatomic,assign) id<BKImagePickerCollectionViewCellDelegate> delegate;
 
-@property (nonatomic,strong) FLAnimatedImageView * photoImageView;
-
-@property (nonatomic,strong) UIView * instanceView;
+@property (nonatomic,strong) UIImageView * photoImageView;
 
 @property (nonatomic,assign) NSInteger max_select;
 

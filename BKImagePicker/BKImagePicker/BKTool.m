@@ -185,6 +185,16 @@
         return imageData;
     }
     
+    NSData * lastImageData = [self calculateSizeAndCreateImageData:imageData];
+    while (lastImageData.length > 200*1024) {
+        lastImageData = [self calculateSizeAndCreateImageData:lastImageData];
+    }
+    
+    return lastImageData;
+}
+
++(NSData*)calculateSizeAndCreateImageData:(NSData*)imageData
+{
     UIImage * image = [UIImage imageWithData:imageData];
     UIImage *newImage;
     
@@ -202,7 +212,8 @@
         }
     }
     
-    return UIImageJPEGRepresentation(newImage, BKThumbImageCompressSizeMultiplier);
+    NSData * newImageData = UIImageJPEGRepresentation(newImage, BKThumbImageCompressSizeMultiplier);
+    return newImageData;
 }
 
 +(UIImage*)compressImage:(UIImage*)image
