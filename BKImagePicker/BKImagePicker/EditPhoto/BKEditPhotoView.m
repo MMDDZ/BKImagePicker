@@ -11,24 +11,39 @@
 #import "BKImagePickerConst.h"
 #import <Photos/Photos.h>
 #import "BKImagePicker.h"
-#import "BKDrawLineView.h"
+#import "BKDrawView.h"
 #import "BKSelectColorView.h"
 
 @interface BKEditPhotoView()<BKSelectColorViewDelegate>
-
-@property (nonatomic,strong) UIImage * editImage;
-@property (nonatomic,strong) UIImageView * editImageView;
-
-@property (nonatomic,assign) BOOL isDrawLine;
-@property (nonatomic,assign) NSInteger afterDrawTime;
-@property (nonatomic,strong) NSTimer * drawTimer;
 
 @property (nonatomic,strong) BKEditGradientView * topView;
 @property (nonatomic,strong) BKEditGradientView * bottomView;
 
 @property (nonatomic,strong) UIButton * selectEditBtn;
 
-@property (nonatomic,strong) BKDrawLineView * drawLineView;
+@property (nonatomic,strong) UIImage * editImage;
+@property (nonatomic,strong) UIImageView * editImageView;
+
+/**
+ 是否正在绘画中
+ */
+@property (nonatomic,assign) BOOL isDrawingFlag;
+/**
+ 停止绘画后倒计时时间（5s）
+ */
+@property (nonatomic,assign) NSInteger afterDrawTime;
+/**
+ 倒计时定时器
+ */
+@property (nonatomic,strong) NSTimer * drawTimer;
+
+/**
+ 画图(包括线、圆角矩形、圆、箭头)
+ */
+@property (nonatomic,strong) BKDrawView * drawView;
+/**
+ 颜色选取
+ */
 @property (nonatomic,strong) BKSelectColorView * selectColorView;
 
 @end
@@ -53,7 +68,7 @@
         
         [self addSubview:self.selectColorView];
         
-        [self addObserver:self forKeyPath:@"isDrawLine" options:NSKeyValueObservingOptionNew context:nil];
+        [self addObserver:self forKeyPath:@"isDrawingFlag" options:NSKeyValueObservingOptionNew context:nil];
         _drawTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(drawThingsTimer) userInfo:nil repeats:YES];
     }
     return self;
@@ -61,19 +76,21 @@
 
 -(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
 {
-    if ([keyPath isEqualToString:@"isDrawLine"]) {
+    if ([keyPath isEqualToString:@"isDrawingFlag"]) {
         if ([change[@"new"] boolValue]) {
             
             [UIView animateWithDuration:0.25 animations:^{
                 _topView.alpha = 0;
                 _bottomView.alpha = 0;
                 _selectColorView.alpha = 0;
+                [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
             }];
         }else{
             [UIView animateWithDuration:0.25 animations:^{
                 _topView.alpha = 1;
                 _bottomView.alpha = 1;
                 _selectColorView.alpha = 1;
+                [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
             }];
         }
     }
@@ -81,7 +98,7 @@
 
 -(void)cancelThings
 {
-    [self removeObserver:self forKeyPath:@"isDrawLine"];
+    [self removeObserver:self forKeyPath:@"isDrawingFlag"];
     [_drawTimer invalidate];
     _drawTimer = nil;
 }
@@ -154,6 +171,9 @@
     [self removeFromSuperview];
 }
 
+/**
+ 保存图片
+ */
 -(void)saveBtnClick
 {
     [BKImagePicker saveImage:self.editImage];
@@ -166,10 +186,16 @@
     if (!_bottomView) {
         _bottomView = [[BKEditGradientView alloc]initWithFrame:CGRectMake(0, self.bk_height - 64, self.bk_width, 64) topColor:[UIColor colorWithWhite:0 alpha:0] bottomColor:[UIColor colorWithWhite:0.2 alpha:0.5]];
         
-        NSString * bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
-        NSArray * imageArr_n = @[[bundlePath stringByAppendingString:@"/draw_n.png"],[bundlePath stringByAppendingString:@"/rotation_n.png"],[bundlePath stringByAppendingString:@"/write_n.png"],[bundlePath stringByAppendingString:@"/clip_n.png"],[bundlePath stringByAppendingString:@"/filter_n.png"]];
-        NSArray * imageArr_s = @[[bundlePath stringByAppendingString:@"/draw_s.png"],[bundlePath stringByAppendingString:@"/rotation_s.png"],[bundlePath stringByAppendingString:@"/write_s.png"],[bundlePath stringByAppendingString:@"/clip_s.png"],[bundlePath stringByAppendingString:@"/filter_s.png"]];
+        UIScrollView * itemsView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, self.bk_width/4*3 - 6, _bottomView.bk_height)];
+        itemsView.backgroundColor = [UIColor clearColor];
+        itemsView.showsVerticalScrollIndicator = NO;
+        [_bottomView addSubview:itemsView];
         
+        NSString * bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
+        NSArray * imageArr_n = @[[bundlePath stringByAppendingString:@"/draw_n.png"],[bundlePath stringByAppendingString:@"/rounded_rectangle_n.png"],[bundlePath stringByAppendingString:@"/circle_n.png"],[bundlePath stringByAppendingString:@"/arrow_n.png"],[bundlePath stringByAppendingString:@"/rotation_n.png"],[bundlePath stringByAppendingString:@"/write_n.png"],[bundlePath stringByAppendingString:@"/clip_n.png"],[bundlePath stringByAppendingString:@"/filter_n.png"]];
+        NSArray * imageArr_s = @[[bundlePath stringByAppendingString:@"/draw_s.png"],[bundlePath stringByAppendingString:@"/rounded_rectangle_s.png"],[bundlePath stringByAppendingString:@"/circle_s.png"],[bundlePath stringByAppendingString:@"/arrow_s.png"],[bundlePath stringByAppendingString:@"/rotation_s.png"],[bundlePath stringByAppendingString:@"/write_s.png"],[bundlePath stringByAppendingString:@"/clip_s.png"],[bundlePath stringByAppendingString:@"/filter_s.png"]];
+        
+        __block UIView * lastView;
         [imageArr_n enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             UIButton * button = [UIButton buttonWithType:UIButtonTypeCustom];
             button.frame = CGRectMake(idx*50, 0, 50, 64);
@@ -178,12 +204,15 @@
             [button setImage:[UIImage imageWithContentsOfFile:imageArr_s[idx]] forState:UIControlStateSelected];
             [button addTarget:self action:@selector(editBtnClick:) forControlEvents:UIControlEventTouchUpInside];
             button.tag = idx;
-            [_bottomView addSubview:button];
+            [itemsView addSubview:button];
             
             if (idx == 0) {
                 [self editBtnClick:button];
             }
+            
+            lastView = button;
         }];
+        itemsView.contentSize = CGSizeMake(CGRectGetMaxX(lastView.frame), itemsView.bk_height);
         
         UIButton * sendBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         sendBtn.frame = CGRectMake(self.bk_width/4*3, (_bottomView.bk_height - 37)/2, self.bk_width/4-6, 37);
@@ -199,6 +228,8 @@
     return _bottomView;
 }
 
+#pragma mark - 底部按钮
+
 -(void)editBtnClick:(UIButton*)button
 {
     if (self.selectEditBtn == button) {
@@ -212,10 +243,36 @@
     switch (button.tag) {
         case 0:
         {
-            [self drawLineView];
+            if (![[self subviews] containsObject:_drawView]) {
+                [self addSubview:self.drawView];
+            }
+            _drawView.drawType = BKDrawTypeLine;
         }
             break;
-            
+        case 1:
+        {
+            if (![[self subviews] containsObject:_drawView]) {
+                [self addSubview:self.drawView];
+            }
+            _drawView.drawType = BKDrawTypeRoundedRectangle;
+        }
+            break;
+        case 2:
+        {
+            if (![[self subviews] containsObject:_drawView]) {
+                [self addSubview:self.drawView];
+            }
+            _drawView.drawType = BKDrawTypeCircle;
+        }
+            break;
+        case 3:
+        {
+            if (![[self subviews] containsObject:_drawView]) {
+                [self addSubview:self.drawView];
+            }
+            _drawView.drawType = BKDrawTypeArrow;
+        }
+            break;
         default:
             break;
     }
@@ -226,36 +283,36 @@
     
 }
 
-#pragma mark - 画线
+#pragma mark - 画画
 
--(BKDrawLineView*)drawLineView
+-(BKDrawView*)drawView
 {
-    if (!_drawLineView) {
-        _drawLineView = [[BKDrawLineView alloc]initWithFrame:self.editImageView.frame];
+    if (!_drawView) {
+        _drawView = [[BKDrawView alloc]initWithFrame:self.editImageView.frame];
         __weak typeof(self) weakSelf = self;
-        [_drawLineView setMovedOption:^{
-            weakSelf.isDrawLine = YES;
+        [_drawView setMovedOption:^{
+            weakSelf.isDrawingFlag = YES;
             weakSelf.afterDrawTime = 5;
         }];
-        [_drawLineView setMoveEndOption:^{
+        [_drawView setMoveEndOption:^{
             
-            if (weakSelf.isDrawLine) {
+            if (weakSelf.isDrawingFlag) {
                 weakSelf.afterDrawTime = 5;
             }else {
-                weakSelf.isDrawLine = YES;
+                weakSelf.isDrawingFlag = YES;
             }
             
         }];
-        [self insertSubview:_drawLineView aboveSubview:self.editImageView];
+        [self insertSubview:_drawView aboveSubview:self.editImageView];
     }
-    return _drawLineView;
+    return _drawView;
 }
 
 -(void)drawThingsTimer
 {
     self.afterDrawTime = self.afterDrawTime - 1;
     if (self.afterDrawTime == 0) {
-        self.isDrawLine = NO;
+        self.isDrawingFlag = NO;
     }
 }
 
@@ -288,14 +345,14 @@
 -(void)selectColor:(UIColor*)color orSelectType:(BKSelectType)selectType
 {
     if (selectType == BKSelectTypeColor) {
-        _drawLineView.selectColor = color;
-        _drawLineView.selectType = selectType;
+        _drawView.selectColor = color;
+        _drawView.selectType = selectType;
     }
 }
 
 -(void)revocationAction
 {
-    [_drawLineView cleanFinallyDraw];
+    [_drawView cleanFinallyDraw];
 }
 
 @end

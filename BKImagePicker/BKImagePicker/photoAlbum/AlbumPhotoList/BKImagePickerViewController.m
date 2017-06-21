@@ -508,7 +508,7 @@
 
 -(void)previewWithCell:(BKImagePickerCollectionViewCell*)cell imageListArray:(NSArray*)imageListArray tapModel:(BKImageModel*)tapModel
 {
-    if (!cell.photoImageView.image
+    if (!cell.photoImageView.image && cell
         //&& !cell.photoImageView.animatedImage
         ) {
         return;
