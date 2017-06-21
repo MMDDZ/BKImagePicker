@@ -278,7 +278,7 @@
 -(BKSelectColorView*)selectColorView
 {
     if (!_selectColorView) {
-        _selectColorView = [[BKSelectColorView alloc]initWithStartPosition:CGPointMake(UISCREEN_WIDTH - 40,  UISCREEN_HEIGHT - 64 - 200) delegate:self];
+        _selectColorView = [[BKSelectColorView alloc]initWithStartPosition:CGPointMake(UISCREEN_WIDTH - 40,  UISCREEN_HEIGHT - 64 - 250) delegate:self];
     }
     return _selectColorView;
 }
@@ -291,6 +291,11 @@
         _drawLineView.selectColor = color;
         _drawLineView.selectType = selectType;
     }
+}
+
+-(void)revocationAction
+{
+    [_drawLineView cleanFinallyDraw];
 }
 
 @end

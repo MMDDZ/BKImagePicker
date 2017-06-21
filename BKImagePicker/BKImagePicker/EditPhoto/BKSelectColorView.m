@@ -12,8 +12,11 @@
 
 @interface BKSelectColorView()
 
-@property (nonatomic,strong) UIImageView * selectImageView;
+@property (nonatomic,copy) NSString * bundlePath;
 
+@property (nonatomic,strong) UIButton * revocationBtn;
+
+@property (nonatomic,strong) UIImageView * selectImageView;
 @property (nonatomic,strong) BKSelectColorMarkView * markView;
 
 @end
@@ -30,84 +33,71 @@
         self.backgroundColor = [UIColor clearColor];
         self.clipsToBounds = NO;
         
+        [self addSubview:self.revocationBtn];
         [self createColorView];
         
     }
     return self;
 }
 
+-(NSString*)bundlePath
+{
+    if (!_bundlePath) {
+        _bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
+    }
+    return _bundlePath;
+}
+
+#pragma mark - 撤销
+
+-(UIButton *)revocationBtn
+{
+    if (!_revocationBtn) {
+        _revocationBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        _revocationBtn.frame = CGRectMake(0, 5, 40, 40);
+        [_revocationBtn setImage:[UIImage imageWithContentsOfFile:[self.bundlePath stringByAppendingString:@"/revocation.png"]] forState:UIControlStateNormal];
+        [_revocationBtn setImageEdgeInsets:UIEdgeInsetsMake(0, -8, 0, 0)];
+        [_revocationBtn addTarget:self action:@selector(revocationBtnClick) forControlEvents:UIControlEventTouchUpInside];
+    }
+    return _revocationBtn;
+}
+
+-(void)revocationBtnClick
+{
+    if ([self.delegate respondsToSelector:@selector(revocationAction)]) {
+        [self.delegate revocationAction];
+    }
+}
+
+#pragma mark - 选色
+
 -(void)createColorView
 {
-    UIView * lastView;
-    for (int i = 0; i < 10 ; i++) {
+    UIImage * masaike = [UIImage imageWithContentsOfFile:[self.bundlePath stringByAppendingString:@"/masaike.png"]];
+    NSArray * arr = @[[UIColor redColor],[UIColor orangeColor],[UIColor yellowColor],[UIColor greenColor],[UIColor blueColor],[UIColor purpleColor],[UIColor blackColor],[UIColor whiteColor],[UIColor lightGrayColor],masaike];
+    
+    __block UIView * lastView;
+    [arr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         
-        UIImageView * colorImageView = [[UIImageView alloc]initWithFrame:CGRectMake(8, 16*i, 16, 16)];
+        UIImageView * colorImageView = [[UIImageView alloc]initWithFrame:CGRectMake(8, CGRectGetMaxY(_revocationBtn.frame) + 5 + 16*idx, 16, 16)];
         colorImageView.tag = 1;
-        switch (i) {
-            case 0:
-            {
-                colorImageView.backgroundColor = [UIColor redColor];
-                _selectImageView = colorImageView;
-                
-                if ([self.delegate respondsToSelector:@selector(selectColor:orSelectType:)]) {
-                    [self.delegate selectColor:_selectImageView.backgroundColor orSelectType:BKSelectTypeColor];
-                }
-            }
-                break;
-            case 1:
-            {
-                colorImageView.backgroundColor = [UIColor orangeColor];
-            }
-                break;
-            case 2:
-            {
-                colorImageView.backgroundColor = [UIColor yellowColor];
-            }
-                break;
-            case 3:
-            {
-                colorImageView.backgroundColor = [UIColor greenColor];
-            }
-                break;
-            case 4:
-            {
-                colorImageView.backgroundColor = [UIColor blueColor];
-            }
-                break;
-            case 5:
-            {
-                colorImageView.backgroundColor = [UIColor purpleColor];
-            }
-                break;
-            case 6:
-            {
-                colorImageView.backgroundColor = [UIColor blackColor];
-            }
-                break;
-            case 7:
-            {
-                colorImageView.backgroundColor = [UIColor whiteColor];
-            }
-                break;
-            case 8:
-            {
-                colorImageView.backgroundColor = [UIColor lightGrayColor];
-            }
-                break;
-            case 9:
-            {
-                NSString * bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
-                bundlePath = [bundlePath stringByAppendingString:@"/masaike.png"];
-                colorImageView.image = [UIImage imageWithContentsOfFile:bundlePath];
-            }
-                break;
-            default:
-                break;
-        }
         [self addSubview:colorImageView];
         
+        if ([obj isKindOfClass:[UIColor class]]) {
+            colorImageView.backgroundColor = obj;
+        }else if ([obj isKindOfClass:[UIImage class]]) {
+            colorImageView.image = obj;
+        }
+        
+        if (idx == 0) {
+            _selectImageView = colorImageView;
+            if ([self.delegate respondsToSelector:@selector(selectColor:orSelectType:)]) {
+                [self.delegate selectColor:_selectImageView.backgroundColor orSelectType:BKSelectTypeColor];
+            }
+        }
+        
         lastView = colorImageView;
-    }
+    }];
     
     self.bk_height = CGRectGetMaxY(lastView.frame);
     
@@ -137,6 +127,7 @@
     
     for (UIView * view in [self subviews]) {
         if (CGRectContainsPoint(CGRectMake(0, view.bk_y, self.bk_width, 16) , currentPoint) && view.tag == 1) {
+            
             _selectImageView = (UIImageView*)view;
 
             [self bringSubviewToFront:_selectImageView];
@@ -145,6 +136,7 @@
             if (![[self subviews] containsObject:self.markView]) {
                 [self addSubview:self.markView];
             }
+            
             if (!_selectImageView.image) {
                 _markView.selectColor = _selectImageView.backgroundColor;
                 if ([self.delegate respondsToSelector:@selector(selectColor:orSelectType:)]) {

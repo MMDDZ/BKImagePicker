@@ -11,6 +11,19 @@
 
 @protocol BKSelectColorViewDelegate <NSObject>
 
+@optional
+
+/**
+ 撤销
+ */
+-(void)revocationAction;
+
+/**
+ 选取颜色
+
+ @param color 颜色(不是颜色类型此参数为nil)
+ @param selectType 选取类型
+ */
 -(void)selectColor:(UIColor*)color orSelectType:(BKSelectType)selectType;
 
 @end
