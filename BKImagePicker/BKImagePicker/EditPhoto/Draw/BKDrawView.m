@@ -88,27 +88,41 @@
     CGContextSetLineJoin(context, kCGLineJoinRound);
     CGContextSetLineWidth(context, 5);
     
+    NSMutableArray * mosaicPointArr = [NSMutableArray array];
+    
     //之前画的线
     if ([self.lineArray count]>0) {
         for (int i = 0; i < [self.lineArray count]; i++) {
             BKDrawModel * model = self.lineArray[i];
-            if (model.drawType == BKDrawTypeLine || model.drawType == BKDrawTypeRoundedRectangle) {
-                [self drawLine:context pointArr:model.pointArray lineColor:model.selectColor.CGColor];
-            }else if (model.drawType == BKDrawTypeCircle) {
-                [self drawCircle:context pointArr:model.pointArray lineColor:model.selectColor.CGColor];
-            }else if (model.drawType == BKDrawTypeArrow) {
-                [self drawArrow:context pointArr:model.pointArray lineColor:model.selectColor.CGColor];
+            if (model.selectType == BKSelectTypeColor) {
+                if (model.drawType == BKDrawTypeLine || model.drawType == BKDrawTypeRoundedRectangle) {
+                    [self drawLine:context pointArr:model.pointArray lineColor:model.selectColor.CGColor];
+                }else if (model.drawType == BKDrawTypeCircle) {
+                    [self drawCircle:context pointArr:model.pointArray lineColor:model.selectColor.CGColor];
+                }else if (model.drawType == BKDrawTypeArrow) {
+                    [self drawArrow:context pointArr:model.pointArray lineColor:model.selectColor.CGColor];
+                }
+            }else if (model.selectType == BKSelectTypeMaSaiKe) {
+                [mosaicPointArr addObjectsFromArray:model.pointArray];
             }
         }
     }
     
     //画当前的线
-    if (self.drawType == BKDrawTypeLine || self.drawType == BKDrawTypeRoundedRectangle) {
-        [self drawLine:context pointArr:[self.pointArray copy] lineColor:self.selectColor.CGColor];
-    }else if (self.drawType == BKDrawTypeCircle) {
-        [self drawCircle:context pointArr:[self.pointArray copy] lineColor:self.selectColor.CGColor];
-    }else if (self.drawType == BKDrawTypeArrow) {
-        [self drawArrow:context pointArr:[self.pointArray copy] lineColor:self.selectColor.CGColor];
+    if (self.selectType == BKSelectTypeColor) {
+        if (self.drawType == BKDrawTypeLine || self.drawType == BKDrawTypeRoundedRectangle) {
+            [self drawLine:context pointArr:[self.pointArray copy] lineColor:self.selectColor.CGColor];
+        }else if (self.drawType == BKDrawTypeCircle) {
+            [self drawCircle:context pointArr:[self.pointArray copy] lineColor:self.selectColor.CGColor];
+        }else if (self.drawType == BKDrawTypeArrow) {
+            [self drawArrow:context pointArr:[self.pointArray copy] lineColor:self.selectColor.CGColor];
+        }
+    }else if (self.selectType == BKSelectTypeMaSaiKe) {
+        [mosaicPointArr addObjectsFromArray:self.pointArray];
+    }
+    
+    if ([self.delegate respondsToSelector:@selector(processingMosaicImageWithPathArr:)]) {
+        [self.delegate processingMosaicImageWithPathArr:[mosaicPointArr copy]];
     }
 }
 
@@ -128,8 +142,8 @@
         CGPoint startPoint = CGPointFromString([NSString stringWithFormat:@"%@",pointArr[0]]);
         CGContextMoveToPoint(context, startPoint.x, startPoint.y);
         
-        for (int j = 0; j < [pointArr count]-1; j++) {
-            CGPoint endPoint = CGPointFromString([NSString stringWithFormat:@"%@",pointArr[j+1]]);
+        for (int i = 0; i < [pointArr count]-1; i++) {
+            CGPoint endPoint = CGPointFromString([NSString stringWithFormat:@"%@",pointArr[i+1]]);
             CGContextAddLineToPoint(context, endPoint.x, endPoint.y);
         }
         
@@ -448,8 +462,8 @@
         }
         [self setNeedsDisplay];
         
-        if (self.movedOption) {
-            self.movedOption();
+        if ([self.delegate respondsToSelector:@selector(movedOption)]) {
+            [self.delegate movedOption];
         }
     }
 }
@@ -468,8 +482,8 @@
         [self.pointArray removeAllObjects];
     }
     
-    if (self.moveEndOption) {
-        self.moveEndOption();
+    if ([self.delegate respondsToSelector:@selector(moveEndOption)]) {
+        [self.delegate moveEndOption];
     }
 }
 

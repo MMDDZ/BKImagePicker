@@ -16,10 +16,32 @@ typedef enum : NSUInteger {
     BKDrawTypeArrow,
 } BKDrawType;
 
+@protocol BKDrawViewDelegate <NSObject>
+
+@optional
+
+/**
+ 马赛克处理
+
+ @param pointArr 点数组
+ */
+-(void)processingMosaicImageWithPathArr:(NSArray*)pointArr;
+
+/**
+ 滑动中
+ */
+-(void)movedOption;
+
+/**
+ 滑动结束
+ */
+-(void)moveEndOption;
+
+@end
+
 @interface BKDrawView : UIView
 
-@property (nonatomic,copy) void (^movedOption)();
-@property (nonatomic,copy) void (^moveEndOption)();
+@property (nonatomic,assign) id<BKDrawViewDelegate> delegate;
 
 @property (nonatomic,strong) UIColor * selectColor;
 @property (nonatomic,assign) BKSelectType selectType;

@@ -13,16 +13,25 @@
 #import "BKImagePicker.h"
 #import "BKDrawView.h"
 #import "BKSelectColorView.h"
+#import "UIImage+BKOrientationExpand.h"
 
-@interface BKEditPhotoView()<BKSelectColorViewDelegate>
+@interface BKEditPhotoView()<BKSelectColorViewDelegate,BKDrawViewDelegate>
 
 @property (nonatomic,strong) BKEditGradientView * topView;
 @property (nonatomic,strong) BKEditGradientView * bottomView;
 
 @property (nonatomic,strong) UIButton * selectEditBtn;
 
+/**
+ 要修改的图片
+ */
 @property (nonatomic,strong) UIImage * editImage;
 @property (nonatomic,strong) UIImageView * editImageView;
+/**
+ 全图马赛克处理
+ */
+@property (nonatomic,strong) UIImage * mosaicImage;
+@property (nonatomic,strong) CIContext * context;
 
 /**
  是否正在绘画中
@@ -50,6 +59,8 @@
 
 @implementation BKEditPhotoView
 
+#pragma mark - init
+
 -(instancetype)initWithImage:(UIImage*)image
 {
     self = [super initWithFrame:[UIScreen mainScreen].bounds];
@@ -57,7 +68,7 @@
         
         [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
         
-        self.editImage = image;
+        self.editImage = [image editImageOrientation];
         
         self.backgroundColor = [UIColor blackColor];
         
@@ -72,6 +83,14 @@
         _drawTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(drawThingsTimer) userInfo:nil repeats:YES];
     }
     return self;
+}
+
+-(void)drawThingsTimer
+{
+    self.afterDrawTime = self.afterDrawTime - 1;
+    if (self.afterDrawTime == 0) {
+        self.isDrawingFlag = NO;
+    }
 }
 
 -(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
@@ -243,38 +262,37 @@
     switch (button.tag) {
         case 0:
         {
-            if (![[self subviews] containsObject:_drawView]) {
-                [self addSubview:self.drawView];
-            }
+            [self checkDrawViewExist];
             _drawView.drawType = BKDrawTypeLine;
         }
             break;
         case 1:
         {
-            if (![[self subviews] containsObject:_drawView]) {
-                [self addSubview:self.drawView];
-            }
+            [self checkDrawViewExist];
             _drawView.drawType = BKDrawTypeRoundedRectangle;
         }
             break;
         case 2:
         {
-            if (![[self subviews] containsObject:_drawView]) {
-                [self addSubview:self.drawView];
-            }
+            [self checkDrawViewExist];
             _drawView.drawType = BKDrawTypeCircle;
         }
             break;
         case 3:
         {
-            if (![[self subviews] containsObject:_drawView]) {
-                [self addSubview:self.drawView];
-            }
+            [self checkDrawViewExist];
             _drawView.drawType = BKDrawTypeArrow;
         }
             break;
         default:
             break;
+    }
+}
+
+-(void)checkDrawViewExist
+{
+    if (![[self subviews] containsObject:_drawView]) {
+        [self insertSubview:self.drawView aboveSubview:self.editImageView];
     }
 }
 
@@ -289,31 +307,88 @@
 {
     if (!_drawView) {
         _drawView = [[BKDrawView alloc]initWithFrame:self.editImageView.frame];
-        __weak typeof(self) weakSelf = self;
-        [_drawView setMovedOption:^{
-            weakSelf.isDrawingFlag = YES;
-            weakSelf.afterDrawTime = 5;
-        }];
-        [_drawView setMoveEndOption:^{
-            
-            if (weakSelf.isDrawingFlag) {
-                weakSelf.afterDrawTime = 5;
-            }else {
-                weakSelf.isDrawingFlag = YES;
-            }
-            
-        }];
-        [self insertSubview:_drawView aboveSubview:self.editImageView];
     }
     return _drawView;
 }
 
--(void)drawThingsTimer
+#pragma mark - BKDrawViewDelegate
+
+/**
+ 滑动中
+ */
+-(void)movedOption
 {
-    self.afterDrawTime = self.afterDrawTime - 1;
-    if (self.afterDrawTime == 0) {
-        self.isDrawingFlag = NO;
+    self.isDrawingFlag = YES;
+    self.afterDrawTime = 5;
+}
+
+/**
+ 滑动结束
+ */
+-(void)moveEndOption
+{
+    if (self.isDrawingFlag) {
+        self.afterDrawTime = 5;
+    }else {
+        self.isDrawingFlag = YES;
     }
+}
+
+-(CIContext*)context
+{
+    if (!_context) {
+        _context = [CIContext contextWithOptions:nil];
+    }
+    return _context;
+}
+
+//#pragma mark - 马赛克图片
+//
+//-(void)getMosaicImage
+//{
+//    CIImage *ciImage = [CIImage imageWithCGImage:self.editImage.CGImage];
+//    //生成马赛克
+//    CIFilter *filter = [CIFilter filterWithName:@"CIPixellate"];
+//    [filter setValue:ciImage forKey:kCIInputImageKey];
+//    //马赛克像素大小
+//    [filter setValue:@(50) forKey:kCIInputScaleKey];
+//    CIImage *outImage = [filter valueForKey:kCIOutputImageKey];
+//
+//    CIContext *context = [CIContext contextWithOptions:nil];
+//    CGImageRef cgImage = [context createCGImage:outImage fromRect:CGRectMake(0, 0, self.editImage.size.width, self.editImage.size.height)];
+//    self.mosaicImage = [UIImage imageWithCGImage:cgImage];
+//    CGImageRelease(cgImage);
+//}
+
+/**
+ 马赛克处理
+ 
+ @param pointArr 点数组
+ */
+-(void)processingMosaicImageWithPathArr:(NSArray*)pointArr
+{
+//    CGFloat radius = 5;
+//    CIImage * maskImage;
+//    for (int i = 0; i < [pointArr count]; i++) {
+//        CGPoint point = CGPointFromString([NSString stringWithFormat:@"%@",pointArr[i]]);
+//        CIFilter * radialGradient = [CIFilter filterWithName:@"CIRadialGradient" withInputParameters:@{@"inputRadius0":@(radius), @"inputRadius1" : @(radius + 1), @"inputColor0" : [CIColor colorWithRed:0 green:1 blue:0 alpha:1], @"inputColor1" : [CIColor colorWithRed:0 green:0 blue:0 alpha:0], kCIInputCenterKey : [CIVector vectorWithX:point.x Y:point.y]}];
+//        
+//        CIImage * radialGradientOutputImage = [radialGradient.outputImage imageByCroppingToRect:<#(CGRect)#>];
+//        if (!maskImage) {
+//            maskImage = radialGradientOutputImage;
+//        }else{
+//            maskImage = [CIFilter filterWithName:@"CISourceOverCompositing" withInputParameters:@{kCIInputImageKey : radialGradientOutputImage, kCIInputBackgroundImageKey : maskImage}].outputImage;
+//        }
+//        
+//        CIFilter * blendFilter = [CIFilter filterWithName:@"CIBlendWithMask"];
+//        [blendFilter setValue:fullPixellatedImage forKey:kCIInputImageKey];
+//        [blendFilter setValue:inputImage forKey:kCIInputBackgroundImageKey];
+//        [blendFilter setValue:maskImage forKey:kCIInputMaskImageKey];
+//        
+//        CIImage * blendOutputImage = blendFilter.outputImage;
+//        CGImageRef * blendCGImage = [self.context createCGImage:blendOutputImage fromRect:blendOutputImage.extent];
+//        self.mosaicImage = [UIImage imageWithCGImage:blendCGImage];
+//    }
 }
 
 -(UIImage *)addImage:(UIImage *)image1 toImage:(UIImage *)image2
@@ -344,10 +419,8 @@
 
 -(void)selectColor:(UIColor*)color orSelectType:(BKSelectType)selectType
 {
-    if (selectType == BKSelectTypeColor) {
-        _drawView.selectColor = color;
-        _drawView.selectType = selectType;
-    }
+    _drawView.selectColor = color;
+    _drawView.selectType = selectType;
 }
 
 -(void)revocationAction
