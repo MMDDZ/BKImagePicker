@@ -7,7 +7,6 @@
 //
 
 #import "BKEditPhotoView.h"
-#import "BKEditGradientView.h"
 #import "BKImagePickerConst.h"
 #import <Photos/Photos.h>
 #import "BKImagePicker.h"
@@ -17,8 +16,13 @@
 
 @interface BKEditPhotoView()<BKSelectColorViewDelegate,BKDrawViewDelegate>
 
-@property (nonatomic,strong) BKEditGradientView * topView;
-@property (nonatomic,strong) BKEditGradientView * bottomView;
+@property (nonatomic,strong) UIView * topView;
+@property (nonatomic,strong) UIView * bottomView;
+/**
+ 颜色选取
+ */
+@property (nonatomic,strong) BKSelectColorView * selectColorView;
+
 
 @property (nonatomic,strong) UIButton * selectEditBtn;
 
@@ -31,7 +35,7 @@
  全图马赛克处理
  */
 @property (nonatomic,strong) UIImage * mosaicImage;
-@property (nonatomic,strong) CIContext * context;
+@property (nonatomic, strong) CAShapeLayer * mosaicImageShapeLayer;
 
 /**
  是否正在绘画中
@@ -50,14 +54,46 @@
  画图(包括线、圆角矩形、圆、箭头)
  */
 @property (nonatomic,strong) BKDrawView * drawView;
-/**
- 颜色选取
- */
-@property (nonatomic,strong) BKSelectColorView * selectColorView;
+
 
 @end
 
 @implementation BKEditPhotoView
+
+#pragma mark - 马赛克图片
+
+-(UIImage *)mosaicImage
+{
+    if (!_mosaicImage) {
+        CIImage *ciImage = [CIImage imageWithCGImage:self.editImage.CGImage];
+        //生成马赛克
+        CIFilter *filter = [CIFilter filterWithName:@"CIPixellate"];
+        [filter setValue:ciImage forKey:kCIInputImageKey];
+        //马赛克像素大小
+        [filter setValue:@(50) forKey:kCIInputScaleKey];
+        CIImage *outImage = [filter valueForKey:kCIOutputImageKey];
+        
+        CIContext *context = [CIContext contextWithOptions:nil];
+        CGImageRef cgImage = [context createCGImage:outImage fromRect:CGRectMake(0, 0, self.editImage.size.width, self.editImage.size.height)];
+        _mosaicImage = [UIImage imageWithCGImage:cgImage];
+        CGImageRelease(cgImage);
+    }
+    return _mosaicImage;
+}
+
+-(CAShapeLayer*)mosaicImageShapeLayer
+{
+    if (!_mosaicImageShapeLayer) {
+        _mosaicImageShapeLayer = [CAShapeLayer layer];
+        _mosaicImageShapeLayer.frame = self.editImageView.bounds;
+        _mosaicImageShapeLayer.lineCap = kCALineCapRound;
+        _mosaicImageShapeLayer.lineJoin = kCALineJoinRound;
+        _mosaicImageShapeLayer.lineWidth = 20;
+        _mosaicImageShapeLayer.strokeColor = [UIColor whiteColor].CGColor;
+        _mosaicImageShapeLayer.fillColor = [UIColor clearColor].CGColor;
+    }
+    return _mosaicImageShapeLayer;
+}
 
 #pragma mark - init
 
@@ -67,12 +103,10 @@
     if (self) {
         
         [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
-        
-        self.editImage = [image editImageOrientation];
-        
         self.backgroundColor = [UIColor blackColor];
         
-        [self addSubview:self.editImageView];
+        [self addEditImage:image];
+        [self addSubview:self.drawView];
         
         [self addSubview:self.topView];
         [self addSubview:self.bottomView];
@@ -85,6 +119,8 @@
     return self;
 }
 
+#pragma mark - NSTimer
+
 -(void)drawThingsTimer
 {
     self.afterDrawTime = self.afterDrawTime - 1;
@@ -92,6 +128,8 @@
         self.isDrawingFlag = NO;
     }
 }
+
+#pragma mark - KVO
 
 -(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
 {
@@ -115,11 +153,21 @@
     }
 }
 
--(void)cancelThings
+#pragma mark - 图片
+
+-(void)addEditImage:(UIImage*)image
 {
-    [self removeObserver:self forKeyPath:@"isDrawingFlag"];
-    [_drawTimer invalidate];
-    _drawTimer = nil;
+    //图片取正 添加在屏幕上
+    self.editImage = [image editImageOrientation];
+    [self addSubview:self.editImageView];
+    //全图做马赛克处理 添加在图片图层上
+    CALayer * imageLayer = [CALayer layer];
+    imageLayer.frame = self.editImageView.bounds;
+    imageLayer.contents = (id)self.mosaicImage.CGImage;
+    [self.editImageView.layer addSublayer:imageLayer];
+    //添加遮罩shapeLayer
+    [self.editImageView.layer addSublayer:self.mosaicImageShapeLayer];
+    imageLayer.mask = self.mosaicImageShapeLayer;
 }
 
 -(UIImageView*)editImageView
@@ -158,10 +206,11 @@
 
 #pragma mark - topView
 
--(BKEditGradientView*)topView
+-(UIView*)topView
 {
     if (!_topView) {
-        _topView = [[BKEditGradientView alloc]initWithFrame:CGRectMake(0, 0, self.bk_width, 64) topColor:[UIColor colorWithWhite:0.2 alpha:0.5] bottomColor:[UIColor colorWithWhite:0 alpha:0]];
+        _topView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.bk_width, 64)];
+        _topView.backgroundColor = BKNavBackgroundColor;
         
         UIButton * backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         backBtn.frame = CGRectMake(0, 20, 64, 44);
@@ -190,6 +239,13 @@
     [self removeFromSuperview];
 }
 
+-(void)cancelThings
+{
+    [self removeObserver:self forKeyPath:@"isDrawingFlag"];
+    [_drawTimer invalidate];
+    _drawTimer = nil;
+}
+
 /**
  保存图片
  */
@@ -200,10 +256,11 @@
 
 #pragma mark - bottomView
 
--(BKEditGradientView*)bottomView
+-(UIView*)bottomView
 {
     if (!_bottomView) {
-        _bottomView = [[BKEditGradientView alloc]initWithFrame:CGRectMake(0, self.bk_height - 64, self.bk_width, 64) topColor:[UIColor colorWithWhite:0 alpha:0] bottomColor:[UIColor colorWithWhite:0.2 alpha:0.5]];
+        _bottomView = [[UIView alloc]initWithFrame:CGRectMake(0, self.bk_height - 64, self.bk_width, 64)];
+        _bottomView.backgroundColor = BKNavBackgroundColor;
         
         UIScrollView * itemsView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, self.bk_width/4*3 - 6, _bottomView.bk_height)];
         itemsView.backgroundColor = [UIColor clearColor];
@@ -262,37 +319,26 @@
     switch (button.tag) {
         case 0:
         {
-            [self checkDrawViewExist];
             _drawView.drawType = BKDrawTypeLine;
         }
             break;
         case 1:
         {
-            [self checkDrawViewExist];
             _drawView.drawType = BKDrawTypeRoundedRectangle;
         }
             break;
         case 2:
         {
-            [self checkDrawViewExist];
             _drawView.drawType = BKDrawTypeCircle;
         }
             break;
         case 3:
         {
-            [self checkDrawViewExist];
             _drawView.drawType = BKDrawTypeArrow;
         }
             break;
         default:
             break;
-    }
-}
-
--(void)checkDrawViewExist
-{
-    if (![[self subviews] containsObject:_drawView]) {
-        [self insertSubview:self.drawView aboveSubview:self.editImageView];
     }
 }
 
@@ -306,7 +352,8 @@
 -(BKDrawView*)drawView
 {
     if (!_drawView) {
-        _drawView = [[BKDrawView alloc]initWithFrame:self.editImageView.frame];
+        _drawView = [[BKDrawView alloc]initWithFrame:self.bounds];
+        _drawView.delegate = self;
     }
     return _drawView;
 }
@@ -334,61 +381,33 @@
     }
 }
 
--(CIContext*)context
-{
-    if (!_context) {
-        _context = [CIContext contextWithOptions:nil];
-    }
-    return _context;
-}
-
-//#pragma mark - 马赛克图片
-//
-//-(void)getMosaicImage
-//{
-//    CIImage *ciImage = [CIImage imageWithCGImage:self.editImage.CGImage];
-//    //生成马赛克
-//    CIFilter *filter = [CIFilter filterWithName:@"CIPixellate"];
-//    [filter setValue:ciImage forKey:kCIInputImageKey];
-//    //马赛克像素大小
-//    [filter setValue:@(50) forKey:kCIInputScaleKey];
-//    CIImage *outImage = [filter valueForKey:kCIOutputImageKey];
-//
-//    CIContext *context = [CIContext contextWithOptions:nil];
-//    CGImageRef cgImage = [context createCGImage:outImage fromRect:CGRectMake(0, 0, self.editImage.size.width, self.editImage.size.height)];
-//    self.mosaicImage = [UIImage imageWithCGImage:cgImage];
-//    CGImageRelease(cgImage);
-//}
-
-/**
- 马赛克处理
- 
- @param pointArr 点数组
- */
 -(void)processingMosaicImageWithPathArr:(NSArray*)pointArr
 {
-//    CGFloat radius = 5;
-//    CIImage * maskImage;
-//    for (int i = 0; i < [pointArr count]; i++) {
-//        CGPoint point = CGPointFromString([NSString stringWithFormat:@"%@",pointArr[i]]);
-//        CIFilter * radialGradient = [CIFilter filterWithName:@"CIRadialGradient" withInputParameters:@{@"inputRadius0":@(radius), @"inputRadius1" : @(radius + 1), @"inputColor0" : [CIColor colorWithRed:0 green:1 blue:0 alpha:1], @"inputColor1" : [CIColor colorWithRed:0 green:0 blue:0 alpha:0], kCIInputCenterKey : [CIVector vectorWithX:point.x Y:point.y]}];
-//        
-//        CIImage * radialGradientOutputImage = [radialGradient.outputImage imageByCroppingToRect:<#(CGRect)#>];
-//        if (!maskImage) {
-//            maskImage = radialGradientOutputImage;
-//        }else{
-//            maskImage = [CIFilter filterWithName:@"CISourceOverCompositing" withInputParameters:@{kCIInputImageKey : radialGradientOutputImage, kCIInputBackgroundImageKey : maskImage}].outputImage;
-//        }
-//        
-//        CIFilter * blendFilter = [CIFilter filterWithName:@"CIBlendWithMask"];
-//        [blendFilter setValue:fullPixellatedImage forKey:kCIInputImageKey];
-//        [blendFilter setValue:inputImage forKey:kCIInputBackgroundImageKey];
-//        [blendFilter setValue:maskImage forKey:kCIInputMaskImageKey];
-//        
-//        CIImage * blendOutputImage = blendFilter.outputImage;
-//        CGImageRef * blendCGImage = [self.context createCGImage:blendOutputImage fromRect:blendOutputImage.extent];
-//        self.mosaicImage = [UIImage imageWithCGImage:blendCGImage];
-//    }
+    CGMutablePathRef path = CGPathCreateMutable();
+    
+    if ([pointArr count] > 0) {
+        for (int i = 0; i < [pointArr count]; i++) {
+            
+            NSArray * nextPointArr = pointArr[i];
+            
+            CGPoint startPoint = CGPointFromString([NSString stringWithFormat:@"%@",nextPointArr[0]]);
+            CGPathMoveToPoint(path, NULL, startPoint.x, startPoint.y - self.editImageView.bk_y);
+            
+            for (int j = 0; j < [nextPointArr count]-1; j++) {
+                CGPoint endPoint = CGPointFromString([NSString stringWithFormat:@"%@",nextPointArr[j+1]]);
+                CGPathAddLineToPoint(path, NULL, endPoint.x, endPoint.y - self.editImageView.bk_y);
+            }
+            
+            CGMutablePathRef nextPath = CGPathCreateMutableCopy(path);
+            self.mosaicImageShapeLayer.path = nextPath;
+            
+            CGPathRelease(nextPath);
+        }
+    }else{
+        self.mosaicImageShapeLayer.path = nil;
+    }
+    
+    CGPathRelease(path);
 }
 
 -(UIImage *)addImage:(UIImage *)image1 toImage:(UIImage *)image2

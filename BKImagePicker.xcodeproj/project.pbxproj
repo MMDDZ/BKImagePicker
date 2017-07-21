@@ -11,7 +11,6 @@
 		1D44AB911EE686CD00AE180B /* BKImageClassTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D44AB8D1EE686CD00AE180B /* BKImageClassTableViewCell.m */; };
 		1D44AB921EE686CD00AE180B /* BKImageClassViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D44AB8F1EE686CD00AE180B /* BKImageClassViewController.m */; };
 		1D8A25DD1EFA0DFD00C55945 /* BKImage.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 1D8A25DC1EFA0DFD00C55945 /* BKImage.bundle */; };
-		1D8A25EA1EFA0E2600C55945 /* BKEditGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D8A25E21EFA0E2600C55945 /* BKEditGradientView.m */; };
 		1D8A25EB1EFA0E2600C55945 /* BKEditPhotoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D8A25E41EFA0E2600C55945 /* BKEditPhotoView.m */; };
 		1D8A25F71EFA14BB00C55945 /* BKSelectColorMarkView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D8A25F41EFA14BB00C55945 /* BKSelectColorMarkView.m */; };
 		1D8A25F81EFA14BB00C55945 /* BKSelectColorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D8A25F61EFA14BB00C55945 /* BKSelectColorView.m */; };
@@ -51,8 +50,6 @@
 		1D44AB8E1EE686CD00AE180B /* BKImageClassViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKImageClassViewController.h; sourceTree = "<group>"; };
 		1D44AB8F1EE686CD00AE180B /* BKImageClassViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKImageClassViewController.m; sourceTree = "<group>"; };
 		1D8A25DC1EFA0DFD00C55945 /* BKImage.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = BKImage.bundle; sourceTree = "<group>"; };
-		1D8A25E11EFA0E2600C55945 /* BKEditGradientView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKEditGradientView.h; sourceTree = "<group>"; };
-		1D8A25E21EFA0E2600C55945 /* BKEditGradientView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKEditGradientView.m; sourceTree = "<group>"; };
 		1D8A25E31EFA0E2600C55945 /* BKEditPhotoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKEditPhotoView.h; sourceTree = "<group>"; };
 		1D8A25E41EFA0E2600C55945 /* BKEditPhotoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKEditPhotoView.m; sourceTree = "<group>"; };
 		1D8A25F31EFA14BB00C55945 /* BKSelectColorMarkView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSelectColorMarkView.h; sourceTree = "<group>"; };
@@ -143,8 +140,6 @@
 				1D8A25EE1EFA148C00C55945 /* Draw */,
 				1D8A25E31EFA0E2600C55945 /* BKEditPhotoView.h */,
 				1D8A25E41EFA0E2600C55945 /* BKEditPhotoView.m */,
-				1D8A25E11EFA0E2600C55945 /* BKEditGradientView.h */,
-				1D8A25E21EFA0E2600C55945 /* BKEditGradientView.m */,
 				1DB825131EFCFB07003BBF7B /* UIImage+BKOrientationExpand.h */,
 				1DB825141EFCFB07003BBF7B /* UIImage+BKOrientationExpand.m */,
 			);
@@ -362,7 +357,6 @@
 				1D44AB921EE686CD00AE180B /* BKImageClassViewController.m in Sources */,
 				1D44AB901EE686CD00AE180B /* BKImageClassModel.m in Sources */,
 				1D96639E1EE68A75000ECBF8 /* BKImageAlbumItemView.m in Sources */,
-				1D8A25EA1EFA0E2600C55945 /* BKEditGradientView.m in Sources */,
 				883BB4E41DC864F500952C2D /* BKShowExampleVideoView.m in Sources */,
 				1D96639D1EE68A75000ECBF8 /* BKImagePickerViewController.m in Sources */,
 				2A16740D1DB2056E00BA7AE0 /* BKShowExampleImageView.m in Sources */,

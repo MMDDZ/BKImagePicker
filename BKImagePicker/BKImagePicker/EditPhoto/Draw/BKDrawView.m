@@ -17,7 +17,7 @@
 @property (nonatomic,strong) NSMutableArray * pointArray;
 //之前保存画的数组model
 @property (nonatomic,strong) NSMutableArray<BKDrawModel*> * lineArray;
-
+//开始点
 @property (nonatomic,assign) CGPoint beginPoint;
 
 @end
@@ -91,7 +91,7 @@
     NSMutableArray * mosaicPointArr = [NSMutableArray array];
     
     //之前画的线
-    if ([self.lineArray count]>0) {
+    if ([self.lineArray count] > 0) {
         for (int i = 0; i < [self.lineArray count]; i++) {
             BKDrawModel * model = self.lineArray[i];
             if (model.selectType == BKSelectTypeColor) {
@@ -103,7 +103,9 @@
                     [self drawArrow:context pointArr:model.pointArray lineColor:model.selectColor.CGColor];
                 }
             }else if (model.selectType == BKSelectTypeMaSaiKe) {
-                [mosaicPointArr addObjectsFromArray:model.pointArray];
+                if ([model.pointArray count] > 0) {
+                    [mosaicPointArr addObject:model.pointArray];
+                }
             }
         }
     }
@@ -118,7 +120,9 @@
             [self drawArrow:context pointArr:[self.pointArray copy] lineColor:self.selectColor.CGColor];
         }
     }else if (self.selectType == BKSelectTypeMaSaiKe) {
-        [mosaicPointArr addObjectsFromArray:self.pointArray];
+        if ([self.pointArray count] > 0) {
+            [mosaicPointArr addObject:self.pointArray];
+        }
     }
     
     if ([self.delegate respondsToSelector:@selector(processingMosaicImageWithPathArr:)]) {
@@ -135,7 +139,7 @@
  */
 -(void)drawLine:(CGContextRef)context pointArr:(NSArray*)pointArr lineColor:(CGColorRef)lineColor
 {
-    if ([pointArr count]>0) {
+    if ([pointArr count] > 0) {
         
         CGContextBeginPath(context);
         CGContextSetStrokeColorWithColor(context, lineColor);
