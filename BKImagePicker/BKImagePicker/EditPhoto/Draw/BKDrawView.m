@@ -13,13 +13,6 @@
 
 @interface BKDrawView()
 
-//这一次画的数组
-@property (nonatomic,strong) NSMutableArray * pointArray;
-//之前保存画的数组model
-@property (nonatomic,strong) NSMutableArray<BKDrawModel*> * lineArray;
-//开始点
-@property (nonatomic,assign) CGPoint beginPoint;
-
 @end
 
 @implementation BKDrawView
@@ -63,17 +56,6 @@
         [self.lineArray removeLastObject];
         [self setNeedsDisplay];
     }
-}
-
-#pragma mark - 生成图片
-
--(UIImage*)checkEditImage
-{
-    UIGraphicsBeginImageContextWithOptions(self.bounds.size, YES, [UIScreen mainScreen].scale);
-    [self.layer renderInContext:UIGraphicsGetCurrentContext()];
-    UIImage * image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return image;
 }
 
 #pragma mark - drawRect
@@ -425,78 +407,14 @@
     }
 }
 
-#pragma mark - 手势
-
--(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
-{
-    UITouch* touch = [touches anyObject];
-    CGPoint point = [touch locationInView:self];
-    self.beginPoint = point;
-}
-
--(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    UITouch* touch = [touches anyObject];
-    CGPoint point = [touch locationInView:self];
-    
-    if (self.beginPoint.x != point.x || self.beginPoint.y != point.y) {
-        switch (self.drawType) {
-            case BKDrawTypeLine:
-            {
-                [self drawLineWithPoint:point];
-            }
-                break;
-            case BKDrawTypeRoundedRectangle:
-            {
-                [self drawRoundedRectangleWithPoint:point];
-            }
-                break;
-            case BKDrawTypeCircle:
-            {
-                [self drawCircleWithBeginPoint:self.beginPoint endPoint:point];
-            }
-                break;
-            case BKDrawTypeArrow:
-            {
-                [self drawArrowWithBeginPoint:self.beginPoint endPoint:point];
-            }
-                break;
-            default:
-                break;
-        }
-        [self setNeedsDisplay];
-        
-        if ([self.delegate respondsToSelector:@selector(movedOption)]) {
-            [self.delegate movedOption];
-        }
-    }
-}
-
--(void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
-{
-    if ([self.pointArray count] > 0) {
-        
-        BKDrawModel * model = [[BKDrawModel alloc]init];
-        model.pointArray = [self.pointArray copy];
-        model.selectColor = self.selectColor;
-        model.selectType = self.selectType;
-        model.drawType = self.drawType;
-        
-        [self.lineArray addObject:model];
-        [self.pointArray removeAllObjects];
-    }
-    
-    if ([self.delegate respondsToSelector:@selector(moveEndOption)]) {
-        [self.delegate moveEndOption];
-    }
-}
-
 #pragma mark - 画线
 
 -(void)drawLineWithPoint:(CGPoint)point
 {
     NSString * sPoint = NSStringFromCGPoint(point);
     [self.pointArray addObject:sPoint];
+    
+    [self setNeedsDisplay];
 }
 
 #pragma mark - 画圆角矩形
@@ -511,6 +429,8 @@
     UIBezierPath * path = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(x, y, width, height) cornerRadius:4];
     [self.pointArray removeAllObjects];
     [self.pointArray addObjectsFromArray:[path points]];
+    
+    [self setNeedsDisplay];
 }
 
 #pragma mark - 画圆
@@ -520,6 +440,8 @@
     [self.pointArray removeAllObjects];
     [self.pointArray addObject:NSStringFromCGPoint(beginPoint)];
     [self.pointArray addObject:NSStringFromCGPoint(endPoint)];
+    
+    [self setNeedsDisplay];
 }
 
 #pragma mark - 画箭头
@@ -529,6 +451,8 @@
     [self.pointArray removeAllObjects];
     [self.pointArray addObject:NSStringFromCGPoint(beginPoint)];
     [self.pointArray addObject:NSStringFromCGPoint(endPoint)];
+    
+    [self setNeedsDisplay];
 }
 
 @end

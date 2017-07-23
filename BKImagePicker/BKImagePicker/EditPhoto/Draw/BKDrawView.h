@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "BKSelectColorMarkView.h"
+@class BKDrawModel;
 
 typedef enum : NSUInteger {
     BKDrawTypeLine = 0,
@@ -27,26 +28,61 @@ typedef enum : NSUInteger {
  */
 -(void)processingMosaicImageWithPathArr:(NSArray*)pointArr;
 
-/**
- 滑动中
- */
--(void)movedOption;
-
-/**
- 滑动结束
- */
--(void)moveEndOption;
-
 @end
 
 @interface BKDrawView : UIView
 
+//这一次画的数组
+@property (nonatomic,strong) NSMutableArray * pointArray;
+//之前保存画的数组model
+@property (nonatomic,strong) NSMutableArray<BKDrawModel*> * lineArray;
+//开始点
+@property (nonatomic,assign) CGPoint beginPoint;
+
+
 @property (nonatomic,assign) id<BKDrawViewDelegate> delegate;
 
-@property (nonatomic,strong) UIColor * selectColor;
-@property (nonatomic,assign) BKSelectType selectType;
 
+/**
+ 选取的颜色
+ */
+@property (nonatomic,strong) UIColor * selectColor;
+/**
+ 选取画的类型（颜色或马赛克）
+ */
+@property (nonatomic,assign) BKSelectType selectType;
+/**
+ 画的形状
+ */
 @property (nonatomic,assign) BKDrawType drawType;
+
+
+/**
+ 画线
+
+ @param point 点
+ */
+-(void)drawLineWithPoint:(CGPoint)point;
+/**
+ 画圆角矩形
+
+ @param point 点
+ */
+-(void)drawRoundedRectangleWithPoint:(CGPoint)point;
+/**
+ 画圆
+
+ @param beginPoint 起点
+ @param endPoint 终点
+ */
+-(void)drawCircleWithBeginPoint:(CGPoint)beginPoint endPoint:(CGPoint)endPoint;
+/**
+ 画箭头
+
+ @param beginPoint 起点
+ @param endPoint 终点
+ */
+-(void)drawArrowWithBeginPoint:(CGPoint)beginPoint endPoint:(CGPoint)endPoint;
 
 /**
  清除所有
@@ -57,12 +93,5 @@ typedef enum : NSUInteger {
  清除最后一条
  */
 -(void)cleanFinallyDraw;
-
-/**
- 生成图片
- 
- @return 图片
- */
--(UIImage*)checkEditImage;
 
 @end

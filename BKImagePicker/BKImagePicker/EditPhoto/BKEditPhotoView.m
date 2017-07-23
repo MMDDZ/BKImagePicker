@@ -13,6 +13,7 @@
 #import "BKDrawView.h"
 #import "BKSelectColorView.h"
 #import "UIImage+BKOrientationExpand.h"
+#import "BKDrawModel.h"
 
 @interface BKEditPhotoView()<BKSelectColorViewDelegate,BKDrawViewDelegate>
 
@@ -35,7 +36,7 @@
  全图马赛克处理
  */
 @property (nonatomic,strong) UIImage * mosaicImage;
-@property (nonatomic, strong) CAShapeLayer * mosaicImageShapeLayer;
+@property (nonatomic,strong) CAShapeLayer * mosaicImageShapeLayer;
 
 /**
  是否正在绘画中
@@ -204,6 +205,173 @@
     return imageRect;
 }
 
+#pragma mark - 画画
+
+-(BKDrawView*)drawView
+{
+    if (!_drawView) {
+        _drawView = [[BKDrawView alloc]initWithFrame:self.editImageView.frame];
+        _drawView.delegate = self;
+    }
+    return _drawView;
+}
+
+#pragma mark - BKDrawViewDelegate
+
+/**
+ 画的马赛克轨迹
+ 
+ @param pointArr 轨迹数组
+ */
+-(void)processingMosaicImageWithPathArr:(NSArray*)pointArr
+{
+    CGMutablePathRef path = CGPathCreateMutable();
+    
+    if ([pointArr count] > 0) {
+        for (int i = 0; i < [pointArr count]; i++) {
+            
+            NSArray * nextPointArr = pointArr[i];
+            
+            CGPoint startPoint = CGPointFromString([NSString stringWithFormat:@"%@",nextPointArr[0]]);
+            CGPathMoveToPoint(path, NULL, startPoint.x, startPoint.y);
+            
+            for (int j = 0; j < [nextPointArr count]-1; j++) {
+                CGPoint endPoint = CGPointFromString([NSString stringWithFormat:@"%@",nextPointArr[j+1]]);
+                CGPathAddLineToPoint(path, NULL, endPoint.x, endPoint.y);
+            }
+            
+            CGMutablePathRef nextPath = CGPathCreateMutableCopy(path);
+            self.mosaicImageShapeLayer.path = nextPath;
+            
+            CGPathRelease(nextPath);
+        }
+    }else{
+        self.mosaicImageShapeLayer.path = nil;
+    }
+    
+    CGPathRelease(path);
+}
+
+#pragma mark - 手势
+
+-(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+    UITouch* touch = [touches anyObject];
+    CGPoint point = [touch locationInView:self];
+    point.y = point.y - self.editImageView.frame.origin.y;
+    self.drawView.beginPoint = point;
+}
+
+-(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    UITouch* touch = [touches anyObject];
+    CGPoint point = [touch locationInView:self];
+    point.y = point.y - self.editImageView.frame.origin.y;
+    
+    if (self.drawView.beginPoint.x != point.x || self.drawView.beginPoint.y != point.y) {
+        switch (self.drawView.drawType) {
+            case BKDrawTypeLine:
+            {
+                [self.drawView drawLineWithPoint:point];
+            }
+                break;
+            case BKDrawTypeRoundedRectangle:
+            {
+                [self.drawView drawRoundedRectangleWithPoint:point];
+            }
+                break;
+            case BKDrawTypeCircle:
+            {
+                [self.drawView drawCircleWithBeginPoint:self.drawView.beginPoint endPoint:point];
+            }
+                break;
+            case BKDrawTypeArrow:
+            {
+                [self.drawView drawArrowWithBeginPoint:self.drawView.beginPoint endPoint:point];
+            }
+                break;
+            default:
+                break;
+        }
+        
+        [self movedOption];
+    }
+}
+
+-(void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+    if ([self.drawView.pointArray count] > 0) {
+        
+        BKDrawModel * model = [[BKDrawModel alloc]init];
+        model.pointArray = [self.drawView.pointArray copy];
+        model.selectColor = self.drawView.selectColor;
+        model.selectType = self.drawView.selectType;
+        model.drawType = self.drawView.drawType;
+        
+        [self.drawView.lineArray addObject:model];
+        [self.drawView.pointArray removeAllObjects];
+    }
+    
+    [self moveEndOption];
+}
+
+/**
+ 滑动中
+ */
+-(void)movedOption
+{
+    self.isDrawingFlag = YES;
+    self.afterDrawTime = 5;
+}
+
+/**
+ 滑动结束
+ */
+-(void)moveEndOption
+{
+    if (self.isDrawingFlag) {
+        self.afterDrawTime = 5;
+    }else {
+        self.isDrawingFlag = YES;
+    }
+}
+
+#pragma mark - 生成图片
+
+-(UIImage*)createNewImage
+{
+    BOOL flag = [UIApplication sharedApplication].statusBarHidden;
+    CGFloat alpha1 = _topView.alpha;
+    CGFloat alpha2 = _bottomView.alpha;
+    CGFloat alpha3 = _selectColorView.alpha;
+    
+    [UIApplication sharedApplication].statusBarHidden = YES;
+    _topView.alpha = 0;
+    _bottomView.alpha = 0;
+    _selectColorView.alpha = 0;
+    
+    UIGraphicsBeginImageContextWithOptions(self.bounds.size, NO, [UIScreen mainScreen].scale);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    [self.layer renderInContext:context];
+    UIImage * image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    if (!flag) {
+        [UIApplication sharedApplication].statusBarHidden = NO;
+    }
+    if (alpha1 != 0) {
+        _topView.alpha = alpha1;
+    }
+    if (alpha2 != 0) {
+        _bottomView.alpha = alpha1;
+    }
+    if (alpha3 != 0) {
+        _selectColorView.alpha = alpha1;
+    }
+    
+    return image;
+}
+
 #pragma mark - topView
 
 -(UIView*)topView
@@ -251,7 +419,17 @@
  */
 -(void)saveBtnClick
 {
-    [BKImagePicker saveImage:self.editImage];
+    UIImage * image = [self createNewImage];
+    
+    CGFloat scale = [UIScreen mainScreen].scale;
+    CGRect rect = self.editImageView.frame;
+    rect.origin.x = rect.origin.x * scale;
+    rect.origin.y = rect.origin.y * scale;
+    rect.size.width = rect.size.width * scale;
+    rect.size.height = rect.size.height * scale;
+    
+    CGImageRef imageRef = CGImageCreateWithImageInRect(image.CGImage, rect);
+    [BKImagePicker saveImage:[UIImage imageWithCGImage:imageRef]];
 }
 
 #pragma mark - bottomView
@@ -347,68 +525,6 @@
     
 }
 
-#pragma mark - 画画
-
--(BKDrawView*)drawView
-{
-    if (!_drawView) {
-        _drawView = [[BKDrawView alloc]initWithFrame:self.bounds];
-        _drawView.delegate = self;
-    }
-    return _drawView;
-}
-
-#pragma mark - BKDrawViewDelegate
-
-/**
- 滑动中
- */
--(void)movedOption
-{
-    self.isDrawingFlag = YES;
-    self.afterDrawTime = 5;
-}
-
-/**
- 滑动结束
- */
--(void)moveEndOption
-{
-    if (self.isDrawingFlag) {
-        self.afterDrawTime = 5;
-    }else {
-        self.isDrawingFlag = YES;
-    }
-}
-
--(void)processingMosaicImageWithPathArr:(NSArray*)pointArr
-{
-    CGMutablePathRef path = CGPathCreateMutable();
-    
-    if ([pointArr count] > 0) {
-        for (int i = 0; i < [pointArr count]; i++) {
-            
-            NSArray * nextPointArr = pointArr[i];
-            
-            CGPoint startPoint = CGPointFromString([NSString stringWithFormat:@"%@",nextPointArr[0]]);
-            CGPathMoveToPoint(path, NULL, startPoint.x, startPoint.y - self.editImageView.bk_y);
-            
-            for (int j = 0; j < [nextPointArr count]-1; j++) {
-                CGPoint endPoint = CGPointFromString([NSString stringWithFormat:@"%@",nextPointArr[j+1]]);
-                CGPathAddLineToPoint(path, NULL, endPoint.x, endPoint.y - self.editImageView.bk_y);
-            }
-            
-            CGMutablePathRef nextPath = CGPathCreateMutableCopy(path);
-            self.mosaicImageShapeLayer.path = nextPath;
-            
-            CGPathRelease(nextPath);
-        }
-    }else{
-        self.mosaicImageShapeLayer.path = nil;
-    }
-    
-    CGPathRelease(path);
-}
 
 -(UIImage *)addImage:(UIImage *)image1 toImage:(UIImage *)image2
 {
