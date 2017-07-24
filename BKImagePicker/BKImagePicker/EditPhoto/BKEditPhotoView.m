@@ -258,6 +258,7 @@
 {
     UITouch* touch = [touches anyObject];
     CGPoint point = [touch locationInView:self];
+    point.x = point.x - self.editImageView.frame.origin.x;
     point.y = point.y - self.editImageView.frame.origin.y;
     self.drawView.beginPoint = point;
 }
@@ -266,6 +267,7 @@
 {
     UITouch* touch = [touches anyObject];
     CGPoint point = [touch locationInView:self];
+    point.x = point.x - self.editImageView.frame.origin.x;
     point.y = point.y - self.editImageView.frame.origin.y;
     
     if (self.drawView.beginPoint.x != point.x || self.drawView.beginPoint.y != point.y) {
@@ -350,10 +352,30 @@
     _bottomView.alpha = 0;
     _selectColorView.alpha = 0;
     
-    UIGraphicsBeginImageContextWithOptions(self.bounds.size, NO, [UIScreen mainScreen].scale);
+    _editImageView.image = nil;
+    self.backgroundColor = [UIColor clearColor];
+    
+    CGFloat scale = [UIScreen mainScreen].scale;
+    
+    UIGraphicsBeginImageContextWithOptions(self.bounds.size, NO, scale);
     CGContextRef context = UIGraphicsGetCurrentContext();
     [self.layer renderInContext:context];
     UIImage * image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    CGRect rect = self.editImageView.frame;
+    rect.origin.x = rect.origin.x * scale;
+    rect.origin.y = rect.origin.y * scale;
+    rect.size.width = rect.size.width * scale;
+    rect.size.height = rect.size.height * scale;
+    
+    CGImageRef imageRef = CGImageCreateWithImageInRect(image.CGImage, rect);
+    image = [UIImage imageWithCGImage:imageRef];
+    
+    UIGraphicsBeginImageContext(CGSizeMake(_editImage.size.width, _editImage.size.height));
+    [_editImage drawInRect:CGRectMake(0, 0, _editImage.size.width, _editImage.size.height)];
+    [image drawInRect:CGRectMake(0, 0, _editImage.size.width, _editImage.size.height)];
+    UIImage * reSizeImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
     if (!flag) {
@@ -369,7 +391,10 @@
         _selectColorView.alpha = alpha1;
     }
     
-    return image;
+    _editImageView.image = _editImage;
+    self.backgroundColor = [UIColor blackColor];
+    
+    return reSizeImage;
 }
 
 #pragma mark - topView
@@ -419,17 +444,7 @@
  */
 -(void)saveBtnClick
 {
-    UIImage * image = [self createNewImage];
-    
-    CGFloat scale = [UIScreen mainScreen].scale;
-    CGRect rect = self.editImageView.frame;
-    rect.origin.x = rect.origin.x * scale;
-    rect.origin.y = rect.origin.y * scale;
-    rect.size.width = rect.size.width * scale;
-    rect.size.height = rect.size.height * scale;
-    
-    CGImageRef imageRef = CGImageCreateWithImageInRect(image.CGImage, rect);
-    [BKImagePicker saveImage:[UIImage imageWithCGImage:imageRef]];
+    [BKImagePicker saveImage:[self createNewImage]];
 }
 
 #pragma mark - bottomView
