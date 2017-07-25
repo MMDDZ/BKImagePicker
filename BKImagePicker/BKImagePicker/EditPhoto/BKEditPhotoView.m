@@ -14,18 +14,9 @@
 #import "BKSelectColorView.h"
 #import "UIImage+BKOrientationExpand.h"
 #import "BKDrawModel.h"
+#import "BKImageCropView.h"
 
 @interface BKEditPhotoView()<BKSelectColorViewDelegate,BKDrawViewDelegate>
-
-@property (nonatomic,strong) UIView * topView;
-@property (nonatomic,strong) UIView * bottomView;
-/**
- 颜色选取
- */
-@property (nonatomic,strong) BKSelectColorView * selectColorView;
-
-
-@property (nonatomic,strong) UIButton * selectEditBtn;
 
 /**
  要修改的图片
@@ -37,6 +28,11 @@
  */
 @property (nonatomic,strong) UIImage * mosaicImage;
 @property (nonatomic,strong) CAShapeLayer * mosaicImageShapeLayer;
+
+/**
+ 画图(包括线、圆角矩形、圆、箭头)
+ */
+@property (nonatomic,strong) BKDrawView * drawView;
 
 /**
  是否正在绘画中
@@ -51,50 +47,20 @@
  */
 @property (nonatomic,strong) NSTimer * drawTimer;
 
+
+@property (nonatomic,strong) UIView * topView;
+@property (nonatomic,strong) UIView * bottomView;
+
+@property (nonatomic,strong) UIButton * selectEditBtn;
 /**
- 画图(包括线、圆角矩形、圆、箭头)
+ 颜色选取
  */
-@property (nonatomic,strong) BKDrawView * drawView;
+@property (nonatomic,strong) BKSelectColorView * selectColorView;
 
 
 @end
 
 @implementation BKEditPhotoView
-
-#pragma mark - 马赛克图片
-
--(UIImage *)mosaicImage
-{
-    if (!_mosaicImage) {
-        CIImage *ciImage = [CIImage imageWithCGImage:self.editImage.CGImage];
-        //生成马赛克
-        CIFilter *filter = [CIFilter filterWithName:@"CIPixellate"];
-        [filter setValue:ciImage forKey:kCIInputImageKey];
-        //马赛克像素大小
-        [filter setValue:@(50) forKey:kCIInputScaleKey];
-        CIImage *outImage = [filter valueForKey:kCIOutputImageKey];
-        
-        CIContext *context = [CIContext contextWithOptions:nil];
-        CGImageRef cgImage = [context createCGImage:outImage fromRect:CGRectMake(0, 0, self.editImage.size.width, self.editImage.size.height)];
-        _mosaicImage = [UIImage imageWithCGImage:cgImage];
-        CGImageRelease(cgImage);
-    }
-    return _mosaicImage;
-}
-
--(CAShapeLayer*)mosaicImageShapeLayer
-{
-    if (!_mosaicImageShapeLayer) {
-        _mosaicImageShapeLayer = [CAShapeLayer layer];
-        _mosaicImageShapeLayer.frame = self.editImageView.bounds;
-        _mosaicImageShapeLayer.lineCap = kCALineCapRound;
-        _mosaicImageShapeLayer.lineJoin = kCALineJoinRound;
-        _mosaicImageShapeLayer.lineWidth = 20;
-        _mosaicImageShapeLayer.strokeColor = [UIColor whiteColor].CGColor;
-        _mosaicImageShapeLayer.fillColor = [UIColor clearColor].CGColor;
-    }
-    return _mosaicImageShapeLayer;
-}
 
 #pragma mark - init
 
@@ -152,6 +118,41 @@
             }];
         }
     }
+}
+
+#pragma mark - 马赛克图片
+
+-(UIImage *)mosaicImage
+{
+    if (!_mosaicImage) {
+        CIImage *ciImage = [CIImage imageWithCGImage:self.editImage.CGImage];
+        //生成马赛克
+        CIFilter *filter = [CIFilter filterWithName:@"CIPixellate"];
+        [filter setValue:ciImage forKey:kCIInputImageKey];
+        //马赛克像素大小
+        [filter setValue:@(50) forKey:kCIInputScaleKey];
+        CIImage *outImage = [filter valueForKey:kCIOutputImageKey];
+        
+        CIContext *context = [CIContext contextWithOptions:nil];
+        CGImageRef cgImage = [context createCGImage:outImage fromRect:CGRectMake(0, 0, self.editImage.size.width, self.editImage.size.height)];
+        _mosaicImage = [UIImage imageWithCGImage:cgImage];
+        CGImageRelease(cgImage);
+    }
+    return _mosaicImage;
+}
+
+-(CAShapeLayer*)mosaicImageShapeLayer
+{
+    if (!_mosaicImageShapeLayer) {
+        _mosaicImageShapeLayer = [CAShapeLayer layer];
+        _mosaicImageShapeLayer.frame = self.editImageView.bounds;
+        _mosaicImageShapeLayer.lineCap = kCALineCapRound;
+        _mosaicImageShapeLayer.lineJoin = kCALineJoinRound;
+        _mosaicImageShapeLayer.lineWidth = 20;
+        _mosaicImageShapeLayer.strokeColor = [UIColor whiteColor].CGColor;
+        _mosaicImageShapeLayer.fillColor = [UIColor clearColor].CGColor;
+    }
+    return _mosaicImageShapeLayer;
 }
 
 #pragma mark - 图片
@@ -452,7 +453,7 @@
 -(UIView*)bottomView
 {
     if (!_bottomView) {
-        _bottomView = [[UIView alloc]initWithFrame:CGRectMake(0, self.bk_height - 64, self.bk_width, 64)];
+        _bottomView = [[UIView alloc]initWithFrame:CGRectMake(0, self.bk_height - 49, self.bk_width, 49)];
         _bottomView.backgroundColor = BKNavBackgroundColor;
         
         UIScrollView * itemsView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, self.bk_width/4*3 - 6, _bottomView.bk_height)];
@@ -461,13 +462,13 @@
         [_bottomView addSubview:itemsView];
         
         NSString * bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
-        NSArray * imageArr_n = @[[bundlePath stringByAppendingString:@"/draw_n.png"],[bundlePath stringByAppendingString:@"/rounded_rectangle_n.png"],[bundlePath stringByAppendingString:@"/circle_n.png"],[bundlePath stringByAppendingString:@"/arrow_n.png"],[bundlePath stringByAppendingString:@"/rotation_n.png"],[bundlePath stringByAppendingString:@"/write_n.png"],[bundlePath stringByAppendingString:@"/clip_n.png"],[bundlePath stringByAppendingString:@"/filter_n.png"]];
-        NSArray * imageArr_s = @[[bundlePath stringByAppendingString:@"/draw_s.png"],[bundlePath stringByAppendingString:@"/rounded_rectangle_s.png"],[bundlePath stringByAppendingString:@"/circle_s.png"],[bundlePath stringByAppendingString:@"/arrow_s.png"],[bundlePath stringByAppendingString:@"/rotation_s.png"],[bundlePath stringByAppendingString:@"/write_s.png"],[bundlePath stringByAppendingString:@"/clip_s.png"],[bundlePath stringByAppendingString:@"/filter_s.png"]];
+        NSArray * imageArr_n = @[[bundlePath stringByAppendingString:@"/draw_n.png"],[bundlePath stringByAppendingString:@"/rounded_rectangle_n.png"],[bundlePath stringByAppendingString:@"/circle_n.png"],[bundlePath stringByAppendingString:@"/arrow_n.png"],[bundlePath stringByAppendingString:@"/rotation_n.png"],[bundlePath stringByAppendingString:@"/write_n.png"],[bundlePath stringByAppendingString:@"/clip_n.png"]];
+        NSArray * imageArr_s = @[[bundlePath stringByAppendingString:@"/draw_s.png"],[bundlePath stringByAppendingString:@"/rounded_rectangle_s.png"],[bundlePath stringByAppendingString:@"/circle_s.png"],[bundlePath stringByAppendingString:@"/arrow_s.png"],[bundlePath stringByAppendingString:@"/rotation_s.png"],[bundlePath stringByAppendingString:@"/write_s.png"],[bundlePath stringByAppendingString:@"/clip_s.png"]];
         
         __block UIView * lastView;
         [imageArr_n enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             UIButton * button = [UIButton buttonWithType:UIButtonTypeCustom];
-            button.frame = CGRectMake(idx*50, 0, 50, 64);
+            button.frame = CGRectMake(idx*50, 0, 50, 49);
             [button setImage:[UIImage imageWithContentsOfFile:obj] forState:UIControlStateNormal];
             [button setImage:[UIImage imageWithContentsOfFile:imageArr_s[idx]] forState:UIControlStateHighlighted];
             [button setImage:[UIImage imageWithContentsOfFile:imageArr_s[idx]] forState:UIControlStateSelected];
@@ -528,6 +529,13 @@
         case 3:
         {
             _drawView.drawType = BKDrawTypeArrow;
+        }
+            break;
+        case 4:
+        {
+            UIImage * image = [self createNewImage];
+            BKImageCropView * cropView = [[BKImageCropView alloc] initWithImage:image];
+            [self addSubview:cropView];
         }
             break;
         default:

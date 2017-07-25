@@ -10,6 +10,7 @@
 		1D44AB901EE686CD00AE180B /* BKImageClassModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D44AB8B1EE686CD00AE180B /* BKImageClassModel.m */; };
 		1D44AB911EE686CD00AE180B /* BKImageClassTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D44AB8D1EE686CD00AE180B /* BKImageClassTableViewCell.m */; };
 		1D44AB921EE686CD00AE180B /* BKImageClassViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D44AB8F1EE686CD00AE180B /* BKImageClassViewController.m */; };
+		1D4ABCD01F25D0AE00D0AAD0 /* BKImageCropView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D4ABCCF1F25D0AE00D0AAD0 /* BKImageCropView.m */; };
 		1D8A25DD1EFA0DFD00C55945 /* BKImage.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 1D8A25DC1EFA0DFD00C55945 /* BKImage.bundle */; };
 		1D8A25EB1EFA0E2600C55945 /* BKEditPhotoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D8A25E41EFA0E2600C55945 /* BKEditPhotoView.m */; };
 		1D8A25F71EFA14BB00C55945 /* BKSelectColorMarkView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D8A25F41EFA14BB00C55945 /* BKSelectColorMarkView.m */; };
@@ -49,6 +50,8 @@
 		1D44AB8D1EE686CD00AE180B /* BKImageClassTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKImageClassTableViewCell.m; sourceTree = "<group>"; };
 		1D44AB8E1EE686CD00AE180B /* BKImageClassViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKImageClassViewController.h; sourceTree = "<group>"; };
 		1D44AB8F1EE686CD00AE180B /* BKImageClassViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKImageClassViewController.m; sourceTree = "<group>"; };
+		1D4ABCCE1F25D0AE00D0AAD0 /* BKImageCropView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKImageCropView.h; sourceTree = "<group>"; };
+		1D4ABCCF1F25D0AE00D0AAD0 /* BKImageCropView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKImageCropView.m; sourceTree = "<group>"; };
 		1D8A25DC1EFA0DFD00C55945 /* BKImage.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = BKImage.bundle; sourceTree = "<group>"; };
 		1D8A25E31EFA0E2600C55945 /* BKEditPhotoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKEditPhotoView.h; sourceTree = "<group>"; };
 		1D8A25E41EFA0E2600C55945 /* BKEditPhotoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKEditPhotoView.m; sourceTree = "<group>"; };
@@ -133,9 +136,19 @@
 			path = AlbumList;
 			sourceTree = "<group>";
 		};
+		1D4ABCCD1F25D07200D0AAD0 /* Crop */ = {
+			isa = PBXGroup;
+			children = (
+				1D4ABCCE1F25D0AE00D0AAD0 /* BKImageCropView.h */,
+				1D4ABCCF1F25D0AE00D0AAD0 /* BKImageCropView.m */,
+			);
+			path = Crop;
+			sourceTree = "<group>";
+		};
 		1D8A25DE1EFA0E2600C55945 /* EditPhoto */ = {
 			isa = PBXGroup;
 			children = (
+				1D4ABCCD1F25D07200D0AAD0 /* Crop */,
 				1D8A25F21EFA14B100C55945 /* Color */,
 				1D8A25EE1EFA148C00C55945 /* Draw */,
 				1D8A25E31EFA0E2600C55945 /* BKEditPhotoView.h */,
@@ -358,6 +371,7 @@
 				1D44AB901EE686CD00AE180B /* BKImageClassModel.m in Sources */,
 				1D96639E1EE68A75000ECBF8 /* BKImageAlbumItemView.m in Sources */,
 				883BB4E41DC864F500952C2D /* BKShowExampleVideoView.m in Sources */,
+				1D4ABCD01F25D0AE00D0AAD0 /* BKImageCropView.m in Sources */,
 				1D96639D1EE68A75000ECBF8 /* BKImagePickerViewController.m in Sources */,
 				2A16740D1DB2056E00BA7AE0 /* BKShowExampleImageView.m in Sources */,
 				1D96639B1EE68A75000ECBF8 /* BKImagePickerCollectionViewCell.m in Sources */,
