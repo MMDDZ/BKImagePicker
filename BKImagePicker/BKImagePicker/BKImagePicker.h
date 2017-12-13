@@ -11,6 +11,23 @@
 
 @interface BKImagePicker : NSObject
 
+/**
+ 是否有编辑
+ */
+@property (nonatomic,assign) BOOL isHaveEdit;
+
+/**
+ 是否有原图按钮
+ */
+@property (nonatomic,assign) BOOL isHaveOriginal;
+
+/**
+ 单例
+
+ @return BKImagePicker
+ */
++(instancetype)sharedManager;
+
 -(void)takePhoto;
 
 /**
@@ -20,20 +37,20 @@
  @param maxSelect 最大选择数 (最大999)
  @param complete  选择图片/GIF/视频
  */
-+(void)showPhotoAlbumWithTypePhoto:(BKPhotoType)photoType maxSelect:(NSInteger)maxSelect complete:(void (^)(UIImage * image , NSData * data , NSURL * url , BKSelectPhotoType selectPhotoType))complete;
+-(void)showPhotoAlbumWithTypePhoto:(BKPhotoType)photoType maxSelect:(NSInteger)maxSelect complete:(void (^)(UIImage * image , NSData * data , NSURL * url , BKSelectPhotoType selectPhotoType))complete;
 
 /**
  检测是否允许调用相册
  
  @param handler 检测结果
  */
-+(void)checkAllowVisitPhotoAlbumHandler:(void (^)(BOOL handleFlag))handler;
+-(void)checkAllowVisitPhotoAlbumHandler:(void (^)(BOOL handleFlag))handler;
 
 /**
  保存图片
 
  @param image 图片
  */
-+(void)saveImage:(UIImage*)image;
+-(void)saveImage:(UIImage*)image;
 
 @end

@@ -41,7 +41,7 @@
 
 -(instancetype)initWithModel:(BKImageModel*)model
 {
-    self = [super initWithFrame:CGRectMake(UISCREEN_WIDTH, 0, UISCREEN_WIDTH, UISCREEN_HEIGHT)];
+    self = [super initWithFrame:CGRectMake(SCREENW, 0, SCREENW, SCREENH)];
     if (self) {
         
         self.model = model;
@@ -105,7 +105,7 @@
     
     [UIView animateWithDuration:BKCheckExampleGifAndVideoAnimateTime delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         
-        self.locationVC.view.bk_x = -UISCREEN_WIDTH/2.0f;
+        self.locationVC.view.bk_x = -SCREENW/2.0f;
         self.bk_x = 0;
         
     } completion:^(BOOL finished) {
@@ -186,12 +186,12 @@
 {
     [UIApplication sharedApplication].statusBarHidden = NO;
     
-    self.locationVC.view.bk_x = - UISCREEN_WIDTH/2.0f;
+    self.locationVC.view.bk_x = - SCREENW/2.0f;
     
     [UIView animateWithDuration:BKCheckExampleGifAndVideoAnimateTime delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         
         self.locationVC.view.bk_x = 0;
-        self.bk_x = UISCREEN_WIDTH;
+        self.bk_x = SCREENW;
         
     } completion:^(BOOL finished) {
         

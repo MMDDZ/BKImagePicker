@@ -17,6 +17,17 @@
 
 @implementation BKImagePicker
 
+static BKImagePicker * sharedManagerInstance = nil;
++ (instancetype)sharedManager
+{
+    static dispatch_once_t predicate;
+    dispatch_once(&predicate, ^{
+        sharedManagerInstance = [[self alloc] init];
+    });
+    
+    return sharedManagerInstance;
+}
+
 -(void)takePhoto
 {
     NSLog(@"1");
@@ -29,7 +40,7 @@
  @param maxSelect 最大选择数 (最大999)
  @param complete  选择图片/GIF/视频
  */
-+(void)showPhotoAlbumWithTypePhoto:(BKPhotoType)photoType maxSelect:(NSInteger)maxSelect complete:(void (^)(UIImage * image , NSData * data , NSURL * url , BKSelectPhotoType selectPhotoType))complete
+-(void)showPhotoAlbumWithTypePhoto:(BKPhotoType)photoType maxSelect:(NSInteger)maxSelect complete:(void (^)(UIImage * image , NSData * data , NSURL * url , BKSelectPhotoType selectPhotoType))complete
 {
     [self checkAllowVisitPhotoAlbumHandler:^(BOOL handleFlag) {
         if (handleFlag) {
@@ -104,7 +115,7 @@
             UINavigationController * nav = [[UINavigationController alloc]initWithRootViewController:imageClassVC];
             nav.navigationBarHidden = YES;
             [nav pushViewController:imageVC animated:NO];
-            [[BKTool locationVC] presentViewController:nav animated:YES completion:nil];
+            [[[BKTool sharedManager] locationVC] presentViewController:nav animated:YES completion:nil];
         }
     }];
 }
@@ -114,7 +125,7 @@
 
  @param handler 检测结果
  */
-+(void)checkAllowVisitPhotoAlbumHandler:(void (^)(BOOL handleFlag))handler
+-(void)checkAllowVisitPhotoAlbumHandler:(void (^)(BOOL handleFlag))handler
 {
     NSDictionary * infoDictionary = [[NSBundle mainBundle] infoDictionary];
     NSString * app_Name = [infoDictionary objectForKey:@"CFBundleDisplayName"];
@@ -137,7 +148,7 @@
                         }
                     }];
                     [alert addAction:ok];
-                    [[BKTool locationVC] presentViewController:alert animated:YES completion:nil];
+                    [[[BKTool sharedManager] locationVC] presentViewController:alert animated:YES completion:nil];
                 }
             }];
         }
@@ -151,7 +162,7 @@
                 }
             }];
             [alert addAction:ok];
-            [[BKTool locationVC] presentViewController:alert animated:YES completion:nil];
+            [[[BKTool sharedManager] locationVC] presentViewController:alert animated:YES completion:nil];
         }
             break;
         case PHAuthorizationStatusDenied:
@@ -163,7 +174,7 @@
                 }
             }];
             [alert addAction:ok];
-            [[BKTool locationVC] presentViewController:alert animated:YES completion:nil];
+            [[[BKTool sharedManager] locationVC] presentViewController:alert animated:YES completion:nil];
         }
             break;
         case PHAuthorizationStatusAuthorized:
@@ -185,12 +196,12 @@
  
  @param image 图片
  */
-+ (void)saveImage:(UIImage*)image
+- (void)saveImage:(UIImage*)image
 {
     UIWindow * window = [[[UIApplication sharedApplication] delegate] window];
-    [BKTool showLoadInView:window];
+    [[BKTool sharedManager] showLoadInView:window];
     
-    [BKImagePicker checkAllowVisitPhotoAlbumHandler:^(BOOL handleFlag) {
+    [self checkAllowVisitPhotoAlbumHandler:^(BOOL handleFlag) {
         if (handleFlag) {
          
             __block NSString *assetId = nil;
@@ -200,8 +211,8 @@
             } completionHandler:^(BOOL success, NSError * _Nullable error) {
                 if (error) {
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [BKTool hideLoad];
-                        [BKTool showRemind:@"图片保存失败"];
+                        [[BKTool sharedManager] hideLoad];
+                        [[BKTool sharedManager] showRemind:@"图片保存失败"];
                     });
                     return;
                 }
@@ -218,14 +229,14 @@
                     
                     dispatch_async(dispatch_get_main_queue(), ^{
                         
-                        [BKTool hideLoad];
+                        [[BKTool sharedManager] hideLoad];
                         
                         if (error) {
-                            [BKTool showRemind:@"图片保存失败"];
+                            [[BKTool sharedManager] showRemind:@"图片保存失败"];
                             return;
                         }
                         
-                        [BKTool showRemind:@"保存成功"];
+                        [[BKTool sharedManager] showRemind:@"保存成功"];
                     });
                 }];
             }];
@@ -239,7 +250,7 @@
  
  @return 保存图片相册
  */
-+ (PHAssetCollection *)collection
+- (PHAssetCollection *)collection
 {
     NSDictionary * infoDictionary = [[NSBundle mainBundle] infoDictionary];
     NSString * app_Name = [infoDictionary objectForKey:@"CFBundleDisplayName"];

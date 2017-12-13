@@ -135,7 +135,7 @@
             [rightBtn addSubview:[self rightBtn]];
         }
         
-        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 64-BKLineHeight, self.bk_width, BKLineHeight)];
+        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 64-ONE_PIXEL, self.bk_width, ONE_PIXEL)];
         line.backgroundColor = BKLineColor;
         [_topView addSubview:line];
     }
@@ -178,7 +178,7 @@
     BKImageModel * model = self.imageListArray[button.tag];
     BOOL isHave = [self.selectImageArray containsObject:model];
     if (!isHave && [self.selectImageArray count] >= self.maxSelect) {
-        [BKTool showRemind:[NSString stringWithFormat:@"最多只能选择%ld张照片",self.maxSelect]];
+        [[BKTool sharedManager] showRemind:[NSString stringWithFormat:@"最多只能选择%ld张照片",self.maxSelect]];
         return;
     }
     
@@ -265,8 +265,10 @@
         _bottomView.backgroundColor = BKNavBackgroundColor;
         _bottomView.alpha = 0;
         
-        [_bottomView addSubview:[self editBtn]];
-        if (BKComfirmHaveOriginalOption) {
+        if ([BKImagePicker sharedManager].isHaveEdit) {
+            [_bottomView addSubview:[self editBtn]];
+        }
+        if ([BKImagePicker sharedManager].isHaveOriginal) {
             [_bottomView addSubview:[self originalBtn]];
         }
         [_bottomView addSubview:[self sendBtn]];
@@ -293,7 +295,7 @@
             }
         }
         
-        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.bk_width, BKLineHeight)];
+        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.bk_width, ONE_PIXEL)];
         line.backgroundColor = BKLineColor;
         [_bottomView addSubview:line];
     }
@@ -317,7 +319,10 @@
 {
     if (!_originalBtn) {
         _originalBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _originalBtn.frame = CGRectMake(UISCREEN_WIDTH/6, 0, UISCREEN_WIDTH/7*3, 49);
+        _originalBtn.frame = CGRectMake(SCREENW/6, 0, SCREENW/7*3, 49);
+        if (![BKImagePicker sharedManager].isHaveEdit) {
+            _originalBtn.bk_x = _editBtn.bk_x;
+        }
         if (self.isOriginal) {
             [_originalBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
             [self calculataImageSize];
@@ -427,7 +432,7 @@
 
 #pragma mark - 显示方法
 
--(void)showImageAnimate:(UIImageView*)tapImageView beginAnimateOption:(void (^)())beginOption endAnimateOption:(void (^)())endOption
+-(void)showImageAnimate:(UIImageView*)tapImageView beginAnimateOption:(void (^)(void))beginOption endAnimateOption:(void (^)(void))endOption
 {
     [[self.locationVC.view superview] addSubview:self];
     
@@ -438,7 +443,7 @@
         [self showAnimateOption:beginOption endAnimateOption:endOption];
     }else{
         
-        self.bk_x = UISCREEN_WIDTH;
+        self.bk_x = SCREENW;
         self.backgroundColor = [UIColor colorWithWhite:0 alpha:1];
         self.topView.alpha = 1;
         self.bottomView.alpha = 1;
@@ -471,7 +476,7 @@
         
         [UIView animateWithDuration:BKCheckExampleGifAndVideoAnimateTime delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             
-            self.locationVC.view.bk_x = -UISCREEN_WIDTH/2.0f;
+            self.locationVC.view.bk_x = -SCREENW/2.0f;
             self.bk_x = 0;
             
         } completion:^(BOOL finished) {
@@ -485,7 +490,7 @@
     }
 }
 
--(void)showAnimateOption:(void (^)())beginOption endAnimateOption:(void (^)())endOption
+-(void)showAnimateOption:(void (^)(void))beginOption endAnimateOption:(void (^)(void))endOption
 {
     CGRect tapImageViewFrame = [[self.tapImageView superview] convertRect:self.tapImageView.frame toView:self];
     
@@ -634,7 +639,7 @@
                             
                         }];
                     }else{
-                        model.thumbImageData = [BKTool compressImageData:originalImageData];
+                        model.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];
                     }
                     
                 });
@@ -694,7 +699,7 @@
                         
                     }];
                 }else{
-                    model.thumbImageData = [BKTool compressImageData:originalImageData];
+                    model.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];
                 }
                 
             });

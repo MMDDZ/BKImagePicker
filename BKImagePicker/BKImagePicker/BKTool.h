@@ -11,14 +11,45 @@
 
 @interface BKTool : NSObject
 
-+(UIViewController *)locationVC;
+/**
+ 单例
+ 
+ @return BKImagePicker
+ */
++(instancetype)sharedManager;
 
-+(void)showRemind:(NSString*)text;
+/**
+ 所在VC
 
-+(void)showLoadInView:(UIView*)view;
+ @return VC
+ */
+-(UIViewController *)locationVC;
 
-+(void)hideLoad;
+/**
+ 提示
 
-+(NSData *)compressImageData:(NSData *)imageData;
+ @param text 文本
+ */
+-(void)showRemind:(NSString*)text;
+
+/**
+ 加载Loading
+
+ @param view 加载Loading
+ */
+-(void)showLoadInView:(UIView*)view;
+
+/**
+ 隐藏Loading
+ */
+-(void)hideLoad;
+
+/**
+ 压缩图片
+
+ @param imageData 原图data
+ @return 缩略图data
+ */
+-(NSData *)compressImageData:(NSData *)imageData;
 
 @end

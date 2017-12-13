@@ -39,7 +39,7 @@
 -(UIImageView*)editImageView
 {
     if (!_editImageView) {
-        _editImageView = [[UIImageView alloc]initWithFrame:CGRectMake(10, 30, UISCREEN_WIDTH - 20, UISCREEN_HEIGHT - 140)];
+        _editImageView = [[UIImageView alloc]initWithFrame:CGRectMake(10, 30, SCREENW - 20, SCREENH - 140)];
         _editImageView.image = _editImage;
         _editImageView.clipsToBounds = YES;
         _editImageView.contentMode = UIViewContentModeScaleAspectFit;

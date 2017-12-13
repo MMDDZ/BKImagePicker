@@ -33,6 +33,6 @@
 
 -(instancetype)initWithLocationVC:(UIViewController*)locationVC imageListArray:(NSArray*)imageListArray selectImageArray:(NSArray*)selectImageArray tapModel:(BKImageModel*)tapModel maxSelect:(NSInteger)maxSelect isOriginal:(BOOL)isOriginal;
 
--(void)showImageAnimate:(UIImageView*)tapImageView beginAnimateOption:(void (^)())beginOption endAnimateOption:(void (^)())endOption;
+-(void)showImageAnimate:(UIImageView*)tapImageView beginAnimateOption:(void (^)(void))beginOption endAnimateOption:(void (^)(void))endOption;
 
 @end

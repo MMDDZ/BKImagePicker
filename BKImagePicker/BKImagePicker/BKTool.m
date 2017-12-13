@@ -17,7 +17,7 @@
 
 @implementation BKTool
 
-+(instancetype)shareInstance
++(instancetype)sharedManager
 {
     static BKTool * shareInstance = nil;
     static dispatch_once_t onceToken;
@@ -27,35 +27,34 @@
     return shareInstance;
 }
 
-+(UIViewController *)locationVC
+/**
+ 所在VC
+ 
+ @return VC
+ */
+-(UIViewController *)locationVC
 {
-    UIWindow * window = [[UIApplication sharedApplication] keyWindow];
-    if (window.windowLevel != UIWindowLevelNormal) {
-        NSArray *windows = [[UIApplication sharedApplication] windows];
-        for(UIWindow * tmpWin in windows) {
-            if (tmpWin.windowLevel == UIWindowLevelNormal) {
-                window = tmpWin;
-                break;
-            }
-        }
+    UIViewController *rootVC = [[UIApplication sharedApplication].delegate window].rootViewController;
+    
+    UIViewController *parent = rootVC;
+    
+    while ((parent = rootVC.presentedViewController) != nil ) {
+        rootVC = parent;
     }
     
-    UIView *frontView = [[window subviews] objectAtIndex:0];
-    id nextResponder = [frontView nextResponder];
-    
-    UIViewController * vc;
-    if ([nextResponder isKindOfClass:[UIViewController class]]) {
-        vc = nextResponder;
-    }else {
-        vc = window.rootViewController;
+    while ([rootVC isKindOfClass:[UINavigationController class]]) {
+        rootVC = [(UINavigationController *)rootVC topViewController];
     }
     
-    return vc;
+    return rootVC; 
 }
 
-#pragma mark - Remind
-
-+(void)showRemind:(NSString*)text
+/**
+ 提示
+ 
+ @param text 文本
+ */
+-(void)showRemind:(NSString*)text
 {
     UIWindow * window = [[[UIApplication sharedApplication] delegate] window];
     
@@ -95,7 +94,7 @@
     }];
 }
 
-+(CGSize)sizeWithString:(NSString *)string UIWidth:(CGFloat)width font:(UIFont*)font
+-(CGSize)sizeWithString:(NSString *)string UIWidth:(CGFloat)width font:(UIFont*)font
 {
     CGRect rect = [string boundingRectWithSize:CGSizeMake(width, MAXFLOAT)
                                        options: NSStringDrawingUsesFontLeading  |NSStringDrawingUsesLineFragmentOrigin
@@ -105,7 +104,7 @@
     return rect.size;
 }
 
-+(CGSize)sizeWithString:(NSString *)string UIHeight:(CGFloat)height font:(UIFont*)font
+-(CGSize)sizeWithString:(NSString *)string UIHeight:(CGFloat)height font:(UIFont*)font
 {
     CGRect rect = [string boundingRectWithSize:CGSizeMake(MAXFLOAT, height)
                                        options: NSStringDrawingUsesFontLeading  |NSStringDrawingUsesLineFragmentOrigin
@@ -115,11 +114,14 @@
     return rect.size;
 }
 
-#pragma mark - Load
-
-+(void)showLoadInView:(UIView*)view
+/**
+ 加载Loading
+ 
+ @param view 加载Loading
+ */
+-(void)showLoadInView:(UIView*)view
 {
-    if ([BKTool shareInstance].loadLayer) {
+    if (self.loadLayer) {
         [self hideLoad];
     }
     
@@ -131,7 +133,7 @@
     loadLayer.masksToBounds = YES;
     [view.layer addSublayer:loadLayer];
     
-    [BKTool shareInstance].loadLayer = loadLayer;
+    self.loadLayer = loadLayer;
     
     NSTimeInterval beginTime = CACurrentMediaTime();
     
@@ -164,18 +166,25 @@
     }
 }
 
-+(void)hideLoad
+/**
+ 隐藏Loading
+ */
+-(void)hideLoad
 {
-    [[[BKTool shareInstance].loadLayer sublayers] enumerateObjectsUsingBlock:^(CALayer * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [[self.loadLayer sublayers] enumerateObjectsUsingBlock:^(CALayer * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         [obj removeAnimationForKey:@"loading_admin"];
     }];
-    [[BKTool shareInstance].loadLayer removeFromSuperlayer];
-    [BKTool shareInstance].loadLayer = nil;
+    [self.loadLayer removeFromSuperlayer];
+    self.loadLayer = nil;
 }
 
-#pragma mark - 图片压缩
-
-+(NSData *)compressImageData:(NSData *)imageData
+/**
+ 压缩图片
+ 
+ @param imageData 原图data
+ @return 缩略图data
+ */
+-(NSData *)compressImageData:(NSData *)imageData
 {
     if (!imageData) {
         return nil;
@@ -193,7 +202,7 @@
     return lastImageData;
 }
 
-+(NSData*)calculateSizeAndCreateImageData:(NSData*)imageData
+-(NSData*)calculateSizeAndCreateImageData:(NSData*)imageData
 {
     UIImage * image = [UIImage imageWithData:imageData];
     UIImage *newImage;
@@ -216,7 +225,7 @@
     return newImageData;
 }
 
-+(UIImage*)compressImage:(UIImage*)image
+-(UIImage*)compressImage:(UIImage*)image
 {
     float imageWidth = image.size.width;
     float imageHeight = image.size.height;

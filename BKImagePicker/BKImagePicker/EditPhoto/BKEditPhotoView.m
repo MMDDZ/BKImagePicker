@@ -445,7 +445,7 @@
  */
 -(void)saveBtnClick
 {
-    [BKImagePicker saveImage:[self createNewImage]];
+    [[BKImagePicker sharedManager] saveImage:[self createNewImage]];
 }
 
 #pragma mark - bottomView
@@ -568,7 +568,7 @@
 -(BKSelectColorView*)selectColorView
 {
     if (!_selectColorView) {
-        _selectColorView = [[BKSelectColorView alloc]initWithStartPosition:CGPointMake(UISCREEN_WIDTH - 40,  UISCREEN_HEIGHT - 64 - 250) delegate:self];
+        _selectColorView = [[BKSelectColorView alloc]initWithStartPosition:CGPointMake(SCREENW - 40,  SCREENH - 64 - 250) delegate:self];
     }
     return _selectColorView;
 }

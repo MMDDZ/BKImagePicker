@@ -121,19 +121,18 @@
                 options.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
                 options.synchronous = YES;
                 
-                [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(UISCREEN_WIDTH/2.0f, UISCREEN_WIDTH/2.0f) contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+                [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(SCREENW/2.0f, SCREENW/2.0f) contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
                     
                     // 排除取消，错误，低清图三种情况，即已经获取到了高清图
                     BOOL downImageloadFinined = ![[info objectForKey:PHImageCancelledKey] boolValue] && ![info objectForKey:PHImageErrorKey] && ![[info objectForKey:PHImageResultIsDegradedKey] boolValue];
                     if (downImageloadFinined) {
-                        if(result)
-                        {
+                        if(result) {
                             model.albumName = collection.localizedTitle;
                             model.albumFirstImage = result;
                             model.albumImageCount = assetsCount;
                             
                             [self.imageClassArray addObject:model];
-                            [self.imageClassTableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:[self.imageClassArray count]-1 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
+                            [self.imageClassTableView reloadData];
                         }
                     }
                 }];
@@ -161,10 +160,10 @@
 -(UIView*)topView
 {
     if (!_topView) {
-        _topView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, UISCREEN_WIDTH, 64)];
+        _topView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREENW, SYSTEM_NAV_HEIGHT)];
         _topView.backgroundColor = BKNavBackgroundColor;
         
-        UILabel * titleLab = [[UILabel alloc]initWithFrame:CGRectMake(64, 20, UISCREEN_WIDTH - 64*2, 44)];
+        UILabel * titleLab = [[UILabel alloc]initWithFrame:CGRectMake(64, SYSTEM_STATUSBAR_HEIGHT, SCREENW - 64*2, SYSTEM_NAV_UI_HEIGHT)];
         titleLab.font = [UIFont boldSystemFontOfSize:17];
         titleLab.textColor = [UIColor blackColor];
         titleLab.textAlignment = NSTextAlignmentCenter;
@@ -172,14 +171,14 @@
         [_topView addSubview:titleLab];
         
         UIButton * rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        rightBtn.frame = CGRectMake(UISCREEN_WIDTH - 64, 20, 64, 44);
+        rightBtn.frame = CGRectMake(SCREENW - 64, SYSTEM_STATUSBAR_HEIGHT, 64, SYSTEM_NAV_UI_HEIGHT);
         [rightBtn setTitle:@"取消" forState:UIControlStateNormal];
         [rightBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
         rightBtn.titleLabel.font = [UIFont systemFontOfSize:17];
         [rightBtn addTarget:self action:@selector(rightBtnClick:) forControlEvents:UIControlEventTouchUpInside];
         [_topView addSubview:rightBtn];
         
-        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 64-BKLineHeight, UISCREEN_WIDTH, BKLineHeight)];
+        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, SYSTEM_NAV_HEIGHT - ONE_PIXEL, SCREENW, ONE_PIXEL)];
         line.backgroundColor = BKLineColor;
         [_topView addSubview:line];
     }
@@ -196,13 +195,19 @@
 -(UITableView*)imageClassTableView
 {
     if (!_imageClassTableView) {
-        _imageClassTableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 64, UISCREEN_WIDTH, UISCREEN_HEIGHT - 64) style:UITableViewStylePlain];
+        _imageClassTableView = [[UITableView alloc]initWithFrame:CGRectMake(0, SYSTEM_NAV_HEIGHT, SCREENW, SCREENH - SYSTEM_NAV_HEIGHT) style:UITableViewStylePlain];
         _imageClassTableView.delegate = self;
         _imageClassTableView.dataSource = self;
         _imageClassTableView.showsVerticalScrollIndicator = NO;
         _imageClassTableView.tableFooterView = [UIView new];
         _imageClassTableView.rowHeight = ROW_HEIGHT;
         _imageClassTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+        if (@available(iOS 11.0, *)) {
+            _imageClassTableView.estimatedRowHeight = 0;
+            _imageClassTableView.estimatedSectionFooterHeight = 0;
+            _imageClassTableView.estimatedSectionHeaderHeight = 0;
+            _imageClassTableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+        }
     }
     return _imageClassTableView;
 }
@@ -222,7 +227,7 @@
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         
-        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(ROW_HEIGHT+ROW_HEIGHT/3, ROW_HEIGHT-BKLineHeight, UISCREEN_WIDTH-(ROW_HEIGHT+ROW_HEIGHT/3), BKLineHeight)];
+        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(ROW_HEIGHT+ROW_HEIGHT/3, ROW_HEIGHT-ONE_PIXEL, SCREENW-(ROW_HEIGHT+ROW_HEIGHT/3), ONE_PIXEL)];
         line.backgroundColor = BKLineColor;
         [cell addSubview:line];
     }

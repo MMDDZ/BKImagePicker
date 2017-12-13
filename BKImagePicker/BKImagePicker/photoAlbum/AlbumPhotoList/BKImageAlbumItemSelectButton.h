@@ -20,6 +20,6 @@
  */
 @property (nonatomic,copy) void (^selectButtonClick)(BKImageAlbumItemSelectButton*button);
 
--(void)selectClickNum:(NSInteger)num addMethod:(void (^)())method;
+-(void)selectClickNum:(NSInteger)num addMethod:(void (^)(void))method;
 
 @end

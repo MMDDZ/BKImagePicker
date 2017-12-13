@@ -6,12 +6,12 @@
 //  Copyright © 2016年 BIKE. All rights reserved.
 //
 
-#define item_Size CGSizeMake((UISCREEN_WIDTH-BKAlbumImagesSpacing*5)/4, (UISCREEN_WIDTH-BKAlbumImagesSpacing*5)/4)
+#define item_Size CGSizeMake((SCREENW-BKAlbumImagesSpacing*5)/4, (SCREENW-BKAlbumImagesSpacing*5)/4)
 
 #define imagePickerCell_identifier @"BKImagePickerCollectionViewCell"
 #define imagePickerFooter_identifier @"BKImagePickerFooterCollectionReusableView"
 
-#define imageSize CGSizeMake(UISCREEN_WIDTH/2.0f, UISCREEN_WIDTH/2.0f)
+#define imageSize CGSizeMake(SCREENW/2.0f, SCREENW/2.0f)
 
 #import "BKImageClassViewController.h"
 
@@ -26,7 +26,6 @@
 @interface BKImagePickerViewController ()<UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout,BKImagePickerCollectionViewCellDelegate>
 
 @property (nonatomic,strong) PHImageRequestOptions * options;
-@property (nonatomic,strong) PHCachingImageManager * cachingImageManager;
 
 @property (nonatomic,strong) UICollectionView * albumCollectionView;
 
@@ -151,23 +150,6 @@
     return _options;
 }
 
--(PHCachingImageManager*)cachingImageManager
-{
-    if (!_cachingImageManager) {
-        _cachingImageManager = [[PHCachingImageManager alloc]init];
-        _cachingImageManager.allowsCachingHighQualityImages = NO;
-        
-        NSMutableArray * array = [NSMutableArray array];
-        [self.listArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            BKImageModel * model = obj;
-            [array addObject:model.asset];
-        }];
-        
-        [_cachingImageManager startCachingImagesForAssets:array targetSize:imageSize contentMode:PHImageContentModeAspectFill options:self.options];
-    }
-    return _cachingImageManager;
-}
-
 -(void)getAllImageClassData
 {
     //系统的相簿
@@ -284,7 +266,7 @@
     return flag;
 }
 
--(void)getImageWithIndex:(NSInteger)index getThumbComplete:(void (^)())getThumbComplete getOriginalDataComplete:(void (^)(BKImageModel * model ,NSInteger index))getOriginalDataComplete
+-(void)getImageWithIndex:(NSInteger)index getThumbComplete:(void (^)(void))getThumbComplete getOriginalDataComplete:(void (^)(BKImageModel * model ,NSInteger index))getOriginalDataComplete
 {
     BKImageModel * model = self.listArray[index];
     if (model.thumbImageData) {
@@ -292,7 +274,7 @@
             getThumbComplete();
         }
     }else{
-        [self.cachingImageManager requestImageForAsset:model.asset targetSize:imageSize contentMode:PHImageContentModeAspectFill options:self.options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+        [[PHImageManager defaultManager] requestImageForAsset:model.asset targetSize:imageSize contentMode:PHImageContentModeAspectFill options:self.options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
             
             // 排除取消，错误，低清图
             BOOL downImageloadFinined = ![[info objectForKey:PHImageCancelledKey] boolValue] && ![info objectForKey:PHImageErrorKey] && ![[info objectForKey:PHImageResultIsDegradedKey] boolValue];
@@ -380,20 +362,23 @@
         flowLayout.minimumLineSpacing = BKAlbumImagesSpacing;
         flowLayout.minimumInteritemSpacing = 0;
         flowLayout.sectionInset = UIEdgeInsetsMake(BKAlbumImagesSpacing, BKAlbumImagesSpacing, BKAlbumImagesSpacing, BKAlbumImagesSpacing);
-        [flowLayout setFooterReferenceSize:CGSizeMake(UISCREEN_WIDTH, 40)];
+        [flowLayout setFooterReferenceSize:CGSizeMake(SCREENW, 40)];
         
         if (self.max_select == 1) {
-            _albumCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 0, UISCREEN_WIDTH, UISCREEN_HEIGHT) collectionViewLayout:flowLayout];
+            _albumCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 0, SCREENW, SCREENH) collectionViewLayout:flowLayout];
         }else{
-            _albumCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 0, UISCREEN_WIDTH, UISCREEN_HEIGHT-49) collectionViewLayout:flowLayout];
+            _albumCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 0, SCREENW, SCREENH-49) collectionViewLayout:flowLayout];
         }
-        _albumCollectionView.scrollIndicatorInsets = UIEdgeInsetsMake(64, 0, 0, 0);
-        _albumCollectionView.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
+        _albumCollectionView.scrollIndicatorInsets = UIEdgeInsetsMake(SYSTEM_NAV_HEIGHT, 0, 0, 0);
+        _albumCollectionView.contentInset = UIEdgeInsetsMake(SYSTEM_NAV_HEIGHT, 0, 0, 0);
         _albumCollectionView.delegate = self;
         _albumCollectionView.dataSource = self;
         _albumCollectionView.backgroundColor = [UIColor clearColor];
         [_albumCollectionView registerClass:[BKImagePickerCollectionViewCell class] forCellWithReuseIdentifier:imagePickerCell_identifier];
         [_albumCollectionView registerClass:[BKImagePickerFooterCollectionReusableView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:imagePickerFooter_identifier];
+        if (@available(iOS 11.0, *)) {
+            _albumCollectionView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+        }
     }
     return _albumCollectionView;
 }
@@ -490,7 +475,7 @@
         
     }else{
         if ([self.selectImageArray count] > 0) {
-            [BKTool showRemind:@"不能同时选择照片和视频"];
+            [[BKTool sharedManager] showRemind:@"不能同时选择照片和视频"];
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 self.view.userInteractionEnabled = YES;
             });
@@ -588,12 +573,12 @@
             
             [strongExampleImageView removeFromSuperview];
             [[strongSelf.view superview] addSubview:strongExampleImageView];
-            strongSelf.view.bk_x = - UISCREEN_WIDTH/2.0f;
+            strongSelf.view.bk_x = - SCREENW/2.0f;
             
             [UIView animateWithDuration:BKCheckExampleGifAndVideoAnimateTime delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
                 
                 strongSelf.view.bk_x = 0;
-                strongExampleImageView.bk_x = UISCREEN_WIDTH;
+                strongExampleImageView.bk_x = SCREENW;
                 
             } completion:^(BOOL finished) {
                 [strongExampleImageView removeFromSuperview];
@@ -700,7 +685,7 @@
     }];
     
     if (!isHave && [self.selectImageArray count] >= self.max_select) {
-        [BKTool showRemind:[NSString stringWithFormat:@"最多只能选择%ld张照片",self.max_select]];
+        [[BKTool sharedManager] showRemind:[NSString stringWithFormat:@"最多只能选择%ld张照片",self.max_select]];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             self.view.userInteractionEnabled = YES;
         });
@@ -747,7 +732,7 @@
                                 
                             }];
                         }else{
-                            model.thumbImageData = [BKTool compressImageData:originalImageData];
+                            model.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];
                         }
                         
                     });
@@ -776,10 +761,10 @@
 -(UIView*)topView
 {
     if (!_topView) {
-        _topView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, UISCREEN_WIDTH, 64)];
+        _topView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREENW, SYSTEM_NAV_HEIGHT)];
         _topView.backgroundColor = BKNavBackgroundColor;
         
-        UILabel * titleLab = [[UILabel alloc]initWithFrame:CGRectMake(100, 20, UISCREEN_WIDTH - 100*2, 44)];
+        UILabel * titleLab = [[UILabel alloc]initWithFrame:CGRectMake(100, SYSTEM_STATUSBAR_HEIGHT, SCREENW - 100*2, SYSTEM_NAV_UI_HEIGHT)];
         titleLab.font = [UIFont boldSystemFontOfSize:17];
         titleLab.textColor = [UIColor blackColor];
         titleLab.textAlignment = NSTextAlignmentCenter;
@@ -787,12 +772,12 @@
         [_topView addSubview:titleLab];
         
         UIButton * leftBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        leftBtn.frame = CGRectMake(0, 0, 100, 64);
+        leftBtn.frame = CGRectMake(0, SYSTEM_STATUSBAR_HEIGHT, 100, SYSTEM_NAV_UI_HEIGHT);
         [leftBtn addTarget:self action:@selector(leftBtnClick:) forControlEvents:UIControlEventTouchUpInside];
         [_topView addSubview:leftBtn];
         
         NSString * backPath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
-        UIImageView * leftImageView = [[UIImageView alloc]initWithFrame:CGRectMake(10, 20 + 12, 20, 20)];
+        UIImageView * leftImageView = [[UIImageView alloc]initWithFrame:CGRectMake(10, (SYSTEM_NAV_UI_HEIGHT - 20)/2, 20, 20)];
         leftImageView.clipsToBounds = YES;
         leftImageView.contentMode = UIViewContentModeScaleAspectFit;
         leftImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/blue_back.png",backPath]];
@@ -808,14 +793,14 @@
         [leftBtn addSubview:leftLab];
         
         UIButton * rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        rightBtn.frame = CGRectMake(UISCREEN_WIDTH - 64, 20, 64, 44);
+        rightBtn.frame = CGRectMake(SCREENW - 64, SYSTEM_STATUSBAR_HEIGHT, 64, SYSTEM_NAV_UI_HEIGHT);
         [rightBtn setTitle:@"取消" forState:UIControlStateNormal];
         [rightBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
         rightBtn.titleLabel.font = [UIFont systemFontOfSize:17];
         [rightBtn addTarget:self action:@selector(rightBtnClick:) forControlEvents:UIControlEventTouchUpInside];
         [_topView addSubview:rightBtn];
         
-        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 64-BKLineHeight, UISCREEN_WIDTH, BKLineHeight)];
+        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, SYSTEM_NAV_HEIGHT - ONE_PIXEL, SCREENW, ONE_PIXEL)];
         line.backgroundColor = BKLineColor;
         [_topView addSubview:line];
     }
@@ -838,16 +823,18 @@
 {
     if (!_bottomView) {
         
-        _bottomView = [[UIView alloc]initWithFrame:CGRectMake(0, UISCREEN_HEIGHT-49, UISCREEN_WIDTH, 49)];
+        _bottomView = [[UIView alloc]initWithFrame:CGRectMake(0, SCREENH - 49, SCREENW, 49)];
         _bottomView.backgroundColor = BKNavBackgroundColor;
         
-        UIImageView * lineView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, UISCREEN_WIDTH, BKLineHeight)];
+        UIImageView * lineView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, SCREENW, ONE_PIXEL)];
         lineView.backgroundColor = BKLineColor;
         [_bottomView addSubview:lineView];
         
-        [_bottomView addSubview:[self editBtn]];
         [_bottomView addSubview:[self previewBtn]];
-        if (BKComfirmHaveOriginalOption) {
+        if ([BKImagePicker sharedManager].isHaveEdit) {
+            [_bottomView addSubview:[self editBtn]];
+        }
+        if ([BKImagePicker sharedManager].isHaveOriginal) {
             [_bottomView addSubview:[self originalBtn]];
         }
         [_bottomView addSubview:[self sendBtn]];
@@ -877,7 +864,7 @@
 {
     if (!_previewBtn) {
         _previewBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _previewBtn.frame = CGRectMake(0, 0, UISCREEN_WIDTH/6, 49);
+        _previewBtn.frame = CGRectMake(0, 0, SCREENW/6, 49);
         [_previewBtn setTitle:@"预览" forState:UIControlStateNormal];
         [_previewBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
         _previewBtn.titleLabel.font = [UIFont systemFontOfSize:15];
@@ -890,7 +877,7 @@
 {
     if (!_editBtn) {
         _editBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _editBtn.frame = CGRectMake(UISCREEN_WIDTH/6, 0, UISCREEN_WIDTH/6, 49);
+        _editBtn.frame = CGRectMake(SCREENW/6, 0, SCREENW/6, 49);
         [_editBtn setTitle:@"编辑" forState:UIControlStateNormal];
         [_editBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
         _editBtn.titleLabel.font = [UIFont systemFontOfSize:15];
@@ -903,7 +890,10 @@
 {
     if (!_originalBtn) {
         _originalBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _originalBtn.frame = CGRectMake(UISCREEN_WIDTH/6*2, 0, UISCREEN_WIDTH/7*3, 49);
+        _originalBtn.frame = CGRectMake(SCREENW/6*2, 0, SCREENW/7*3, 49);
+        if (![BKImagePicker sharedManager].isHaveEdit) {
+            _originalBtn.bk_x = _editBtn.bk_x;
+        }
         if (self.isOriginal) {
             [_originalBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
             [self calculataImageSize];
@@ -924,7 +914,7 @@
     if (!_sendBtn) {
         
         _sendBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _sendBtn.frame = CGRectMake(UISCREEN_WIDTH/4*3, 6, UISCREEN_WIDTH/4-6, 37);
+        _sendBtn.frame = CGRectMake(SCREENW/4*3, 6, SCREENW/4-6, 37);
         [_sendBtn setTitle:@"确认" forState:UIControlStateNormal];
         [_sendBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
         [_sendBtn setBackgroundColor:BKNavSendGrayBackgroundColor];
