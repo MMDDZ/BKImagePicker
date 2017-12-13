@@ -194,27 +194,17 @@
         return imageData;
     }
     
-    NSData * lastImageData = [self calculateSizeAndCreateImageData:imageData];
-    while (lastImageData.length > 200*1024) {
-        lastImageData = [self calculateSizeAndCreateImageData:lastImageData];
-    }
-    
-    return lastImageData;
-}
-
--(NSData*)calculateSizeAndCreateImageData:(NSData*)imageData
-{
     UIImage * image = [UIImage imageWithData:imageData];
-    UIImage *newImage;
+    UIImage * newImage;
     
     if (image.size.width > image.size.height) {
-        if (image.size.width < 1000) {
+        if (image.size.width < 1242) {
             newImage = image;
         }else{
             newImage = [self compressImage:image];
         }
     }else{
-        if (image.size.height < 1500) {
+        if (image.size.height < 2208) {
             newImage = image;
         }else{
             newImage = [self compressImage:image];
