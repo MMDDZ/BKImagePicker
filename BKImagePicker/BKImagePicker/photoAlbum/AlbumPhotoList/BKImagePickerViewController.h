@@ -10,8 +10,9 @@
 #import <Photos/Photos.h>
 #import "BKImagePicker.h"
 #import "BKImageModel.h"
+#import "BKImageBaseViewController.h"
 
-@interface BKImagePickerViewController : UIViewController
+@interface BKImagePickerViewController : BKImageBaseViewController
 
 /**
  最大选取量

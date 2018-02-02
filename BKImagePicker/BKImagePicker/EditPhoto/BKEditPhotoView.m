@@ -568,7 +568,7 @@
 -(BKSelectColorView*)selectColorView
 {
     if (!_selectColorView) {
-        _selectColorView = [[BKSelectColorView alloc]initWithStartPosition:CGPointMake(SCREENW - 40,  SCREENH - 64 - 250) delegate:self];
+        _selectColorView = [[BKSelectColorView alloc]initWithStartPosition:CGPointMake(BK_SCREENW - 40,  BK_SCREENH - 64 - 250) delegate:self];
     }
     return _selectColorView;
 }

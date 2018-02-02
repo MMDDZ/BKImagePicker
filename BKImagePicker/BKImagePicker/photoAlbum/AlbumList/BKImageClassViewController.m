@@ -121,7 +121,7 @@
                 options.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
                 options.synchronous = YES;
                 
-                [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(SCREENW/2.0f, SCREENW/2.0f) contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+                [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(BK_SCREENW/2.0f, BK_SCREENW/2.0f) contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
                     
                     // 排除取消，错误，低清图三种情况，即已经获取到了高清图
                     BOOL downImageloadFinined = ![[info objectForKey:PHImageCancelledKey] boolValue] && ![info objectForKey:PHImageErrorKey] && ![[info objectForKey:PHImageResultIsDegradedKey] boolValue];
@@ -160,10 +160,10 @@
 -(UIView*)topView
 {
     if (!_topView) {
-        _topView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREENW, SYSTEM_NAV_HEIGHT)];
+        _topView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, BK_SCREENW, BK_SYSTEM_NAV_HEIGHT)];
         _topView.backgroundColor = BKNavBackgroundColor;
         
-        UILabel * titleLab = [[UILabel alloc]initWithFrame:CGRectMake(64, SYSTEM_STATUSBAR_HEIGHT, SCREENW - 64*2, SYSTEM_NAV_UI_HEIGHT)];
+        UILabel * titleLab = [[UILabel alloc]initWithFrame:CGRectMake(64, BK_SYSTEM_STATUSBAR_HEIGHT, BK_SCREENW - 64*2, BK_SYSTEM_NAV_UI_HEIGHT)];
         titleLab.font = [UIFont boldSystemFontOfSize:17];
         titleLab.textColor = [UIColor blackColor];
         titleLab.textAlignment = NSTextAlignmentCenter;
@@ -171,14 +171,14 @@
         [_topView addSubview:titleLab];
         
         UIButton * rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        rightBtn.frame = CGRectMake(SCREENW - 64, SYSTEM_STATUSBAR_HEIGHT, 64, SYSTEM_NAV_UI_HEIGHT);
+        rightBtn.frame = CGRectMake(BK_SCREENW - 64, BK_SYSTEM_STATUSBAR_HEIGHT, 64, BK_SYSTEM_NAV_UI_HEIGHT);
         [rightBtn setTitle:@"取消" forState:UIControlStateNormal];
         [rightBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
         rightBtn.titleLabel.font = [UIFont systemFontOfSize:17];
         [rightBtn addTarget:self action:@selector(rightBtnClick:) forControlEvents:UIControlEventTouchUpInside];
         [_topView addSubview:rightBtn];
         
-        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, SYSTEM_NAV_HEIGHT - ONE_PIXEL, SCREENW, ONE_PIXEL)];
+        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, BK_SYSTEM_NAV_HEIGHT - BK_ONE_PIXEL, BK_SCREENW, BK_ONE_PIXEL)];
         line.backgroundColor = BKLineColor;
         [_topView addSubview:line];
     }
@@ -195,7 +195,7 @@
 -(UITableView*)imageClassTableView
 {
     if (!_imageClassTableView) {
-        _imageClassTableView = [[UITableView alloc]initWithFrame:CGRectMake(0, SYSTEM_NAV_HEIGHT, SCREENW, SCREENH - SYSTEM_NAV_HEIGHT) style:UITableViewStylePlain];
+        _imageClassTableView = [[UITableView alloc]initWithFrame:CGRectMake(0, BK_SYSTEM_NAV_HEIGHT, BK_SCREENW, BK_SCREENH - BK_SYSTEM_NAV_HEIGHT) style:UITableViewStylePlain];
         _imageClassTableView.delegate = self;
         _imageClassTableView.dataSource = self;
         _imageClassTableView.showsVerticalScrollIndicator = NO;
@@ -227,7 +227,7 @@
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         
-        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(ROW_HEIGHT+ROW_HEIGHT/3, ROW_HEIGHT-ONE_PIXEL, SCREENW-(ROW_HEIGHT+ROW_HEIGHT/3), ONE_PIXEL)];
+        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(ROW_HEIGHT+ROW_HEIGHT/3, ROW_HEIGHT-BK_ONE_PIXEL, BK_SCREENW-(ROW_HEIGHT+ROW_HEIGHT/3), BK_ONE_PIXEL)];
         line.backgroundColor = BKLineColor;
         [cell addSubview:line];
     }

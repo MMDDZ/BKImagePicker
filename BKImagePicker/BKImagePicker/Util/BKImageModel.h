@@ -7,8 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "BKImagePickerConst.h"
 #import <Photos/Photos.h>
+#import "BKImagePickerConst.h"
 
 @interface BKImageModel : NSObject
 

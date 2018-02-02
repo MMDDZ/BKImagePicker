@@ -6,12 +6,12 @@
 //  Copyright © 2016年 BIKE. All rights reserved.
 //
 
-#define item_Size CGSizeMake((SCREENW-BKAlbumImagesSpacing*5)/4, (SCREENW-BKAlbumImagesSpacing*5)/4)
+#define item_Size CGSizeMake((BK_SCREENW-BKAlbumImagesSpacing*5)/4, (BK_SCREENW-BKAlbumImagesSpacing*5)/4)
 
 #define imagePickerCell_identifier @"BKImagePickerCollectionViewCell"
 #define imagePickerFooter_identifier @"BKImagePickerFooterCollectionReusableView"
 
-#define imageSize CGSizeMake(SCREENW/2.0f, SCREENW/2.0f)
+#define imageSize CGSizeMake(BK_SCREENW/2.0f, BK_SCREENW/2.0f)
 
 #import "BKImageClassViewController.h"
 
@@ -57,9 +57,9 @@
 @property (nonatomic,assign) NSInteger allVideoNum;
 
 
-@property (nonatomic,strong) UIView * topView;
+//@property (nonatomic,strong) UIView * topView;
 
-@property (nonatomic,strong) UIView * bottomView;
+//@property (nonatomic,strong) UIView * bottomView;
 @property (nonatomic,strong) UIButton * previewBtn;
 @property (nonatomic,strong) UIButton * editBtn;
 @property (nonatomic,strong) UIButton * originalBtn;
@@ -255,7 +255,6 @@
                 
                 if ([self.listArray count] == self.allAlbumImageNum) {
                     [self.albumCollectionView reloadData];
-                    [self moveAlbumViewToBottom];
                 }
             }];
             
@@ -317,14 +316,13 @@
     }
 }
 
--(void)moveAlbumViewToBottom
+#pragma mark - KVO
+
+-(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
 {
-    NSUInteger finalItem = MAX(0, [self.albumCollectionView numberOfItemsInSection:0] - 1);
-    NSIndexPath *finalIndexPath = [NSIndexPath indexPathForItem:finalItem inSection:0];
-    [self.albumCollectionView scrollToItemAtIndexPath:finalIndexPath atScrollPosition:UICollectionViewScrollPositionBottom animated:NO];
-    
-    if (self.albumCollectionView.contentOffset.y > 0) {
-        [self.albumCollectionView setContentOffset:CGPointMake(0, self.albumCollectionView.contentOffset.y + 46)];
+    if ([keyPath isEqualToString:@"contentSize"]) {
+        [self.albumCollectionView setContentOffset:CGPointMake(0, self.albumCollectionView.contentSize.height - self.albumCollectionView.bk_height) animated:NO];
+        [self.albumCollectionView removeObserver:self forKeyPath:@"contentSize"];
     }
 }
 
@@ -342,10 +340,9 @@
     
     self.view.backgroundColor = [UIColor whiteColor];
     
-    [self.view addSubview:[self albumCollectionView]];
-    [self.view addSubview:[self topView]];
+    [self initTopNav];
     if (self.max_select != 1) {
-        [self.view addSubview:[self bottomView]];
+        [self initBottomNav];
     }
     
     [self getAllImageClassData];
@@ -362,15 +359,11 @@
         flowLayout.minimumLineSpacing = BKAlbumImagesSpacing;
         flowLayout.minimumInteritemSpacing = 0;
         flowLayout.sectionInset = UIEdgeInsetsMake(BKAlbumImagesSpacing, BKAlbumImagesSpacing, BKAlbumImagesSpacing, BKAlbumImagesSpacing);
-        [flowLayout setFooterReferenceSize:CGSizeMake(SCREENW, 40)];
+        [flowLayout setFooterReferenceSize:CGSizeMake(BK_SCREENW, 40)];
         
-        if (self.max_select == 1) {
-            _albumCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 0, SCREENW, SCREENH) collectionViewLayout:flowLayout];
-        }else{
-            _albumCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, 0, SCREENW, SCREENH-49) collectionViewLayout:flowLayout];
-        }
-        _albumCollectionView.scrollIndicatorInsets = UIEdgeInsetsMake(SYSTEM_NAV_HEIGHT, 0, 0, 0);
-        _albumCollectionView.contentInset = UIEdgeInsetsMake(SYSTEM_NAV_HEIGHT, 0, 0, 0);
+        _albumCollectionView = [[UICollectionView alloc]initWithFrame:CGRectZero collectionViewLayout:flowLayout];
+        _albumCollectionView.scrollIndicatorInsets = UIEdgeInsetsMake(BK_SYSTEM_NAV_HEIGHT, 0, 0, 0);
+        _albumCollectionView.contentInset = UIEdgeInsetsMake(BK_SYSTEM_NAV_HEIGHT, 0, 0, 0);
         _albumCollectionView.delegate = self;
         _albumCollectionView.dataSource = self;
         _albumCollectionView.backgroundColor = [UIColor clearColor];
@@ -379,6 +372,16 @@
         if (@available(iOS 11.0, *)) {
             _albumCollectionView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
         }
+        [self.view insertSubview:_albumCollectionView atIndex:0];
+        
+        [_albumCollectionView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.top.mas_equalTo(self.view).mas_offset(0);
+            make.left.mas_equalTo(self.view).mas_offset(0);
+            make.bottom.mas_equalTo(self.bottomNavView.mas_top).mas_offset(0);
+            make.right.mas_equalTo(self.view).mas_offset(0);
+        }];
+        
+        [_albumCollectionView addObserver:self forKeyPath:@"contentSize" options:NSKeyValueObservingOptionNew context:nil];
     }
     return _albumCollectionView;
 }
@@ -573,12 +576,12 @@
             
             [strongExampleImageView removeFromSuperview];
             [[strongSelf.view superview] addSubview:strongExampleImageView];
-            strongSelf.view.bk_x = - SCREENW/2.0f;
+            strongSelf.view.bk_x = - BK_SCREENW/2.0f;
             
             [UIView animateWithDuration:BKCheckExampleGifAndVideoAnimateTime delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
                 
                 strongSelf.view.bk_x = 0;
-                strongExampleImageView.bk_x = SCREENW;
+                strongExampleImageView.bk_x = BK_SCREENW;
                 
             } completion:^(BOOL finished) {
                 [strongExampleImageView removeFromSuperview];
@@ -718,23 +721,7 @@
                 [self getOriginalImageDataSizeWithAsset:model.asset complete:^(NSData * originalImageData,NSURL * url) {
                    
                     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-                        
-                        if (model.photoType == BKSelectPhotoTypeGIF) {
-                            
-                            PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
-                            options.resizeMode = PHImageRequestOptionsResizeModeFast;
-                            options.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
-                            options.synchronous = NO;
-                            
-                            [[PHImageManager defaultManager] requestImageDataForAsset:model.asset options:options resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
-                                
-                                model.thumbImageData = imageData;
-                                
-                            }];
-                        }else{
-                            model.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];
-                        }
-                        
+                        model.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];
                     });
                     model.originalImageData = originalImageData;
                     model.originalImageSize = (double)originalImageData.length/1024/1024;;
@@ -756,115 +743,70 @@
     }];
 }
 
-#pragma mark - topView
+#pragma mark - initTopNav
 
--(UIView*)topView
+-(void)initTopNav
 {
-    if (!_topView) {
-        _topView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREENW, SYSTEM_NAV_HEIGHT)];
-        _topView.backgroundColor = BKNavBackgroundColor;
-        
-        UILabel * titleLab = [[UILabel alloc]initWithFrame:CGRectMake(100, SYSTEM_STATUSBAR_HEIGHT, SCREENW - 100*2, SYSTEM_NAV_UI_HEIGHT)];
-        titleLab.font = [UIFont boldSystemFontOfSize:17];
-        titleLab.textColor = [UIColor blackColor];
-        titleLab.textAlignment = NSTextAlignmentCenter;
-        titleLab.text = self.title;
-        [_topView addSubview:titleLab];
-        
-        UIButton * leftBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        leftBtn.frame = CGRectMake(0, SYSTEM_STATUSBAR_HEIGHT, 100, SYSTEM_NAV_UI_HEIGHT);
-        [leftBtn addTarget:self action:@selector(leftBtnClick:) forControlEvents:UIControlEventTouchUpInside];
-        [_topView addSubview:leftBtn];
-        
-        NSString * backPath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
-        UIImageView * leftImageView = [[UIImageView alloc]initWithFrame:CGRectMake(10, (SYSTEM_NAV_UI_HEIGHT - 20)/2, 20, 20)];
-        leftImageView.clipsToBounds = YES;
-        leftImageView.contentMode = UIViewContentModeScaleAspectFit;
-        leftImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/blue_back.png",backPath]];
-        [leftBtn addSubview:leftImageView];
-        
-        UILabel * leftLab = [[UILabel alloc]initWithFrame:CGRectMake(CGRectGetMaxX(leftImageView.frame), 0, 70, 30)];
-        leftLab.textColor = BKNavHighlightTitleColor;
-        leftLab.font = [UIFont systemFontOfSize:17];
-        leftLab.text = self.navigationController.viewControllers[0].title;
-        CGPoint leftLabCenter = leftLab.center;
-        leftLabCenter.y = leftImageView.center.y;
-        leftLab.center = leftLabCenter;
-        [leftBtn addSubview:leftLab];
-        
-        UIButton * rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        rightBtn.frame = CGRectMake(SCREENW - 64, SYSTEM_STATUSBAR_HEIGHT, 64, SYSTEM_NAV_UI_HEIGHT);
-        [rightBtn setTitle:@"取消" forState:UIControlStateNormal];
-        [rightBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
-        rightBtn.titleLabel.font = [UIFont systemFontOfSize:17];
-        [rightBtn addTarget:self action:@selector(rightBtnClick:) forControlEvents:UIControlEventTouchUpInside];
-        [_topView addSubview:rightBtn];
-        
-        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, SYSTEM_NAV_HEIGHT - ONE_PIXEL, SCREENW, ONE_PIXEL)];
-        line.backgroundColor = BKLineColor;
-        [_topView addSubview:line];
-    }
-    return _topView;
+    self.rightLab.text = @"取消";
 }
 
--(void)leftBtnClick:(UIButton*)button
-{
-    [self.navigationController popViewControllerAnimated:YES];
-}
-
--(void)rightBtnClick:(UIButton*)button
+-(void)rightNavBtnAction:(UIButton *)button
 {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-#pragma mark - BottomView
+#pragma mark - initBottomNav
 
--(UIView*)bottomView
+-(void)initBottomNav
 {
-    if (!_bottomView) {
-        
-        _bottomView = [[UIView alloc]initWithFrame:CGRectMake(0, SCREENH - 49, SCREENW, 49)];
-        _bottomView.backgroundColor = BKNavBackgroundColor;
-        
-        UIImageView * lineView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, SCREENW, ONE_PIXEL)];
-        lineView.backgroundColor = BKLineColor;
-        [_bottomView addSubview:lineView];
-        
-        [_bottomView addSubview:[self previewBtn]];
-        if ([BKImagePicker sharedManager].isHaveEdit) {
-            [_bottomView addSubview:[self editBtn]];
-        }
-        if ([BKImagePicker sharedManager].isHaveOriginal) {
-            [_bottomView addSubview:[self originalBtn]];
-        }
-        [_bottomView addSubview:[self sendBtn]];
-        
-        if ([self.selectImageArray count] == 1) {
-            [_previewBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
-            [_editBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
-            [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-            [_sendBtn setBackgroundColor:BKNavHighlightTitleColor];
-            
-            [_sendBtn setTitle:[NSString stringWithFormat:@"确认(%ld)",[self.selectImageArray count]] forState:UIControlStateNormal];
-        }else if ([self.selectImageArray count] > 1) {
-            
-            [_previewBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
-            [_editBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
-            [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-            [_sendBtn setBackgroundColor:BKNavHighlightTitleColor];
-            
-            [_sendBtn setTitle:[NSString stringWithFormat:@"确认(%ld)",[self.selectImageArray count]] forState:UIControlStateNormal];
-        }
-        
+    self.bottomNavViewHeight = BK_SYSTEM_TABBAR_HEIGHT;
+    
+    [self.bottomNavView addSubview:[self previewBtn]];
+    if ([BKImagePicker sharedManager].isHaveEdit) {
+        [self.bottomNavView addSubview:[self editBtn]];
     }
-    return _bottomView;
+    if ([BKImagePicker sharedManager].isHaveOriginal) {
+        [self.bottomNavView addSubview:[self originalBtn]];
+    }
+    [self.bottomNavView addSubview:[self sendBtn]];
+    
+    if ([self.selectImageArray count] == 1) {
+        [_previewBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
+        [_editBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
+        [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [_sendBtn setBackgroundColor:BKNavHighlightTitleColor];
+        
+        [_sendBtn setTitle:[NSString stringWithFormat:@"确认(%ld)",[self.selectImageArray count]] forState:UIControlStateNormal];
+    }else if ([self.selectImageArray count] > 1) {
+        
+        [_previewBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
+        [_editBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
+        [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [_sendBtn setBackgroundColor:BKNavHighlightTitleColor];
+        
+        [_sendBtn setTitle:[NSString stringWithFormat:@"确认(%ld)",[self.selectImageArray count]] forState:UIControlStateNormal];
+    }
+    
+//    if (!_bottomView) {
+//
+//        _bottomView = [[UIView alloc]initWithFrame:CGRectMake(0, BK_SCREENH - 49, BK_SCREENW, 49)];
+//        _bottomView.backgroundColor = BKNavBackgroundColor;
+//
+//        UIImageView * lineView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, BK_SCREENW, BK_ONE_PIXEL)];
+//        lineView.backgroundColor = BKLineColor;
+//        [_bottomView addSubview:lineView];
+//
+//
+//
+//    }
+//    return _bottomView;
 }
 
 -(UIButton*)previewBtn
 {
     if (!_previewBtn) {
         _previewBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _previewBtn.frame = CGRectMake(0, 0, SCREENW/6, 49);
+        _previewBtn.frame = CGRectMake(0, 0, BK_SCREENW/6, 49);
         [_previewBtn setTitle:@"预览" forState:UIControlStateNormal];
         [_previewBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
         _previewBtn.titleLabel.font = [UIFont systemFontOfSize:15];
@@ -877,7 +819,7 @@
 {
     if (!_editBtn) {
         _editBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _editBtn.frame = CGRectMake(SCREENW/6, 0, SCREENW/6, 49);
+        _editBtn.frame = CGRectMake(BK_SCREENW/6, 0, BK_SCREENW/6, 49);
         [_editBtn setTitle:@"编辑" forState:UIControlStateNormal];
         [_editBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
         _editBtn.titleLabel.font = [UIFont systemFontOfSize:15];
@@ -890,9 +832,9 @@
 {
     if (!_originalBtn) {
         _originalBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _originalBtn.frame = CGRectMake(SCREENW/6*2, 0, SCREENW/7*3, 49);
+        _originalBtn.frame = CGRectMake(BK_SCREENW/6*2, 0, BK_SCREENW/7*3, 49);
         if (![BKImagePicker sharedManager].isHaveEdit) {
-            _originalBtn.bk_x = _editBtn.bk_x;
+            _originalBtn.bk_x = BK_SCREENW/6;
         }
         if (self.isOriginal) {
             [_originalBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
@@ -914,7 +856,7 @@
     if (!_sendBtn) {
         
         _sendBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _sendBtn.frame = CGRectMake(SCREENW/4*3, 6, SCREENW/4-6, 37);
+        _sendBtn.frame = CGRectMake(BK_SCREENW/4*3, 6, BK_SCREENW/4-6, 37);
         [_sendBtn setTitle:@"确认" forState:UIControlStateNormal];
         [_sendBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
         [_sendBtn setBackgroundColor:BKNavSendGrayBackgroundColor];

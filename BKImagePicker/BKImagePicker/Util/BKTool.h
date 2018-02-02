@@ -26,6 +26,16 @@
 -(UIViewController *)locationVC;
 
 /**
+ 弹框
+ 
+ @param title 标题
+ @param message 内容
+ @param actionTitleArr 按钮标题数组
+ @param actionMethod 按钮标题数组对应点击事件
+ */
+-(void)presentAlert:(NSString*)title message:(NSString*)message actionTitleArr:(NSArray*)actionTitleArr actionMethod:(void (^)(NSInteger index))actionMethod;
+
+/**
  提示
 
  @param text 文本

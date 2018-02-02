@@ -11,6 +11,7 @@
 
 #import <Foundation/Foundation.h>
 #import "UIView+BKExpand.h"
+#import "NSObject+BKExpand.h"
 #import "BKTool.h"
 
 typedef NS_ENUM(NSInteger,BKPhotoType) {
@@ -42,19 +43,21 @@ typedef NS_ENUM(NSInteger,BKSelectPhotoType) {
 //多张照片选择时 选择按钮选中颜色
 #define BKSelectImageCircleHighlightColor Color(45,150,250,1)
 
-#define SCREENW [UIScreen mainScreen].bounds.size.width
-#define SCREENH [UIScreen mainScreen].bounds.size.height
+#define BK_SCREENW [UIScreen mainScreen].bounds.size.width
+#define BK_SCREENH [UIScreen mainScreen].bounds.size.height
 
-#define POINTS_FROM_PIXELS(__PIXELS) (__PIXELS / [[UIScreen mainScreen] scale])
-#define ONE_PIXEL POINTS_FROM_PIXELS(1.0)
+#define BK_POINTS_FROM_PIXELS(__PIXELS) (__PIXELS / [[UIScreen mainScreen] scale])
+#define BK_ONE_PIXEL BK_POINTS_FROM_PIXELS(1.0)
 
-#define WEAK_SELF(obj) __weak typeof(obj) weakSelf = obj;
-#define STRONG_SELF(obj) __strong typeof(obj) strongSelf = weakSelf;
+#define BK_WEAK_SELF(obj) __weak typeof(obj) weakSelf = obj;
+#define BK_STRONG_SELF(obj) __strong typeof(obj) strongSelf = weakSelf;
 
-#define iPhoneX ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(1125, 2436), [[UIScreen mainScreen] currentMode].size) : NO)
-#define SYSTEM_STATUSBAR_HEIGHT (iPhoneX ? 44.f : 20.f)
-#define SYSTEM_NAV_HEIGHT (iPhoneX ? (44.f+44.f) : 64.f)
-#define SYSTEM_NAV_UI_HEIGHT SYSTEM_NAV_HEIGHT - SYSTEM_STATUSBAR_HEIGHT
+#define BK_IPONEX ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(1125, 2436), [[UIScreen mainScreen] currentMode].size) : NO)
+#define BK_SYSTEM_STATUSBAR_HEIGHT (BK_IPONEX ? 44.f : 20.f)
+#define BK_SYSTEM_NAV_HEIGHT BK_SYSTEM_STATUSBAR_HEIGHT + 44.f
+#define BK_SYSTEM_NAV_UI_HEIGHT 44.f
+#define BK_SYSTEM_TABBAR_HEIGHT (BK_IPONEX ? 83.f : 49.f)
+#define BK_SYSTEM_TABBAR_UI_HEIGHT 49.f
 
 UIKIT_EXTERN NSString * const BKFinishSelectImageNotification;
 

@@ -12,6 +12,31 @@
 @interface BKImagePicker : NSObject
 
 /**
+ 单例
+
+ @return BKImagePicker
+ */
++(instancetype)sharedManager;
+
+#pragma mark - 相机
+
+/**
+ 检测是否允许调用相机
+ 
+ @param handler 检测结果
+ */
+- (void)checkAllowVisitCameraHandler:(void (^)(BOOL handleFlag))handler;
+
+/**
+ 拍照
+
+ @param complete 图片
+ */
+-(void)takePhotoWithComplete:(void (^)(UIImage * image , NSData * data))complete;
+
+#pragma mark - 相机
+
+/**
  是否有编辑
  */
 @property (nonatomic,assign) BOOL isHaveEdit;
@@ -20,15 +45,6 @@
  是否有原图按钮
  */
 @property (nonatomic,assign) BOOL isHaveOriginal;
-
-/**
- 单例
-
- @return BKImagePicker
- */
-+(instancetype)sharedManager;
-
--(void)takePhoto;
 
 /**
  相册

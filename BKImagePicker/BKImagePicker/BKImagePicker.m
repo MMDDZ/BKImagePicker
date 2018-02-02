@@ -10,6 +10,7 @@
 #import <Photos/Photos.h>
 #import "BKImageClassViewController.h"
 #import "BKImagePickerViewController.h"
+#import "BKImageTakePhotoViewController.h"
 
 @interface BKImagePicker ()
 
@@ -28,10 +29,99 @@ static BKImagePicker * sharedManagerInstance = nil;
     return sharedManagerInstance;
 }
 
--(void)takePhoto
+#pragma mark - 拍照
+
+-(void)takePhotoWithComplete:(void (^)(UIImage *, NSData *))complete
 {
-    NSLog(@"1");
+    [self checkAllowVisitCameraHandler:^(BOOL handleFlag) {
+        if (handleFlag) {
+            
+            UIViewController * lastVC = [[BKTool sharedManager] locationVC];
+            
+            BKImageTakePhotoViewController * vc = [[BKImageTakePhotoViewController alloc]init];
+            UINavigationController * nav = [[UINavigationController alloc]initWithRootViewController:vc];
+            nav.navigationBarHidden = YES;
+            [lastVC presentViewController:nav animated:YES completion:nil];
+            
+        }
+    }];
 }
+
+/**
+ 检测是否允许调用相机
+ 
+ @param handler 检测结果
+ */
+- (void)checkAllowVisitCameraHandler:(void (^)(BOOL handleFlag))handler
+{
+    NSDictionary * infoDictionary = [[NSBundle mainBundle] infoDictionary];
+    NSString * app_Name = [infoDictionary objectForKey:@"CFBundleDisplayName"];
+    
+    AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+    
+    switch (status) {
+        case AVAuthorizationStatusNotDetermined:
+        {
+            [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+                if (status == PHAuthorizationStatusAuthorized) {
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        if (handler) {
+                            handler(YES);
+                        }
+                    });
+                }else{
+                    if (handler) {
+                        handler(NO);
+                    }
+                    
+                    [[BKTool sharedManager] presentAlert:@"提示" message:[NSString stringWithFormat:@"%@没有权限访问您的相机\n在“设置-隐私-相机”中开启即可查看",app_Name] actionTitleArr:@[@"取消",@"去设置"] actionMethod:^(NSInteger index) {
+                        if (index == 1) {
+                            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
+                        }
+                    }];
+                }
+            }];
+        }
+            break;
+        case AVAuthorizationStatusRestricted:
+        {
+            if (handler) {
+                handler(NO);
+            }
+            
+            [[BKTool sharedManager] presentAlert:@"提示" message:[NSString stringWithFormat:@"%@没有访问相机的权限",app_Name] actionTitleArr:@[@"确认"] actionMethod:^(NSInteger index) {
+                
+            }];
+        }
+            break;
+        case AVAuthorizationStatusDenied:
+        {
+            if (handler) {
+                handler(NO);
+            }
+            
+            [[BKTool sharedManager] presentAlert:@"提示" message:[NSString stringWithFormat:@"%@没有权限访问您的相机\n在“设置-隐私-相机”中开启即可查看",app_Name] actionTitleArr:@[@"取消",@"去设置"] actionMethod:^(NSInteger index) {
+                if (index == 1) {
+                    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
+                }
+            }];
+        }
+            break;
+        case AVAuthorizationStatusAuthorized:
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (handler) {
+                    handler(YES);
+                }
+            });
+        }
+            break;
+        default:
+            break;
+    }
+}
+
+#pragma mark - 相册
 
 /**
  相册
@@ -44,6 +134,8 @@ static BKImagePicker * sharedManagerInstance = nil;
 {
     [self checkAllowVisitPhotoAlbumHandler:^(BOOL handleFlag) {
         if (handleFlag) {
+            
+            UIViewController * lastVC = [[BKTool sharedManager] locationVC];
             
             __block NSString * albumName = @"";
             //系统的相簿
@@ -115,7 +207,7 @@ static BKImagePicker * sharedManagerInstance = nil;
             UINavigationController * nav = [[UINavigationController alloc]initWithRootViewController:imageClassVC];
             nav.navigationBarHidden = YES;
             [nav pushViewController:imageVC animated:NO];
-            [[[BKTool sharedManager] locationVC] presentViewController:nav animated:YES completion:nil];
+            [lastVC presentViewController:nav animated:YES completion:nil];
         }
     }];
 }
@@ -137,51 +229,56 @@ static BKImagePicker * sharedManagerInstance = nil;
         {
             [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
                 if (status == PHAuthorizationStatusAuthorized) {
-                    if (handler) {
-                        handler(YES);
-                    }
-                }else{
-                    UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"提示" message:[NSString stringWithFormat:@"%@没有权限访问您的相册\n在“设置-隐私-照片”中开启即可查看",app_Name] preferredStyle:UIAlertControllerStyleAlert];
-                    UIAlertAction * ok = [UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                         if (handler) {
-                            handler(NO);
+                            handler(YES);
+                        }
+                    });
+                }else{
+                    if (handler) {
+                        handler(NO);
+                    }
+                    
+                    [[BKTool sharedManager] presentAlert:@"提示" message:[NSString stringWithFormat:@"%@没有权限访问您的相册\n在“设置-隐私-照片”中开启即可查看",app_Name] actionTitleArr:@[@"确认",@"去设置"] actionMethod:^(NSInteger index) {
+                        if (index == 1) {
+                            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
                         }
                     }];
-                    [alert addAction:ok];
-                    [[[BKTool sharedManager] locationVC] presentViewController:alert animated:YES completion:nil];
                 }
             }];
         }
             break;
         case PHAuthorizationStatusRestricted:
         {
-            UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"提示" message:[NSString stringWithFormat:@"%@没有访问相册的权限",app_Name] preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction * ok = [UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                if (handler) {
-                    handler(NO);
-                }
+            if (handler) {
+                handler(NO);
+            }
+            
+            [[BKTool sharedManager] presentAlert:@"提示" message:[NSString stringWithFormat:@"%@没有访问相册的权限",app_Name] actionTitleArr:@[@"确认"] actionMethod:^(NSInteger index) {
+                
             }];
-            [alert addAction:ok];
-            [[[BKTool sharedManager] locationVC] presentViewController:alert animated:YES completion:nil];
         }
             break;
         case PHAuthorizationStatusDenied:
         {
-            UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"提示" message:[NSString stringWithFormat:@"%@没有权限访问您的相册\n在“设置-隐私-照片”中开启即可查看",app_Name] preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction * ok = [UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                if (handler) {
-                    handler(NO);
+            if (handler) {
+                handler(NO);
+            }
+            
+            [[BKTool sharedManager] presentAlert:@"提示" message:[NSString stringWithFormat:@"%@没有权限访问您的相册\n在“设置-隐私-照片”中开启即可查看",app_Name] actionTitleArr:@[@"确认",@"去设置"] actionMethod:^(NSInteger index) {
+                if (index == 1) {
+                    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
                 }
             }];
-            [alert addAction:ok];
-            [[[BKTool sharedManager] locationVC] presentViewController:alert animated:YES completion:nil];
         }
             break;
         case PHAuthorizationStatusAuthorized:
         {
-            if (handler) {
-                handler(YES);
-            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (handler) {
+                    handler(YES);
+                }
+            });
         }
             break;
         default:

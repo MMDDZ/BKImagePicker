@@ -135,7 +135,7 @@
             [rightBtn addSubview:[self rightBtn]];
         }
         
-        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 64-ONE_PIXEL, self.bk_width, ONE_PIXEL)];
+        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 64-BK_ONE_PIXEL, self.bk_width, BK_ONE_PIXEL)];
         line.backgroundColor = BKLineColor;
         [_topView addSubview:line];
     }
@@ -295,7 +295,7 @@
             }
         }
         
-        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.bk_width, ONE_PIXEL)];
+        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.bk_width, BK_ONE_PIXEL)];
         line.backgroundColor = BKLineColor;
         [_bottomView addSubview:line];
     }
@@ -319,9 +319,9 @@
 {
     if (!_originalBtn) {
         _originalBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _originalBtn.frame = CGRectMake(SCREENW/6, 0, SCREENW/7*3, 49);
+        _originalBtn.frame = CGRectMake(BK_SCREENW/6, 0, BK_SCREENW/7*3, 49);
         if (![BKImagePicker sharedManager].isHaveEdit) {
-            _originalBtn.bk_x = _editBtn.bk_x;
+            _originalBtn.bk_x = 0;
         }
         if (self.isOriginal) {
             [_originalBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
@@ -443,7 +443,7 @@
         [self showAnimateOption:beginOption endAnimateOption:endOption];
     }else{
         
-        self.bk_x = SCREENW;
+        self.bk_x = BK_SCREENW;
         self.backgroundColor = [UIColor colorWithWhite:0 alpha:1];
         self.topView.alpha = 1;
         self.bottomView.alpha = 1;
@@ -476,7 +476,7 @@
         
         [UIView animateWithDuration:BKCheckExampleGifAndVideoAnimateTime delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             
-            self.locationVC.view.bk_x = -SCREENW/2.0f;
+            self.locationVC.view.bk_x = -BK_SCREENW/2.0f;
             self.bk_x = 0;
             
         } completion:^(BOOL finished) {
@@ -625,23 +625,7 @@
                 
                 model.originalImageData = originalImageData;
                 dispatch_async(dispatch_get_global_queue(0, 0), ^{
-                    
-                    if (model.photoType == BKSelectPhotoTypeGIF) {
-                        
-                        PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
-                        options.resizeMode = PHImageRequestOptionsResizeModeFast;
-                        options.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
-                        options.synchronous = NO;
-                        
-                        [[PHImageManager defaultManager] requestImageDataForAsset:model.asset options:options resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
-                            
-                            model.thumbImageData = imageData;
-                            
-                        }];
-                    }else{
-                        model.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];
-                    }
-                    
+                    model.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];
                 });
                 model.url = url;
                 model.originalImageSize = (double)originalImageData.length/1024/1024;
@@ -685,23 +669,7 @@
             
             model.originalImageData = originalImageData;
             dispatch_async(dispatch_get_global_queue(0, 0), ^{
-                
-                if (model.photoType == BKSelectPhotoTypeGIF) {
-                    
-                    PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
-                    options.resizeMode = PHImageRequestOptionsResizeModeFast;
-                    options.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
-                    options.synchronous = NO;
-                    
-                    [[PHImageManager defaultManager] requestImageDataForAsset:model.asset options:options resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
-                        
-                        model.thumbImageData = imageData;
-                        
-                    }];
-                }else{
-                    model.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];
-                }
-                
+                model.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];
             });
             
             model.url = model.url;

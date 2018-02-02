@@ -34,7 +34,7 @@
     if (!_markTitle) {
         _markTitle = [[UILabel alloc]initWithFrame:CGRectMake(4, self.bk_height-16, self.bk_width/2 - 13, 14)];
         _markTitle.textColor = [UIColor whiteColor];
-        _markTitle.font = [UIFont systemFontOfSize:12*SCREENW/414];
+        _markTitle.font = [UIFont systemFontOfSize:12*BK_SCREENW/414];
     }
     return _markTitle;
 }
@@ -44,7 +44,7 @@
     if (!_time) {
         _time = [[UILabel alloc]initWithFrame:CGRectMake(self.bk_width/2 - 4, self.bk_height-16, self.bk_width/2, 14)];
         _time.textColor = [UIColor whiteColor];
-        _time.font = [UIFont systemFontOfSize:12*SCREENW/414];
+        _time.font = [UIFont systemFontOfSize:12*BK_SCREENW/414];
         _time.textAlignment = NSTextAlignmentRight;
     }
     return _time;

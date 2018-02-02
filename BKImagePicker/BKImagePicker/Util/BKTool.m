@@ -7,7 +7,9 @@
 //
 
 #import "BKTool.h"
+#import <ImageIO/ImageIO.h>
 #import "BKImagePickerConst.h"
+#import <MobileCoreServices/MobileCoreServices.h>
 
 @interface BKTool()
 
@@ -26,6 +28,8 @@
     });
     return shareInstance;
 }
+
+#pragma mark - 所在VC
 
 /**
  所在VC
@@ -48,6 +52,40 @@
     
     return rootVC; 
 }
+
+#pragma mark - 弹框
+
+/**
+ 弹框
+
+ @param title 标题
+ @param message 内容
+ @param actionTitleArr 按钮标题数组
+ @param actionMethod 按钮标题数组对应点击事件
+ */
+-(void)presentAlert:(NSString*)title message:(NSString*)message actionTitleArr:(NSArray*)actionTitleArr actionMethod:(void (^)(NSInteger index))actionMethod
+{
+    UIAlertController * alert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
+    for (NSString * title in actionTitleArr) {
+        
+        NSInteger style;
+        if ([title isEqualToString:@"取消"]) {
+            style = UIAlertActionStyleCancel;
+        }else{
+            style = UIAlertActionStyleDefault;
+        }
+        
+        UIAlertAction * action = [UIAlertAction actionWithTitle:title style:style handler:^(UIAlertAction * _Nonnull action) {
+            if (actionMethod) {
+                actionMethod([actionTitleArr indexOfObject:title]);
+            }
+        }];
+        [alert addAction:action];
+    }
+    [[self locationVC] presentViewController:alert animated:YES completion:nil];
+}
+
+#pragma mark - 提示
 
 /**
  提示
@@ -114,6 +152,8 @@
     return rect.size;
 }
 
+#pragma mark - Loading
+
 /**
  加载Loading
  
@@ -178,6 +218,8 @@
     self.loadLayer = nil;
 }
 
+#pragma mark - 压缩图片
+
 /**
  压缩图片
  
@@ -193,40 +235,101 @@
     if (imageData.length < 200*1024) {
         return imageData;
     }
-    
-    UIImage * image = [UIImage imageWithData:imageData];
-    UIImage * newImage;
-    
-    if (image.size.width > image.size.height) {
-        if (image.size.width < 1242) {
-            newImage = image;
-        }else{
-            newImage = [self compressImage:image];
-        }
-    }else{
-        if (image.size.height < 2208) {
-            newImage = image;
-        }else{
-            newImage = [self compressImage:image];
-        }
-    }
-    
-    NSData * newImageData = UIImageJPEGRepresentation(newImage, BKThumbImageCompressSizeMultiplier);
+   
+    NSData * newImageData = [self compressImageWithData:imageData];
     return newImageData;
 }
 
--(UIImage*)compressImage:(UIImage*)image
+-(NSData *)compressImageWithData:(NSData *)data
 {
-    float imageWidth = image.size.width;
-    float imageHeight = image.size.height;
+    if (!data) {
+        return nil;
+    }
+    //创建 CGImageSourceRef
+    CGImageSourceRef imageSource = CGImageSourceCreateWithData((__bridge CFDataRef)data,
+                                                               (__bridge CFDictionaryRef)@{(NSString *)kCGImageSourceShouldCache: @NO});
+    if (!imageSource) {
+        return nil;
+    }
     
-    float width = imageWidth*BKThumbImageCompressSizeMultiplier;
-    float height = imageHeight*BKThumbImageCompressSizeMultiplier;
+    CFStringRef imageSourceContainerType = CGImageSourceGetType(imageSource);
+    //检测是否是GIF
+    BOOL isGIFData = UTTypeConformsTo(imageSourceContainerType, kUTTypeGIF);
+    //检测是否是PNG
+    BOOL isPNGData = UTTypeConformsTo(imageSourceContainerType, kUTTypePNG);
+   
+    //图片数量
+    size_t imageCount = CGImageSourceGetCount(imageSource);
+    //保存图片地址
+    NSString * saveImagePath = [NSTemporaryDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"%.0f.%@",[[NSDate date] timeIntervalSince1970],(isGIFData?@"gif":(isPNGData?@"png":@"jpg"))]];
+    //创建图片写入
+    CGImageDestinationRef destinationRef = CGImageDestinationCreateWithURL((CFURLRef)[NSURL fileURLWithPath:saveImagePath], isGIFData?kUTTypeGIF:(isPNGData?kUTTypePNG:kUTTypeJPEG), imageCount, NULL);
+    //获取原图片属性
+    NSDictionary * imageProperties = (__bridge NSDictionary *) CGImageSourceCopyProperties(imageSource, NULL);
     
-    UIGraphicsBeginImageContext(CGSizeMake(width, height));
-    [image drawInRect:CGRectMake(0, 0, width , height)];
-    UIImage * newImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
+    //遍历图片所有帧
+    for (size_t i = 0; i < (isGIFData?imageCount:1); i++) {
+        @autoreleasepool {
+            CGImageRef imageRef = CGImageSourceCreateImageAtIndex(imageSource, i, NULL);
+            if (imageRef) {
+                //获取某一帧图片属性
+                NSDictionary * frameProperties =
+                (__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(imageSource, i, NULL);
+                
+                //写入图片
+                CGImageDestinationAddImage(destinationRef, [self compressImageRef:imageRef], (CFDictionaryRef)frameProperties);
+                //写入图片属性
+                CGImageDestinationSetProperties(destinationRef, (CFDictionaryRef)imageProperties);
+            }
+            
+            CGImageRelease(imageRef);
+        }
+    }
+    //结束图片写入
+    CGImageDestinationFinalize(destinationRef);
+    
+    CFRelease(destinationRef);
+    CFRelease(imageSource);
+
+    NSData * animatedImageData = [NSData dataWithContentsOfFile:saveImagePath];
+    
+    return animatedImageData;
+}
+
+//YYImage压缩图片方法
+-(CGImageRef)compressImageRef:(CGImageRef)imageRef
+{
+    if (!imageRef) {
+        return nil;
+    }
+    
+    size_t width = floor(CGImageGetWidth(imageRef) * BKThumbImageCompressSizeMultiplier);
+    size_t height = floor(CGImageGetHeight(imageRef) * BKThumbImageCompressSizeMultiplier);
+    if (width == 0 || height == 0) {
+        return nil;
+    }
+    
+    CGImageAlphaInfo alphaInfo = CGImageGetAlphaInfo(imageRef) & kCGBitmapAlphaInfoMask;
+    
+    BOOL hasAlpha = NO;
+    if (alphaInfo == kCGImageAlphaPremultipliedLast ||
+        alphaInfo == kCGImageAlphaPremultipliedFirst ||
+        alphaInfo == kCGImageAlphaLast ||
+        alphaInfo == kCGImageAlphaFirst) {
+        hasAlpha = YES;
+    }
+    
+    CGBitmapInfo bitmapInfo = kCGBitmapByteOrder32Host;
+    bitmapInfo |= hasAlpha ? kCGImageAlphaPremultipliedFirst : kCGImageAlphaNoneSkipFirst;
+    
+    CGContextRef context = CGBitmapContextCreate(NULL, width, height, 8, 0, CGColorSpaceCreateDeviceRGB(), bitmapInfo);
+    if (!context) {
+        return nil;
+    }
+    
+    CGContextDrawImage(context, CGRectMake(0, 0, width, height), imageRef);
+    CGImageRef newImage = CGBitmapContextCreateImage(context);
+    CFRelease(context);
     
     return newImage;
 }
