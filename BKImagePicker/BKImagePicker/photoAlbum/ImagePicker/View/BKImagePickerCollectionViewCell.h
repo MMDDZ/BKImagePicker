@@ -9,7 +9,6 @@
 #import <UIKit/UIKit.h>
 #import <Photos/Photos.h>
 #import "BKImageAlbumItemSelectButton.h"
-#import "FLAnimatedImage.h"
 
 @protocol BKImagePickerCollectionViewCellDelegate <NSObject>
 

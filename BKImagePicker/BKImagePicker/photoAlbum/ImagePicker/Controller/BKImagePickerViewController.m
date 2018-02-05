@@ -62,11 +62,6 @@
 @property (nonatomic,strong) UIButton * originalBtn;
 @property (nonatomic,strong) UIButton * sendBtn;
 
-/**
- 是否移动过
- */
-@property (nonatomic,assign) BOOL isDidScroll;
-
 @end
 
 @implementation BKImagePickerViewController
@@ -262,7 +257,9 @@
     return flag;
 }
 
--(void)getImageWithIndex:(NSInteger)index getThumbComplete:(void (^)(void))getThumbComplete getOriginalDataComplete:(void (^)(BKImageModel * model ,NSInteger index))getOriginalDataComplete
+#pragma mark - 根据index 获取对应缩略图
+
+-(void)getImageWithIndex:(NSInteger)index getThumbComplete:(void (^)(void))getThumbComplete
 {
     BKImageModel * model = self.listArray[index];
     if (model.thumbImageData) {
@@ -374,18 +371,6 @@
     
     [self getImageWithIndex:indexPath.item getThumbComplete:^{
         [cell revaluateIndexPath:indexPath listArr:[self.listArray copy] selectImageArr:[self.selectImageArray copy]];
-    } getOriginalDataComplete:^(BKImageModel * model ,NSInteger index) {
-//        NSIndexPath * currentIndexPath = [NSIndexPath indexPathForItem:index inSection:0];
-//        BKImagePickerCollectionViewCell * currentCell = (BKImagePickerCollectionViewCell*)[_albumCollectionView cellForItemAtIndexPath:currentIndexPath];
-//        if (currentCell) {
-//            BKImageModel * model = self.listArray[currentIndexPath.item];
-//            if (model.thumbImageData && model.photoType == BKSelectPhotoTypeGIF) {
-//                FLAnimatedImage * gifImage = [FLAnimatedImage animatedImageWithGIFData:model.thumbImageData];
-//                if (gifImage) {
-//                    currentCell.photoImageView.animatedImage = gifImage;
-//                }
-//            }
-//        }
     }];
     
     return cell;
@@ -471,9 +456,7 @@
 
 -(void)previewWithCell:(BKImagePickerCollectionViewCell*)cell imageListArray:(NSArray*)imageListArray tapModel:(BKImageModel*)tapModel
 {
-    if (!cell.photoImageView.image && cell
-        //&& !cell.photoImageView.animatedImage
-        ) {
+    if (!cell.photoImageView.image && cell) {
         return;
     }
     

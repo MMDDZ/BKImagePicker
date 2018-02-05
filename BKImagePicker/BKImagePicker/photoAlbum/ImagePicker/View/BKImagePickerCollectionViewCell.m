@@ -26,7 +26,6 @@
     if (self) {
         
         _photoImageView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
-//        _photoImageView.runLoopMode = NSDefaultRunLoopMode;
         _photoImageView.clipsToBounds = YES;
         _photoImageView.contentMode = UIViewContentModeScaleAspectFill;
         [self.contentView addSubview:_photoImageView];

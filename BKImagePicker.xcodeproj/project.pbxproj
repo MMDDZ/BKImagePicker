@@ -44,6 +44,7 @@
 		1D87FC0F2028014A00166568 /* BKPhotoAlbumListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D87FC082028014A00166568 /* BKPhotoAlbumListViewController.m */; };
 		1D87FC102028014A00166568 /* BKPhotoAlbumListModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D87FC0A2028014A00166568 /* BKPhotoAlbumListModel.m */; };
 		1D87FC112028014A00166568 /* BKPhotoAlbumListTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D87FC0D2028014A00166568 /* BKPhotoAlbumListTableViewCell.m */; };
+		1D87FC14202801C800166568 /* BKShowExampleImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D87FC13202801C800166568 /* BKShowExampleImageViewController.m */; };
 		1DA0E20920243A82005E8D5D /* BKImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 1DA0E20820243A82005E8D5D /* BKImagePicker.m */; };
 		1DA0E21E20244014005E8D5D /* BKImageTransitionAnimater.m in Sources */ = {isa = PBXBuildFile; fileRef = 1DA0E21420244014005E8D5D /* BKImageTransitionAnimater.m */; };
 		1DA0E21F20244014005E8D5D /* BKImageNavViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1DA0E21520244014005E8D5D /* BKImageNavViewController.m */; };
@@ -139,6 +140,8 @@
 		1D87FC0B2028014A00166568 /* BKPhotoAlbumListModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPhotoAlbumListModel.h; sourceTree = "<group>"; };
 		1D87FC0D2028014A00166568 /* BKPhotoAlbumListTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPhotoAlbumListTableViewCell.m; sourceTree = "<group>"; };
 		1D87FC0E2028014A00166568 /* BKPhotoAlbumListTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPhotoAlbumListTableViewCell.h; sourceTree = "<group>"; };
+		1D87FC12202801C800166568 /* BKShowExampleImageViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BKShowExampleImageViewController.h; sourceTree = "<group>"; };
+		1D87FC13202801C800166568 /* BKShowExampleImageViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BKShowExampleImageViewController.m; sourceTree = "<group>"; };
 		1DA0E20720243A82005E8D5D /* BKImagePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKImagePicker.h; sourceTree = "<group>"; };
 		1DA0E20820243A82005E8D5D /* BKImagePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKImagePicker.m; sourceTree = "<group>"; };
 		1DA0E21120244014005E8D5D /* BKImageNavViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKImageNavViewController.h; sourceTree = "<group>"; };
@@ -332,6 +335,8 @@
 		1D87FBE62027FB6500166568 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				1D87FC12202801C800166568 /* BKShowExampleImageViewController.h */,
+				1D87FC13202801C800166568 /* BKShowExampleImageViewController.m */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -613,6 +618,7 @@
 				1D40F4E2202438A50031DD5A /* ViewController+MASAdditions.m in Sources */,
 				1D40F4E6202438A50031DD5A /* NSArray+MASAdditions.m in Sources */,
 				1D40F4AC202438750031DD5A /* BKImageModel.m in Sources */,
+				1D87FC14202801C800166568 /* BKShowExampleImageViewController.m in Sources */,
 				1DA0E22120244014005E8D5D /* BKImageBaseViewController.m in Sources */,
 				1D87FC0F2028014A00166568 /* BKPhotoAlbumListViewController.m in Sources */,
 				1D87FC00202800FF00166568 /* BKImagePickerViewController.m in Sources */,
