@@ -23,14 +23,6 @@
 		1D40F4B9202438750031DD5A /* BKImageTakePhotoBtn.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D40F48A202438750031DD5A /* BKImageTakePhotoBtn.m */; };
 		1D40F4BA202438750031DD5A /* BKShowExampleImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D40F48D202438750031DD5A /* BKShowExampleImageView.m */; };
 		1D40F4BB202438750031DD5A /* BKShowExampleImageCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D40F48E202438750031DD5A /* BKShowExampleImageCollectionViewCell.m */; };
-		1D40F4BC202438750031DD5A /* BKImageClassTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D40F492202438750031DD5A /* BKImageClassTableViewCell.m */; };
-		1D40F4BD202438750031DD5A /* BKImageClassModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D40F494202438750031DD5A /* BKImageClassModel.m */; };
-		1D40F4BE202438750031DD5A /* BKImageClassViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D40F496202438750031DD5A /* BKImageClassViewController.m */; };
-		1D40F4BF202438750031DD5A /* BKImageAlbumItemView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D40F49A202438750031DD5A /* BKImageAlbumItemView.m */; };
-		1D40F4C0202438750031DD5A /* BKImagePickerFooterCollectionReusableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D40F49B202438750031DD5A /* BKImagePickerFooterCollectionReusableView.m */; };
-		1D40F4C1202438750031DD5A /* BKImageAlbumItemSelectButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D40F49D202438750031DD5A /* BKImageAlbumItemSelectButton.m */; };
-		1D40F4C2202438750031DD5A /* BKImagePickerCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D40F49E202438750031DD5A /* BKImagePickerCollectionViewCell.m */; };
-		1D40F4C3202438750031DD5A /* BKImagePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D40F4A3202438750031DD5A /* BKImagePickerViewController.m */; };
 		1D40F4C4202438750031DD5A /* BKShowExampleVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D40F4A4202438750031DD5A /* BKShowExampleVideoView.m */; };
 		1D40F4C5202438750031DD5A /* BKShowExampleImageCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D40F4A6202438750031DD5A /* BKShowExampleImageCollectionViewFlowLayout.m */; };
 		1D40F4E1202438A50031DD5A /* NSLayoutConstraint+MASDebugAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D40F4C8202438A50031DD5A /* NSLayoutConstraint+MASDebugAdditions.m */; };
@@ -44,6 +36,14 @@
 		1D40F4E9202438A50031DD5A /* MASViewConstraint.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D40F4DE202438A50031DD5A /* MASViewConstraint.m */; };
 		1D40F4EA202438A50031DD5A /* MASViewAttribute.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D40F4DF202438A50031DD5A /* MASViewAttribute.m */; };
 		1D40F4EB202438A50031DD5A /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1D40F4E0202438A50031DD5A /* Info.plist */; };
+		1D87FC00202800FF00166568 /* BKImagePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D87FBF5202800FF00166568 /* BKImagePickerViewController.m */; };
+		1D87FC01202800FF00166568 /* BKImageAlbumItemView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D87FBF8202800FF00166568 /* BKImageAlbumItemView.m */; };
+		1D87FC02202800FF00166568 /* BKImagePickerFooterCollectionReusableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D87FBF9202800FF00166568 /* BKImagePickerFooterCollectionReusableView.m */; };
+		1D87FC03202800FF00166568 /* BKImageAlbumItemSelectButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D87FBFA202800FF00166568 /* BKImageAlbumItemSelectButton.m */; };
+		1D87FC04202800FF00166568 /* BKImagePickerCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D87FBFB202800FF00166568 /* BKImagePickerCollectionViewCell.m */; };
+		1D87FC0F2028014A00166568 /* BKPhotoAlbumListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D87FC082028014A00166568 /* BKPhotoAlbumListViewController.m */; };
+		1D87FC102028014A00166568 /* BKPhotoAlbumListModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D87FC0A2028014A00166568 /* BKPhotoAlbumListModel.m */; };
+		1D87FC112028014A00166568 /* BKPhotoAlbumListTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D87FC0D2028014A00166568 /* BKPhotoAlbumListTableViewCell.m */; };
 		1DA0E20920243A82005E8D5D /* BKImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 1DA0E20820243A82005E8D5D /* BKImagePicker.m */; };
 		1DA0E21E20244014005E8D5D /* BKImageTransitionAnimater.m in Sources */ = {isa = PBXBuildFile; fileRef = 1DA0E21420244014005E8D5D /* BKImageTransitionAnimater.m */; };
 		1DA0E21F20244014005E8D5D /* BKImageNavViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1DA0E21520244014005E8D5D /* BKImageNavViewController.m */; };
@@ -92,24 +92,8 @@
 		1D40F48D202438750031DD5A /* BKShowExampleImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKShowExampleImageView.m; sourceTree = "<group>"; };
 		1D40F48E202438750031DD5A /* BKShowExampleImageCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKShowExampleImageCollectionViewCell.m; sourceTree = "<group>"; };
 		1D40F48F202438750031DD5A /* BKShowExampleVideoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKShowExampleVideoView.h; sourceTree = "<group>"; };
-		1D40F491202438750031DD5A /* BKImageClassModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKImageClassModel.h; sourceTree = "<group>"; };
-		1D40F492202438750031DD5A /* BKImageClassTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKImageClassTableViewCell.m; sourceTree = "<group>"; };
-		1D40F493202438750031DD5A /* BKImageClassViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKImageClassViewController.h; sourceTree = "<group>"; };
-		1D40F494202438750031DD5A /* BKImageClassModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKImageClassModel.m; sourceTree = "<group>"; };
-		1D40F495202438750031DD5A /* BKImageClassTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKImageClassTableViewCell.h; sourceTree = "<group>"; };
-		1D40F496202438750031DD5A /* BKImageClassViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKImageClassViewController.m; sourceTree = "<group>"; };
 		1D40F497202438750031DD5A /* BKShowExampleImageCollectionViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKShowExampleImageCollectionViewFlowLayout.h; sourceTree = "<group>"; };
 		1D40F498202438750031DD5A /* BKShowExampleImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKShowExampleImageView.h; sourceTree = "<group>"; };
-		1D40F49A202438750031DD5A /* BKImageAlbumItemView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKImageAlbumItemView.m; sourceTree = "<group>"; };
-		1D40F49B202438750031DD5A /* BKImagePickerFooterCollectionReusableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKImagePickerFooterCollectionReusableView.m; sourceTree = "<group>"; };
-		1D40F49C202438750031DD5A /* BKImagePickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKImagePickerViewController.h; sourceTree = "<group>"; };
-		1D40F49D202438750031DD5A /* BKImageAlbumItemSelectButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKImageAlbumItemSelectButton.m; sourceTree = "<group>"; };
-		1D40F49E202438750031DD5A /* BKImagePickerCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKImagePickerCollectionViewCell.m; sourceTree = "<group>"; };
-		1D40F49F202438750031DD5A /* BKImagePickerFooterCollectionReusableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKImagePickerFooterCollectionReusableView.h; sourceTree = "<group>"; };
-		1D40F4A0202438750031DD5A /* BKImageAlbumItemView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKImageAlbumItemView.h; sourceTree = "<group>"; };
-		1D40F4A1202438750031DD5A /* BKImagePickerCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKImagePickerCollectionViewCell.h; sourceTree = "<group>"; };
-		1D40F4A2202438750031DD5A /* BKImageAlbumItemSelectButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKImageAlbumItemSelectButton.h; sourceTree = "<group>"; };
-		1D40F4A3202438750031DD5A /* BKImagePickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKImagePickerViewController.m; sourceTree = "<group>"; };
 		1D40F4A4202438750031DD5A /* BKShowExampleVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKShowExampleVideoView.m; sourceTree = "<group>"; };
 		1D40F4A5202438750031DD5A /* BKShowExampleImageCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKShowExampleImageCollectionViewCell.h; sourceTree = "<group>"; };
 		1D40F4A6202438750031DD5A /* BKShowExampleImageCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKShowExampleImageCollectionViewFlowLayout.m; sourceTree = "<group>"; };
@@ -139,6 +123,22 @@
 		1D40F4DE202438A50031DD5A /* MASViewConstraint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASViewConstraint.m; sourceTree = "<group>"; };
 		1D40F4DF202438A50031DD5A /* MASViewAttribute.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASViewAttribute.m; sourceTree = "<group>"; };
 		1D40F4E0202438A50031DD5A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1D87FBF4202800FF00166568 /* BKImagePickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKImagePickerViewController.h; sourceTree = "<group>"; };
+		1D87FBF5202800FF00166568 /* BKImagePickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKImagePickerViewController.m; sourceTree = "<group>"; };
+		1D87FBF8202800FF00166568 /* BKImageAlbumItemView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKImageAlbumItemView.m; sourceTree = "<group>"; };
+		1D87FBF9202800FF00166568 /* BKImagePickerFooterCollectionReusableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKImagePickerFooterCollectionReusableView.m; sourceTree = "<group>"; };
+		1D87FBFA202800FF00166568 /* BKImageAlbumItemSelectButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKImageAlbumItemSelectButton.m; sourceTree = "<group>"; };
+		1D87FBFB202800FF00166568 /* BKImagePickerCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKImagePickerCollectionViewCell.m; sourceTree = "<group>"; };
+		1D87FBFC202800FF00166568 /* BKImagePickerFooterCollectionReusableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKImagePickerFooterCollectionReusableView.h; sourceTree = "<group>"; };
+		1D87FBFD202800FF00166568 /* BKImageAlbumItemView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKImageAlbumItemView.h; sourceTree = "<group>"; };
+		1D87FBFE202800FF00166568 /* BKImagePickerCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKImagePickerCollectionViewCell.h; sourceTree = "<group>"; };
+		1D87FBFF202800FF00166568 /* BKImageAlbumItemSelectButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKImageAlbumItemSelectButton.h; sourceTree = "<group>"; };
+		1D87FC072028014A00166568 /* BKPhotoAlbumListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPhotoAlbumListViewController.h; sourceTree = "<group>"; };
+		1D87FC082028014A00166568 /* BKPhotoAlbumListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPhotoAlbumListViewController.m; sourceTree = "<group>"; };
+		1D87FC0A2028014A00166568 /* BKPhotoAlbumListModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPhotoAlbumListModel.m; sourceTree = "<group>"; };
+		1D87FC0B2028014A00166568 /* BKPhotoAlbumListModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPhotoAlbumListModel.h; sourceTree = "<group>"; };
+		1D87FC0D2028014A00166568 /* BKPhotoAlbumListTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPhotoAlbumListTableViewCell.m; sourceTree = "<group>"; };
+		1D87FC0E2028014A00166568 /* BKPhotoAlbumListTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPhotoAlbumListTableViewCell.h; sourceTree = "<group>"; };
 		1DA0E20720243A82005E8D5D /* BKImagePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKImagePicker.h; sourceTree = "<group>"; };
 		1DA0E20820243A82005E8D5D /* BKImagePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKImagePicker.m; sourceTree = "<group>"; };
 		1DA0E21120244014005E8D5D /* BKImageNavViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKImageNavViewController.h; sourceTree = "<group>"; };
@@ -216,10 +216,10 @@
 				1D40F474202438750031DD5A /* Color */,
 				1D40F479202438750031DD5A /* Crop */,
 				1D40F47C202438750031DD5A /* UIImage+BKOrientationExpand.h */,
+				1D40F486202438750031DD5A /* UIImage+BKOrientationExpand.m */,
 				1D40F47D202438750031DD5A /* BKEditPhotoView.m */,
 				1D40F47E202438750031DD5A /* BKEditPhotoView.h */,
 				1D40F47F202438750031DD5A /* Draw */,
-				1D40F486202438750031DD5A /* UIImage+BKOrientationExpand.m */,
 			);
 			path = EditPhoto;
 			sourceTree = "<group>";
@@ -261,9 +261,9 @@
 			isa = PBXGroup;
 			children = (
 				1D40F488202438750031DD5A /* BKImageTakePhotoBtn.h */,
-				1D40F489202438750031DD5A /* BKImageTakePhotoViewController.m */,
 				1D40F48A202438750031DD5A /* BKImageTakePhotoBtn.m */,
 				1D40F48B202438750031DD5A /* BKImageTakePhotoViewController.h */,
+				1D40F489202438750031DD5A /* BKImageTakePhotoViewController.m */,
 			);
 			path = TakePhoto;
 			sourceTree = "<group>";
@@ -271,8 +271,9 @@
 		1D40F48C202438750031DD5A /* photoAlbum */ = {
 			isa = PBXGroup;
 			children = (
-				1D40F490202438750031DD5A /* AlbumList */,
-				1D40F499202438750031DD5A /* AlbumPhotoList */,
+				1D87FC052028014A00166568 /* PhotoAlbumList */,
+				1D87FBF2202800FF00166568 /* ImagePicker */,
+				1D87FBE52027FB6500166568 /* Example */,
 				1D40F498202438750031DD5A /* BKShowExampleImageView.h */,
 				1D40F48D202438750031DD5A /* BKShowExampleImageView.m */,
 				1D40F4A5202438750031DD5A /* BKShowExampleImageCollectionViewCell.h */,
@@ -283,36 +284,6 @@
 				1D40F4A6202438750031DD5A /* BKShowExampleImageCollectionViewFlowLayout.m */,
 			);
 			path = photoAlbum;
-			sourceTree = "<group>";
-		};
-		1D40F490202438750031DD5A /* AlbumList */ = {
-			isa = PBXGroup;
-			children = (
-				1D40F491202438750031DD5A /* BKImageClassModel.h */,
-				1D40F494202438750031DD5A /* BKImageClassModel.m */,
-				1D40F495202438750031DD5A /* BKImageClassTableViewCell.h */,
-				1D40F492202438750031DD5A /* BKImageClassTableViewCell.m */,
-				1D40F493202438750031DD5A /* BKImageClassViewController.h */,
-				1D40F496202438750031DD5A /* BKImageClassViewController.m */,
-			);
-			path = AlbumList;
-			sourceTree = "<group>";
-		};
-		1D40F499202438750031DD5A /* AlbumPhotoList */ = {
-			isa = PBXGroup;
-			children = (
-				1D40F4A0202438750031DD5A /* BKImageAlbumItemView.h */,
-				1D40F49A202438750031DD5A /* BKImageAlbumItemView.m */,
-				1D40F49F202438750031DD5A /* BKImagePickerFooterCollectionReusableView.h */,
-				1D40F49B202438750031DD5A /* BKImagePickerFooterCollectionReusableView.m */,
-				1D40F49C202438750031DD5A /* BKImagePickerViewController.h */,
-				1D40F4A3202438750031DD5A /* BKImagePickerViewController.m */,
-				1D40F4A2202438750031DD5A /* BKImageAlbumItemSelectButton.h */,
-				1D40F49D202438750031DD5A /* BKImageAlbumItemSelectButton.m */,
-				1D40F4A1202438750031DD5A /* BKImagePickerCollectionViewCell.h */,
-				1D40F49E202438750031DD5A /* BKImagePickerCollectionViewCell.m */,
-			);
-			path = AlbumPhotoList;
 			sourceTree = "<group>";
 		};
 		1D40F4C6202438A50031DD5A /* Masonry */ = {
@@ -346,6 +317,115 @@
 				1D40F4E0202438A50031DD5A /* Info.plist */,
 			);
 			path = Masonry;
+			sourceTree = "<group>";
+		};
+		1D87FBE52027FB6500166568 /* Example */ = {
+			isa = PBXGroup;
+			children = (
+				1D87FBE62027FB6500166568 /* Controller */,
+				1D87FBE72027FB6500166568 /* Model */,
+				1D87FBE82027FB6500166568 /* View */,
+			);
+			path = Example;
+			sourceTree = "<group>";
+		};
+		1D87FBE62027FB6500166568 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		1D87FBE72027FB6500166568 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		1D87FBE82027FB6500166568 /* View */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		1D87FBF2202800FF00166568 /* ImagePicker */ = {
+			isa = PBXGroup;
+			children = (
+				1D87FBF3202800FF00166568 /* Controller */,
+				1D87FBF6202800FF00166568 /* Model */,
+				1D87FBF7202800FF00166568 /* View */,
+			);
+			path = ImagePicker;
+			sourceTree = "<group>";
+		};
+		1D87FBF3202800FF00166568 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				1D87FBF4202800FF00166568 /* BKImagePickerViewController.h */,
+				1D87FBF5202800FF00166568 /* BKImagePickerViewController.m */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		1D87FBF6202800FF00166568 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		1D87FBF7202800FF00166568 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				1D87FBFE202800FF00166568 /* BKImagePickerCollectionViewCell.h */,
+				1D87FBFB202800FF00166568 /* BKImagePickerCollectionViewCell.m */,
+				1D87FBFC202800FF00166568 /* BKImagePickerFooterCollectionReusableView.h */,
+				1D87FBF9202800FF00166568 /* BKImagePickerFooterCollectionReusableView.m */,
+				1D87FBFD202800FF00166568 /* BKImageAlbumItemView.h */,
+				1D87FBF8202800FF00166568 /* BKImageAlbumItemView.m */,
+				1D87FBFF202800FF00166568 /* BKImageAlbumItemSelectButton.h */,
+				1D87FBFA202800FF00166568 /* BKImageAlbumItemSelectButton.m */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		1D87FC052028014A00166568 /* PhotoAlbumList */ = {
+			isa = PBXGroup;
+			children = (
+				1D87FC062028014A00166568 /* Controller */,
+				1D87FC092028014A00166568 /* Model */,
+				1D87FC0C2028014A00166568 /* View */,
+			);
+			path = PhotoAlbumList;
+			sourceTree = "<group>";
+		};
+		1D87FC062028014A00166568 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				1D87FC072028014A00166568 /* BKPhotoAlbumListViewController.h */,
+				1D87FC082028014A00166568 /* BKPhotoAlbumListViewController.m */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		1D87FC092028014A00166568 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				1D87FC0B2028014A00166568 /* BKPhotoAlbumListModel.h */,
+				1D87FC0A2028014A00166568 /* BKPhotoAlbumListModel.m */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		1D87FC0C2028014A00166568 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				1D87FC0E2028014A00166568 /* BKPhotoAlbumListTableViewCell.h */,
+				1D87FC0D2028014A00166568 /* BKPhotoAlbumListTableViewCell.m */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 		1DA0E21020244014005E8D5D /* Base */ = {
@@ -504,28 +584,28 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1D40F4BF202438750031DD5A /* BKImageAlbumItemView.m in Sources */,
-				1D40F4BE202438750031DD5A /* BKImageClassViewController.m in Sources */,
 				1DA0E21E20244014005E8D5D /* BKImageTransitionAnimater.m in Sources */,
+				1D87FC102028014A00166568 /* BKPhotoAlbumListModel.m in Sources */,
 				2A06DE381EB6C67500C2CCDF /* FLAnimatedImage.m in Sources */,
+				1D87FC02202800FF00166568 /* BKImagePickerFooterCollectionReusableView.m in Sources */,
 				1D40F4A8202438750031DD5A /* BKTool.m in Sources */,
 				1DA0E21F20244014005E8D5D /* BKImageNavViewController.m in Sources */,
 				1D40F4B8202438750031DD5A /* BKImageTakePhotoViewController.m in Sources */,
 				1D40F4EA202438A50031DD5A /* MASViewAttribute.m in Sources */,
-				1D40F4BC202438750031DD5A /* BKImageClassTableViewCell.m in Sources */,
+				1D87FC04202800FF00166568 /* BKImagePickerCollectionViewCell.m in Sources */,
 				1D40F4C5202438750031DD5A /* BKShowExampleImageCollectionViewFlowLayout.m in Sources */,
 				1D40F4E4202438A50031DD5A /* MASConstraintMaker.m in Sources */,
 				1D40F4B9202438750031DD5A /* BKImageTakePhotoBtn.m in Sources */,
 				1D40F4E8202438A50031DD5A /* MASConstraint.m in Sources */,
-				1D40F4C3202438750031DD5A /* BKImagePickerViewController.m in Sources */,
 				88500AA51DAF1D2300102A35 /* ViewController.m in Sources */,
 				1D40F4E5202438A50031DD5A /* MASLayoutConstraint.m in Sources */,
+				1D87FC03202800FF00166568 /* BKImageAlbumItemSelectButton.m in Sources */,
 				1D40F4E1202438A50031DD5A /* NSLayoutConstraint+MASDebugAdditions.m in Sources */,
-				1D40F4BD202438750031DD5A /* BKImageClassModel.m in Sources */,
 				1D40F4B3202438750031DD5A /* BKEditPhotoView.m in Sources */,
 				1D40F4B7202438750031DD5A /* UIImage+BKOrientationExpand.m in Sources */,
 				1DA0E22320244014005E8D5D /* NSObject+BKExpand.m in Sources */,
 				1D40F4B0202438750031DD5A /* BKSelectColorView.m in Sources */,
+				1D87FC112028014A00166568 /* BKPhotoAlbumListTableViewCell.m in Sources */,
 				2A06DE391EB6C67500C2CCDF /* FLAnimatedImageView.m in Sources */,
 				1D40F4E7202438A50031DD5A /* View+MASAdditions.m in Sources */,
 				1D40F4E9202438A50031DD5A /* MASViewConstraint.m in Sources */,
@@ -534,12 +614,12 @@
 				1D40F4E6202438A50031DD5A /* NSArray+MASAdditions.m in Sources */,
 				1D40F4AC202438750031DD5A /* BKImageModel.m in Sources */,
 				1DA0E22120244014005E8D5D /* BKImageBaseViewController.m in Sources */,
+				1D87FC0F2028014A00166568 /* BKPhotoAlbumListViewController.m in Sources */,
+				1D87FC00202800FF00166568 /* BKImagePickerViewController.m in Sources */,
 				1DA0E22020244014005E8D5D /* BKImagePercentDrivenInteractiveTransition.m in Sources */,
-				1D40F4C0202438750031DD5A /* BKImagePickerFooterCollectionReusableView.m in Sources */,
-				1D40F4C1202438750031DD5A /* BKImageAlbumItemSelectButton.m in Sources */,
 				1D40F4E3202438A50031DD5A /* MASCompositeConstraint.m in Sources */,
-				1D40F4C2202438750031DD5A /* BKImagePickerCollectionViewCell.m in Sources */,
 				1D40F4B1202438750031DD5A /* BKSelectColorMarkView.m in Sources */,
+				1D87FC01202800FF00166568 /* BKImageAlbumItemView.m in Sources */,
 				1D40F4BB202438750031DD5A /* BKShowExampleImageCollectionViewCell.m in Sources */,
 				1D40F4A9202438750031DD5A /* BKImagePickerConst.m in Sources */,
 				1DA0E22220244014005E8D5D /* UIView+BKExpand.m in Sources */,

@@ -11,7 +11,7 @@
 #import "BKShowExampleImageView.h"
 #import "BKShowExampleImageCollectionViewFlowLayout.h"
 #import "BKShowExampleImageCollectionViewCell.h"
-#import "BKImageClassViewController.h"
+#import "BKPhotoAlbumListViewController.h"
 #import "BKImageAlbumItemSelectButton.h"
 #import "BKImagePickerConst.h"
 #import "BKEditPhotoView.h"

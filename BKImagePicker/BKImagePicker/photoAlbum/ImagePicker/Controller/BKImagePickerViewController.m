@@ -13,13 +13,13 @@
 
 #define imageSize CGSizeMake(BK_SCREENW/2.0f, BK_SCREENW/2.0f)
 
-#import "BKImageClassViewController.h"
+#import "BKPhotoAlbumListViewController.h"
 
 #import "BKImagePickerViewController.h"
 #import "BKImagePickerCollectionViewCell.h"
 #import "BKImagePickerFooterCollectionReusableView.h"
 #import "BKImageAlbumItemSelectButton.h"
-#import "BKTool.h"
+#import "BKImagePickerConst.h"
 #import "BKShowExampleImageView.h"
 #import "BKShowExampleVideoView.h"
 
@@ -57,9 +57,6 @@
 @property (nonatomic,assign) NSInteger allVideoNum;
 
 
-//@property (nonatomic,strong) UIView * topView;
-
-//@property (nonatomic,strong) UIView * bottomView;
 @property (nonatomic,strong) UIButton * previewBtn;
 @property (nonatomic,strong) UIButton * editBtn;
 @property (nonatomic,strong) UIButton * originalBtn;
@@ -102,8 +99,8 @@
 -(void)refreshClassSelectImageArray
 {
     [self.navigationController.viewControllers enumerateObjectsUsingBlock:^(__kindof UIViewController * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ([obj isKindOfClass:[BKImageClassViewController class]]) {
-            BKImageClassViewController * vc = (BKImageClassViewController*)obj;
+        if ([obj isKindOfClass:[BKPhotoAlbumListViewController class]]) {
+            BKPhotoAlbumListViewController * vc = (BKPhotoAlbumListViewController*)obj;
             vc.selectImageArray = [NSArray arrayWithArray:self.selectImageArray];
             vc.isOriginal = self.isOriginal;
             
@@ -288,28 +285,6 @@
                             getThumbComplete();
                         }
                     });
-                    
-//                    if (model.photoType == BKSelectPhotoTypeGIF) {
-//                        
-//                        PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
-//                        options.resizeMode = PHImageRequestOptionsResizeModeFast;
-//                        options.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
-//                        options.synchronous = NO;
-//                        
-//                        [[PHImageManager defaultManager] requestImageDataForAsset:model.asset options:options resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
-//                            
-//                            model.thumbImageData = imageData;
-//                            
-//                            if (!self.isDidScroll) {
-//                                dispatch_async(dispatch_get_main_queue(), ^{
-//                                    if (getOriginalDataComplete) {
-//                                        getOriginalDataComplete(model,index);
-//                                    }
-//                                });
-//                            }
-//                            
-//                        }];
-//                    }
                 }
             }
         }];
@@ -321,7 +296,10 @@
 -(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
 {
     if ([keyPath isEqualToString:@"contentSize"]) {
-        [self.albumCollectionView setContentOffset:CGPointMake(0, self.albumCollectionView.contentSize.height - self.albumCollectionView.bk_height) animated:NO];
+        
+        if (self.albumCollectionView.contentSize.height > self.albumCollectionView.bk_height) {
+            [self.albumCollectionView setContentOffset:CGPointMake(0, self.albumCollectionView.contentSize.height - self.albumCollectionView.bk_height) animated:NO];
+        }
         [self.albumCollectionView removeObserver:self forKeyPath:@"contentSize"];
     }
 }
@@ -333,12 +311,9 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    self.automaticallyAdjustsScrollViewInsets = NO;
     self.allNormalImageNum = 0;
     self.allGifImageNum = 0;
     self.allVideoNum = 0;
-    
-    self.view.backgroundColor = [UIColor whiteColor];
     
     [self initTopNav];
     if (self.max_select != 1) {
@@ -375,10 +350,10 @@
         [self.view insertSubview:_albumCollectionView atIndex:0];
         
         [_albumCollectionView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.top.mas_equalTo(self.view).mas_offset(0);
-            make.left.mas_equalTo(self.view).mas_offset(0);
+            make.top.mas_equalTo(self.view.mas_top).mas_offset(0);
+            make.left.mas_equalTo(self.view.mas_left).mas_offset(0);
             make.bottom.mas_equalTo(self.bottomNavView.mas_top).mas_offset(0);
-            make.right.mas_equalTo(self.view).mas_offset(0);
+            make.right.mas_equalTo(self.view.mas_right).mas_offset(0);
         }];
         
         [_albumCollectionView addObserver:self forKeyPath:@"contentSize" options:NSKeyValueObservingOptionNew context:nil];
@@ -614,56 +589,6 @@
     }];
 }
 
-#pragma mark - UIScrollViewDelegate
-
-//- (BOOL)scrollViewShouldScrollToTop:(UIScrollView *)scrollView
-//{
-//    if (scrollView == _albumCollectionView) {
-//        _isDidScroll = YES;
-//    }
-//    return YES;
-//}
-//
-//-(void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
-//{
-//    if (scrollView == _albumCollectionView) {
-//        _isDidScroll = YES;
-//    }
-//}
-//
-//- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
-//{
-//    if (scrollView == _albumCollectionView) {
-//        [self scrollStopAnimate];
-//    }
-//}
-//
-//- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
-//{
-//    if (!decelerate) {
-//        if (scrollView == _albumCollectionView) {
-//            [self scrollStopAnimate];
-//        }
-//    }
-//}
-//
-//-(void)scrollStopAnimate
-//{
-//    [[_albumCollectionView visibleCells] enumerateObjectsUsingBlock:^(__kindof UICollectionViewCell * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-//        BKImagePickerCollectionViewCell * currentCell = (BKImagePickerCollectionViewCell*)obj;
-//        if (currentCell) {
-//            NSIndexPath * indexPath = [_albumCollectionView indexPathForCell:currentCell];
-//            BKImageModel * model = self.listArray[indexPath.item];
-//            if (model.thumbImageData && model.photoType == BKSelectPhotoTypeGIF) {
-//                FLAnimatedImage * gifImage = [FLAnimatedImage animatedImageWithGIFData:model.thumbImageData];
-//                if (gifImage) {
-//                    currentCell.photoImageView.animatedImage = gifImage;
-//                }
-//            }
-//        }
-//    }];
-//}
-
 #pragma mark - BKImagePickerCollectionViewCellDelegate
 
 -(void)selectImageBtnClick:(BKImageAlbumItemSelectButton*)button
@@ -786,20 +711,6 @@
         
         [_sendBtn setTitle:[NSString stringWithFormat:@"确认(%ld)",[self.selectImageArray count]] forState:UIControlStateNormal];
     }
-    
-//    if (!_bottomView) {
-//
-//        _bottomView = [[UIView alloc]initWithFrame:CGRectMake(0, BK_SCREENH - 49, BK_SCREENW, 49)];
-//        _bottomView.backgroundColor = BKNavBackgroundColor;
-//
-//        UIImageView * lineView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, BK_SCREENW, BK_ONE_PIXEL)];
-//        lineView.backgroundColor = BKLineColor;
-//        [_bottomView addSubview:lineView];
-//
-//
-//
-//    }
-//    return _bottomView;
 }
 
 -(UIButton*)previewBtn

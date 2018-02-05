@@ -10,6 +10,7 @@
 #define BKImagePickerConst_h
 
 #import <Foundation/Foundation.h>
+#import "BKImageNavViewController.h"
 #import "UIView+BKExpand.h"
 #import "NSObject+BKExpand.h"
 #import "BKTool.h"

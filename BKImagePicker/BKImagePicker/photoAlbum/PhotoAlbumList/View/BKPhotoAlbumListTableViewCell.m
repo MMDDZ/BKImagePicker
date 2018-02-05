@@ -1,19 +1,22 @@
 //
-//  BKImageClassTableViewCell.m
+//  BKPhotoAlbumListTableViewCell.m
 //  BKImagePicker
 //
-//  Created by iMac on 16/10/14.
-//  Copyright © 2016年 BIKE. All rights reserved.
+//  Created by zhaolin on 2018/2/5.
+//  Copyright © 2018年 BIKE. All rights reserved.
 //
 
-#import "BKImageClassTableViewCell.h"
+#import "BKPhotoAlbumListTableViewCell.h"
 
-@implementation BKImageClassTableViewCell
+@implementation BKPhotoAlbumListTableViewCell
 
 -(instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
+        
+        self.selectionStyle = UITableViewCellSelectionStyleNone;
+        self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         
         _exampleImageView = [[UIImageView alloc]init];
         _exampleImageView.contentMode = UIViewContentModeScaleAspectFill;

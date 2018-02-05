@@ -1,15 +1,15 @@
 //
-//  BKImageClassModel.h
+//  BKPhotoAlbumListModel.h
 //  BKImagePicker
 //
-//  Created by 兆林 on 2017/6/6.
-//  Copyright © 2017年 BIKE. All rights reserved.
+//  Created by zhaolin on 2018/2/5.
+//  Copyright © 2018年 BIKE. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-@interface BKImageClassModel : NSObject
+@interface BKPhotoAlbumListModel : NSObject
 
 /**
  相册名字

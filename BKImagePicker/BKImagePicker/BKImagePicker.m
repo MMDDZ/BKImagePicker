@@ -8,7 +8,7 @@
 
 #import "BKImagePicker.h"
 #import <Photos/Photos.h>
-#import "BKImageClassViewController.h"
+#import "BKPhotoAlbumListViewController.h"
 #import "BKImagePickerViewController.h"
 #import "BKImageTakePhotoViewController.h"
 
@@ -156,7 +156,7 @@ static BKImagePicker * sharedManagerInstance = nil;
                 }
             }];
             
-            BKImageClassViewController * imageClassVC = [[BKImageClassViewController alloc]init];
+            BKPhotoAlbumListViewController * imageClassVC = [[BKPhotoAlbumListViewController alloc]init];
             imageClassVC.max_select = maxSelect>999?999:maxSelect;
             imageClassVC.photoType = photoType;
           
@@ -204,9 +204,9 @@ static BKImagePicker * sharedManagerInstance = nil;
                 [[NSNotificationCenter defaultCenter] removeObserver:observer];
             }];
             
-            UINavigationController * nav = [[UINavigationController alloc]initWithRootViewController:imageClassVC];
-            nav.navigationBarHidden = YES;
+            BKImageNavViewController * nav = [[BKImageNavViewController alloc]initWithRootViewController:imageClassVC];
             [nav pushViewController:imageVC animated:NO];
+            nav.customTransition.backVC = imageClassVC;
             [lastVC presentViewController:nav animated:YES completion:nil];
         }
     }];

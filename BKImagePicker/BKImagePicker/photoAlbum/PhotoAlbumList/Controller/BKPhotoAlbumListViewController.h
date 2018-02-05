@@ -1,16 +1,15 @@
 //
-//  BKImageClassViewController.h
+//  BKPhotoAlbumListViewController.h
 //  BKImagePicker
 //
-//  Created by iMac on 16/10/13.
-//  Copyright © 2016年 BIKE. All rights reserved.
+//  Created by zhaolin on 2018/2/5.
+//  Copyright © 2018年 BIKE. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-#import "BKImagePicker.h"
 #import "BKImageBaseViewController.h"
+#import "BKImagePicker.h"
 
-@interface BKImageClassViewController : BKImageBaseViewController
+@interface BKPhotoAlbumListViewController : BKImageBaseViewController
 
 /**
  最大选取量

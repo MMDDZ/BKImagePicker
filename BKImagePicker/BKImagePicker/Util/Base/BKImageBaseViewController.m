@@ -171,7 +171,7 @@
         make.left.mas_equalTo(self.view.mas_left).mas_offset(0);
         make.bottom.mas_equalTo(self.view.mas_bottom).mas_offset(0);
         make.centerX.mas_equalTo(self.view);
-        make.size.mas_equalTo(CGSizeMake(BK_SCREENW, BK_SYSTEM_TABBAR_HEIGHT));
+        make.size.mas_equalTo(CGSizeMake(BK_SCREENW, 0));
     }];
     
     [_bottomLine mas_makeConstraints:^(MASConstraintMaker *make) {

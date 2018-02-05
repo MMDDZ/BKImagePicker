@@ -1,19 +1,17 @@
 //
-//  BKImageClassTableViewCell.h
+//  BKPhotoAlbumListTableViewCell.h
 //  BKImagePicker
 //
-//  Created by iMac on 16/10/14.
-//  Copyright © 2016年 BIKE. All rights reserved.
+//  Created by zhaolin on 2018/2/5.
+//  Copyright © 2018年 BIKE. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
 
-@interface BKImageClassTableViewCell : UITableViewCell
+@interface BKPhotoAlbumListTableViewCell : UITableViewCell
 
 @property (nonatomic,strong) UIImageView * exampleImageView;
-
 @property (nonatomic,strong) UILabel * titleLab;
-
 @property (nonatomic,strong) UILabel * countLab;
 
 @end

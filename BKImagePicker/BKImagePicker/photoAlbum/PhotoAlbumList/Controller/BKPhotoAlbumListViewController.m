@@ -1,29 +1,27 @@
 //
-//  BKImageClassViewController.m
+//  BKPhotoAlbumListViewController.m
 //  BKImagePicker
 //
-//  Created by iMac on 16/10/13.
-//  Copyright © 2016年 BIKE. All rights reserved.
+//  Created by zhaolin on 2018/2/5.
+//  Copyright © 2018年 BIKE. All rights reserved.
 //
 
-#define ROW_HEIGHT _imageClassTableView.frame.size.height/10.0f
+#define ROW_HEIGHT BK_SCREENH/10.0f
 
-#import "BKImageClassViewController.h"
+#import "BKPhotoAlbumListViewController.h"
 #import "BKImagePickerViewController.h"
 #import <Photos/Photos.h>
-#import "BKImageClassModel.h"
-#import "BKImageClassTableViewCell.h"
+#import "BKPhotoAlbumListModel.h"
+#import "BKPhotoAlbumListTableViewCell.h"
 
-@interface BKImageClassViewController ()<UITableViewDelegate,UITableViewDataSource>
-
-@property (nonatomic,strong) UIView * topView;
+@interface BKPhotoAlbumListViewController ()<UITableViewDelegate,UITableViewDataSource>
 
 @property (nonatomic,strong) UITableView * imageClassTableView;
 @property (nonatomic,strong) NSMutableArray * imageClassArray;
 
 @end
 
-@implementation BKImageClassViewController
+@implementation BKPhotoAlbumListViewController
 
 -(NSMutableArray*)imageClassArray
 {
@@ -48,7 +46,7 @@
 {
     [fetchResult enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         PHAssetCollection *collection = obj;
-        BKImageClassModel * model = [[BKImageClassModel alloc]init];
+        BKPhotoAlbumListModel * model = [[BKPhotoAlbumListModel alloc]init];
         
         // 获取所有资源的集合按照创建时间倒序排列
         PHFetchOptions * fetchOptions = [[PHFetchOptions alloc] init];
@@ -141,51 +139,41 @@
     }];
 }
 
+#pragma mark - init
+
+-(instancetype)init
+{
+    self = [super init];
+    if (self) {
+        [self getAllImageClassData];
+    }
+    return self;
+}
+
+#pragma mark - viewDidLoad
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    self.automaticallyAdjustsScrollViewInsets = NO;
-    
-    self.title = @"相册";
-    self.view.backgroundColor = [UIColor whiteColor];
-    
-    [self.view addSubview:[self topView]];
-    [self.view addSubview:[self imageClassTableView]];
-    [self getAllImageClassData];
+    [self initTopNav];
 }
 
-#pragma mark - topView
+#pragma mark - initTopNav
 
--(UIView*)topView
+-(void)initTopNav
 {
-    if (!_topView) {
-        _topView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, BK_SCREENW, BK_SYSTEM_NAV_HEIGHT)];
-        _topView.backgroundColor = BKNavBackgroundColor;
-        
-        UILabel * titleLab = [[UILabel alloc]initWithFrame:CGRectMake(64, BK_SYSTEM_STATUSBAR_HEIGHT, BK_SCREENW - 64*2, BK_SYSTEM_NAV_UI_HEIGHT)];
-        titleLab.font = [UIFont boldSystemFontOfSize:17];
-        titleLab.textColor = [UIColor blackColor];
-        titleLab.textAlignment = NSTextAlignmentCenter;
-        titleLab.text = self.title;
-        [_topView addSubview:titleLab];
-        
-        UIButton * rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        rightBtn.frame = CGRectMake(BK_SCREENW - 64, BK_SYSTEM_STATUSBAR_HEIGHT, 64, BK_SYSTEM_NAV_UI_HEIGHT);
-        [rightBtn setTitle:@"取消" forState:UIControlStateNormal];
-        [rightBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
-        rightBtn.titleLabel.font = [UIFont systemFontOfSize:17];
-        [rightBtn addTarget:self action:@selector(rightBtnClick:) forControlEvents:UIControlEventTouchUpInside];
-        [_topView addSubview:rightBtn];
-        
-        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, BK_SYSTEM_NAV_HEIGHT - BK_ONE_PIXEL, BK_SCREENW, BK_ONE_PIXEL)];
-        line.backgroundColor = BKLineColor;
-        [_topView addSubview:line];
-    }
-    return _topView;
+    self.title = @"相册";
+    self.rightLab.text = @"取消";
+    self.leftImageView.image = nil;
 }
 
--(void)rightBtnClick:(UIButton*)button
+-(void)leftNavBtnAction:(UIButton *)button
+{
+    
+}
+
+-(void)rightNavBtnAction:(UIButton *)button
 {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -195,7 +183,7 @@
 -(UITableView*)imageClassTableView
 {
     if (!_imageClassTableView) {
-        _imageClassTableView = [[UITableView alloc]initWithFrame:CGRectMake(0, BK_SYSTEM_NAV_HEIGHT, BK_SCREENW, BK_SCREENH - BK_SYSTEM_NAV_HEIGHT) style:UITableViewStylePlain];
+        _imageClassTableView = [[UITableView alloc]initWithFrame:CGRectZero style:UITableViewStylePlain];
         _imageClassTableView.delegate = self;
         _imageClassTableView.dataSource = self;
         _imageClassTableView.showsVerticalScrollIndicator = NO;
@@ -208,6 +196,14 @@
             _imageClassTableView.estimatedSectionHeaderHeight = 0;
             _imageClassTableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
         }
+        [self.view addSubview:_imageClassTableView];
+        
+        [_imageClassTableView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.top.mas_equalTo(self.topNavView.mas_bottom).mas_offset(0);
+            make.left.mas_equalTo(self.view.mas_left).mas_offset(0);
+            make.bottom.mas_equalTo(self.bottomNavView.mas_top).mas_offset(0);
+            make.right.mas_equalTo(self.view.mas_right).mas_offset(0);
+        }];
     }
     return _imageClassTableView;
 }
@@ -219,20 +215,17 @@
 
 -(UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString * identifier = @"BKImageClassTableViewCell";
-    BKImageClassTableViewCell * cell = (BKImageClassTableViewCell*)[tableView dequeueReusableCellWithIdentifier:identifier];
+    static NSString * identifier = @"BKPhotoAlbumListTableViewCell";
+    BKPhotoAlbumListTableViewCell * cell = (BKPhotoAlbumListTableViewCell*)[tableView dequeueReusableCellWithIdentifier:identifier];
     if (!cell) {
-        cell = [[BKImageClassTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
-        
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        cell = [[BKPhotoAlbumListTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
         
         UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(ROW_HEIGHT+ROW_HEIGHT/3, ROW_HEIGHT-BK_ONE_PIXEL, BK_SCREENW-(ROW_HEIGHT+ROW_HEIGHT/3), BK_ONE_PIXEL)];
         line.backgroundColor = BKLineColor;
         [cell addSubview:line];
     }
     
-    BKImageClassModel * model = self.imageClassArray[indexPath.row];
+    BKPhotoAlbumListModel * model = self.imageClassArray[indexPath.row];
     
     cell.exampleImageView.frame = CGRectMake(ROW_HEIGHT/3, 3, ROW_HEIGHT-6, ROW_HEIGHT-6);
     cell.exampleImageView.image = model.albumFirstImage;
@@ -256,7 +249,7 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    BKImageClassModel * model = self.imageClassArray[indexPath.row];
+    BKPhotoAlbumListModel * model = self.imageClassArray[indexPath.row];
     
     BKImagePickerViewController * imageVC = [[BKImagePickerViewController alloc]init];
     imageVC.title = model.albumName;

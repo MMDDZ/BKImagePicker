@@ -33,7 +33,7 @@
 
 - (NSTimeInterval)transitionDuration:(nullable id <UIViewControllerContextTransitioning>)transitionContext
 {
-    return 0.3;
+    return 0.25;
 }
 
 - (void)animateTransition:(id <UIViewControllerContextTransitioning>)transitionContext
@@ -75,7 +75,7 @@
     }
     [containerView addSubview:toVC.view];
     
-    [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+    [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
         
         if (_direction == BKImageTransitionAnimaterDirectionRight) {
             fromVC.view.bk_x = -BK_SCREENW/2;
@@ -134,7 +134,7 @@
     
     [containerView addSubview:fromVC.view];
     
-    [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+    [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
         
         if (_direction == BKImageTransitionAnimaterDirectionRight) {
             fromVC.view.bk_x = BK_SCREENW;
