@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 #import "BKImagePickerConst.h"
-#import "Masonry.h"
 
 @interface BKImageBaseViewController : UIViewController
 

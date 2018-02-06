@@ -29,14 +29,9 @@
     return shareInstance;
 }
 
-#pragma mark - 所在VC
+#pragma mark - 获取当前屏幕显示的viewcontroller
 
-/**
- 所在VC
- 
- @return VC
- */
--(UIViewController *)locationVC
+-(UIViewController *)getCurrentVC
 {
     UIViewController *rootVC = [[UIApplication sharedApplication].delegate window].rootViewController;
     
@@ -53,16 +48,8 @@
     return rootVC; 
 }
 
-#pragma mark - 弹框
+#pragma mark - 弹框提示
 
-/**
- 弹框
-
- @param title 标题
- @param message 内容
- @param actionTitleArr 按钮标题数组
- @param actionMethod 按钮标题数组对应点击事件
- */
 -(void)presentAlert:(NSString*)title message:(NSString*)message actionTitleArr:(NSArray*)actionTitleArr actionMethod:(void (^)(NSInteger index))actionMethod
 {
     UIAlertController * alert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
@@ -82,7 +69,7 @@
         }];
         [alert addAction:action];
     }
-    [[self locationVC] presentViewController:alert animated:YES completion:nil];
+    [[self getCurrentVC] presentViewController:alert animated:YES completion:nil];
 }
 
 #pragma mark - 提示
@@ -134,6 +121,10 @@
 
 -(CGSize)sizeWithString:(NSString *)string UIWidth:(CGFloat)width font:(UIFont*)font
 {
+    if (!string || !font) {
+        return CGSizeZero;
+    }
+    
     CGRect rect = [string boundingRectWithSize:CGSizeMake(width, MAXFLOAT)
                                        options: NSStringDrawingUsesFontLeading  |NSStringDrawingUsesLineFragmentOrigin
                                     attributes:@{NSFontAttributeName: font}
@@ -144,6 +135,10 @@
 
 -(CGSize)sizeWithString:(NSString *)string UIHeight:(CGFloat)height font:(UIFont*)font
 {
+    if (!string || !font) {
+        return CGSizeZero;
+    }
+    
     CGRect rect = [string boundingRectWithSize:CGSizeMake(MAXFLOAT, height)
                                        options: NSStringDrawingUsesFontLeading  |NSStringDrawingUsesLineFragmentOrigin
                                     attributes:@{NSFontAttributeName:font}

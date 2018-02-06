@@ -159,6 +159,13 @@
     [self initTopNav];
 }
 
+-(void)viewWillLayoutSubviews
+{
+    [super viewWillLayoutSubviews];
+    
+    self.imageClassTableView.frame = CGRectMake(0, CGRectGetMaxY(self.topNavView.frame), self.view.bk_width, self.view.bk_height - CGRectGetMaxY(self.topNavView.frame) - self.bottomNavView.bk_height);
+}
+
 #pragma mark - initTopNav
 
 -(void)initTopNav
@@ -197,13 +204,6 @@
             _imageClassTableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
         }
         [self.view addSubview:_imageClassTableView];
-        
-        [_imageClassTableView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.top.mas_equalTo(self.topNavView.mas_bottom).mas_offset(0);
-            make.left.mas_equalTo(self.view.mas_left).mas_offset(0);
-            make.bottom.mas_equalTo(self.bottomNavView.mas_top).mas_offset(0);
-            make.right.mas_equalTo(self.view.mas_right).mas_offset(0);
-        }];
     }
     return _imageClassTableView;
 }

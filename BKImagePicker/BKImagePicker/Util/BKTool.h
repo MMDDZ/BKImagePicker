@@ -11,19 +11,18 @@
 
 @interface BKTool : NSObject
 
-/**
- 单例
- 
- @return BKImagePicker
- */
 +(instancetype)sharedManager;
+
+#pragma mark - 获取当前屏幕显示的viewcontroller
 
 /**
  所在VC
 
  @return VC
  */
--(UIViewController *)locationVC;
+-(UIViewController *)getCurrentVC;
+
+#pragma mark - 弹框提示
 
 /**
  弹框
@@ -35,12 +34,16 @@
  */
 -(void)presentAlert:(NSString*)title message:(NSString*)message actionTitleArr:(NSArray*)actionTitleArr actionMethod:(void (^)(NSInteger index))actionMethod;
 
+#pragma mark - 提示
+
 /**
  提示
 
  @param text 文本
  */
 -(void)showRemind:(NSString*)text;
+
+#pragma mark - Loading
 
 /**
  加载Loading
@@ -53,6 +56,8 @@
  隐藏Loading
  */
 -(void)hideLoad;
+
+#pragma mark - 压缩图片
 
 /**
  压缩图片

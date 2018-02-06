@@ -20,10 +20,10 @@
 #import "BKImagePickerFooterCollectionReusableView.h"
 #import "BKImageAlbumItemSelectButton.h"
 #import "BKImagePickerConst.h"
-#import "BKShowExampleImageView.h"
-#import "BKShowExampleVideoView.h"
+#import "BKShowExampleImageViewController.h"
+#import "BKShowExampleVideoViewController.h"
 
-@interface BKImagePickerViewController ()<UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout,BKImagePickerCollectionViewCellDelegate>
+@interface BKImagePickerViewController ()<UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout,BKImagePickerCollectionViewCellDelegate,BKShowExampleImageViewControllerDelegate>
 
 @property (nonatomic,strong) PHImageRequestOptions * options;
 
@@ -90,7 +90,9 @@
     return _selectImageArray;
 }
 
-//更新选取的PHAsset数组
+/**
+ 更新选取的PHAsset数组
+ */
 -(void)refreshClassSelectImageArray
 {
     [self.navigationController.viewControllers enumerateObjectsUsingBlock:^(__kindof UIViewController * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -320,6 +322,13 @@
     [self getAllImageClassData];
 }
 
+-(void)viewWillLayoutSubviews
+{
+    [super viewWillLayoutSubviews];
+    
+    self.albumCollectionView.frame = CGRectMake(0, 0, self.view.bk_width, self.view.bk_height - self.bottomNavView.bk_height);
+}
+
 #pragma mark - UICollectionView
 
 -(UICollectionView*)albumCollectionView
@@ -345,13 +354,6 @@
             _albumCollectionView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
         }
         [self.view insertSubview:_albumCollectionView atIndex:0];
-        
-        [_albumCollectionView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.top.mas_equalTo(self.view.mas_top).mas_offset(0);
-            make.left.mas_equalTo(self.view.mas_left).mas_offset(0);
-            make.bottom.mas_equalTo(self.bottomNavView.mas_top).mas_offset(0);
-            make.right.mas_equalTo(self.view.mas_right).mas_offset(0);
-        }];
         
         [_albumCollectionView addObserver:self forKeyPath:@"contentSize" options:NSKeyValueObservingOptionNew context:nil];
     }
@@ -445,8 +447,11 @@
             return;
         }
         
-        BKShowExampleVideoView * exampleVideoView = [[BKShowExampleVideoView alloc]initWithModel:model];
-        [exampleVideoView showInVC:self];
+        BKShowExampleVideoViewController * vc = [[BKShowExampleVideoViewController alloc]init];
+        vc.tapVideoModel = model;
+        [self.navigationController pushViewController:vc animated:YES];
+//        BKShowExampleVideoView * exampleVideoView = [[BKShowExampleVideoView alloc]initWithModel:model];t
+//        [exampleVideoView showInVC:self];
     }
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -460,96 +465,19 @@
         return;
     }
     
-    _albumCollectionView.scrollsToTop = NO;
-    
-    BKShowExampleImageView * exampleImageView = [[BKShowExampleImageView alloc] initWithLocationVC:self imageListArray:imageListArray selectImageArray:_selectImageArray tapModel:tapModel maxSelect:_max_select isOriginal:_isOriginal];
-    __weak typeof(self) weakSelf = self;
-    __weak typeof(exampleImageView) weakExampleImageView = exampleImageView;
-    
-    [exampleImageView setRefreshLookLocationOption:^(BKImageModel * model) {
-        __strong typeof(self) strongSelf = weakSelf;
-        __block NSInteger item = 0;
-        __block BOOL isHaveFlag = NO;
-        [strongSelf.listArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            BKImageModel * listModel = obj;
-            if ([listModel.fileName isEqualToString: model.fileName]) {
-                item = idx;
-                isHaveFlag = YES;
-                *stop = YES;
-            }
-        }];
-        
-        if (isHaveFlag) {
-            NSIndexPath * indexPath = [NSIndexPath indexPathForItem:item inSection:0];
-            BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
-            if (!cell) {
-                [self.albumCollectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
-            }
-        }
-        
-    }];
-    [exampleImageView setBackOption:^(BKImageModel * model, UIImageView * imageView) {
-        __strong typeof(self) strongSelf = weakSelf;
-        __strong typeof(weakExampleImageView) strongExampleImageView = weakExampleImageView;
-        __block BOOL isHaveFlag = NO;
-        __block NSInteger item = 0;
-        [strongSelf.listArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            BKImageModel * listModel = obj;
-            if ([listModel.fileName isEqualToString: model.fileName]) {
-                item = idx;
-                isHaveFlag = YES;
-                *stop = YES;
-            }
-        }];
-        
-        CGRect imageViewFrame = [[imageView superview] convertRect:imageView.frame toView:strongExampleImageView];
-        
-        UIImageView * newImageView = [[UIImageView alloc]initWithFrame:imageViewFrame];
-        newImageView.clipsToBounds = YES;
-        newImageView.contentMode = UIViewContentModeScaleAspectFill;
-        newImageView.image = imageView.image;
-        [strongExampleImageView addSubview:newImageView];
-        [strongExampleImageView bringSubviewToFront:strongExampleImageView.topView];
-        [strongExampleImageView bringSubviewToFront:strongExampleImageView.bottomView];
-        
-        if (isHaveFlag) {
-            NSIndexPath * indexPath = [NSIndexPath indexPathForItem:item inSection:0];
-            
-            BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[strongSelf.albumCollectionView cellForItemAtIndexPath:indexPath];
-            CGRect cellImageFrame = [[cell.photoImageView superview] convertRect:cell.photoImageView.frame toView:self.view];
-            
-            cell.alpha = 0;
-            
-            [UIView animateWithDuration:BKCheckExampleImageAnimateTime delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-                newImageView.frame = cellImageFrame;
-                strongExampleImageView.backgroundColor = [UIColor colorWithWhite:1 alpha:0];
-                strongExampleImageView.topView.alpha = 0;
-                strongExampleImageView.bottomView.alpha = 0;
-            } completion:^(BOOL finished) {
-                [newImageView removeFromSuperview];
-                cell.alpha = 1;
-                [strongExampleImageView removeFromSuperview];
-            }];
-        }else{
-            
-            [strongExampleImageView removeFromSuperview];
-            [[strongSelf.view superview] addSubview:strongExampleImageView];
-            strongSelf.view.bk_x = - BK_SCREENW/2.0f;
-            
-            [UIView animateWithDuration:BKCheckExampleGifAndVideoAnimateTime delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-                
-                strongSelf.view.bk_x = 0;
-                strongExampleImageView.bk_x = BK_SCREENW;
-                
-            } completion:^(BOOL finished) {
-                [strongExampleImageView removeFromSuperview];
-            }];
-        }
-        
-        _albumCollectionView.scrollsToTop = YES;
-    }];
-    [exampleImageView setRefreshAlbumViewOption:^(NSArray * selectImageArray,BOOL isOriginal) {
-        __strong typeof(self) strongSelf = weakSelf;
+    BKShowExampleImageViewController * vc = [[BKShowExampleImageViewController alloc]init];
+    vc.delegate = self;
+    vc.tapImageView = cell.photoImageView;
+    vc.imageListArray = imageListArray;
+    vc.selectImageArray = _selectImageArray;
+    vc.tapImageModel = tapModel;
+    vc.maxSelect = _max_select;
+    vc.isOriginal = _isOriginal;
+    [vc showInNav:self.navigationController];
+   
+    BK_WEAK_SELF(self);
+    [vc setRefreshAlbumViewOption:^(NSArray * selectImageArray,BOOL isOriginal) {
+        BK_STRONG_SELF(self);
         
         strongSelf.selectImageArray = [NSMutableArray arrayWithArray:selectImageArray];
         [strongSelf.albumCollectionView reloadData];
@@ -565,11 +493,54 @@
         
         [strongSelf refreshClassSelectImageArray];
     }];
-    [exampleImageView showImageAnimate:cell.photoImageView beginAnimateOption:^{
-        cell.alpha = 0;
-    } endAnimateOption:^{
-        cell.alpha = 1;
+}
+
+#pragma mark - BKShowExampleImageViewControllerDelegate
+
+-(void)refreshLookLocationActionWithImageModel:(BKImageModel*)model
+{
+    __block BOOL isHaveFlag = NO;
+    __block NSInteger item = 0;
+    [_listArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        BKImageModel * listModel = obj;
+        if ([listModel.fileName isEqualToString: model.fileName]) {
+            item = idx;
+            isHaveFlag = YES;
+            *stop = YES;
+        }
     }];
+    
+    if (isHaveFlag) {
+        NSIndexPath * indexPath = [NSIndexPath indexPathForItem:item inSection:0];
+        
+        BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
+        if (!cell) {
+            [self.albumCollectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
+        }
+    }
+}
+
+-(UIImageView*)backActionWithImageModel:(BKImageModel*)model
+{
+    __block BOOL isHaveFlag = NO;
+    __block NSInteger item = 0;
+    [_listArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        BKImageModel * listModel = obj;
+        if ([listModel.fileName isEqualToString: model.fileName]) {
+            item = idx;
+            isHaveFlag = YES;
+            *stop = YES;
+        }
+    }];
+    
+    if (isHaveFlag) {
+        NSIndexPath * indexPath = [NSIndexPath indexPathForItem:item inSection:0];
+        
+        BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[_albumCollectionView cellForItemAtIndexPath:indexPath];
+        return cell.photoImageView;
+    }else{
+        return nil;
+    }
 }
 
 #pragma mark - BKImagePickerCollectionViewCellDelegate

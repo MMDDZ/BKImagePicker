@@ -29,11 +29,15 @@
         _imageScrollView.contentSize = CGSizeMake(frame.size.width-BKExampleImagesSpacing*2, frame.size.height);
         _imageScrollView.backgroundColor = [UIColor clearColor];
         _imageScrollView.minimumZoomScale = 1.0;
+        if (@available(iOS 11.0, *)) {
+            _imageScrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+        }
         [self addSubview:_imageScrollView];
         
         _showImageView = [[FLAnimatedImageView alloc]init];
         _showImageView.userInteractionEnabled = YES;
-        _showImageView.tag = 1;
+        _showImageView.clipsToBounds = YES;
+        _showImageView.contentMode = UIViewContentModeScaleAspectFill;
         [_imageScrollView addSubview:_showImageView];
         
     }

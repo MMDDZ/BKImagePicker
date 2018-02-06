@@ -30,6 +30,14 @@
     [self addBottomNavConstraint];
 }
 
+-(void)viewWillLayoutSubviews
+{
+    [super viewWillLayoutSubviews];
+    
+    [self addTopNavConstraint];
+    [self addBottomNavConstraint];
+}
+
 #pragma mark - 顶部导航
 
 -(void)setTitle:(NSString *)title
@@ -101,37 +109,43 @@
 
 -(void)addTopNavConstraint
 {
-    [_topNavView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(self.view.mas_left).mas_offset(0);
-        make.top.mas_equalTo(self.view.mas_top).mas_offset(0);
-        make.centerX.mas_equalTo(self.view);
-        make.size.mas_equalTo(CGSizeMake(BK_SCREENW, BK_SYSTEM_NAV_HEIGHT));
-    }];
+    _topNavView.frame = CGRectMake(0, 0, self.view.bk_width, BK_SYSTEM_NAV_HEIGHT);
+    _leftBtn.frame = CGRectMake(0, BK_SYSTEM_STATUSBAR_HEIGHT, 64, BK_SYSTEM_NAV_UI_HEIGHT);
+    _titleLab.frame = CGRectMake(64, BK_SYSTEM_STATUSBAR_HEIGHT, self.view.bk_width - 128, BK_SYSTEM_NAV_UI_HEIGHT);
+    _rightBtn.frame = CGRectMake(self.view.bk_width - 64, BK_SYSTEM_STATUSBAR_HEIGHT, 64, BK_SYSTEM_NAV_UI_HEIGHT);
+    _topLine.frame = CGRectMake(0, _topNavView.bk_height - BK_ONE_PIXEL, _topNavView.bk_width, BK_ONE_PIXEL);
     
-    [_leftBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(_topNavView.mas_left).mas_offset(0);
-        make.bottom.mas_equalTo(_topNavView.mas_bottom).mas_offset(0);
-        make.size.mas_equalTo(CGSizeMake(64, BK_SYSTEM_NAV_UI_HEIGHT));
-    }];
-
-    [_titleLab mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(_leftBtn.mas_right).mas_offset(0);
-        make.bottom.mas_equalTo(_topNavView.mas_bottom).mas_offset(0);
-        make.right.mas_equalTo(_rightBtn.mas_left).mas_offset(0);
-        make.height.mas_equalTo(BK_SYSTEM_NAV_UI_HEIGHT);
-    }];
-    
-    [_rightBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_equalTo(_topNavView.mas_right).mas_offset(0);
-        make.bottom.mas_equalTo(_topNavView.mas_bottom).mas_offset(0);
-        make.size.mas_equalTo(CGSizeMake(64, BK_SYSTEM_NAV_UI_HEIGHT));
-    }];
-    
-    [_topLine mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(_topNavView.mas_left).mas_offset(0);
-        make.bottom.mas_equalTo(_topNavView.mas_bottom).mas_offset(0);
-        make.size.mas_equalTo(CGSizeMake(BK_SCREENW, BK_ONE_PIXEL));
-    }];
+//    [_topNavView mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.mas_equalTo(self.view.mas_left).mas_offset(0);
+//        make.top.mas_equalTo(self.view.mas_top).mas_offset(0);
+//        make.centerX.mas_equalTo(self.view);
+//        make.size.mas_equalTo(CGSizeMake(BK_SCREENW, BK_SYSTEM_NAV_HEIGHT));
+//    }];
+//
+//    [_leftBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.mas_equalTo(_topNavView.mas_left).mas_offset(0);
+//        make.bottom.mas_equalTo(_topNavView.mas_bottom).mas_offset(0);
+//        make.size.mas_equalTo(CGSizeMake(64, BK_SYSTEM_NAV_UI_HEIGHT));
+//    }];
+//
+//    [_titleLab mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.mas_equalTo(_leftBtn.mas_right).mas_offset(0);
+//        make.bottom.mas_equalTo(_topNavView.mas_bottom).mas_offset(0);
+//        make.right.mas_equalTo(_rightBtn.mas_left).mas_offset(0);
+//        make.height.mas_equalTo(BK_SYSTEM_NAV_UI_HEIGHT);
+//    }];
+//
+//    [_rightBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.right.mas_equalTo(_topNavView.mas_right).mas_offset(0);
+//        make.bottom.mas_equalTo(_topNavView.mas_bottom).mas_offset(0);
+//        make.size.mas_equalTo(CGSizeMake(64, BK_SYSTEM_NAV_UI_HEIGHT));
+//    }];
+//
+//    [_topLine mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.mas_equalTo(_topNavView.mas_left).mas_offset(0);
+//        make.bottom.mas_equalTo(_topNavView.mas_bottom).mas_offset(0);
+//        make.size.mas_equalTo(CGSizeMake(BK_SCREENW, BK_ONE_PIXEL));
+//    }];
 }
 
 -(void)leftNavBtnAction:(UIButton*)button
@@ -167,27 +181,32 @@
 
 -(void)addBottomNavConstraint
 {
-    [_bottomNavView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(self.view.mas_left).mas_offset(0);
-        make.bottom.mas_equalTo(self.view.mas_bottom).mas_offset(0);
-        make.centerX.mas_equalTo(self.view);
-        make.size.mas_equalTo(CGSizeMake(BK_SCREENW, 0));
-    }];
+    _bottomNavView.frame = CGRectMake(0, self.view.bk_height - _bottomNavViewHeight, self.view.bk_width, _bottomNavViewHeight);
+    _bottomLine.frame = CGRectMake(0, 0, _bottomNavView.bk_width, BK_ONE_PIXEL);
     
-    [_bottomLine mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(_bottomNavView.mas_left).mas_offset(0);
-        make.top.mas_equalTo(_bottomNavView.mas_top).mas_offset(0);
-        make.size.mas_equalTo(CGSizeMake(BK_SCREENW, BK_ONE_PIXEL));
-    }];
+//    [_bottomNavView mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.mas_equalTo(self.view.mas_left).mas_offset(0);
+//        make.bottom.mas_equalTo(self.view.mas_bottom).mas_offset(0);
+//        make.centerX.mas_equalTo(self.view);
+//        make.size.mas_equalTo(CGSizeMake(BK_SCREENW, 0));
+//    }];
+//
+//    [_bottomLine mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.mas_equalTo(_bottomNavView.mas_left).mas_offset(0);
+//        make.top.mas_equalTo(_bottomNavView.mas_top).mas_offset(0);
+//        make.size.mas_equalTo(CGSizeMake(BK_SCREENW, BK_ONE_PIXEL));
+//    }];
 }
 
 -(void)setBottomNavViewHeight:(CGFloat)bottomNavViewHeight
 {
     _bottomNavViewHeight = bottomNavViewHeight;
     
-    [_bottomNavView mas_updateConstraints:^(MASConstraintMaker *make) {
-        make.height.mas_equalTo(_bottomNavViewHeight);
-    }];
+    _bottomNavView.bk_height = _bottomNavViewHeight;
+    _bottomNavView.bk_y = self.view.bk_height - _bottomNavView.bk_height;
+//    [_bottomNavView mas_updateConstraints:^(MASConstraintMaker *make) {
+//        make.height.mas_equalTo(_bottomNavViewHeight);
+//    }];
 }
 
 #pragma iPhoneX黑条隐藏

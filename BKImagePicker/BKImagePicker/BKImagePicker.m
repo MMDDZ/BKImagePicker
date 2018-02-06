@@ -36,7 +36,7 @@ static BKImagePicker * sharedManagerInstance = nil;
     [self checkAllowVisitCameraHandler:^(BOOL handleFlag) {
         if (handleFlag) {
             
-            UIViewController * lastVC = [[BKTool sharedManager] locationVC];
+            UIViewController * lastVC = [[BKTool sharedManager] getCurrentVC];
             
             BKImageTakePhotoViewController * vc = [[BKImageTakePhotoViewController alloc]init];
             UINavigationController * nav = [[UINavigationController alloc]initWithRootViewController:vc];
@@ -135,7 +135,7 @@ static BKImagePicker * sharedManagerInstance = nil;
     [self checkAllowVisitPhotoAlbumHandler:^(BOOL handleFlag) {
         if (handleFlag) {
             
-            UIViewController * lastVC = [[BKTool sharedManager] locationVC];
+            UIViewController * lastVC = [[BKTool sharedManager] getCurrentVC];
             
             __block NSString * albumName = @"";
             //系统的相簿

@@ -28,9 +28,9 @@ typedef NS_ENUM(NSInteger,BKSelectPhotoType) {
     BKSelectPhotoTypeVideo,
 };
 
-#define Color(R,G,B,A) [UIColor colorWithRed:R/255.0f green:G/255.0f blue:B/255.0f alpha:A]
+#define BK_RGBA(R,G,B,A) [UIColor colorWithRed:R/255.0f green:G/255.0f blue:B/255.0f alpha:A]
 //导航字体高亮颜色
-#define BKNavHighlightTitleColor Color(21,126,251,1)
+#define BKNavHighlightTitleColor BK_RGBA(21,126,251,1)
 //导航字体默认颜色
 #define BKNavGrayTitleColor [UIColor colorWithWhite:0.5 alpha:1]
 //发送按钮默认颜色
@@ -42,7 +42,7 @@ typedef NS_ENUM(NSInteger,BKSelectPhotoType) {
 //多张照片选择时 选择按钮默认颜色
 #define BKSelectImageCircleNormalColor [UIColor colorWithWhite:0.2 alpha:0.5]
 //多张照片选择时 选择按钮选中颜色
-#define BKSelectImageCircleHighlightColor Color(45,150,250,1)
+#define BKSelectImageCircleHighlightColor BK_RGBA(45,150,250,1)
 
 #define BK_SCREENW [UIScreen mainScreen].bounds.size.width
 #define BK_SCREENH [UIScreen mainScreen].bounds.size.height
