@@ -527,6 +527,9 @@
 {
     BKShowExampleImageCollectionViewCell * currentCell = (BKShowExampleImageCollectionViewCell*)cell;
     
+    currentCell.imageScrollView.zoomScale = 1;
+    currentCell.imageScrollView.contentSize = CGSizeMake(currentCell.bk_width-BKExampleImagesSpacing*2, currentCell.bk_height);
+    
     BKImageModel * model = self.imageListArray[indexPath.item];
     
     if (model.photoType == BKSelectPhotoTypeImage) {
@@ -613,13 +616,13 @@
     }
 }
 
-- (void)collectionView:(UICollectionView *)collectionView didEndDisplayingCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    BKShowExampleImageCollectionViewCell * currentCell = (BKShowExampleImageCollectionViewCell*)cell;
-    
-    currentCell.imageScrollView.zoomScale = 1;
-    currentCell.imageScrollView.contentSize = CGSizeMake(currentCell.bk_width-BKExampleImagesSpacing*2, currentCell.bk_height);
-}
+//- (void)collectionView:(UICollectionView *)collectionView didEndDisplayingCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
+//{
+//    BKShowExampleImageCollectionViewCell * currentCell = (BKShowExampleImageCollectionViewCell*)cell;
+//
+//    currentCell.imageScrollView.zoomScale = 1;
+//    currentCell.imageScrollView.contentSize = CGSizeMake(currentCell.bk_width-BKExampleImagesSpacing*2, currentCell.bk_height);
+//}
 
 #pragma mark - 缩略图 、 原图 、 原图data
 
@@ -724,12 +727,11 @@
         }
     }
     
-    CGRect showImageViewFrame = [self calculateTargetFrameWithImageView:showImageView];
+    showImageView.frame = [self calculateTargetFrameWithImageView:showImageView];
+    imageScrollView.contentSize = CGSizeMake(showImageView.bk_width, showImageView.bk_height);
     
     CGFloat scale = image.size.width / self.view.bk_width;
     imageScrollView.maximumZoomScale = scale<2?2:scale;
-    
-    showImageView.frame = showImageViewFrame;
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -745,6 +747,7 @@
             
             BKShowExampleImageCollectionViewCell * cell = (BKShowExampleImageCollectionViewCell*)[_exampleImageCollectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:item inSection:0]];
             self.interactiveTransition.startImageView = cell.showImageView;
+            self.interactiveTransition.supperScrollView = cell.imageScrollView;
             
             self.nowImageIndex = item;
         }
@@ -785,6 +788,7 @@
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             BKShowExampleImageCollectionViewCell * cell = (BKShowExampleImageCollectionViewCell*)[_exampleImageCollectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:_nowImageIndex inSection:0]];
             self.interactiveTransition.startImageView = cell.showImageView;
+            self.interactiveTransition.supperScrollView = cell.imageScrollView;
         });
     }
 }

@@ -8,7 +8,7 @@
 
 #import "BKImagePercentDrivenInteractiveTransition.h"
 
-@interface BKImagePercentDrivenInteractiveTransition ()
+@interface BKImagePercentDrivenInteractiveTransition ()<UIGestureRecognizerDelegate>
 
 /**
  当前VC
@@ -38,8 +38,11 @@
 
 - (void)addPanGestureForViewController:(UIViewController *)viewController
 {
-    UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panGesture:)];
     self.currentVC = viewController;
+    
+    UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panGesture:)];
+    pan.maximumNumberOfTouches = 1;
+    pan.delegate = self;
     [viewController.view addGestureRecognizer:pan];
 }
 
@@ -138,6 +141,16 @@
         default:
             break;
     }
+}
+
+-(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(nonnull UIGestureRecognizer *)otherGestureRecognizer
+{
+    return YES;
+//    if ([gestureRecognizer.view isKindOfClass:[UIScrollView class]]) {
+//        return NO;
+//    }else{
+//        return YES;
+//    }
 }
 
 @end

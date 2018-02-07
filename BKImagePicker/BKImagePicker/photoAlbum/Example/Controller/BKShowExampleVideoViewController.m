@@ -71,8 +71,12 @@
 {
     [super viewWillLayoutSubviews];
     
-    self.playerView.frame = self.view.bounds;
-    self.playerLayer.frame = _playerView.bounds;
+    if (_playerView) {
+        _playerView.frame = self.view.bounds;
+        if (_playerLayer) {
+            _playerLayer.frame = _playerView.bounds;
+        }
+    }
 }
 
 -(void)viewWillAppear:(BOOL)animated
