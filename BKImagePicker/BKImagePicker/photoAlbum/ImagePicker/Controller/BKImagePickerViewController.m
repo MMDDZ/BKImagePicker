@@ -417,12 +417,6 @@
 
 -(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (self.view.userInteractionEnabled) {
-        self.view.userInteractionEnabled = NO;
-    }else{
-        return;
-    }
-    
     BKImageModel * model = self.listArray[indexPath.item];
     
     if (model.asset.mediaType == PHAssetMediaTypeImage) {
@@ -441,22 +435,13 @@
     }else{
         if ([self.selectImageArray count] > 0) {
             [[BKTool sharedManager] showRemind:@"不能同时选择照片和视频"];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                self.view.userInteractionEnabled = YES;
-            });
             return;
         }
         
         BKShowExampleVideoViewController * vc = [[BKShowExampleVideoViewController alloc]init];
         vc.tapVideoModel = model;
         [self.navigationController pushViewController:vc animated:YES];
-//        BKShowExampleVideoView * exampleVideoView = [[BKShowExampleVideoView alloc]initWithModel:model];t
-//        [exampleVideoView showInVC:self];
     }
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        self.view.userInteractionEnabled = YES;
-    });
 }
 
 -(void)previewWithCell:(BKImagePickerCollectionViewCell*)cell imageListArray:(NSArray*)imageListArray tapModel:(BKImageModel*)tapModel
@@ -476,7 +461,7 @@
     [vc showInNav:self.navigationController];
    
     BK_WEAK_SELF(self);
-    [vc setRefreshAlbumViewOption:^(NSArray * selectImageArray,BOOL isOriginal) {
+    [vc setRefreshSelectPhotoAction:^(NSArray * selectImageArray,BOOL isOriginal) {
         BK_STRONG_SELF(self);
         
         strongSelf.selectImageArray = [NSMutableArray arrayWithArray:selectImageArray];
@@ -736,16 +721,7 @@
 
 -(void)previewBtnClick:(UIButton*)button
 {
-    if (self.view.userInteractionEnabled) {
-        self.view.userInteractionEnabled = NO;
-    }else{
-        return;
-    }
-    
     if ([self.selectImageArray count] == 0) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            self.view.userInteractionEnabled = YES;
-        });
         return;
     }
     
@@ -777,10 +753,6 @@
             [self previewWithCell:cell imageListArray:self.selectImageArray tapModel:[self.selectImageArray lastObject]];
         }
     }
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        self.view.userInteractionEnabled = YES;
-    });
 }
 
 -(void)editBtnClick:(UIButton*)button

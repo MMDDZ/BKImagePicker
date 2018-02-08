@@ -35,8 +35,6 @@
 
 @property (nonatomic,assign) id<BKShowExampleImageViewControllerDelegate> delegate;
 
-@property (nonatomic,weak) UIViewController * getCurrentVC;
-
 /**
  点击的那张图片
  */
@@ -65,7 +63,7 @@
 /**
  更新选取相册数组
  */
-@property (nonatomic,copy) void (^refreshAlbumViewOption)(NSArray * selectImageArray,BOOL isOriginal);
+@property (nonatomic,copy) void (^refreshSelectPhotoAction)(NSArray * selectImageArray,BOOL isOriginal);
 
 /**
  显示方法

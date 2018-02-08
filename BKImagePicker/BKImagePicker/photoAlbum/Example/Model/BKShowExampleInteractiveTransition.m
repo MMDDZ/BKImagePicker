@@ -26,11 +26,6 @@
 -(FLAnimatedImageView*)panImageView
 {
     if (!_panImageView) {
-        
-        if (CGRectEqualToRect(_startImageViewRect, CGRectZero)) {
-            _startImageViewRect = [_startImageView.superview convertRect:_startImageView.frame toView:self.vc.view];
-        }
-        
         _panImageView = [[FLAnimatedImageView alloc]initWithFrame:_startImageViewRect];
         if (_startImageView.animatedImage) {
             _panImageView.animatedImage = _startImageView.animatedImage;

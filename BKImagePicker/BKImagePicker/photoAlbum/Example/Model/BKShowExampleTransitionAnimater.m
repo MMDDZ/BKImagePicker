@@ -98,8 +98,8 @@
         if (self.endTransitionAnimateAction) {
             self.endTransitionAnimateAction();
         }
-        [transitionContext completeTransition:YES];
         [_startImageView removeFromSuperview];
+        [transitionContext completeTransition:YES];
     }];
 }
 

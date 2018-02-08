@@ -69,7 +69,7 @@
             __block NSInteger item = 0;
             [selectImageArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 BKImageModel * listModel = obj;
-                if ([listModel.fileName isEqualToString: model.fileName]) {
+                if ([listModel.fileName isEqualToString:model.fileName]) {
                     item = idx;
                     isHaveFlag = YES;
                     *stop = YES;

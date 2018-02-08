@@ -43,6 +43,10 @@
     }];
     [alert addAction:takePhoto];
     UIAlertAction * photoAlbum = [UIAlertAction actionWithTitle:@"从相册中选择" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        
+        [BKImagePicker sharedManager].isHaveEdit = YES;
+        [BKImagePicker sharedManager].isHaveOriginal = YES;
+        
         [[BKImagePicker sharedManager] showPhotoAlbumWithTypePhoto:BKPhotoTypeDefault maxSelect:6 complete:^(UIImage * image, NSData * data, NSURL * url, BKSelectPhotoType selectPhotoType) {
             NSLog(@"%@ , %ld , %@ , %ld",image,[data length],url,selectPhotoType);
         }];

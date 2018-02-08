@@ -96,7 +96,7 @@
         }
         
         BKShowExampleTransitionAnimater * transitionAnimater = [[BKShowExampleTransitionAnimater alloc] initWithTransitionType:BKShowExampleTransitionPop];
-        transitionAnimater.startImageView = self.interactiveTransition.panImageView;
+        transitionAnimater.startImageView = CGRectEqualToRect(self.interactiveTransition.panImageView.frame, CGRectZero)?self.interactiveTransition.startImageView:self.interactiveTransition.panImageView;
         transitionAnimater.endRect = endRect;
         BK_WEAK_SELF(self);
         [transitionAnimater setEndTransitionAnimateAction:^{
@@ -178,17 +178,8 @@
     self.exampleImageCollectionView.frame = CGRectMake(-BKExampleImagesSpacing, 0, self.view.bk_width + 2*BKExampleImagesSpacing, self.view.bk_height);
 }
 
--(void)viewWillAppear:(BOOL)animated
+-(void)dealloc
 {
-    [super viewWillAppear:animated];
-    
-    [self addObserver:self forKeyPath:@"nowImageIndex" options:NSKeyValueObservingOptionNew context:nil];
-}
-
--(void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-    
     [self removeObserver:self forKeyPath:@"nowImageIndex"];
 }
 
@@ -196,6 +187,8 @@
 
 -(void)initTopNav
 {
+    [self addObserver:self forKeyPath:@"nowImageIndex" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
+    
     if ([self.imageListArray count] == 1) {
         self.title = @"预览";
     }else{
@@ -230,7 +223,7 @@
 
 -(void)rightBtnClick:(BKImageAlbumItemSelectButton*)button
 {
-    BKImageModel * model = self.imageListArray[button.tag];
+    BKImageModel * model = self.imageListArray[_nowImageIndex];
     BOOL isHave = [self.selectImageArray containsObject:model];
     if (!isHave && [self.selectImageArray count] >= self.maxSelect) {
         [[BKTool sharedManager] showRemind:[NSString stringWithFormat:@"最多只能选择%ld张照片",self.maxSelect]];
@@ -245,14 +238,8 @@
                 [self calculataImageSize];
             }
             
-            if (self.refreshAlbumViewOption) {
-                self.refreshAlbumViewOption([self.selectImageArray copy],self.isOriginal);
-            }
-            
             if ([self.selectImageArray count] == 0) {
                 [_editBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
-                [_sendBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
-                [_sendBtn setBackgroundColor:BKNavSendGrayBackgroundColor];
             }else if ([self.selectImageArray count] == 1) {
                 
                 BKImageModel * firstModel = self.selectImageArray[0];
@@ -264,10 +251,6 @@
             }
         }else{
             [self.selectImageArray addObject:model];
-            
-            if (self.refreshAlbumViewOption) {
-                self.refreshAlbumViewOption([self.selectImageArray copy],self.isOriginal);
-            }
             
             if (self.isOriginal) {
                 [self calculataImageSize];
@@ -281,8 +264,6 @@
                 }else{
                     [_editBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
                 }
-                [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-                [_sendBtn setBackgroundColor:BKNavHighlightTitleColor];
             }else if ([self.selectImageArray count] > 1) {
                 [_editBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
             }
@@ -294,7 +275,9 @@
             [_sendBtn setTitle:[NSString stringWithFormat:@"确认(%ld)",[self.selectImageArray count]] forState:UIControlStateNormal];
         }
         
-        
+        if (self.refreshSelectPhotoAction) {
+            self.refreshSelectPhotoAction([self.selectImageArray copy],self.isOriginal);
+        }
     }];
 }
 
@@ -378,8 +361,8 @@
         _sendBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         _sendBtn.frame = CGRectMake(self.view.bk_width/4*3, 6, self.view.bk_width/4-6, 37);
         [_sendBtn setTitle:@"确认" forState:UIControlStateNormal];
-        [_sendBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
-        [_sendBtn setBackgroundColor:BKNavSendGrayBackgroundColor];
+        [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [_sendBtn setBackgroundColor:BKNavHighlightTitleColor];
         _sendBtn.titleLabel.font = [UIFont systemFontOfSize:14];
         _sendBtn.layer.cornerRadius = 4;
         _sendBtn.clipsToBounds = YES;
@@ -414,8 +397,8 @@
         [button setTitle:@"原图" forState:UIControlStateNormal];
     }
     self.isOriginal = !self.isOriginal;
-    if (self.refreshAlbumViewOption) {
-        self.refreshAlbumViewOption([self.selectImageArray copy],self.isOriginal);
+    if (self.refreshSelectPhotoAction) {
+        self.refreshSelectPhotoAction([self.selectImageArray copy],self.isOriginal);
     }
 }
 
@@ -454,13 +437,13 @@
             BKImageModel * model = _imageListArray[_nowImageIndex];
             
             [[NSNotificationCenter defaultCenter] postNotificationName:BKFinishSelectImageNotification object:nil userInfo:@{@"object":model,@"isOriginal":@(_isOriginal)}];
-            [self.getCurrentVC dismissViewControllerAnimated:YES completion:nil];
+            [self dismissViewControllerAnimated:YES completion:nil];
         }
         return;
     }
     
     [[NSNotificationCenter defaultCenter] postNotificationName:BKFinishSelectImageNotification object:nil userInfo:@{@"object":self.selectImageArray,@"isOriginal":@(_isOriginal)}];
-    [self.getCurrentVC dismissViewControllerAnimated:YES completion:nil];
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - UICollectionView
@@ -617,14 +600,6 @@
     }
 }
 
-//- (void)collectionView:(UICollectionView *)collectionView didEndDisplayingCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
-//{
-//    BKShowExampleImageCollectionViewCell * currentCell = (BKShowExampleImageCollectionViewCell*)cell;
-//
-//    currentCell.imageScrollView.zoomScale = 1;
-//    currentCell.imageScrollView.contentSize = CGSizeMake(currentCell.bk_width-BKExampleImagesSpacing*2, currentCell.bk_height);
-//}
-
 #pragma mark - 缩略图 、 原图 、 原图data
 
 /**
@@ -761,6 +736,10 @@
 {
     if ([keyPath isEqualToString:@"nowImageIndex"]) {
         
+        if ([change[@"old"] integerValue] == [change[@"new"] integerValue]) {
+            return;
+        }
+        
         self.titleLab.text = [NSString stringWithFormat:@"%ld/%ld",_nowImageIndex+1,[self.imageListArray count]];
         
         BKImageModel * model = self.imageListArray[_nowImageIndex];
@@ -768,13 +747,14 @@
             [self.delegate refreshLookLocationActionWithImageModel:model];
         }
         
-        if ([self.selectImageArray containsObject:model]) {
-            NSInteger select_num = [self.selectImageArray indexOfObject:model]+1;
-            self.rightNavBtn.title = [NSString stringWithFormat:@"%ld",select_num];
-        }else{
-            self.rightNavBtn.title = @"";
-        }
-        self.rightBtn.tag = _nowImageIndex;
+        self.rightNavBtn.title = @"";
+        [self.selectImageArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            BKImageModel * selectModel = obj;
+            if ([model.fileName isEqualToString:selectModel.fileName]) {
+                self.rightNavBtn.title = [NSString stringWithFormat:@"%ld",idx+1];
+                *stop = YES;
+            }
+        }];
         
     }else if ([keyPath isEqualToString:@"contentSize"]) {
         
