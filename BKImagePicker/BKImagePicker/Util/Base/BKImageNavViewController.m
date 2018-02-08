@@ -87,6 +87,16 @@
 
 #pragma mark - 自定义过场动画
 
+-(void)setDelegate:(id<UINavigationControllerDelegate>)delegate
+{
+    if (!delegate) {
+        self.delegate = self;
+        [self resetNavSettingWithVC:[self.viewControllers lastObject]];
+    }else{
+        [super setDelegate:delegate];
+    }
+}
+
 -(void)setPopVC:(UIViewController *)popVC
 {
     _popVC = popVC;
@@ -140,13 +150,7 @@
         BK_WEAK_SELF(self);
         [transitionAnimater setBackFinishAction:^{
             BK_STRONG_SELF(self);
-            strongSelf.customTransition = nil;
-            
-            NSDictionary * vcMessageDic = toVC.dicTag;
-            strongSelf.popVC = [vcMessageDic[@"popVC"] isKindOfClass:[NSNull class]]?nil:vcMessageDic[@"popVC"];
-            strongSelf.direction = [vcMessageDic[@"direction"] integerValue];
-            strongSelf.nextVC = toVC;
-            [strongSelf customTransition];//重置上一个VC导航设置
+            [strongSelf resetNavSettingWithVC:toVC];
         }];
         
         return transitionAnimater;
@@ -156,6 +160,19 @@
 - (id<UIViewControllerInteractiveTransitioning>)navigationController:(UINavigationController *)navigationController interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransitioning>)animationController
 {
     return self.customTransition.interation?self.customTransition:nil;
+}
+
+#pragma mark - 重置上一个VC导航设置
+
+-(void)resetNavSettingWithVC:(UIViewController*)vc
+{
+    self.customTransition = nil;
+    
+    NSDictionary * vcMessageDic = vc.dicTag;
+    self.popVC = [vcMessageDic[@"popVC"] isKindOfClass:[NSNull class]]?nil:vcMessageDic[@"popVC"];
+    self.direction = [vcMessageDic[@"direction"] integerValue];
+    self.nextVC = vc;
+    [self customTransition];//重置上一个VC导航设置
 }
 
 #pragma mark - UIGestureRecognizerDelegate 在根视图时不响应interactivePopGestureRecognizer手势

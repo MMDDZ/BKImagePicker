@@ -102,6 +102,7 @@
         [transitionAnimater setEndTransitionAnimateAction:^{
             BK_STRONG_SELF(self);
             strongSelf.exampleImageCollectionView.hidden = NO;
+            strongSelf.navigationController.delegate = nil;
         }];
         
         return transitionAnimater;

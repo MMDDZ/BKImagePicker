@@ -16,7 +16,7 @@
 
 /**
  是否是其他自定义push动画
- 如果采用其他自定义push动画 在pushViewController前赋值YES
+ 如果采用其他自定义push动画 在pushViewController前赋值YES pop后设置导航delegate = nil
  */
 @property (nonatomic,assign) BOOL isCustomTransition;
 
