@@ -96,7 +96,7 @@
         }
         
         BKShowExampleTransitionAnimater * transitionAnimater = [[BKShowExampleTransitionAnimater alloc] initWithTransitionType:BKShowExampleTransitionPop];
-        transitionAnimater.startImageView = self.interactiveTransition.startImageView;
+        transitionAnimater.startImageView = self.interactiveTransition.panImageView;
         transitionAnimater.endRect = endRect;
         BK_WEAK_SELF(self);
         [transitionAnimater setEndTransitionAnimateAction:^{

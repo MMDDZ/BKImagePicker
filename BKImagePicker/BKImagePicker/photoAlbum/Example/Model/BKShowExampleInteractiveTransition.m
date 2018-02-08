@@ -19,19 +19,28 @@
 @end
 
 @implementation BKShowExampleInteractiveTransition
+@synthesize panImageView = _panImageView;
 
--(void)setStartImageView:(FLAnimatedImageView *)startImageView
+#pragma mark - panImageView
+
+-(FLAnimatedImageView*)panImageView
 {
-    _startImageViewRect = [startImageView.superview convertRect:startImageView.frame toView:self.vc.view];
-    
-    _startImageView = [[FLAnimatedImageView alloc]initWithFrame:_startImageViewRect];
-    if (_startImageView.animatedImage) {
-        _startImageView.animatedImage = startImageView.animatedImage;
-    }else{
-        _startImageView.image = startImageView.image;
+    if (!_panImageView) {
+        
+        if (CGRectEqualToRect(_startImageViewRect, CGRectZero)) {
+            _startImageViewRect = [_startImageView.superview convertRect:_startImageView.frame toView:self.vc.view];
+        }
+        
+        _panImageView = [[FLAnimatedImageView alloc]initWithFrame:_startImageViewRect];
+        if (_startImageView.animatedImage) {
+            _panImageView.animatedImage = _startImageView.animatedImage;
+        }else{
+            _panImageView.image = _startImageView.image;
+        }
+        _panImageView.clipsToBounds = YES;
+        _panImageView.contentMode = UIViewContentModeScaleAspectFill;
     }
-    _startImageView.clipsToBounds = YES;
-    _startImageView.contentMode = UIViewContentModeScaleAspectFill;
+    return _panImageView;
 }
 
 #pragma mark - 手势
@@ -53,10 +62,7 @@
 {
     CGPoint nowPoint = [panGesture locationInView:_vc.view];
     
-    CGFloat xDistance = (nowPoint.x - _startPoint.x);
-    CGFloat yDistance = (nowPoint.y - _startPoint.y);
-    
-    CGFloat percentage = yDistance / ([UIScreen mainScreen].bounds.size.width / 2);
+    CGFloat percentage = (nowPoint.y - _startPoint.y) / [UIScreen mainScreen].bounds.size.height;
     if (percentage > 1) {
         percentage = 1;
     }else if (percentage < -0.5) {
@@ -85,21 +91,35 @@
             }
             
             [[_vc.view superview] insertSubview:lastVC.view atIndex:0];
-            [[_vc.view superview] addSubview:_startImageView];
+            
+            _startImageViewRect = [_startImageView.superview convertRect:_startImageView.frame toView:self.vc.view];
+            [[_vc.view superview] addSubview:self.panImageView];
         }
             break;
         case UIGestureRecognizerStateChanged:
         {
-            CGFloat scale = 1 - fabs(0.4*percentage);
-            if (percentage < 0) {
-                scale = 1;
+            CGPoint translation = [panGesture translationInView:panGesture.view];
+            CGFloat newY = _panImageView.bk_y + translation.y;
+            if (newY <= 0) {
                 _vc.view.alpha = 1;
-            }else{
-                _vc.view.alpha = 1 - fabs(0.7*percentage);
+                _panImageView.transform = CGAffineTransformMakeScale(1, 1);
+                _panImageView.bk_y = _panImageView.bk_y + translation.y/3.f;
+            }else if (newY > 0 && newY <= _startImageViewRect.origin.y) {
+                _vc.view.alpha = 1;
+                _panImageView.transform = CGAffineTransformMakeScale(1, 1);
+                _panImageView.bk_y = newY;
+            }else {
+                CGFloat scale = 0;
+                if (percentage < 0) {
+                    scale = 1;
+                }else{
+                    scale = 1 - fabs(0.7*percentage);
+                }
+                _vc.view.alpha = scale;
+                _panImageView.transform = CGAffineTransformMakeScale(scale, scale);
+                _panImageView.bk_y = newY;
             }
-            
-            _startImageView.center = CGPointMake(CGRectGetMidX(_startImageViewRect) + xDistance, CGRectGetMidY(_startImageViewRect) + yDistance);
-            _startImageView.transform = CGAffineTransformMakeScale(scale, scale);
+            _panImageView.bk_x = _panImageView.bk_x + translation.x;
         }
             break;
         case UIGestureRecognizerStateEnded:
@@ -112,7 +132,7 @@
             _interation = NO;
             _startPoint = CGPointZero;
             
-            if (percentage > 0.5) {
+            if (percentage > 0.2) {
                 [_vc.navigationController popViewControllerAnimated:YES];
             }else{
                 [self cancelRecognizerMethodWithPercentage:percentage lastVC:lastVC];
@@ -136,23 +156,26 @@
         default:
             break;
     }
+    
+    [panGesture setTranslation:CGPointZero inView:panGesture.view];
 }
 
 -(void)cancelRecognizerMethodWithPercentage:(CGFloat)percentage lastVC:(UIViewController*)lastVC
 {
-    CGFloat duration = fabs(0.25 * percentage * 2);
+    CGFloat duration = percentage < 0 ? fabs(0.75 * percentage) : (1 * percentage);
     
     [UIView animateWithDuration:duration animations:^{
         
-        _startImageView.center = CGPointMake(CGRectGetMidX(_startImageViewRect), CGRectGetMidY(_startImageViewRect));
-        _startImageView.transform = CGAffineTransformMakeScale(1, 1);
+        _panImageView.center = CGPointMake(CGRectGetMidX(_startImageViewRect), CGRectGetMidY(_startImageViewRect));
+        _panImageView.transform = CGAffineTransformMakeScale(1, 1);
         
         _vc.view.alpha = 1;
         
     } completion:^(BOOL finished) {
         
         [lastVC.view removeFromSuperview];
-        [_startImageView removeFromSuperview];
+        [_panImageView removeFromSuperview];
+        _panImageView = nil;
         
         [[_vc.view subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             [obj setHidden:NO];

@@ -33,6 +33,9 @@
 @property (nonatomic,strong) UIScrollView * supperScrollView;
 
 
+@property (nonatomic,strong,readonly) FLAnimatedImageView * panImageView;//手势滑动imageVIew
+
+
 - (void)addPanGestureForViewController:(BKShowExampleImageViewController *)viewController;
 
 @end
