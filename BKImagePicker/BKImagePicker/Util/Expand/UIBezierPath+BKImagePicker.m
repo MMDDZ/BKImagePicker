@@ -1,12 +1,12 @@
 //
-//  UIBezierPath+BKExpand.m
+//  UIBezierPath+BKImagePicker.m
 //  BKImagePicker
 //
 //  Created by 兆林 on 2017/6/21.
 //  Copyright © 2017年 BIKE. All rights reserved.
 //
 
-#import "UIBezierPath+BKExpand.h"
+#import "UIBezierPath+BKImagePicker.h"
 
 #define VALUE(_INDEX_) [NSValue valueWithCGPoint:points[_INDEX_]]
 

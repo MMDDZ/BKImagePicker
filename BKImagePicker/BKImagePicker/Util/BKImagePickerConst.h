@@ -10,10 +10,14 @@
 #define BKImagePickerConst_h
 
 #import <Foundation/Foundation.h>
+#import <Photos/Photos.h>
 #import "BKImageNavViewController.h"
-#import "UIView+BKExpand.h"
-#import "NSObject+BKExpand.h"
 #import "BKTool.h"
+
+#import "UIView+BKImagePicker.h"
+#import "NSObject+BKImagePicker.h"
+#import "UIImage+BKImagePicker.h"
+#import "UIBezierPath+BKImagePicker.h"
 
 typedef NS_ENUM(NSInteger,BKPhotoType) {
     BKPhotoTypeDefault = 0,

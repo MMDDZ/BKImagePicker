@@ -1,5 +1,5 @@
 //
-//  NSObject+BKExpand.h
+//  NSObject+BKImagePicker.h
 //  BKImagePicker
 //
 //  Created by zhaolin on 2018/2/2.

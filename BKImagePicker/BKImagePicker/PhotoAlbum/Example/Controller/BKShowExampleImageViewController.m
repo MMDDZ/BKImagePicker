@@ -13,7 +13,7 @@
 #import "BKImagePickerConst.h"
 #import "BKShowExampleInteractiveTransition.h"
 #import "BKShowExampleTransitionAnimater.h"
-#import "BKImageNavViewController.h"
+#import "BKEditImageViewController.h"
 
 @interface BKShowExampleImageViewController ()<UICollectionViewDataSource,UICollectionViewDelegate,UICollectionViewDelegateFlowLayout,UINavigationControllerDelegate>
 
@@ -165,6 +165,15 @@
     [self initTopNav];
     [self initBottomNav];
     [self exampleImageCollectionView];
+}
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    if (_nav) {
+        self.nav.delegate = self;
+    }
 }
 
 -(void)viewWillLayoutSubviews
@@ -370,17 +379,32 @@
 
 -(void)editBtnClick:(UIButton*)button
 {
-    //    BKImageModel * model = _imageListArray[_nowImageIndex];
-    //    if (model.originalImageData) {
-    //        UIImage * originalImage = [UIImage imageWithData:model.originalImageData];
-    //        BKEditPhotoView * editView = [[BKEditPhotoView alloc]initWithImage:originalImage];
-    //        [self addSubview:editView];
-    //    }else{
-    //        [self getOriginalImageSizeWithAsset:model.asset complete:^(UIImage *originalImage) {
-    //            BKEditPhotoView * editView = [[BKEditPhotoView alloc]initWithImage:originalImage];
-    //            [self addSubview:editView];
-    //        }];
-    //    }
+    BKImageModel * model = _imageListArray[_nowImageIndex];
+    
+    if (model.originalImageData) {
+        BKEditImageViewController * vc = [[BKEditImageViewController alloc]init];
+        vc.editImage = [UIImage imageWithData:model.originalImageData];
+        self.nav.delegate = nil;
+        [self.nav pushViewController:vc animated:NO];
+    }else{
+        [self getOriginalImageDataSizeWithAsset:model.asset complete:^(NSData *originalImageData, NSURL *url) {
+            
+            model.originalImageData = originalImageData;
+            dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                model.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];
+            });
+            model.url = url;
+            model.originalImageSize = (double)originalImageData.length/1024/1024;
+            if (self.isOriginal && self.maxSelect == 1) {
+                [self calculataImageSize];
+            }
+            
+            BKEditImageViewController * vc = [[BKEditImageViewController alloc]init];
+            vc.editImage = [UIImage imageWithData:model.originalImageData];
+            self.nav.delegate = nil;
+            [self.nav pushViewController:vc animated:NO];
+        }];
+    }
 }
 
 -(void)originalBtnClick:(UIButton*)button

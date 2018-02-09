@@ -1,12 +1,12 @@
 //
-//  NSObject+BKExpand.m
+//  NSObject+BKImagePicker.m
 //  BKImagePicker
 //
 //  Created by zhaolin on 2018/2/2.
 //  Copyright © 2018年 BIKE. All rights reserved.
 //
 
-#import "NSObject+BKExpand.h"
+#import "NSObject+BKImagePicker.h"
 
 @implementation NSObject (BKExpand)
 

@@ -7,7 +7,7 @@
 //
 
 #import "BKDrawView.h"
-#import "UIBezierPath+BKExpand.h"
+#import "UIBezierPath+BKImagePicker.h"
 #import "BKImagePickerConst.h"
 #import "BKDrawModel.h"
 

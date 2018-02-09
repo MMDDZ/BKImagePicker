@@ -8,11 +8,9 @@
 
 #import "BKEditPhotoView.h"
 #import "BKImagePickerConst.h"
-#import <Photos/Photos.h>
 #import "BKImagePicker.h"
 #import "BKDrawView.h"
 #import "BKSelectColorView.h"
-#import "UIImage+BKOrientationExpand.h"
 #import "BKDrawModel.h"
 #import "BKImageCropView.h"
 

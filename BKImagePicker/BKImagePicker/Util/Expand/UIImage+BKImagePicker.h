@@ -1,5 +1,5 @@
 //
-//  UIImage+BKOrientationExpand.h
+//  UIImage+BKImagePicker.h
 //  BKImagePicker
 //
 //  Created by 兆林 on 2017/6/23.

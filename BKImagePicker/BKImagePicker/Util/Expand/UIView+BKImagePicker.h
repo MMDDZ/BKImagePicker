@@ -1,5 +1,5 @@
 //
-//  UIView+BKExpand.h
+//  UIView+BKImagePicker.h
 //  BKImagePicker
 //
 //  Created by iMac on 16/12/30.

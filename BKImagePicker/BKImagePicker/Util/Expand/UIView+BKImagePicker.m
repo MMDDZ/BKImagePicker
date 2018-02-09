@@ -1,12 +1,12 @@
 //
-//  UIView+BKExpand.m
+//  UIView+BKImagePicker.m
 //  BKImagePicker
 //
 //  Created by iMac on 16/12/30.
 //  Copyright © 2016年 BIKE. All rights reserved.
 //
 
-#import "UIView+BKExpand.h"
+#import "UIView+BKImagePicker.h"
 
 @implementation UIView (BKExpand)
 

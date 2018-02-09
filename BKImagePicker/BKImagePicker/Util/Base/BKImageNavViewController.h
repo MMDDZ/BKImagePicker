@@ -16,7 +16,7 @@
 
 /**
  是否是其他自定义push动画
- 如果采用其他自定义push动画 在push前设置delegate = 对应类 ; pop后设置导航delegate = nil
+ 如果采用其他自定义push动画 在push前设置delegate = 对应类 ; pop后或者push下一个vc不采用其他自定义push动画前设置导航delegate = nil
  */
 
 

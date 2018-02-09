@@ -1,12 +1,12 @@
 //
-//  UIImage+BKOrientationExpand.m
+//  UIImage+BKImagePicker.m
 //  BKImagePicker
 //
 //  Created by 兆林 on 2017/6/23.
 //  Copyright © 2017年 BIKE. All rights reserved.
 //
 
-#import "UIImage+BKOrientationExpand.h"
+#import "UIImage+BKImagePicker.h"
 
 @implementation UIImage (BKOrientationExpand)
 

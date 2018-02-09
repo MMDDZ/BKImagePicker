@@ -10,7 +10,7 @@
 #import "BKImagePickerConst.h"
 #import <AVFoundation/AVFoundation.h>
 #import "BKImageTakePhotoBtn.h"
-#import "BKEditPhotoView.h"
+//#import "BKEditPhotoView.h"
 
 @interface BKImageTakePhotoViewController ()<AVCaptureVideoDataOutputSampleBufferDelegate>
 
@@ -527,8 +527,8 @@
         BK_WEAK_SELF(self);
         [_shutterBtn setShutterAction:^{
             BK_STRONG_SELF(self);
-            BKEditPhotoView * editPhotoView = [[BKEditPhotoView alloc]initWithImage:strongSelf.currentImage];
-            [strongSelf.view addSubview:editPhotoView];
+//            BKEditPhotoView * editPhotoView = [[BKEditPhotoView alloc]initWithImage:strongSelf.currentImage];
+//            [strongSelf.view addSubview:editPhotoView];
         }];
     }
     return _shutterBtn;
