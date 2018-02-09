@@ -33,7 +33,11 @@
 
 - (NSTimeInterval)transitionDuration:(nullable id <UIViewControllerContextTransitioning>)transitionContext
 {
-    return 0.25;
+    if (_interation) {
+        return 0.5;
+    }else{
+        return 0.25;
+    }
 }
 
 - (void)animateTransition:(id <UIViewControllerContextTransitioning>)transitionContext

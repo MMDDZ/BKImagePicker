@@ -27,6 +27,11 @@ typedef NS_ENUM(NSUInteger, BKImageTransitionAnimaterType) {
 @property (nonatomic,copy) void (^backFinishAction)(void);
 
 /**
+ 是否是手势返回
+ */
+@property (nonatomic, assign) BOOL interation;
+
+/**
  创建方法
  
  @param type 过场动画的方法

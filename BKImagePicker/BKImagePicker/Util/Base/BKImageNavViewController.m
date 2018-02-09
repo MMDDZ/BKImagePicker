@@ -28,6 +28,7 @@
     
     self.navigationBarHidden = YES;
     self.interactivePopGestureRecognizer.delegate = self;
+    self.delegate = self;
 }
 
 #pragma mark - push / pop
@@ -35,11 +36,6 @@
 - (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated
 {
     _customTransition = nil;
-    
-    if (!_isCustomTransition) {
-        self.delegate = self;
-    }
-    _isCustomTransition = NO;
     
     viewController.dicTag = @{@"direction":@(_direction),@"popVC":_popVC?_popVC:[NSNull null]};
     _nextVC = viewController;
@@ -147,6 +143,7 @@
     }else{
         
         BKImageTransitionAnimater * transitionAnimater = [[BKImageTransitionAnimater alloc] initWithTransitionType:BKImageTransitionAnimaterTypePop transitionAnimaterDirection:_direction];
+        transitionAnimater.interation = self.customTransition.interation;
         BK_WEAK_SELF(self);
         [transitionAnimater setBackFinishAction:^{
             BK_STRONG_SELF(self);

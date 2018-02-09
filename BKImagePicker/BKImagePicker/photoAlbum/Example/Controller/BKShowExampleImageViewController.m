@@ -48,10 +48,6 @@
 -(void)showInNav:(UINavigationController*)nav
 {
     _nav = nav;
-    
-    if ([nav isKindOfClass:[BKImageNavViewController class]]) {
-        ((BKImageNavViewController*)_nav).isCustomTransition = YES;
-    }
     _nav.delegate = self;
     [_nav pushViewController:self animated:YES];
 }

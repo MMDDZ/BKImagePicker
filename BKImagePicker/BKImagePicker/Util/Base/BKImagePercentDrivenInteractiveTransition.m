@@ -56,12 +56,12 @@
     
     CGPoint point = [panGesture velocityInView:panGesture.view];
     BOOL isPassFlag = NO;
-    CGFloat persent = 0;
+    CGFloat persentProgress = 0;
     switch (_direction) {
         case BKImagePercentDrivenInteractiveTransitionGestureDirectionRight:
         {
             CGFloat transitionX = [panGesture translationInView:panGesture.view].x;
-            persent = transitionX / panGesture.view.frame.size.width;
+            persentProgress = transitionX / panGesture.view.frame.size.width;
             
             if (point.x > 500) {
                 isPassFlag = YES;
@@ -73,7 +73,7 @@
         case BKImagePercentDrivenInteractiveTransitionGestureDirectionLeft:
         {
             CGFloat transitionX = -[panGesture translationInView:panGesture.view].x;
-            persent = transitionX / panGesture.view.frame.size.width;
+            persentProgress = transitionX / panGesture.view.frame.size.width;
             
             if (point.x < -500) {
                 isPassFlag = YES;
@@ -117,13 +117,13 @@
             break;
         case UIGestureRecognizerStateChanged:
         {
-            [self updateInteractiveTransition:persent];
+            [self updateInteractiveTransition:persentProgress];
         }
             break;
         case UIGestureRecognizerStateEnded:
         {
             self.interation = NO;
-            if (persent > 0.5 || isPassFlag) {
+            if (persentProgress > 0.5 || isPassFlag) {
                 [self finishInteractiveTransition];
             }else{
                 [self cancelInteractiveTransition];

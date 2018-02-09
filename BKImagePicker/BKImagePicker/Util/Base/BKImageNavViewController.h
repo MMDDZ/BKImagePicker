@@ -16,9 +16,9 @@
 
 /**
  是否是其他自定义push动画
- 如果采用其他自定义push动画 在pushViewController前赋值YES pop后设置导航delegate = nil
+ 如果采用其他自定义push动画 在push前设置delegate = 对应类 ; pop后设置导航delegate = nil
  */
-@property (nonatomic,assign) BOOL isCustomTransition;
+
 
 /**
  过场动画方向
