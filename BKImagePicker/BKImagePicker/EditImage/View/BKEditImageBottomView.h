@@ -38,9 +38,9 @@ typedef NS_ENUM(NSUInteger, BKEditImageSelectPaintingType) {
  */
 @property (nonatomic,assign,readonly) UIColor * selectPaintingColor;
 /**
- 选择编辑方式 和BKEditImageBottomView高度变化
+ 选择编辑方式
  */
-@property (nonatomic,copy) void (^selectTypeAction)(BKEditImageSelectEditType selectEditType ,CGFloat height);
+@property (nonatomic,copy) void (^selectTypeAction)(void);
 /**
  完成按钮
  */

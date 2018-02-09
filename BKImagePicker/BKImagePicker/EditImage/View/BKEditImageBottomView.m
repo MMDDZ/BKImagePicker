@@ -128,7 +128,7 @@
             self.bk_height = CGRectGetMaxY(_firstLevelView.frame);
             
             if (self.selectTypeAction) {
-                self.selectTypeAction(_selectEditType,self.bk_height);
+                self.selectTypeAction();
             }
         }
             break;
@@ -147,7 +147,7 @@
             self.bk_height = CGRectGetMaxY(_firstLevelView.frame);
             
             if (self.selectTypeAction) {
-                self.selectTypeAction(_selectEditType,self.bk_height);
+                self.selectTypeAction();
             }
         }
             break;
@@ -163,7 +163,7 @@
             self.bk_height = CGRectGetMaxY(_firstLevelView.frame);
             
             if (self.selectTypeAction) {
-                self.selectTypeAction(_selectEditType,self.bk_height);
+                self.selectTypeAction();
             }
         }
             break;
@@ -178,7 +178,7 @@
             self.bk_height = CGRectGetMaxY(_firstLevelView.frame);
             
             if (self.selectTypeAction) {
-                self.selectTypeAction(_selectEditType,self.bk_height);
+                self.selectTypeAction();
             }
         }
             break;
@@ -252,7 +252,26 @@
 {
     if (!_paintingView) {
         _paintingView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.bk_width, 40)];
+        _paintingView.backgroundColor = [UIColor clearColor];
         _paintingView.alpha = 0;
+        
+        UIScrollView * scrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, _paintingView.bk_width, _paintingView.bk_height)];
+        scrollView.backgroundColor = [UIColor clearColor];
+        scrollView.showsVerticalScrollIndicator = NO;
+        [_paintingView addSubview:scrollView];
+        
+        __block UIView * lastView;
+        [self.colorArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            UIButton * button = [UIButton buttonWithType:UIButtonTypeCustom];
+            button.frame = CGRectMake(idx*50, 0, 50, scrollView.bk_height);
+            
+            [button addTarget:self action:@selector(selectDrawTypeBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+            button.tag = idx;
+            [scrollView addSubview:button];
+            
+            lastView = button;
+        }];
+        scrollView.contentSize = CGSizeMake(CGRectGetMaxX(lastView.frame), scrollView.bk_height);
     }
     return _paintingView;
 }

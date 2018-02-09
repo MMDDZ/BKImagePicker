@@ -138,13 +138,12 @@
     if (!_bottomView) {
         _bottomView = [[BKEditImageBottomView alloc]init];
         BK_WEAK_SELF(self);
-        [_bottomView setSelectTypeAction:^(BKEditImageSelectEditType selectEditType, CGFloat height) {
+        [_bottomView setSelectTypeAction:^{
             BK_STRONG_SELF(self);
             
-            strongSelf.bottomNavViewHeight = height + BK_SYSTEM_TABBAR_HEIGHT - BK_SYSTEM_TABBAR_UI_HEIGHT;
+            strongSelf.bottomNavViewHeight = strongSelf.bottomView.bk_height + BK_SYSTEM_TABBAR_HEIGHT - BK_SYSTEM_TABBAR_UI_HEIGHT;
             
-            
-            switch (selectEditType) {
+            switch (strongSelf.bottomView.selectEditType) {
                 case BKEditImageSelectEditTypeDrawLine:
                 {
                     
