@@ -486,7 +486,7 @@
         sendBtn.frame = CGRectMake(self.bk_width/4*3, (_bottomView.bk_height - 37)/2, self.bk_width/4-6, 37);
         [sendBtn setTitle:@"确认" forState:UIControlStateNormal];
         [sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [sendBtn setBackgroundColor:BKNavHighlightTitleColor];
+        [sendBtn setBackgroundColor:BKHighlightColor];
         sendBtn.titleLabel.font = [UIFont systemFontOfSize:14];
         sendBtn.layer.cornerRadius = 4;
         sendBtn.clipsToBounds = YES;

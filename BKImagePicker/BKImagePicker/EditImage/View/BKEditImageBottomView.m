@@ -71,12 +71,16 @@
         [imageArr_n enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             UIButton * button = [UIButton buttonWithType:UIButtonTypeCustom];
             button.frame = CGRectMake(idx*50, 0, 50, scrollView.bk_height);
-            [button setImage:[UIImage imageWithContentsOfFile:obj] forState:UIControlStateNormal];
-            [button setImage:[UIImage imageWithContentsOfFile:imageArr_s[idx]] forState:UIControlStateHighlighted];
-            [button setImage:[UIImage imageWithContentsOfFile:imageArr_s[idx]] forState:UIControlStateSelected];
             [button addTarget:self action:@selector(editBtnClick:) forControlEvents:UIControlEventTouchUpInside];
-            button.tag = idx;
+            button.tag = (idx+1)*100;
             [scrollView addSubview:button];
+            
+            UIImageView * imageView = [[UIImageView alloc]initWithFrame:CGRectMake((button.bk_width - 20)/2, (button.bk_height - 20)/2, 20, 20)];
+            imageView.clipsToBounds = YES;
+            imageView.contentMode = UIViewContentModeScaleAspectFit;
+            imageView.image = [UIImage imageWithContentsOfFile:obj];
+            imageView.tag = button.tag+1;
+            [button addSubview:imageView];
             
             lastView = button;
         }];
@@ -86,7 +90,7 @@
         sendBtn.frame = CGRectMake(_firstLevelView.bk_width/4*3, (_firstLevelView.bk_height - 37)/2, _firstLevelView.bk_width/4-6, 37);
         [sendBtn setTitle:@"确认" forState:UIControlStateNormal];
         [sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [sendBtn setBackgroundColor:BKNavHighlightTitleColor];
+        [sendBtn setBackgroundColor:BKHighlightColor];
         sendBtn.titleLabel.font = [UIFont systemFontOfSize:14];
         sendBtn.layer.cornerRadius = 4;
         sendBtn.clipsToBounds = YES;
@@ -107,11 +111,19 @@
         return;
     }
     
-    self.selectFirstLevelBtn.selected = NO;
-    self.selectFirstLevelBtn = button;
-    self.selectFirstLevelBtn.selected = YES;
+    NSString * bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
+    NSArray * imageArr_n = @[[bundlePath stringByAppendingString:@"/draw_n.png"],[bundlePath stringByAppendingString:@"/write_n.png"],[bundlePath stringByAppendingString:@"/rotation_n.png"],[bundlePath stringByAppendingString:@"/clip_n.png"]];
+    NSArray * imageArr_s = @[[bundlePath stringByAppendingString:@"/draw_s.png"],[bundlePath stringByAppendingString:@"/write_s.png"],[bundlePath stringByAppendingString:@"/rotation_s.png"],[bundlePath stringByAppendingString:@"/clip_s.png"]];
     
-    switch (button.tag) {
+    if (_selectFirstLevelBtn) {
+        UIImageView * oldImageView = (UIImageView*)[self.selectFirstLevelBtn viewWithTag:self.selectFirstLevelBtn.tag+1];
+        oldImageView.image = [UIImage imageWithContentsOfFile:imageArr_n[self.selectFirstLevelBtn.tag/100-1]];
+    }
+    self.selectFirstLevelBtn = button;
+    UIImageView * imageView = (UIImageView*)[self.selectFirstLevelBtn viewWithTag:self.selectFirstLevelBtn.tag+1];
+    imageView.image = [UIImage imageWithContentsOfFile:imageArr_s[self.selectFirstLevelBtn.tag/100-1]];
+    
+    switch (button.tag/100-1) {
         case 0:
         {
             _selectEditType = BKEditImageSelectEditTypeDrawLine;
@@ -209,19 +221,23 @@
         [_drawTypeView addSubview:scrollView];
         
         NSString * bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
-        NSArray * imageArr_n = @[[bundlePath stringByAppendingString:@"/draw_n.png"],[bundlePath stringByAppendingString:@"/write_n.png"],[bundlePath stringByAppendingString:@"/rotation_n.png"],[bundlePath stringByAppendingString:@"/clip_n.png"]];
-        NSArray * imageArr_s = @[[bundlePath stringByAppendingString:@"/draw_s.png"],[bundlePath stringByAppendingString:@"/write_s.png"],[bundlePath stringByAppendingString:@"/rotation_s.png"],[bundlePath stringByAppendingString:@"/clip_s.png"]];
+        NSArray * imageArr_n = @[[bundlePath stringByAppendingString:@"/line_n.png"],[bundlePath stringByAppendingString:@"/circle_n.png"],[bundlePath stringByAppendingString:@"/rounded_rectangle_n.png"],[bundlePath stringByAppendingString:@"/arrow_n.png"]];
+        NSArray * imageArr_s = @[[bundlePath stringByAppendingString:@"/line_s.png"],[bundlePath stringByAppendingString:@"/circle_s.png"],[bundlePath stringByAppendingString:@"/rounded_rectangle_s.png"],[bundlePath stringByAppendingString:@"/arrow_s.png"]];
         
         __block UIView * lastView;
         [imageArr_n enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             UIButton * button = [UIButton buttonWithType:UIButtonTypeCustom];
             button.frame = CGRectMake(idx*50, 0, 50, scrollView.bk_height);
-            [button setImage:[UIImage imageWithContentsOfFile:obj] forState:UIControlStateNormal];
-            [button setImage:[UIImage imageWithContentsOfFile:imageArr_s[idx]] forState:UIControlStateHighlighted];
-            [button setImage:[UIImage imageWithContentsOfFile:imageArr_s[idx]] forState:UIControlStateSelected];
             [button addTarget:self action:@selector(selectDrawTypeBtnClick:) forControlEvents:UIControlEventTouchUpInside];
-            button.tag = idx;
+            button.tag = (idx+1)*100;
             [scrollView addSubview:button];
+            
+            UIImageView * imageView = [[UIImageView alloc]initWithFrame:CGRectMake((button.bk_width - 20)/2, (button.bk_height - 20)/2, 20, 20)];
+            imageView.clipsToBounds = YES;
+            imageView.contentMode = UIViewContentModeScaleAspectFit;
+            imageView.image = [UIImage imageWithContentsOfFile:obj];
+            imageView.tag = button.tag+1;
+            [button addSubview:imageView];
             
             lastView = button;
         }];
@@ -241,9 +257,17 @@
         return;
     }
     
-    self.selectDrawTypeBtn.selected = NO;
+    NSString * bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
+    NSArray * imageArr_n = @[[bundlePath stringByAppendingString:@"/line_n.png"],[bundlePath stringByAppendingString:@"/circle_n.png"],[bundlePath stringByAppendingString:@"/rounded_rectangle_n.png"],[bundlePath stringByAppendingString:@"/arrow_n.png"]];
+    NSArray * imageArr_s = @[[bundlePath stringByAppendingString:@"/line_s.png"],[bundlePath stringByAppendingString:@"/circle_s.png"],[bundlePath stringByAppendingString:@"/rounded_rectangle_s.png"],[bundlePath stringByAppendingString:@"/arrow_s.png"]];
+    
+    if (_selectDrawTypeBtn) {
+        UIImageView * oldImageView = (UIImageView*)[self.selectDrawTypeBtn viewWithTag:self.selectDrawTypeBtn.tag+1];
+        oldImageView.image = [UIImage imageWithContentsOfFile:imageArr_n[self.selectDrawTypeBtn.tag/100-1]];
+    }
     self.selectDrawTypeBtn = button;
-    self.selectDrawTypeBtn.selected = YES;
+    UIImageView * imageView = (UIImageView*)[self.selectDrawTypeBtn viewWithTag:self.selectDrawTypeBtn.tag+1];
+    imageView.image = [UIImage imageWithContentsOfFile:imageArr_s[self.selectDrawTypeBtn.tag/100-1]];
 }
 
 #pragma mark - paintingView
@@ -265,7 +289,7 @@
             UIButton * button = [UIButton buttonWithType:UIButtonTypeCustom];
             button.frame = CGRectMake(idx*50, 0, 50, scrollView.bk_height);
             
-            [button addTarget:self action:@selector(selectDrawTypeBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+            [button addTarget:self action:@selector(selectPaintingTypeBtnClick:) forControlEvents:UIControlEventTouchUpInside];
             button.tag = idx;
             [scrollView addSubview:button];
             
@@ -274,6 +298,11 @@
         scrollView.contentSize = CGSizeMake(CGRectGetMaxX(lastView.frame), scrollView.bk_height);
     }
     return _paintingView;
+}
+
+-(void)selectPaintingTypeBtnClick:(UIButton*)button
+{
+    
 }
 
 @end

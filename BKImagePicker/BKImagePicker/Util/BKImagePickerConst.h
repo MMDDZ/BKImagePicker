@@ -33,20 +33,20 @@ typedef NS_ENUM(NSInteger,BKSelectPhotoType) {
 };
 
 #define BK_RGBA(R,G,B,A) [UIColor colorWithRed:R/255.0f green:G/255.0f blue:B/255.0f alpha:A]
-//导航字体高亮颜色
-#define BKNavHighlightTitleColor BK_RGBA(21,126,251,1)
-//导航字体默认颜色
-#define BKNavGrayTitleColor [UIColor colorWithWhite:0.5 alpha:1]
-//发送按钮默认颜色
-#define BKNavSendGrayBackgroundColor [UIColor colorWithWhite:0.8 alpha:1]
+#define BK_HEX_RGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
+
 //工具栏背景颜色
 #define BKNavBackgroundColor [UIColor colorWithWhite:1 alpha:0.8]
 //所有线的颜色
 #define BKLineColor [UIColor colorWithWhite:0.9 alpha:1]
-//多张照片选择时 选择按钮默认颜色
+//高亮颜色
+#define BKHighlightColor BK_HEX_RGB(0x2D96FA)
+//导航字体默认颜色
+#define BKNavGrayTitleColor [UIColor colorWithWhite:0.5 alpha:1]
+//发送按钮默认颜色
+#define BKNavSendGrayBackgroundColor [UIColor colorWithWhite:0.8 alpha:1]
+//选择照片时 选择按钮默认颜色
 #define BKSelectImageCircleNormalColor [UIColor colorWithWhite:0.2 alpha:0.5]
-//多张照片选择时 选择按钮选中颜色
-#define BKSelectImageCircleHighlightColor BK_RGBA(45,150,250,1)
 
 #define BK_SCREENW [UIScreen mainScreen].bounds.size.width
 #define BK_SCREENH [UIScreen mainScreen].bounds.size.height

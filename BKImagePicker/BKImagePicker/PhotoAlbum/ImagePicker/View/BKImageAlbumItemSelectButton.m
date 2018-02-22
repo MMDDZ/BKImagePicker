@@ -27,7 +27,7 @@
         self.fillColor = BKSelectImageCircleNormalColor;
     }else{
         self.showTitle = title;
-        self.fillColor = BKSelectImageCircleHighlightColor;
+        self.fillColor = BKHighlightColor;
     }
     
     [self setNeedsDisplay];
@@ -102,7 +102,7 @@
     if ([self.showTitle length] == 0) {
         
         self.showTitle = [NSString stringWithFormat:@"%ld",num];
-        self.fillColor = BKSelectImageCircleHighlightColor;
+        self.fillColor = BKHighlightColor;
         [self setNeedsDisplay];
         
         self.isAnimate = YES;

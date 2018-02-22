@@ -249,7 +249,7 @@
                 
                 BKImageModel * firstModel = self.selectImageArray[0];
                 if (firstModel.photoType == BKSelectPhotoTypeImage) {
-                    [_editBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
+                    [_editBtn setTitleColor:BKHighlightColor forState:UIControlStateNormal];
                 }else{
                     [_editBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
                 }
@@ -265,7 +265,7 @@
                 
                 BKImageModel * firstModel = self.selectImageArray[0];
                 if (firstModel.photoType == BKSelectPhotoTypeImage) {
-                    [_editBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
+                    [_editBtn setTitleColor:BKHighlightColor forState:UIControlStateNormal];
                 }else{
                     [_editBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
                 }
@@ -301,22 +301,22 @@
     [self.bottomNavView addSubview:[self sendBtn]];
     
     if (self.maxSelect == 1) {
-        [_editBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
+        [_editBtn setTitleColor:BKHighlightColor forState:UIControlStateNormal];
         [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [_sendBtn setBackgroundColor:BKNavHighlightTitleColor];
+        [_sendBtn setBackgroundColor:BKHighlightColor];
         
         [_sendBtn setTitle:@"确认" forState:UIControlStateNormal];
     }else{
         if ([self.selectImageArray count] == 1) {
-            [_editBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
+            [_editBtn setTitleColor:BKHighlightColor forState:UIControlStateNormal];
             [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-            [_sendBtn setBackgroundColor:BKNavHighlightTitleColor];
+            [_sendBtn setBackgroundColor:BKHighlightColor];
             
             [_sendBtn setTitle:[NSString stringWithFormat:@"确认(%ld)",[self.selectImageArray count]] forState:UIControlStateNormal];
         }else if ([self.selectImageArray count] > 1) {
             [_editBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
             [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-            [_sendBtn setBackgroundColor:BKNavHighlightTitleColor];
+            [_sendBtn setBackgroundColor:BKHighlightColor];
             
             [_sendBtn setTitle:[NSString stringWithFormat:@"确认(%ld)",[self.selectImageArray count]] forState:UIControlStateNormal];
         }
@@ -345,7 +345,7 @@
             _originalBtn.bk_x = 0;
         }
         if (self.isOriginal) {
-            [_originalBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
+            [_originalBtn setTitleColor:BKHighlightColor forState:UIControlStateNormal];
             [self calculataImageSize];
         }else{
             [_originalBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
@@ -367,7 +367,7 @@
         _sendBtn.frame = CGRectMake(self.view.bk_width/4*3, 6, self.view.bk_width/4-6, 37);
         [_sendBtn setTitle:@"确认" forState:UIControlStateNormal];
         [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [_sendBtn setBackgroundColor:BKNavHighlightTitleColor];
+        [_sendBtn setBackgroundColor:BKHighlightColor];
         _sendBtn.titleLabel.font = [UIFont systemFontOfSize:14];
         _sendBtn.layer.cornerRadius = 4;
         _sendBtn.clipsToBounds = YES;
@@ -410,7 +410,7 @@
 -(void)originalBtnClick:(UIButton*)button
 {
     if (!self.isOriginal) {
-        [button setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
+        [button setTitleColor:BKHighlightColor forState:UIControlStateNormal];
         [self calculataImageSize];
     }else{
         [button setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
@@ -537,7 +537,7 @@
     BKImageModel * model = self.imageListArray[indexPath.item];
     
     if (model.photoType == BKSelectPhotoTypeImage) {
-        [_editBtn setTitleColor:BKNavHighlightTitleColor forState:UIControlStateNormal];
+        [_editBtn setTitleColor:BKHighlightColor forState:UIControlStateNormal];
         
         if (model.thumbImage) {
             [self editImageView:currentCell.showImageView image:model.thumbImage imageData:nil scrollView:currentCell.imageScrollView];

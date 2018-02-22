@@ -67,7 +67,7 @@
         
         _leftLab = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, _leftBtn.bk_width, _leftBtn.bk_height)];
         _leftLab.font = [UIFont systemFontOfSize:16];
-        _leftLab.textColor = BKNavHighlightTitleColor;
+        _leftLab.textColor = BKHighlightColor;
         _leftLab.textAlignment = NSTextAlignmentCenter;
         [_leftBtn addSubview:_leftLab];
         
@@ -90,7 +90,7 @@
         _rightLab = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, _rightBtn.bk_width, _rightBtn.bk_height)];
         _rightLab.font = [UIFont systemFontOfSize:15];
         _rightLab.textAlignment = NSTextAlignmentCenter;
-        _rightLab.textColor = BKNavHighlightTitleColor;
+        _rightLab.textColor = BKHighlightColor;
         _rightLab.backgroundColor = [UIColor clearColor];
         [_rightBtn addSubview:_rightLab];
         
@@ -114,38 +114,6 @@
     _titleLab.frame = CGRectMake(64, BK_SYSTEM_STATUSBAR_HEIGHT, self.view.bk_width - 128, BK_SYSTEM_NAV_UI_HEIGHT);
     _rightBtn.frame = CGRectMake(self.view.bk_width - 64, BK_SYSTEM_STATUSBAR_HEIGHT, 64, BK_SYSTEM_NAV_UI_HEIGHT);
     _topLine.frame = CGRectMake(0, _topNavView.bk_height - BK_ONE_PIXEL, _topNavView.bk_width, BK_ONE_PIXEL);
-    
-//    [_topNavView mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.left.mas_equalTo(self.view.mas_left).mas_offset(0);
-//        make.top.mas_equalTo(self.view.mas_top).mas_offset(0);
-//        make.centerX.mas_equalTo(self.view);
-//        make.size.mas_equalTo(CGSizeMake(BK_SCREENW, BK_SYSTEM_NAV_HEIGHT));
-//    }];
-//
-//    [_leftBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.left.mas_equalTo(_topNavView.mas_left).mas_offset(0);
-//        make.bottom.mas_equalTo(_topNavView.mas_bottom).mas_offset(0);
-//        make.size.mas_equalTo(CGSizeMake(64, BK_SYSTEM_NAV_UI_HEIGHT));
-//    }];
-//
-//    [_titleLab mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.left.mas_equalTo(_leftBtn.mas_right).mas_offset(0);
-//        make.bottom.mas_equalTo(_topNavView.mas_bottom).mas_offset(0);
-//        make.right.mas_equalTo(_rightBtn.mas_left).mas_offset(0);
-//        make.height.mas_equalTo(BK_SYSTEM_NAV_UI_HEIGHT);
-//    }];
-//
-//    [_rightBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.right.mas_equalTo(_topNavView.mas_right).mas_offset(0);
-//        make.bottom.mas_equalTo(_topNavView.mas_bottom).mas_offset(0);
-//        make.size.mas_equalTo(CGSizeMake(64, BK_SYSTEM_NAV_UI_HEIGHT));
-//    }];
-//
-//    [_topLine mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.left.mas_equalTo(_topNavView.mas_left).mas_offset(0);
-//        make.bottom.mas_equalTo(_topNavView.mas_bottom).mas_offset(0);
-//        make.size.mas_equalTo(CGSizeMake(BK_SCREENW, BK_ONE_PIXEL));
-//    }];
 }
 
 -(void)leftNavBtnAction:(UIButton*)button
@@ -183,19 +151,6 @@
 {
     _bottomNavView.frame = CGRectMake(0, self.view.bk_height - _bottomNavViewHeight, self.view.bk_width, _bottomNavViewHeight);
     _bottomLine.frame = CGRectMake(0, 0, _bottomNavView.bk_width, BK_ONE_PIXEL);
-    
-//    [_bottomNavView mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.left.mas_equalTo(self.view.mas_left).mas_offset(0);
-//        make.bottom.mas_equalTo(self.view.mas_bottom).mas_offset(0);
-//        make.centerX.mas_equalTo(self.view);
-//        make.size.mas_equalTo(CGSizeMake(BK_SCREENW, 0));
-//    }];
-//
-//    [_bottomLine mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.left.mas_equalTo(_bottomNavView.mas_left).mas_offset(0);
-//        make.top.mas_equalTo(_bottomNavView.mas_top).mas_offset(0);
-//        make.size.mas_equalTo(CGSizeMake(BK_SCREENW, BK_ONE_PIXEL));
-//    }];
 }
 
 -(void)setBottomNavViewHeight:(CGFloat)bottomNavViewHeight
@@ -204,9 +159,6 @@
     
     _bottomNavView.bk_height = _bottomNavViewHeight;
     _bottomNavView.bk_y = self.view.bk_height - _bottomNavView.bk_height;
-//    [_bottomNavView mas_updateConstraints:^(MASConstraintMaker *make) {
-//        make.height.mas_equalTo(_bottomNavViewHeight);
-//    }];
 }
 
 #pragma iPhoneX黑条隐藏
