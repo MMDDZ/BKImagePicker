@@ -39,7 +39,7 @@
         self.backgroundColor = [UIColor clearColor];
         
         NSString * bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
-        UIImage * masaike = [UIImage imageWithContentsOfFile:[bundlePath stringByAppendingString:@"/masaike.png"]];
+        UIImage * masaike = [UIImage imageWithContentsOfFile:[bundlePath stringByAppendingString:@"/EditImage/masaike.png"]];
         self.colorArr = @[[UIColor redColor],[UIColor orangeColor],[UIColor yellowColor],[UIColor greenColor],[UIColor blueColor],[UIColor purpleColor],[UIColor blackColor],[UIColor whiteColor],[UIColor lightGrayColor],masaike];
         
         [self addSubview:self.firstLevelView];
@@ -64,8 +64,8 @@
         [_firstLevelView addSubview:scrollView];
         
         NSString * bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
-        NSArray * imageArr_n = @[[bundlePath stringByAppendingString:@"/draw_n.png"],[bundlePath stringByAppendingString:@"/write_n.png"],[bundlePath stringByAppendingString:@"/rotation_n.png"],[bundlePath stringByAppendingString:@"/clip_n.png"]];
-        NSArray * imageArr_s = @[[bundlePath stringByAppendingString:@"/draw_s.png"],[bundlePath stringByAppendingString:@"/write_s.png"],[bundlePath stringByAppendingString:@"/rotation_s.png"],[bundlePath stringByAppendingString:@"/clip_s.png"]];
+        NSArray * imageArr_n = @[[bundlePath stringByAppendingString:@"/EditImage/draw_n.png"],[bundlePath stringByAppendingString:@"/EditImage/write_n.png"],[bundlePath stringByAppendingString:@"/EditImage/rotation_n.png"],[bundlePath stringByAppendingString:@"/EditImage/clip_n.png"]];
+        NSArray * imageArr_s = @[[bundlePath stringByAppendingString:@"/EditImage/draw_s.png"],[bundlePath stringByAppendingString:@"/EditImage/write_s.png"],[bundlePath stringByAppendingString:@"/EditImage/rotation_s.png"],[bundlePath stringByAppendingString:@"/EditImage/clip_s.png"]];
         
         __block UIView * lastView;
         [imageArr_n enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -112,8 +112,8 @@
     }
     
     NSString * bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
-    NSArray * imageArr_n = @[[bundlePath stringByAppendingString:@"/draw_n.png"],[bundlePath stringByAppendingString:@"/write_n.png"],[bundlePath stringByAppendingString:@"/rotation_n.png"],[bundlePath stringByAppendingString:@"/clip_n.png"]];
-    NSArray * imageArr_s = @[[bundlePath stringByAppendingString:@"/draw_s.png"],[bundlePath stringByAppendingString:@"/write_s.png"],[bundlePath stringByAppendingString:@"/rotation_s.png"],[bundlePath stringByAppendingString:@"/clip_s.png"]];
+    NSArray * imageArr_n = @[[bundlePath stringByAppendingString:@"/EditImage/draw_n.png"],[bundlePath stringByAppendingString:@"/EditImage/write_n.png"],[bundlePath stringByAppendingString:@"/EditImage/rotation_n.png"],[bundlePath stringByAppendingString:@"/EditImage/clip_n.png"]];
+    NSArray * imageArr_s = @[[bundlePath stringByAppendingString:@"/EditImage/draw_s.png"],[bundlePath stringByAppendingString:@"/EditImage/write_s.png"],[bundlePath stringByAppendingString:@"/EditImage/rotation_s.png"],[bundlePath stringByAppendingString:@"/EditImage/clip_s.png"]];
     
     if (_selectFirstLevelBtn) {
         UIImageView * oldImageView = (UIImageView*)[self.selectFirstLevelBtn viewWithTag:self.selectFirstLevelBtn.tag+1];
@@ -221,8 +221,8 @@
         [_drawTypeView addSubview:scrollView];
         
         NSString * bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
-        NSArray * imageArr_n = @[[bundlePath stringByAppendingString:@"/line_n.png"],[bundlePath stringByAppendingString:@"/circle_n.png"],[bundlePath stringByAppendingString:@"/rounded_rectangle_n.png"],[bundlePath stringByAppendingString:@"/arrow_n.png"]];
-        NSArray * imageArr_s = @[[bundlePath stringByAppendingString:@"/line_s.png"],[bundlePath stringByAppendingString:@"/circle_s.png"],[bundlePath stringByAppendingString:@"/rounded_rectangle_s.png"],[bundlePath stringByAppendingString:@"/arrow_s.png"]];
+        NSArray * imageArr_n = @[[bundlePath stringByAppendingString:@"/EditImage/line_n.png"],[bundlePath stringByAppendingString:@"/EditImage/circle_n.png"],[bundlePath stringByAppendingString:@"/EditImage/rounded_rectangle_n.png"],[bundlePath stringByAppendingString:@"/EditImage/arrow_n.png"]];
+        NSArray * imageArr_s = @[[bundlePath stringByAppendingString:@"/EditImage/line_s.png"],[bundlePath stringByAppendingString:@"/EditImage/circle_s.png"],[bundlePath stringByAppendingString:@"/EditImage/rounded_rectangle_s.png"],[bundlePath stringByAppendingString:@"/EditImage/arrow_s.png"]];
         
         __block UIView * lastView;
         [imageArr_n enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -258,8 +258,8 @@
     }
     
     NSString * bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
-    NSArray * imageArr_n = @[[bundlePath stringByAppendingString:@"/line_n.png"],[bundlePath stringByAppendingString:@"/circle_n.png"],[bundlePath stringByAppendingString:@"/rounded_rectangle_n.png"],[bundlePath stringByAppendingString:@"/arrow_n.png"]];
-    NSArray * imageArr_s = @[[bundlePath stringByAppendingString:@"/line_s.png"],[bundlePath stringByAppendingString:@"/circle_s.png"],[bundlePath stringByAppendingString:@"/rounded_rectangle_s.png"],[bundlePath stringByAppendingString:@"/arrow_s.png"]];
+    NSArray * imageArr_n = @[[bundlePath stringByAppendingString:@"/EditImage/line_n.png"],[bundlePath stringByAppendingString:@"/EditImage/circle_n.png"],[bundlePath stringByAppendingString:@"/EditImage/rounded_rectangle_n.png"],[bundlePath stringByAppendingString:@"/EditImage/arrow_n.png"]];
+    NSArray * imageArr_s = @[[bundlePath stringByAppendingString:@"/EditImage/line_s.png"],[bundlePath stringByAppendingString:@"/EditImage/circle_s.png"],[bundlePath stringByAppendingString:@"/EditImage/rounded_rectangle_s.png"],[bundlePath stringByAppendingString:@"/EditImage/arrow_s.png"]];
     
     if (_selectDrawTypeBtn) {
         UIImageView * oldImageView = (UIImageView*)[self.selectDrawTypeBtn viewWithTag:self.selectDrawTypeBtn.tag+1];

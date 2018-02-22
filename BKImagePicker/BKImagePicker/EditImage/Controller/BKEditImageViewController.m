@@ -74,7 +74,7 @@
 
 -(UIImage*)imageWithImageName:(NSString*)imageName
 {
-    return [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@",self.imagePath,imageName]];
+    return [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/EditImage/%@",self.imagePath,imageName]];
 }
 
 #pragma mark - viewDidLoad
