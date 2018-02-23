@@ -29,6 +29,14 @@
  */
 -(UIImageView*)backActionWithImageModel:(BKImageModel*)model;
 
+/**
+ 刷新选中
+
+ @param selectImageArr 选中数组
+ @param isOriginal 是否是原图
+ */
+-(void)refreshSelectPhotoWithSelectImageArr:(NSArray*)selectImageArr isOriginal:(BOOL)isOriginal;
+
 @end
 
 @interface BKShowExampleImageViewController : BKImageBaseViewController
@@ -59,11 +67,6 @@
  是否选择原图
  */
 @property (nonatomic,assign) BOOL isOriginal;
-
-/**
- 更新选取相册数组
- */
-@property (nonatomic,copy) void (^refreshSelectPhotoAction)(NSArray * selectImageArray,BOOL isOriginal);
 
 /**
  显示方法

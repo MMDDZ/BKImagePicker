@@ -449,25 +449,6 @@
     vc.maxSelect = _max_select;
     vc.isOriginal = _isOriginal;
     [vc showInNav:self.navigationController];
-   
-    BK_WEAK_SELF(self);
-    [vc setRefreshSelectPhotoAction:^(NSArray * selectImageArray,BOOL isOriginal) {
-        BK_STRONG_SELF(self);
-        
-        strongSelf.selectImageArray = [NSMutableArray arrayWithArray:selectImageArray];
-        [strongSelf.albumCollectionView reloadData];
-        
-        strongSelf.isOriginal = isOriginal;
-        if (strongSelf.isOriginal) {
-            [_originalBtn setTitleColor:BKHighlightColor forState:UIControlStateNormal];
-            [strongSelf calculataImageSize];
-        }else{
-            [_originalBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
-            [_originalBtn setTitle:@"原图" forState:UIControlStateNormal];
-        }
-        
-        [strongSelf refreshClassSelectImageArray];
-    }];
 }
 
 #pragma mark - BKShowExampleImageViewControllerDelegate
@@ -501,7 +482,7 @@
     __block NSInteger item = 0;
     [_listArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         BKImageModel * listModel = obj;
-        if ([listModel.fileName isEqualToString: model.fileName]) {
+        if ([listModel.fileName isEqualToString:model.fileName]) {
             item = idx;
             isHaveFlag = YES;
             *stop = YES;
@@ -516,6 +497,23 @@
     }else{
         return nil;
     }
+}
+
+-(void)refreshSelectPhotoWithSelectImageArr:(NSArray *)selectImageArr isOriginal:(BOOL)isOriginal
+{
+    self.selectImageArray = [NSMutableArray arrayWithArray:selectImageArr];
+    [_albumCollectionView reloadItemsAtIndexPaths:[_albumCollectionView indexPathsForVisibleItems]];
+    
+    _isOriginal = isOriginal;
+    if (_isOriginal) {
+        [_originalBtn setTitleColor:BKHighlightColor forState:UIControlStateNormal];
+        [self calculataImageSize];
+    }else{
+        [_originalBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
+        [_originalBtn setTitle:@"原图" forState:UIControlStateNormal];
+    }
+    
+    [self refreshClassSelectImageArray];
 }
 
 #pragma mark - BKImagePickerCollectionViewCellDelegate
@@ -637,7 +635,7 @@
 {
     if (!_previewBtn) {
         _previewBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _previewBtn.frame = CGRectMake(0, 0, BK_SCREENW/6, 49);
+        _previewBtn.frame = CGRectMake(0, 0, self.view.bk_width/6, 49);
         [_previewBtn setTitle:@"预览" forState:UIControlStateNormal];
         [_previewBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
         _previewBtn.titleLabel.font = [UIFont systemFontOfSize:15];
@@ -650,7 +648,7 @@
 {
     if (!_originalBtn) {
         _originalBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _originalBtn.frame = CGRectMake(BK_SCREENW/6, 0, BK_SCREENW/7*3, 49);
+        _originalBtn.frame = CGRectMake(self.view.bk_width/6, 0, self.view.bk_width/7*3, 49);
         if (![BKImagePicker sharedManager].isHaveEdit) {
             _originalBtn.bk_x = BK_SCREENW/6;
         }
@@ -674,7 +672,7 @@
     if (!_sendBtn) {
         
         _sendBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _sendBtn.frame = CGRectMake(BK_SCREENW/4*3, 6, BK_SCREENW/4-6, 37);
+        _sendBtn.frame = CGRectMake(self.view.bk_width/5*4, 6, self.view.bk_width/5-6, 37);
         [_sendBtn setTitle:@"确认" forState:UIControlStateNormal];
         [_sendBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
         [_sendBtn setBackgroundColor:BKNavSendGrayBackgroundColor];

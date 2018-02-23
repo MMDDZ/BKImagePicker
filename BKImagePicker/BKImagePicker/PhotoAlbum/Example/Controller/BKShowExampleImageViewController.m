@@ -280,8 +280,8 @@
             [_sendBtn setTitle:[NSString stringWithFormat:@"确认(%ld)",[self.selectImageArray count]] forState:UIControlStateNormal];
         }
         
-        if (self.refreshSelectPhotoAction) {
-            self.refreshSelectPhotoAction([self.selectImageArray copy],self.isOriginal);
+        if ([self.delegate respondsToSelector:@selector(refreshSelectPhotoWithSelectImageArr:isOriginal:)]) {
+            [self.delegate refreshSelectPhotoWithSelectImageArr:[self.selectImageArray copy] isOriginal:self.isOriginal];
         }
     }];
 }
@@ -364,7 +364,7 @@
     if (!_sendBtn) {
         
         _sendBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _sendBtn.frame = CGRectMake(self.view.bk_width/4*3, 6, self.view.bk_width/4-6, 37);
+        _sendBtn.frame = CGRectMake(self.view.bk_width/5*4, 6, self.view.bk_width/5-6, 37);
         [_sendBtn setTitle:@"确认" forState:UIControlStateNormal];
         [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [_sendBtn setBackgroundColor:BKHighlightColor];
@@ -417,8 +417,8 @@
         [button setTitle:@"原图" forState:UIControlStateNormal];
     }
     self.isOriginal = !self.isOriginal;
-    if (self.refreshSelectPhotoAction) {
-        self.refreshSelectPhotoAction([self.selectImageArray copy],self.isOriginal);
+    if ([self.delegate respondsToSelector:@selector(refreshSelectPhotoWithSelectImageArr:isOriginal:)]) {
+        [self.delegate refreshSelectPhotoWithSelectImageArr:[self.selectImageArray copy] isOriginal:self.isOriginal];
     }
 }
 

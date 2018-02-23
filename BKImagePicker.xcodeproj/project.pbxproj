@@ -306,14 +306,14 @@
 		1D815B42202D36A50038BFA2 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				1D815B43202D36A50038BFA2 /* BKImageAlbumItemView.m */,
-				1D815B44202D36A50038BFA2 /* BKImagePickerFooterCollectionReusableView.m */,
-				1D815B45202D36A50038BFA2 /* BKImageAlbumItemSelectButton.m */,
+				1D815B49202D36A50038BFA2 /* BKImagePickerCollectionViewCell.h */,
 				1D815B46202D36A50038BFA2 /* BKImagePickerCollectionViewCell.m */,
 				1D815B47202D36A50038BFA2 /* BKImagePickerFooterCollectionReusableView.h */,
+				1D815B44202D36A50038BFA2 /* BKImagePickerFooterCollectionReusableView.m */,
 				1D815B48202D36A50038BFA2 /* BKImageAlbumItemView.h */,
-				1D815B49202D36A50038BFA2 /* BKImagePickerCollectionViewCell.h */,
+				1D815B43202D36A50038BFA2 /* BKImageAlbumItemView.m */,
 				1D815B4A202D36A50038BFA2 /* BKImageAlbumItemSelectButton.h */,
+				1D815B45202D36A50038BFA2 /* BKImageAlbumItemSelectButton.m */,
 			);
 			path = View;
 			sourceTree = "<group>";
