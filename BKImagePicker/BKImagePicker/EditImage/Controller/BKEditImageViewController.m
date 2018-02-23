@@ -336,7 +336,7 @@
     self.leftImageView.image = nil;
     self.leftLab.text = @"取消";
     
-    self.rightImageView.image = [self imageWithImageName:@"save_s"];
+    self.rightImageView.image = [self imageWithImageName:@"save"];
 }
 
 -(void)leftNavBtnAction:(UIButton *)button
