@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import "BKDrawView.h"
+#import "BKEditImageViewController.h"
 
 @interface BKDrawModel : NSObject
 
@@ -23,10 +23,10 @@
 /**
  选取画的类型（颜色或马赛克）
  */
-@property (nonatomic,assign) BKSelectType selectType;
+@property (nonatomic,assign) BKEditImageSelectPaintingType selectPaintingType;
 /**
  画的形状
  */
-@property (nonatomic,assign) BKDrawType drawType;
+@property (nonatomic,assign) BKEditImageSelectEditType drawType;
 
 @end

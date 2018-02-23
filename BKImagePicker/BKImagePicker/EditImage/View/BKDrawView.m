@@ -9,7 +9,6 @@
 #import "BKDrawView.h"
 #import "UIBezierPath+BKImagePicker.h"
 #import "BKImagePickerConst.h"
-#import "BKDrawModel.h"
 
 @interface BKDrawView()
 
@@ -76,15 +75,15 @@
     if ([self.lineArray count] > 0) {
         for (int i = 0; i < [self.lineArray count]; i++) {
             BKDrawModel * model = self.lineArray[i];
-            if (model.selectType == BKSelectTypeColor) {
-                if (model.drawType == BKDrawTypeLine || model.drawType == BKDrawTypeRoundedRectangle) {
+            if (model.selectPaintingType == BKEditImageSelectPaintingTypeColor) {
+                if (model.drawType == BKEditImageSelectEditTypeDrawLine || model.drawType == BKEditImageSelectEditTypeDrawRoundedRectangle) {
                     [self drawLine:context pointArr:model.pointArray lineColor:model.selectColor.CGColor];
-                }else if (model.drawType == BKDrawTypeCircle) {
+                }else if (model.drawType == BKEditImageSelectEditTypeDrawCircle) {
                     [self drawCircle:context pointArr:model.pointArray lineColor:model.selectColor.CGColor];
-                }else if (model.drawType == BKDrawTypeArrow) {
+                }else if (model.drawType == BKEditImageSelectEditTypeDrawArrow) {
                     [self drawArrow:context pointArr:model.pointArray lineColor:model.selectColor.CGColor];
                 }
-            }else if (model.selectType == BKSelectTypeMaSaiKe) {
+            }else if (model.selectPaintingType == BKEditImageSelectPaintingTypeMosaic) {
                 if ([model.pointArray count] > 0) {
                     [mosaicPointArr addObject:model.pointArray];
                 }
@@ -93,15 +92,15 @@
     }
     
     //画当前的线
-    if (self.selectType == BKSelectTypeColor) {
-        if (self.drawType == BKDrawTypeLine || self.drawType == BKDrawTypeRoundedRectangle) {
+    if (self.selectPaintingType == BKEditImageSelectPaintingTypeColor) {
+        if (self.drawType == BKEditImageSelectEditTypeDrawLine || self.drawType == BKEditImageSelectEditTypeDrawRoundedRectangle) {
             [self drawLine:context pointArr:[self.pointArray copy] lineColor:self.selectColor.CGColor];
-        }else if (self.drawType == BKDrawTypeCircle) {
+        }else if (self.drawType == BKEditImageSelectEditTypeDrawCircle) {
             [self drawCircle:context pointArr:[self.pointArray copy] lineColor:self.selectColor.CGColor];
-        }else if (self.drawType == BKDrawTypeArrow) {
+        }else if (self.drawType == BKEditImageSelectEditTypeDrawArrow) {
             [self drawArrow:context pointArr:[self.pointArray copy] lineColor:self.selectColor.CGColor];
         }
-    }else if (self.selectType == BKSelectTypeMaSaiKe) {
+    }else if (self.selectPaintingType == BKEditImageSelectPaintingTypeMosaic) {
         if ([self.pointArray count] > 0) {
             [mosaicPointArr addObject:self.pointArray];
         }

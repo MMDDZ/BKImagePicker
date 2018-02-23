@@ -7,15 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "BKSelectColorMarkView.h"
-@class BKDrawModel;
-
-typedef enum : NSUInteger {
-    BKDrawTypeLine = 0,
-    BKDrawTypeRoundedRectangle,
-    BKDrawTypeCircle,
-    BKDrawTypeArrow,
-} BKDrawType;
+#import "BKDrawModel.h"
+#import "BKEditImageViewController.h"
 
 @protocol BKDrawViewDelegate <NSObject>
 
@@ -50,11 +43,11 @@ typedef enum : NSUInteger {
 /**
  选取画的类型（颜色或马赛克）
  */
-@property (nonatomic,assign) BKSelectType selectType;
+@property (nonatomic,assign) BKEditImageSelectPaintingType selectPaintingType;
 /**
  画的形状
  */
-@property (nonatomic,assign) BKDrawType drawType;
+@property (nonatomic,assign) BKEditImageSelectEditType drawType;
 
 
 /**

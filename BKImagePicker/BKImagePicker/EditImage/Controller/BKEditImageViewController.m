@@ -10,12 +10,11 @@
 #import "BKImagePickerConst.h"
 #import "BKImagePicker.h"
 #import "BKDrawView.h"
-#import "BKSelectColorView.h"
 #import "BKDrawModel.h"
 #import "BKImageCropView.h"
 #import "BKEditImageBottomView.h"
 
-@interface BKEditImageViewController ()<BKSelectColorViewDelegate,BKDrawViewDelegate>
+@interface BKEditImageViewController ()<BKDrawViewDelegate>
 
 @property (nonatomic,copy) NSString * imagePath;//图片路径
 
@@ -50,12 +49,6 @@
 
 @property (nonatomic,strong) BKEditImageBottomView * bottomView;
 
-
-
-/**
- 颜色选取
- */
-@property (nonatomic,strong) BKSelectColorView * selectColorView;
 
 @end
 
@@ -202,7 +195,7 @@
     if (!_drawView) {
         _drawView = [[BKDrawView alloc]initWithFrame:self.editImageView.frame];
         _drawView.delegate = self;
-        [self.view insertSubview:_drawView atIndex:0];
+        [self.view insertSubview:_drawView aboveSubview:_editImageView];
     }
     return _drawView;
 }
@@ -263,22 +256,22 @@
     
     if (self.drawView.beginPoint.x != point.x || self.drawView.beginPoint.y != point.y) {
         switch (self.drawView.drawType) {
-            case BKDrawTypeLine:
+            case BKEditImageSelectEditTypeDrawLine:
             {
                 [self.drawView drawLineWithPoint:point];
             }
                 break;
-            case BKDrawTypeRoundedRectangle:
-            {
-                [self.drawView drawRoundedRectangleWithPoint:point];
-            }
-                break;
-            case BKDrawTypeCircle:
+            case BKEditImageSelectEditTypeDrawCircle:
             {
                 [self.drawView drawCircleWithBeginPoint:self.drawView.beginPoint endPoint:point];
             }
                 break;
-            case BKDrawTypeArrow:
+            case BKEditImageSelectEditTypeDrawRoundedRectangle:
+            {
+                [self.drawView drawRoundedRectangleWithPoint:point];
+            }
+                break;
+            case BKEditImageSelectEditTypeDrawArrow:
             {
                 [self.drawView drawArrowWithBeginPoint:self.drawView.beginPoint endPoint:point];
             }
@@ -298,7 +291,7 @@
         BKDrawModel * model = [[BKDrawModel alloc]init];
         model.pointArray = [self.drawView.pointArray copy];
         model.selectColor = self.drawView.selectColor;
-        model.selectType = self.drawView.selectType;
+        model.selectPaintingType = self.drawView.selectPaintingType;
         model.drawType = self.drawView.drawType;
         
         [self.drawView.lineArray addObject:model];
@@ -370,6 +363,44 @@
             switch (strongSelf.bottomView.selectEditType) {
                 case BKEditImageSelectEditTypeDrawLine:
                 {
+                    strongSelf.drawView.drawType = BKEditImageSelectEditTypeDrawLine;
+                    strongSelf.drawView.selectColor = strongSelf.bottomView.selectPaintingColor;
+                    strongSelf.drawView.selectPaintingType = strongSelf.bottomView.selectPaintingType;
+                }
+                    break;
+                case BKEditImageSelectEditTypeDrawCircle:
+                {
+                    strongSelf.drawView.drawType = BKEditImageSelectEditTypeDrawCircle;
+                    strongSelf.drawView.selectColor = strongSelf.bottomView.selectPaintingColor;
+                    strongSelf.drawView.selectPaintingType = strongSelf.bottomView.selectPaintingType;
+                }
+                    break;
+                case BKEditImageSelectEditTypeDrawRoundedRectangle:
+                {
+                    strongSelf.drawView.drawType = BKEditImageSelectEditTypeDrawRoundedRectangle;
+                    strongSelf.drawView.selectColor = strongSelf.bottomView.selectPaintingColor;
+                    strongSelf.drawView.selectPaintingType = strongSelf.bottomView.selectPaintingType;
+                }
+                    break;
+                case BKEditImageSelectEditTypeDrawArrow:
+                {
+                    strongSelf.drawView.drawType = BKEditImageSelectEditTypeDrawArrow;
+                    strongSelf.drawView.selectColor = strongSelf.bottomView.selectPaintingColor;
+                    strongSelf.drawView.selectPaintingType = strongSelf.bottomView.selectPaintingType;
+                }
+                    break;
+                case BKEditImageSelectEditTypeWrite:
+                {
+                    
+                }
+                    break;
+                case BKEditImageSelectEditTypeRotation:
+                {
+                    
+                }
+                    break;
+                case BKEditImageSelectEditTypeClip:
+                {
                     
                 }
                     break;
@@ -377,6 +408,10 @@
                 default:
                     break;
             }
+        }];
+        [_bottomView setRevocationAction:^{
+            BK_STRONG_SELF(self);
+            [strongSelf.drawView cleanFinallyDraw];
         }];
     }
     return _bottomView;

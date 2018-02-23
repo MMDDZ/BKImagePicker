@@ -7,21 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-
-typedef NS_ENUM(NSUInteger, BKEditImageSelectEditType) {
-    BKEditImageSelectEditTypeDrawLine = 0,
-    BKEditImageSelectEditTypeDrawRoundedRectangle,
-    BKEditImageSelectEditTypeDrawCircle,
-    BKEditImageSelectEditTypeDrawArrow,
-    BKEditImageSelectEditTypeWrite,
-    BKEditImageSelectEditTypeRotation,
-    BKEditImageSelectEditTypeClip
-};
-
-typedef NS_ENUM(NSUInteger, BKEditImageSelectPaintingType) {
-    BKEditImageSelectPaintingTypeColor = 0,
-    BKEditImageSelectPaintingTypeMosaic
-};
+#import "BKEditImageViewController.h"
 
 @interface BKEditImageBottomView : UIView
 
@@ -45,5 +31,9 @@ typedef NS_ENUM(NSUInteger, BKEditImageSelectPaintingType) {
  完成按钮
  */
 @property (nonatomic,copy) void (^sendBtnAction)(void);
+/**
+ 撤销
+ */
+@property (nonatomic,copy) void (^revocationAction)(void);
 
 @end
