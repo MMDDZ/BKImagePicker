@@ -16,6 +16,7 @@
 		1D443BB9203FFD3600C96731 /* BKDrawModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D443BB8203FFD3600C96731 /* BKDrawModel.m */; };
 		1D443BBC203FFEDE00C96731 /* BKDrawView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D443BBA203FFEDE00C96731 /* BKDrawView.m */; };
 		1D443BBF203FFF0900C96731 /* BKImageCropView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D443BBD203FFF0900C96731 /* BKImageCropView.m */; };
+		1D443BC220400F6400C96731 /* BKEditImageWriteView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D443BC120400F6400C96731 /* BKEditImageWriteView.m */; };
 		1D815B19202D35150038BFA2 /* UIImage+BKImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D815B17202D35150038BFA2 /* UIImage+BKImagePicker.m */; };
 		1D815B1C202D35580038BFA2 /* UIBezierPath+BKImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D815B1B202D35580038BFA2 /* UIBezierPath+BKImagePicker.m */; };
 		1D815B39202D35DF0038BFA2 /* BKEditImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D815B2C202D35DE0038BFA2 /* BKEditImageViewController.m */; };
@@ -69,6 +70,8 @@
 		1D443BBB203FFEDE00C96731 /* BKDrawView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKDrawView.h; sourceTree = "<group>"; };
 		1D443BBD203FFF0900C96731 /* BKImageCropView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKImageCropView.m; sourceTree = "<group>"; };
 		1D443BBE203FFF0900C96731 /* BKImageCropView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKImageCropView.h; sourceTree = "<group>"; };
+		1D443BC020400F6400C96731 /* BKEditImageWriteView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BKEditImageWriteView.h; sourceTree = "<group>"; };
+		1D443BC120400F6400C96731 /* BKEditImageWriteView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BKEditImageWriteView.m; sourceTree = "<group>"; };
 		1D815B17202D35150038BFA2 /* UIImage+BKImagePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+BKImagePicker.m"; sourceTree = "<group>"; };
 		1D815B18202D35150038BFA2 /* UIImage+BKImagePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+BKImagePicker.h"; sourceTree = "<group>"; };
 		1D815B1A202D35570038BFA2 /* UIBezierPath+BKImagePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIBezierPath+BKImagePicker.h"; sourceTree = "<group>"; };
@@ -222,6 +225,8 @@
 				1D815B74202D4CC40038BFA2 /* BKEditImageBottomView.m */,
 				1D443BBB203FFEDE00C96731 /* BKDrawView.h */,
 				1D443BBA203FFEDE00C96731 /* BKDrawView.m */,
+				1D443BC020400F6400C96731 /* BKEditImageWriteView.h */,
+				1D443BC120400F6400C96731 /* BKEditImageWriteView.m */,
 				1D443BBE203FFF0900C96731 /* BKImageCropView.h */,
 				1D443BBD203FFF0900C96731 /* BKImageCropView.m */,
 			);
@@ -303,11 +308,11 @@
 		1D815B51202D36A50038BFA2 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				1D815B55202D36A50038BFA2 /* BKShowExampleInteractiveTransition.h */,
 				1D815B52202D36A50038BFA2 /* BKShowExampleInteractiveTransition.m */,
 				1D815B53202D36A50038BFA2 /* BKShowExampleTransitionAnimater.h */,
-				1D815B54202D36A50038BFA2 /* BKShowExampleImageCollectionViewFlowLayout.h */,
-				1D815B55202D36A50038BFA2 /* BKShowExampleInteractiveTransition.h */,
 				1D815B56202D36A50038BFA2 /* BKShowExampleTransitionAnimater.m */,
+				1D815B54202D36A50038BFA2 /* BKShowExampleImageCollectionViewFlowLayout.h */,
 				1D815B57202D36A50038BFA2 /* BKShowExampleImageCollectionViewFlowLayout.m */,
 			);
 			path = Model;
@@ -540,6 +545,7 @@
 				1DA0E22320244014005E8D5D /* NSObject+BKImagePicker.m in Sources */,
 				2A06DE391EB6C67500C2CCDF /* FLAnimatedImageView.m in Sources */,
 				1D443BB9203FFD3600C96731 /* BKDrawModel.m in Sources */,
+				1D443BC220400F6400C96731 /* BKEditImageWriteView.m in Sources */,
 				1D40F4AC202438750031DD5A /* BKImageModel.m in Sources */,
 				1DA0E22120244014005E8D5D /* BKImageBaseViewController.m in Sources */,
 				1DA0E22020244014005E8D5D /* BKImagePercentDrivenInteractiveTransition.m in Sources */,

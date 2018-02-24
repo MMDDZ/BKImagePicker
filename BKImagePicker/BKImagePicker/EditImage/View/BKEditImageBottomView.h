@@ -28,12 +28,30 @@
  */
 @property (nonatomic,copy) void (^selectTypeAction)(void);
 /**
- 完成按钮
+ 完成编辑发送按钮
  */
 @property (nonatomic,copy) void (^sendBtnAction)(void);
+/**
+ 完成编辑文本
+ */
+@property (nonatomic,copy) void (^finishWriteAction)(void);
 /**
  撤销
  */
 @property (nonatomic,copy) void (^revocationAction)(void);
+
+/**
+ 键盘即将显示
+
+ @param notification NSNotification
+ */
+-(void)keyboardWillShow:(NSNotification*)notification;
+
+/**
+ 键盘即将消失
+
+ @param notification NSNotification
+ */
+-(void)keyboardWillHide:(NSNotification*)notification;
 
 @end

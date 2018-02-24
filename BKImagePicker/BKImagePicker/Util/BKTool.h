@@ -43,6 +43,11 @@
  */
 -(void)showRemind:(NSString*)text;
 
+#pragma mark - 文本大小
+
+-(CGSize)sizeWithString:(NSString *)string UIWidth:(CGFloat)width font:(UIFont*)font;
+-(CGSize)sizeWithString:(NSString *)string UIHeight:(CGFloat)height font:(UIFont*)font;
+
 #pragma mark - Loading
 
 /**

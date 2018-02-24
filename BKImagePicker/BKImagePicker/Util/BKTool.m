@@ -119,6 +119,8 @@
     }];
 }
 
+#pragma mark - 文本大小
+
 -(CGSize)sizeWithString:(NSString *)string UIWidth:(CGFloat)width font:(UIFont*)font
 {
     if (!string || !font) {

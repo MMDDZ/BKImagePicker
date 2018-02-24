@@ -13,6 +13,7 @@
 #import "BKDrawModel.h"
 #import "BKImageCropView.h"
 #import "BKEditImageBottomView.h"
+#import "BKEditImageWriteView.h"
 
 @interface BKEditImageViewController ()<BKDrawViewDelegate>
 
@@ -49,6 +50,9 @@
 
 @property (nonatomic,strong) BKEditImageBottomView * bottomView;
 
+
+@property (nonatomic,strong) UITextView * writeTextView;
+@property (nonatomic,strong) BKEditImageWriteView * writeView;
 
 @end
 
@@ -91,6 +95,9 @@
     
     self.navigationController.interactivePopGestureRecognizer.enabled = NO;
     ((BKImageNavViewController*)self.navigationController).customTransition.enble = NO;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
 }
 
 -(void)viewWillDisappear:(BOOL)animated
@@ -99,6 +106,8 @@
     
     self.navigationController.interactivePopGestureRecognizer.enabled = YES;
     ((BKImageNavViewController*)self.navigationController).customTransition.enble = YES;
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - 图片
@@ -240,6 +249,10 @@
 
 -(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
+    if (self.bottomView.selectEditType == BKEditImageSelectEditTypeWrite || self.bottomView.selectEditType == BKEditImageSelectEditTypeClip) {
+        return;
+    }
+    
     UITouch * touch = [touches anyObject];
     CGPoint point = [touch locationInView:self.view];
     point.x = point.x - self.editImageView.frame.origin.x;
@@ -249,6 +262,10 @@
 
 -(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    if (self.bottomView.selectEditType == BKEditImageSelectEditTypeWrite || self.bottomView.selectEditType == BKEditImageSelectEditTypeClip) {
+        return;
+    }
+    
     UITouch * touch = [touches anyObject];
     CGPoint point = [touch locationInView:self.view];
     point.x = point.x - self.editImageView.frame.origin.x;
@@ -286,6 +303,10 @@
 
 -(void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
+    if (self.bottomView.selectEditType == BKEditImageSelectEditTypeWrite || self.bottomView.selectEditType == BKEditImageSelectEditTypeClip) {
+        return;
+    }
+    
     if ([self.drawView.pointArray count] > 0) {
         
         BKDrawModel * model = [[BKDrawModel alloc]init];
@@ -358,11 +379,11 @@
         [_bottomView setSelectTypeAction:^{
             BK_STRONG_SELF(self);
             
-            strongSelf.bottomNavViewHeight = strongSelf.bottomView.bk_height + BK_SYSTEM_TABBAR_HEIGHT - BK_SYSTEM_TABBAR_UI_HEIGHT;
-            
             switch (strongSelf.bottomView.selectEditType) {
                 case BKEditImageSelectEditTypeDrawLine:
                 {
+                    strongSelf.bottomNavViewHeight = strongSelf.bottomView.bk_height + BK_SYSTEM_TABBAR_HEIGHT - BK_SYSTEM_TABBAR_UI_HEIGHT;
+                    
                     strongSelf.drawView.drawType = BKEditImageSelectEditTypeDrawLine;
                     strongSelf.drawView.selectColor = strongSelf.bottomView.selectPaintingColor;
                     strongSelf.drawView.selectPaintingType = strongSelf.bottomView.selectPaintingType;
@@ -370,6 +391,8 @@
                     break;
                 case BKEditImageSelectEditTypeDrawCircle:
                 {
+                    strongSelf.bottomNavViewHeight = strongSelf.bottomView.bk_height + BK_SYSTEM_TABBAR_HEIGHT - BK_SYSTEM_TABBAR_UI_HEIGHT;
+                    
                     strongSelf.drawView.drawType = BKEditImageSelectEditTypeDrawCircle;
                     strongSelf.drawView.selectColor = strongSelf.bottomView.selectPaintingColor;
                     strongSelf.drawView.selectPaintingType = strongSelf.bottomView.selectPaintingType;
@@ -377,6 +400,8 @@
                     break;
                 case BKEditImageSelectEditTypeDrawRoundedRectangle:
                 {
+                    strongSelf.bottomNavViewHeight = strongSelf.bottomView.bk_height + BK_SYSTEM_TABBAR_HEIGHT - BK_SYSTEM_TABBAR_UI_HEIGHT;
+                    
                     strongSelf.drawView.drawType = BKEditImageSelectEditTypeDrawRoundedRectangle;
                     strongSelf.drawView.selectColor = strongSelf.bottomView.selectPaintingColor;
                     strongSelf.drawView.selectPaintingType = strongSelf.bottomView.selectPaintingType;
@@ -384,6 +409,8 @@
                     break;
                 case BKEditImageSelectEditTypeDrawArrow:
                 {
+                    strongSelf.bottomNavViewHeight = strongSelf.bottomView.bk_height + BK_SYSTEM_TABBAR_HEIGHT - BK_SYSTEM_TABBAR_UI_HEIGHT;
+                    
                     strongSelf.drawView.drawType = BKEditImageSelectEditTypeDrawArrow;
                     strongSelf.drawView.selectColor = strongSelf.bottomView.selectPaintingColor;
                     strongSelf.drawView.selectPaintingType = strongSelf.bottomView.selectPaintingType;
@@ -391,27 +418,33 @@
                     break;
                 case BKEditImageSelectEditTypeWrite:
                 {
-                    
-                }
-                    break;
-                case BKEditImageSelectEditTypeRotation:
-                {
-                    
+                    strongSelf.writeTextView.textColor = strongSelf.bottomView.selectPaintingColor;
+                    strongSelf.writeView.writeColor = strongSelf.writeTextView.textColor;
+                    if (!strongSelf.writeTextView.isFirstResponder) {
+                        [strongSelf.writeTextView becomeFirstResponder];
+                    }
                 }
                     break;
                 case BKEditImageSelectEditTypeClip:
                 {
-                    
+                    strongSelf.bottomNavViewHeight = strongSelf.bottomView.bk_height + BK_SYSTEM_TABBAR_HEIGHT - BK_SYSTEM_TABBAR_UI_HEIGHT;
                 }
                     break;
-                    
                 default:
+                {
+                    strongSelf.bottomNavViewHeight = strongSelf.bottomView.bk_height + BK_SYSTEM_TABBAR_HEIGHT - BK_SYSTEM_TABBAR_UI_HEIGHT;
+                }
                     break;
             }
         }];
         [_bottomView setRevocationAction:^{
             BK_STRONG_SELF(self);
             [strongSelf.drawView cleanFinallyDraw];
+        }];
+        [_bottomView setFinishWriteAction:^{
+            BK_STRONG_SELF(self);
+            strongSelf.writeView.writeString = strongSelf.writeTextView.text;
+            [strongSelf.writeTextView resignFirstResponder];
         }];
     }
     return _bottomView;
@@ -449,11 +482,17 @@
     CGImageRef imageRef = CGImageCreateWithImageInRect(image.CGImage, rect);
     image = [UIImage imageWithCGImage:imageRef];
     
-    UIGraphicsBeginImageContext(CGSizeMake(_editImage.size.width, _editImage.size.height));
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(_editImage.size.width, _editImage.size.height), NO, 1);
     [_editImage drawInRect:CGRectMake(0, 0, _editImage.size.width, _editImage.size.height)];
     [image drawInRect:CGRectMake(0, 0, _editImage.size.width, _editImage.size.height)];
-    UIImage * reSizeImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIImage * resultImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
+    
+    NSData * imageData = UIImagePNGRepresentation(resultImage);
+    BOOL saveflag = [imageData writeToFile:[NSString stringWithFormat:@"%@/save.png",NSTemporaryDirectory()] atomically:YES];
+    if (saveflag) {
+        resultImage = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/save.png",NSTemporaryDirectory()]];
+    }
     
     if (!flag) {
         [UIApplication sharedApplication].statusBarHidden = NO;
@@ -468,8 +507,61 @@
     _editImageView.image = _editImage;
     self.view.backgroundColor = [UIColor blackColor];
     
-    return reSizeImage;
+    return resultImage;
 }
 
+#pragma mark - NSNotification
+
+-(void)keyboardWillShow:(NSNotification*)notification
+{
+    CGRect keyboardFrame = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    CGFloat height = keyboardFrame.size.height;
+    
+    self.bottomNavViewHeight = height + self.bottomView.bk_height + BK_SYSTEM_TABBAR_HEIGHT - BK_SYSTEM_TABBAR_UI_HEIGHT;
+    self.writeTextView.bk_height = self.view.bk_height - self.bottomNavView.bk_height - CGRectGetMaxY(self.topNavView.frame);
+    self.writeTextView.bk_y = CGRectGetMaxY(self.topNavView.frame);
+    self.writeTextView.hidden = NO;
+    
+    [_bottomView keyboardWillShow:notification];
+}
+
+-(void)keyboardWillHide:(NSNotification*)notification
+{
+    self.bottomNavViewHeight = self.bottomView.bk_height + BK_SYSTEM_TABBAR_HEIGHT - BK_SYSTEM_TABBAR_UI_HEIGHT;
+    self.writeTextView.bk_height = 0;
+    self.writeTextView.bk_y = CGRectGetMinY(self.bottomNavView.frame);
+    self.writeTextView.hidden = YES;
+    
+    [_bottomView keyboardWillHide:notification];
+}
+
+#pragma mark - WriteTextView
+
+-(UITextView*)writeTextView
+{
+    if (!_writeTextView) {
+        _writeTextView = [[UITextView alloc] initWithFrame:CGRectMake(0, CGRectGetMinY(self.bottomNavView.frame), self.view.bk_width, 0)];
+        _writeTextView.backgroundColor = BKNavBackgroundColor;
+        _writeTextView.textColor = self.bottomView.selectPaintingColor;
+        _writeTextView.font = [UIFont systemFontOfSize:20];
+        _writeTextView.textContainerInset = UIEdgeInsetsMake(12, 8, 12, 8);
+        _writeTextView.showsVerticalScrollIndicator = NO;
+        _writeTextView.showsHorizontalScrollIndicator = NO;
+        [self.view addSubview:_writeTextView];
+    }
+    return _writeTextView;
+}
+
+#pragma mark - writeView
+
+-(BKEditImageWriteView*)writeView
+{
+    if (!_writeView) {
+        _writeView = [[BKEditImageWriteView alloc]init];
+        _writeView.writeFont = self.writeTextView.font;
+        [self.view insertSubview:_writeView aboveSubview:self.drawView];
+    }
+    return _writeView;
+}
 
 @end

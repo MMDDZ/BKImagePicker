@@ -380,6 +380,9 @@
 -(void)editBtnClick:(UIButton*)button
 {
     BKImageModel * model = _imageListArray[_nowImageIndex];
+    if (model.photoType == BKSelectPhotoTypeGIF) {
+        return;
+    }
     
     if (model.originalImageData) {
         BKEditImageViewController * vc = [[BKEditImageViewController alloc]init];

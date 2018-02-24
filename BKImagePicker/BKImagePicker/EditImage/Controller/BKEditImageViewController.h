@@ -9,17 +9,18 @@
 #import "BKImageBaseViewController.h"
 
 typedef NS_ENUM(NSUInteger, BKEditImageSelectEditType) {
-    BKEditImageSelectEditTypeDrawLine = 0,
+    BKEditImageSelectEditTypeNone = 0,
+    BKEditImageSelectEditTypeDrawLine,
     BKEditImageSelectEditTypeDrawCircle,
     BKEditImageSelectEditTypeDrawRoundedRectangle,
     BKEditImageSelectEditTypeDrawArrow,
     BKEditImageSelectEditTypeWrite,
-    BKEditImageSelectEditTypeRotation,
     BKEditImageSelectEditTypeClip
 };
 
 typedef NS_ENUM(NSUInteger, BKEditImageSelectPaintingType) {
-    BKEditImageSelectPaintingTypeColor = 0,
+    BKEditImageSelectPaintingTypeNone = 0,
+    BKEditImageSelectPaintingTypeColor,
     BKEditImageSelectPaintingTypeMosaic
 };
 

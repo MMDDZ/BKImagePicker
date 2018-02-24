@@ -12,7 +12,10 @@
 @interface BKEditImageBottomView()
 
 @property (nonatomic,strong) UIView * firstLevelView;
+@property (nonatomic,strong) UIScrollView * firstLevelScrollView;
 @property (nonatomic,weak) UIButton * selectFirstLevelBtn;
+@property (nonatomic,strong) UIButton * cancelWriteBtn;
+@property (nonatomic,strong) UIButton * affirmBtn;
 
 @property (nonatomic,strong) UIView * drawTypeView;
 @property (nonatomic,weak) UIButton * selectDrawTypeBtn;
@@ -21,6 +24,7 @@
 @property (nonatomic,strong) UIScrollView * paintingScrollView;
 @property (nonatomic,weak) UIButton * mosaicBtn;
 @property (nonatomic,weak) UIButton * selectPaintingBtn;
+@property (nonatomic,strong) UIButton * revocationBtn;
 @property (nonatomic,strong) NSArray * colorArr;
 
 @end
@@ -29,6 +33,30 @@
 @synthesize selectEditType = _selectEditType;
 @synthesize selectPaintingType = _selectPaintingType;
 @synthesize selectPaintingColor = _selectPaintingColor;
+
+#pragma mark - NSNotification
+
+-(void)keyboardWillShow:(NSNotification*)notification
+{
+    _paintingScrollView.bk_width = _paintingView.bk_width;
+    _mosaicBtn.hidden = YES;
+    _paintingScrollView.contentSize = CGSizeMake(CGRectGetMinX(_mosaicBtn.frame), _paintingScrollView.bk_height);
+    _revocationBtn.hidden = YES;
+    
+    _firstLevelScrollView.hidden = YES;
+    _cancelWriteBtn.hidden = NO;
+    [_affirmBtn setTitle:@"完成" forState:UIControlStateNormal];
+}
+
+-(void)keyboardWillHide:(NSNotification*)notification
+{
+    UIButton * button = (UIButton*)[_firstLevelScrollView viewWithTag:200];
+    [self editBtnClick:button];
+    
+    _firstLevelScrollView.hidden = NO;
+    _cancelWriteBtn.hidden = YES;
+    [_affirmBtn setTitle:@"确认" forState:UIControlStateNormal];
+}
 
 #pragma mark - init
 
@@ -56,23 +84,23 @@
         _firstLevelView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.bk_width, BK_SYSTEM_TABBAR_UI_HEIGHT)];
         _firstLevelView.backgroundColor = [UIColor clearColor];
         
-        UIScrollView * scrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, _firstLevelView.bk_width/5*4 - 6, _firstLevelView.bk_height)];
-        scrollView.backgroundColor = [UIColor clearColor];
-        scrollView.showsVerticalScrollIndicator = NO;
-        scrollView.showsHorizontalScrollIndicator = NO;
-        [_firstLevelView addSubview:scrollView];
+        _firstLevelScrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, _firstLevelView.bk_width/5*4 - 6, _firstLevelView.bk_height)];
+        _firstLevelScrollView.backgroundColor = [UIColor clearColor];
+        _firstLevelScrollView.showsVerticalScrollIndicator = NO;
+        _firstLevelScrollView.showsHorizontalScrollIndicator = NO;
+        [_firstLevelView addSubview:_firstLevelScrollView];
         
         NSString * bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
-        NSArray * imageArr_n = @[[bundlePath stringByAppendingString:@"/EditImage/draw_n.png"],[bundlePath stringByAppendingString:@"/EditImage/write_n.png"],[bundlePath stringByAppendingString:@"/EditImage/clip_n.png"],[bundlePath stringByAppendingString:@"/EditImage/rotation_n.png"]];
-        NSArray * imageArr_s = @[[bundlePath stringByAppendingString:@"/EditImage/draw_s.png"],[bundlePath stringByAppendingString:@"/EditImage/write_s.png"],[bundlePath stringByAppendingString:@"/EditImage/clip_s.png"],[bundlePath stringByAppendingString:@"/EditImage/rotation_s.png"]];
+        NSArray * imageArr_n = @[[bundlePath stringByAppendingString:@"/EditImage/draw_n.png"],[bundlePath stringByAppendingString:@"/EditImage/write_n.png"],[bundlePath stringByAppendingString:@"/EditImage/clip_n.png"]];
+        NSArray * imageArr_s = @[[bundlePath stringByAppendingString:@"/EditImage/draw_s.png"],[bundlePath stringByAppendingString:@"/EditImage/write_s.png"],[bundlePath stringByAppendingString:@"/EditImage/clip_s.png"]];
         
         __block UIView * lastView;
         [imageArr_n enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             UIButton * button = [UIButton buttonWithType:UIButtonTypeCustom];
-            button.frame = CGRectMake(idx*50, 0, 50, scrollView.bk_height);
+            button.frame = CGRectMake(idx*50, 0, 50, _firstLevelScrollView.bk_height);
             [button addTarget:self action:@selector(editBtnClick:) forControlEvents:UIControlEventTouchUpInside];
             button.tag = (idx+1)*100;
-            [scrollView addSubview:button];
+            [_firstLevelScrollView addSubview:button];
             
             UIImageView * imageView = [[UIImageView alloc]initWithFrame:CGRectMake((button.bk_width - 20)/2, (button.bk_height - 20)/2, 20, 20)];
             imageView.clipsToBounds = YES;
@@ -83,18 +111,30 @@
             
             lastView = button;
         }];
-        scrollView.contentSize = CGSizeMake(CGRectGetMaxX(lastView.frame), scrollView.bk_height);
+        _firstLevelScrollView.contentSize = CGSizeMake(CGRectGetMaxX(lastView.frame), _firstLevelScrollView.bk_height);
         
-        UIButton * sendBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        sendBtn.frame = CGRectMake(_firstLevelView.bk_width/5*4, (_firstLevelView.bk_height - 37)/2, _firstLevelView.bk_width/5-6, 37);
-        [sendBtn setTitle:@"确认" forState:UIControlStateNormal];
-        [sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [sendBtn setBackgroundColor:BKHighlightColor];
-        sendBtn.titleLabel.font = [UIFont systemFontOfSize:14];
-        sendBtn.layer.cornerRadius = 4;
-        sendBtn.clipsToBounds = YES;
-        [sendBtn addTarget:self action:@selector(sendBtnClick) forControlEvents:UIControlEventTouchUpInside];
-        [_firstLevelView addSubview:sendBtn];
+        _cancelWriteBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        _cancelWriteBtn.frame = CGRectMake(6, (_firstLevelView.bk_height - 37)/2, _firstLevelView.bk_width/5-6, 37);
+        [_cancelWriteBtn setTitle:@"取消" forState:UIControlStateNormal];
+        [_cancelWriteBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [_cancelWriteBtn setBackgroundColor:BKHighlightColor];
+        _cancelWriteBtn.titleLabel.font = [UIFont systemFontOfSize:14];
+        _cancelWriteBtn.layer.cornerRadius = 4;
+        _cancelWriteBtn.clipsToBounds = YES;
+        [_cancelWriteBtn addTarget:self action:@selector(cancelWriteBtnClick) forControlEvents:UIControlEventTouchUpInside];
+        _cancelWriteBtn.hidden = YES;
+        [_firstLevelView addSubview:_cancelWriteBtn];
+        
+        _affirmBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        _affirmBtn.frame = CGRectMake(_firstLevelView.bk_width/5*4, (_firstLevelView.bk_height - 37)/2, _firstLevelView.bk_width/5-6, 37);
+        [_affirmBtn setTitle:@"确认" forState:UIControlStateNormal];
+        [_affirmBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [_affirmBtn setBackgroundColor:BKHighlightColor];
+        _affirmBtn.titleLabel.font = [UIFont systemFontOfSize:14];
+        _affirmBtn.layer.cornerRadius = 4;
+        _affirmBtn.clipsToBounds = YES;
+        [_affirmBtn addTarget:self action:@selector(affirmBtnClick) forControlEvents:UIControlEventTouchUpInside];
+        [_firstLevelView addSubview:_affirmBtn];
         
         UIImageView * line = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, _firstLevelView.bk_width, BK_ONE_PIXEL)];
         line.backgroundColor = BKLineColor;
@@ -105,21 +145,14 @@
 
 -(void)editBtnClick:(UIButton*)button
 {
-    if (self.selectFirstLevelBtn == button) {
-        return;
-    }
-    
     NSString * bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
-    NSArray * imageArr_n = @[[bundlePath stringByAppendingString:@"/EditImage/draw_n.png"],[bundlePath stringByAppendingString:@"/EditImage/write_n.png"],[bundlePath stringByAppendingString:@"/EditImage/clip_n.png"],[bundlePath stringByAppendingString:@"/EditImage/rotation_n.png"]];
-    NSArray * imageArr_s = @[[bundlePath stringByAppendingString:@"/EditImage/draw_s.png"],[bundlePath stringByAppendingString:@"/EditImage/write_s.png"],[bundlePath stringByAppendingString:@"/EditImage/clip_s.png"],[bundlePath stringByAppendingString:@"/EditImage/rotation_s.png"]];
+    NSArray * imageArr_n = @[[bundlePath stringByAppendingString:@"/EditImage/draw_n.png"],[bundlePath stringByAppendingString:@"/EditImage/write_n.png"],[bundlePath stringByAppendingString:@"/EditImage/clip_n.png"]];
+    NSArray * imageArr_s = @[[bundlePath stringByAppendingString:@"/EditImage/draw_s.png"],[bundlePath stringByAppendingString:@"/EditImage/write_s.png"],[bundlePath stringByAppendingString:@"/EditImage/clip_s.png"]];
     
     if (_selectFirstLevelBtn) {
         UIImageView * oldImageView = (UIImageView*)[self.selectFirstLevelBtn viewWithTag:self.selectFirstLevelBtn.tag+1];
         oldImageView.image = [UIImage imageWithContentsOfFile:imageArr_n[self.selectFirstLevelBtn.tag/100-1]];
     }
-    self.selectFirstLevelBtn = button;
-    UIImageView * imageView = (UIImageView*)[self.selectFirstLevelBtn viewWithTag:self.selectFirstLevelBtn.tag+1];
-    imageView.image = [UIImage imageWithContentsOfFile:imageArr_s[self.selectFirstLevelBtn.tag/100-1]];
     
     if (_paintingView) {
         [_paintingView removeFromSuperview];
@@ -130,6 +163,28 @@
         [_drawTypeView removeFromSuperview];
         _drawTypeView = nil;
     }
+    
+    if (self.selectFirstLevelBtn == button) {
+        
+        self.selectFirstLevelBtn = nil;
+        
+        _selectEditType = BKEditImageSelectEditTypeNone;
+        _selectPaintingType = BKEditImageSelectPaintingTypeNone;
+        _selectPaintingColor = nil;
+        
+        _firstLevelView.bk_y = 0;
+        self.bk_height = CGRectGetMaxY(_firstLevelView.frame);
+        
+        if (self.selectTypeAction) {
+            self.selectTypeAction();
+        }
+        
+        return;
+    }
+    
+    self.selectFirstLevelBtn = button;
+    UIImageView * imageView = (UIImageView*)[self.selectFirstLevelBtn viewWithTag:self.selectFirstLevelBtn.tag+1];
+    imageView.image = [UIImage imageWithContentsOfFile:imageArr_s[self.selectFirstLevelBtn.tag/100-1]];
     
     switch (button.tag/100-1) {
         case 0:
@@ -169,14 +224,8 @@
         case 2:
         {
             _selectEditType = BKEditImageSelectEditTypeClip;
-            
-            _firstLevelView.bk_y = 0;
-            self.bk_height = CGRectGetMaxY(_firstLevelView.frame);
-        }
-            break;
-        case 3:
-        {
-            _selectEditType = BKEditImageSelectEditTypeRotation;
+            _selectPaintingType = BKEditImageSelectPaintingTypeNone;
+            _selectPaintingColor = nil;
             
             _firstLevelView.bk_y = 0;
             self.bk_height = CGRectGetMaxY(_firstLevelView.frame);
@@ -191,10 +240,21 @@
     }
 }
 
--(void)sendBtnClick
+-(void)cancelWriteBtnClick
 {
-    if (self.sendBtnAction) {
-        self.sendBtnAction();
+    [[UIApplication sharedApplication].keyWindow endEditing:YES];
+}
+
+-(void)affirmBtnClick
+{
+    if ([_affirmBtn.titleLabel.text isEqualToString:@"确认"]) {
+        if (self.sendBtnAction) {
+            self.sendBtnAction();
+        }
+    }else if ([_affirmBtn.titleLabel.text isEqualToString:@"完成"]) {
+        if (self.finishWriteAction) {
+            self.finishWriteAction();
+        }
     }
 }
 
@@ -361,21 +421,21 @@
         }];
         _paintingScrollView.contentSize = CGSizeMake(CGRectGetMaxX(lastView.frame), _paintingScrollView.bk_height);
         
-        UIButton * revocationBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        revocationBtn.frame = CGRectMake(CGRectGetMaxX(_paintingScrollView.frame), 0, _paintingView.bk_width - CGRectGetMaxX(_paintingScrollView.frame), _paintingView.bk_height);
-        [revocationBtn addTarget:self action:@selector(revocationBtnClick) forControlEvents:UIControlEventTouchUpInside];
-        [_paintingView insertSubview:revocationBtn belowSubview:_paintingScrollView];
+        _revocationBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        _revocationBtn.frame = CGRectMake(CGRectGetMaxX(_paintingScrollView.frame), 0, _paintingView.bk_width - CGRectGetMaxX(_paintingScrollView.frame), _paintingView.bk_height);
+        [_revocationBtn addTarget:self action:@selector(revocationBtnClick) forControlEvents:UIControlEventTouchUpInside];
+        [_paintingView insertSubview:_revocationBtn belowSubview:_paintingScrollView];
         
         NSString * bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
-        UIImageView * revocationImageView = [[UIImageView alloc]initWithFrame:CGRectMake((revocationBtn.bk_width - 20)/2, (revocationBtn.bk_height - 20)/2, 20, 20)];
+        UIImageView * revocationImageView = [[UIImageView alloc]initWithFrame:CGRectMake((_revocationBtn.bk_width - 20)/2, (_revocationBtn.bk_height - 20)/2, 20, 20)];
         revocationImageView.clipsToBounds = YES;
         revocationImageView.contentMode = UIViewContentModeScaleAspectFit;
         revocationImageView.image = [UIImage imageWithContentsOfFile:[bundlePath stringByAppendingString:@"/EditImage/revocation.png"]];
-        [revocationBtn addSubview:revocationImageView];
+        [_revocationBtn addSubview:revocationImageView];
         
-        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(revocationBtn.bk_x, 0, BK_ONE_PIXEL, _paintingView.bk_height)];
+        UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, BK_ONE_PIXEL, _paintingView.bk_height)];
         line.backgroundColor = BKLineColor;
-        [_paintingView insertSubview:line aboveSubview:revocationBtn];
+        [_revocationBtn addSubview:line];
         
     }
     return _paintingView;
