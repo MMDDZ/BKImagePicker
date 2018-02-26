@@ -38,10 +38,31 @@
 
 -(void)reeditWriteWithWriteStringColor:(UIColor *)color
 {
-    _selectPaintingColor = color;
+    if (_paintingView) {
+        [_paintingView removeFromSuperview];
+        _paintingView = nil;
+    }
+    
+    if (_drawTypeView) {
+        [_drawTypeView removeFromSuperview];
+        _drawTypeView = nil;
+    }
     
     UIButton * button = (UIButton*)[_firstLevelScrollView viewWithTag:200];
-    [self editBtnClick:button];
+    self.selectFirstLevelBtn = button;
+    
+    _selectEditType = BKEditImageSelectEditTypeWrite;
+    _selectPaintingType = BKEditImageSelectPaintingTypeColor;
+    _selectPaintingColor = color;
+    
+    if (!_paintingView) {
+        [self addSubview:self.paintingView];
+    }
+    
+    _paintingView.bk_y = 0;
+    _firstLevelView.bk_y = CGRectGetMaxY(_paintingView.frame);
+    self.bk_height = CGRectGetMaxY(_firstLevelView.frame);
+    
 }
 
 #pragma mark - NSNotification
