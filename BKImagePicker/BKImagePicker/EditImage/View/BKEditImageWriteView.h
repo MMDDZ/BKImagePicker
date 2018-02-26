@@ -23,4 +23,14 @@
  */
 @property (nonatomic,strong) UIColor * writeColor;
 
+/**
+ 重新编辑
+ */
+@property (nonatomic,copy) void (^reeditAction)(BKEditImageWriteView * writeView);
+/**
+ 移动输入文字
+ panGesture 移动手势
+ */
+@property (nonatomic,copy) void (^moveWriteAction)(BKEditImageWriteView * writeView, UIPanGestureRecognizer * panGesture);
+
 @end

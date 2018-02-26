@@ -67,7 +67,11 @@
 {
     [super drawRect:rect];
     
-    NSDictionary * attributes = @{NSFontAttributeName:_writeFont?_writeFont:[UIFont systemFontOfSize:20],NSForegroundColorAttributeName:_writeColor?_writeColor:[UIColor redColor]};
+    NSMutableParagraphStyle* paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+    paragraphStyle.lineBreakMode = NSLineBreakByCharWrapping;
+    paragraphStyle.alignment = NSTextAlignmentCenter;
+    
+    NSDictionary * attributes = @{NSParagraphStyleAttributeName:paragraphStyle,NSFontAttributeName:_writeFont?_writeFont:[UIFont systemFontOfSize:20],NSForegroundColorAttributeName:_writeColor?_writeColor:[UIColor redColor]};
     [self.writeString drawWithRect:self.bounds options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil];
     
     
@@ -97,7 +101,9 @@
 
 -(void)tapGesture:(UITapGestureRecognizer*)tapGesture
 {
-    
+    if (self.reeditAction) {
+        self.reeditAction(self);
+    }
 }
 
 -(void)panGesture:(UIPanGestureRecognizer*)panGesture
@@ -106,6 +112,10 @@
     
     self.bk_centerX = self.bk_centerX + translation.x/2;
     self.bk_centerY = self.bk_centerY + translation.y/2;
+    
+    if (self.moveWriteAction) {
+        self.moveWriteAction(self,panGesture);
+    }
     
     [panGesture setTranslation:CGPointZero inView:panGesture.view];
 }

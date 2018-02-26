@@ -53,6 +53,8 @@
 
 @property (nonatomic,strong) UITextView * writeTextView;
 @property (nonatomic,strong) BKEditImageWriteView * writeView;
+@property (nonatomic,strong) NSMutableArray * writeViewArr;
+@property (nonatomic,strong) UIView * bottomDeleteWriteView;
 
 @end
 
@@ -441,10 +443,27 @@
             BK_STRONG_SELF(self);
             [strongSelf.drawView cleanFinallyDraw];
         }];
-        [_bottomView setFinishWriteAction:^{
+        [_bottomView setEndEditWriteAction:^(BOOL isSave) {
             BK_STRONG_SELF(self);
-            strongSelf.writeView.writeString = strongSelf.writeTextView.text;
+            
+            strongSelf.writeView.hidden = NO;
+            [strongSelf.view bringSubviewToFront:strongSelf.topNavView];
+            [strongSelf.view bringSubviewToFront:strongSelf.bottomNavView];
+            
+            if (isSave) {
+                strongSelf.writeView.writeString = strongSelf.writeTextView.text;
+                if (![[strongSelf.view subviews] containsObject:strongSelf.writeView]) {
+                    [strongSelf.view addSubview:strongSelf.writeView];
+                }
+                if (![strongSelf.writeViewArr containsObject:strongSelf.writeView]) {
+                    [strongSelf.writeViewArr addObject:strongSelf.writeView];
+                }
+            }
+            
+            strongSelf.writeView = nil;
             [strongSelf.writeTextView resignFirstResponder];
+            
+            strongSelf.writeTextView.text = @"";
         }];
     }
     return _bottomView;
@@ -554,14 +573,111 @@
 
 #pragma mark - writeView
 
+-(NSMutableArray*)writeViewArr
+{
+    if (!_writeViewArr) {
+        _writeViewArr = [NSMutableArray array];
+    }
+    return _writeViewArr;
+}
+
+static BOOL writeDeleteFlag = NO;
 -(BKEditImageWriteView*)writeView
 {
     if (!_writeView) {
         _writeView = [[BKEditImageWriteView alloc]init];
         _writeView.writeFont = self.writeTextView.font;
-        [self.view insertSubview:_writeView aboveSubview:self.drawView];
+        
+        BK_WEAK_SELF(self);
+        [_writeView setReeditAction:^(BKEditImageWriteView *writeView) {
+            BK_STRONG_SELF(self);
+            [strongSelf.writeViewArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                if (obj == writeView) {
+                    
+                    strongSelf.writeView = writeView;
+                    strongSelf.writeView.hidden = YES;
+                    
+                    [strongSelf.bottomView reeditWriteWithWriteStringColor:strongSelf.writeView.writeColor];
+                    
+                    strongSelf.writeTextView.textColor = strongSelf.writeView.writeColor;
+                    strongSelf.writeTextView.text = strongSelf.writeView.writeString;
+                    if (!strongSelf.writeTextView.isFirstResponder) {
+                        [strongSelf.writeTextView becomeFirstResponder];
+                    }
+                    
+                    *stop = YES;
+                }
+            }];
+        }];
+        [_writeView setMoveWriteAction:^(BKEditImageWriteView *writeView, UIPanGestureRecognizer *panGesture) {
+            BK_STRONG_SELF(self);
+            
+            switch (panGesture.state) {
+                case UIGestureRecognizerStateBegan:
+                {
+                    [UIApplication sharedApplication].statusBarHidden = YES;
+                    strongSelf.topNavView.hidden = YES;
+                    strongSelf.bottomNavView.hidden = YES;
+                    
+                    [strongSelf.view addSubview:strongSelf.bottomDeleteWriteView];
+                    [strongSelf.view bringSubviewToFront:writeView];
+                    [strongSelf.view bringSubviewToFront:strongSelf.topNavView];
+                    [strongSelf.view bringSubviewToFront:strongSelf.bottomNavView];
+                }
+                    break;
+                case UIGestureRecognizerStateChanged:
+                {
+                    CGPoint point = [panGesture locationInView:strongSelf.view];
+                    if (CGRectContainsPoint(strongSelf.bottomDeleteWriteView.frame, point)) {
+                        strongSelf.bottomDeleteWriteView.backgroundColor = BK_HEX_RGB(0xff725c);
+                        writeDeleteFlag = YES;
+                    }else{
+                        strongSelf.bottomDeleteWriteView.backgroundColor = BKHighlightColor;
+                        writeDeleteFlag = NO;
+                    }
+                }
+                    break;
+                case UIGestureRecognizerStateEnded:
+                case UIGestureRecognizerStateCancelled:
+                case UIGestureRecognizerStateFailed:
+                {
+                    [UIApplication sharedApplication].statusBarHidden = NO;
+                    strongSelf.topNavView.hidden = NO;
+                    strongSelf.bottomNavView.hidden = NO;
+                    
+                    [strongSelf.bottomDeleteWriteView removeFromSuperview];
+                    strongSelf.bottomDeleteWriteView = nil;
+                    
+                    if (writeDeleteFlag) {
+                        [strongSelf.writeViewArr removeObject:writeView];
+                        [writeView removeFromSuperview];
+                    }
+                }
+                    break;
+                default:
+                    break;
+            }
+        }];
     }
+    
     return _writeView;
+}
+
+#pragma mark - bottomDeleteWriteView
+
+-(UIView*)bottomDeleteWriteView
+{
+    if (!_bottomDeleteWriteView) {
+        _bottomDeleteWriteView = [[UIView alloc]initWithFrame:CGRectMake(0, self.view.bk_height - 49, self.view.bk_width, 49)];
+        _bottomDeleteWriteView.backgroundColor = BKHighlightColor;
+        
+        UIImageView * deleteImageView = [[UIImageView alloc]initWithFrame:CGRectMake((_bottomDeleteWriteView.bk_width - 30)/2, (_bottomDeleteWriteView.bk_height - 30)/2, 30, 30)];
+        deleteImageView.image = [self imageWithImageName:@"delete_write"];
+        deleteImageView.clipsToBounds = YES;
+        deleteImageView.contentMode = UIViewContentModeScaleAspectFit;
+        [_bottomDeleteWriteView addSubview:deleteImageView];
+    }
+    return _bottomDeleteWriteView;
 }
 
 @end

@@ -33,12 +33,22 @@
 @property (nonatomic,copy) void (^sendBtnAction)(void);
 /**
  完成编辑文本
+ isSave 是否保存
  */
-@property (nonatomic,copy) void (^finishWriteAction)(void);
+@property (nonatomic,copy) void (^endEditWriteAction)(BOOL isSave);
 /**
  撤销
  */
 @property (nonatomic,copy) void (^revocationAction)(void);
+
+
+
+/**
+ 重新编辑本文
+
+ @param color 编辑本文颜色
+ */
+-(void)reeditWriteWithWriteStringColor:(UIColor*)color;
 
 /**
  键盘即将显示

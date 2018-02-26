@@ -34,6 +34,33 @@
 @synthesize selectPaintingType = _selectPaintingType;
 @synthesize selectPaintingColor = _selectPaintingColor;
 
+#pragma mark - 重新编辑文本
+
+-(void)reeditWriteWithWriteStringColor:(UIColor *)color
+{
+    if (_paintingView) {
+        [_paintingView removeFromSuperview];
+        _paintingView = nil;
+    }
+    
+    if (_drawTypeView) {
+        [_drawTypeView removeFromSuperview];
+        _drawTypeView = nil;
+    }
+    
+    _selectEditType = BKEditImageSelectEditTypeWrite;
+    _selectPaintingType = BKEditImageSelectPaintingTypeColor;
+    _selectPaintingColor = color;
+    
+    if (!_paintingView) {
+        [self addSubview:self.paintingView];
+    }
+    
+    _paintingView.bk_y = 0;
+    _firstLevelView.bk_y = CGRectGetMaxY(_paintingView.frame);
+    self.bk_height = CGRectGetMaxY(_firstLevelView.frame);
+}
+
 #pragma mark - NSNotification
 
 -(void)keyboardWillShow:(NSNotification*)notification
@@ -242,7 +269,9 @@
 
 -(void)cancelWriteBtnClick
 {
-    [[UIApplication sharedApplication].keyWindow endEditing:YES];
+    if (self.endEditWriteAction) {
+        self.endEditWriteAction(NO);
+    }
 }
 
 -(void)affirmBtnClick
@@ -252,8 +281,8 @@
             self.sendBtnAction();
         }
     }else if ([_affirmBtn.titleLabel.text isEqualToString:@"完成"]) {
-        if (self.finishWriteAction) {
-            self.finishWriteAction();
+        if (self.endEditWriteAction) {
+            self.endEditWriteAction(YES);
         }
     }
 }
@@ -412,9 +441,18 @@
             imageView.layer.cornerRadius = 4;
             [button addSubview:imageView];
             
-            if (idx == 0) {
-                self.selectPaintingBtn = button;
-                imageBgView.backgroundColor = BKHighlightColor;
+            if (_selectPaintingColor) {
+                if ([obj isKindOfClass:[UIColor class]]) {
+                    if (CGColorEqualToColor(((UIColor*)obj).CGColor, _selectPaintingColor.CGColor)) {
+                        self.selectPaintingBtn = button;
+                        imageBgView.backgroundColor = BKHighlightColor;
+                    }
+                }
+            }else{
+                if (idx == 0) {
+                    self.selectPaintingBtn = button;
+                    imageBgView.backgroundColor = BKHighlightColor;
+                }
             }
             
             lastView = button;

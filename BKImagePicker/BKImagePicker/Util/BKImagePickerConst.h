@@ -38,7 +38,7 @@ typedef NS_ENUM(NSInteger,BKSelectPhotoType) {
 //工具栏背景颜色
 #define BKNavBackgroundColor [UIColor colorWithWhite:1 alpha:0.8]
 //所有线的颜色
-#define BKLineColor [UIColor colorWithWhite:0.9 alpha:1]
+#define BKLineColor [UIColor colorWithWhite:0.85 alpha:1]
 //高亮颜色
 #define BKHighlightColor BK_HEX_RGB(0x2D96FA)
 //导航字体默认颜色
