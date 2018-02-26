@@ -15,10 +15,6 @@
  */
 @property (nonatomic,copy) NSString * writeString;
 /**
- 输入文字内容的大小
- */
-@property (nonatomic,strong) UIFont * writeFont;
-/**
  输入文字内容的颜色
  */
 @property (nonatomic,strong) UIColor * writeColor;

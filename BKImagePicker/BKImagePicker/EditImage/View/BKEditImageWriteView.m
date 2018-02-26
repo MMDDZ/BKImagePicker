@@ -11,6 +11,9 @@
 
 @interface BKEditImageWriteView()<UIGestureRecognizerDelegate>
 
+@property (nonatomic,assign) CGFloat width;
+@property (nonatomic,assign) CGFloat height;
+
 @property (nonatomic,assign) CGFloat scale;
 @property (nonatomic,assign) CGFloat rotation;
 
@@ -27,13 +30,20 @@
         return;
     }
     
-    CGFloat width = [[BKTool sharedManager] sizeWithString:_writeString UIHeight:MAXFLOAT font:_writeFont?_writeFont:[UIFont systemFontOfSize:20]].width + 40;
-    if (width > BK_SCREENW - 40) {
-        width = BK_SCREENW - 40;
-        CGFloat height = [[BKTool sharedManager] sizeWithString:_writeString UIWidth:width font:_writeFont?_writeFont:[UIFont systemFontOfSize:20]].height + 40;
-        self.frame = CGRectMake((BK_SCREENW - width)/2, (BK_SCREENH - height)/2, width, height);
-    }else {
-        self.frame = CGRectMake((BK_SCREENW - width)/2, (BK_SCREENH - 60)/2, width, 60);
+    _width = [[BKTool sharedManager] sizeWithString:_writeString UIHeight:MAXFLOAT font:[UIFont systemFontOfSize:30]].width + 20;
+    if (_width > BK_SCREENW - 20) {
+        _width = BK_SCREENW - 20;
+    }
+    
+    _height = [[BKTool sharedManager] sizeWithString:_writeString UIWidth:_width font:[UIFont systemFontOfSize:30]].height + 20;
+    
+    self.transform = CGAffineTransformIdentity;
+    
+    if (CGRectEqualToRect(self.frame, CGRectZero)) {
+        self.frame = CGRectMake((BK_SCREENW - _width)/2, (BK_SCREENH - _width)/2, _width, _height);
+    }else{
+        self.bk_width = _width;
+        self.bk_height = _height;
     }
     
     [self setNeedsDisplay];
@@ -67,14 +77,10 @@
 {
     [super drawRect:rect];
     
-    NSMutableParagraphStyle* paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-    paragraphStyle.lineBreakMode = NSLineBreakByCharWrapping;
-    paragraphStyle.alignment = NSTextAlignmentCenter;
+    NSDictionary * attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:30],NSForegroundColorAttributeName:_writeColor?_writeColor:[UIColor redColor]};
+    [self.writeString drawWithRect:CGRectMake(10, 10, self.bk_width - 20, self.bk_height - 20) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil];
     
-    NSDictionary * attributes = @{NSParagraphStyleAttributeName:paragraphStyle,NSFontAttributeName:_writeFont?_writeFont:[UIFont systemFontOfSize:20],NSForegroundColorAttributeName:_writeColor?_writeColor:[UIColor redColor]};
-    [self.writeString drawWithRect:self.bounds options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil];
-    
-    
+    [self resetTransform];
 }
 
 #pragma mark - 手势
@@ -117,6 +123,14 @@
         self.moveWriteAction(self,panGesture);
     }
     
+    if (panGesture.state == UIGestureRecognizerStateEnded || panGesture.state == UIGestureRecognizerStateFailed || panGesture.state == UIGestureRecognizerStateCancelled) {
+        self.layer.borderWidth = 0;
+        self.layer.borderColor = nil;
+    }else{
+        self.layer.borderWidth = 1/_scale;
+        self.layer.borderColor = BKHighlightColor.CGColor;
+    }
+    
     [panGesture setTranslation:CGPointZero inView:panGesture.view];
 }
 
@@ -124,18 +138,36 @@
 {
     self.rotation = self.rotation + rotationGesture.rotation/2;
     [self resetTransform];
+    
+    if (rotationGesture.state == UIGestureRecognizerStateEnded || rotationGesture.state == UIGestureRecognizerStateFailed || rotationGesture.state == UIGestureRecognizerStateCancelled) {
+        self.layer.borderWidth = 0;
+        self.layer.borderColor = nil;
+    }else{
+        self.layer.borderWidth = 1/_scale;
+        self.layer.borderColor = BKHighlightColor.CGColor;
+    }
+    
     rotationGesture.rotation = 0;
 }
 
 -(void)pinchGesture:(UIPinchGestureRecognizer*)pinchGesture
 {
     _scale = _scale + (pinchGesture.scale - 1)/2;
-    if (_scale > 5) {
-        _scale = 5;
+    if (_scale > 2.5) {
+        _scale = 2.5;
     }else if (_scale < 0.5) {
         _scale = 0.5;
     }
     [self resetTransform];
+    
+    if (pinchGesture.state == UIGestureRecognizerStateEnded || pinchGesture.state == UIGestureRecognizerStateFailed || pinchGesture.state == UIGestureRecognizerStateCancelled) {
+        self.layer.borderWidth = 0;
+        self.layer.borderColor = nil;
+    }else{
+        self.layer.borderWidth = 1/_scale;
+        self.layer.borderColor = BKHighlightColor.CGColor;
+    }
+    
     pinchGesture.scale = 1;
 }
 

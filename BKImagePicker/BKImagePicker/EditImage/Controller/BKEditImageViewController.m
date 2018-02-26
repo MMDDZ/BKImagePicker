@@ -15,7 +15,7 @@
 #import "BKEditImageBottomView.h"
 #import "BKEditImageWriteView.h"
 
-@interface BKEditImageViewController ()<BKDrawViewDelegate>
+@interface BKEditImageViewController ()<BKDrawViewDelegate,UITextViewDelegate>
 
 @property (nonatomic,copy) NSString * imagePath;//图片路径
 
@@ -443,28 +443,6 @@
             BK_STRONG_SELF(self);
             [strongSelf.drawView cleanFinallyDraw];
         }];
-        [_bottomView setEndEditWriteAction:^(BOOL isSave) {
-            BK_STRONG_SELF(self);
-            
-            strongSelf.writeView.hidden = NO;
-            [strongSelf.view bringSubviewToFront:strongSelf.topNavView];
-            [strongSelf.view bringSubviewToFront:strongSelf.bottomNavView];
-            
-            if (isSave) {
-                strongSelf.writeView.writeString = strongSelf.writeTextView.text;
-                if (![[strongSelf.view subviews] containsObject:strongSelf.writeView]) {
-                    [strongSelf.view addSubview:strongSelf.writeView];
-                }
-                if (![strongSelf.writeViewArr containsObject:strongSelf.writeView]) {
-                    [strongSelf.writeViewArr addObject:strongSelf.writeView];
-                }
-            }
-            
-            strongSelf.writeView = nil;
-            [strongSelf.writeTextView resignFirstResponder];
-            
-            strongSelf.writeTextView.text = @"";
-        }];
     }
     return _bottomView;
 }
@@ -566,9 +544,48 @@
         _writeTextView.textContainerInset = UIEdgeInsetsMake(12, 8, 12, 8);
         _writeTextView.showsVerticalScrollIndicator = NO;
         _writeTextView.showsHorizontalScrollIndicator = NO;
+        _writeTextView.delegate = self;
         [self.view addSubview:_writeTextView];
     }
     return _writeTextView;
+}
+
+#pragma mark - UITextViewDelegate
+
+- (void)textViewDidBeginEditing:(UITextView *)textView
+{
+    if (textView == _writeTextView) {
+        self.bottomView.isSaveEditWrite = YES;
+    }
+}
+
+- (void)textViewDidEndEditing:(UITextView *)textView
+{
+    if (textView == _writeTextView) {
+        if (self.bottomView.isSaveEditWrite) {
+            self.writeView.writeString = self.writeTextView.text;
+            if (![[self.view subviews] containsObject:self.writeView]) {
+                [self.view addSubview:self.writeView];
+            }
+            if (![self.writeViewArr containsObject:self.writeView]) {
+                [self.writeViewArr addObject:self.writeView];
+            }
+        }
+        
+        self.writeView.hidden = NO;
+        [self.view bringSubviewToFront:self.topNavView];
+        [self.view bringSubviewToFront:self.bottomNavView];
+        [self.view bringSubviewToFront:self.writeTextView];
+        
+        if ([self.writeView.writeString length] == 0) {
+            [self.writeViewArr removeObject:self.writeView];
+            [self.writeView removeFromSuperview];
+        }
+        
+        self.writeView = nil;
+        
+        self.writeTextView.text = @"";
+    }
 }
 
 #pragma mark - writeView
@@ -586,7 +603,6 @@ static BOOL writeDeleteFlag = NO;
 {
     if (!_writeView) {
         _writeView = [[BKEditImageWriteView alloc]init];
-        _writeView.writeFont = self.writeTextView.font;
         
         BK_WEAK_SELF(self);
         [_writeView setReeditAction:^(BKEditImageWriteView *writeView) {
@@ -623,6 +639,7 @@ static BOOL writeDeleteFlag = NO;
                     [strongSelf.view bringSubviewToFront:writeView];
                     [strongSelf.view bringSubviewToFront:strongSelf.topNavView];
                     [strongSelf.view bringSubviewToFront:strongSelf.bottomNavView];
+                    [strongSelf.view bringSubviewToFront:strongSelf.writeTextView];
                 }
                     break;
                 case UIGestureRecognizerStateChanged:

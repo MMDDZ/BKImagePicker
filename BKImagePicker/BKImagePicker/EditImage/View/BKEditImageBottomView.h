@@ -32,10 +32,9 @@
  */
 @property (nonatomic,copy) void (^sendBtnAction)(void);
 /**
- 完成编辑文本
- isSave 是否保存
+ 编辑文本是否保存
  */
-@property (nonatomic,copy) void (^endEditWriteAction)(BOOL isSave);
+@property (nonatomic,assign) BOOL isSaveEditWrite;
 /**
  撤销
  */
