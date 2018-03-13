@@ -8,7 +8,20 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol BKEditImageWriteViewDelegate <NSObject>
+
+@required
+
+/**
+ 目前图片放大比例 (移动前必传)
+ */
+-(CGFloat)getNowImageZoomScale;
+
+@end
+
 @interface BKEditImageWriteView : UIView
+
+@property (nonatomic,assign) id<BKEditImageWriteViewDelegate> delegate;
 
 /**
  输入的内容

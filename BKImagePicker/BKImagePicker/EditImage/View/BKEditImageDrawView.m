@@ -1,20 +1,20 @@
 //
-//  BKDrawView.m
+//  BKEditImageDrawView.m
 //  BKImagePicker
 //
 //  Created by 兆林 on 2017/6/21.
 //  Copyright © 2017年 BIKE. All rights reserved.
 //
 
-#import "BKDrawView.h"
+#import "BKEditImageDrawView.h"
 #import "UIBezierPath+BKImagePicker.h"
 #import "BKImagePickerConst.h"
 
-@interface BKDrawView()
+@interface BKEditImageDrawView()
 
 @end
 
-@implementation BKDrawView
+@implementation BKEditImageDrawView
 
 -(void)layoutSubviews
 {
@@ -74,7 +74,7 @@
     //之前画的线
     if ([self.lineArray count] > 0) {
         for (int i = 0; i < [self.lineArray count]; i++) {
-            BKDrawModel * model = self.lineArray[i];
+            BKEditImageDrawModel * model = self.lineArray[i];
             if (model.selectPaintingType == BKEditImageSelectPaintingTypeColor) {
                 if (model.drawType == BKEditImageSelectEditTypeDrawLine || model.drawType == BKEditImageSelectEditTypeDrawRoundedRectangle) {
                     [self drawLine:context pointArr:model.pointArray lineColor:model.selectColor.CGColor];

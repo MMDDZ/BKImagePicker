@@ -116,8 +116,16 @@
 {
     CGPoint translation = [panGesture translationInView:[UIApplication sharedApplication].keyWindow];
     
-    self.bk_centerX = self.bk_centerX + translation.x/2;
-    self.bk_centerY = self.bk_centerY + translation.y/2;
+    CGFloat nowImageZoomScale = 0;
+    if ([self.delegate respondsToSelector:@selector(getNowImageZoomScale)]) {
+        nowImageZoomScale = [self.delegate getNowImageZoomScale];
+        if (nowImageZoomScale == 0) {
+            nowImageZoomScale = 1;
+        }
+    }
+    
+    self.bk_centerX = self.bk_centerX + translation.x/2/nowImageZoomScale;
+    self.bk_centerY = self.bk_centerY + translation.y/2/nowImageZoomScale;
     
     if (self.moveWriteAction) {
         self.moveWriteAction(self,panGesture);
@@ -182,6 +190,12 @@
 
 -(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
+    if ([otherGestureRecognizer.view isKindOfClass:[UIScrollView class]]) {
+        otherGestureRecognizer.enabled = NO;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            otherGestureRecognizer.enabled = YES;
+        });
+    }
     return YES;
 }
 

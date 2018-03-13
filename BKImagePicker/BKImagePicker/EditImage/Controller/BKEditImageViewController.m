@@ -9,15 +9,19 @@
 #import "BKEditImageViewController.h"
 #import "BKImagePickerConst.h"
 #import "BKImagePicker.h"
-#import "BKDrawView.h"
-#import "BKDrawModel.h"
+#import "BKEditImageBgView.h"
+#import "BKEditImageDrawView.h"
+#import "BKEditImageDrawModel.h"
 #import "BKImageCropView.h"
 #import "BKEditImageBottomView.h"
 #import "BKEditImageWriteView.h"
+#import "BKEditImageCropView.h"
 
-@interface BKEditImageViewController ()<BKDrawViewDelegate,UITextViewDelegate>
+@interface BKEditImageViewController ()<BKEditImageDrawViewDelegate,UITextViewDelegate,BKEditImageWriteViewDelegate>
 
 @property (nonatomic,copy) NSString * imagePath;//图片路径
+
+@property (nonatomic,strong) BKEditImageBgView * editImageBgView;//修改图片背景
 
 /**
  要修改的图片
@@ -32,7 +36,7 @@
 /**
  画图(包括线、圆角矩形、圆、箭头)
  */
-@property (nonatomic,strong) BKDrawView * drawView;
+@property (nonatomic,strong) BKEditImageDrawView * drawView;
 
 /**
  是否正在绘画中
@@ -55,6 +59,8 @@
 @property (nonatomic,strong) BKEditImageWriteView * writeView;
 @property (nonatomic,strong) NSMutableArray * writeViewArr;
 @property (nonatomic,strong) UIView * bottomDeleteWriteView;
+
+@property (nonatomic,strong) BKEditImageCropView * cropView;
 
 @end
 
@@ -112,6 +118,23 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+#pragma mark - editImageBgView
+
+-(BKEditImageBgView*)editImageBgView
+{
+    if (!_editImageBgView) {
+        _editImageBgView = [[BKEditImageBgView alloc]initWithFrame:self.view.bounds];
+        
+        _editImageBgView.contentView.frame = [self calculataImageRect];
+        _editImageBgView.contentSize = CGSizeMake(_editImageBgView.contentView.bk_width, _editImageBgView.contentView.bk_height);
+        CGFloat scale = _editImage.size.width / self.view.bk_width;
+        _editImageBgView.maximumZoomScale = scale<2?2:scale;
+        
+        [self.view insertSubview:_editImageBgView atIndex:0];
+    }
+    return _editImageBgView;
+}
+
 #pragma mark - 图片
 
 -(void)setEditImage:(UIImage *)editImage
@@ -123,9 +146,9 @@
 -(UIImageView*)editImageView
 {
     if (!_editImageView) {
-        _editImageView = [[UIImageView alloc]initWithFrame:[self calculataImageRect]];
+        _editImageView = [[UIImageView alloc]initWithFrame:self.editImageBgView.contentView.bounds];
         _editImageView.image = self.editImage;
-        [self.view insertSubview:_editImageView atIndex:0];
+        [self.editImageBgView.contentView addSubview:_editImageView];
         
         //全图做马赛克处理 添加在图片图层上
         CALayer * imageLayer = [CALayer layer];
@@ -143,25 +166,21 @@
 
 -(CGRect)calculataImageRect
 {
-    CGRect imageRect = CGRectZero;
+    CGRect targetFrame = CGRectZero;
     
-    CGFloat scale = self.editImage.size.width / self.view.bk_width;
-    CGFloat height = self.editImage.size.height / scale;
-    
-    if (height > self.view.bk_height) {
-        imageRect.size.height = self.view.bk_height;
-        scale = self.editImage.size.height / self.view.bk_height;
-        imageRect.size.width = self.editImage.size.width / scale;
-        imageRect.origin.x = (self.view.bk_width - imageRect.size.width) / 2.0f;
-        imageRect.origin.y = 0;
+    targetFrame.size.width = self.view.frame.size.width;
+    if (_editImage) {
+        CGFloat scale = _editImage.size.width / targetFrame.size.width;
+        targetFrame.size.height = _editImage.size.height/scale;
+        if (targetFrame.size.height < self.view.frame.size.height) {
+            targetFrame.origin.y = (self.view.frame.size.height - targetFrame.size.height)/2;
+        }
     }else{
-        imageRect.size.height = height;
-        imageRect.size.width = self.view.bk_width;
-        imageRect.origin.x = 0;
-        imageRect.origin.y = (self.view.bk_height - imageRect.size.height) / 2.0f;
+        targetFrame.size.height = self.view.frame.size.width;
+        targetFrame.origin.y = (self.view.frame.size.height - targetFrame.size.height)/2;
     }
     
-    return imageRect;
+    return targetFrame;
 }
 
 #pragma mark - 马赛克图片
@@ -199,19 +218,19 @@
     return _mosaicImageShapeLayer;
 }
 
-#pragma mark - 画画
+#pragma mark - BKEditImageDrawView
 
--(BKDrawView*)drawView
+-(BKEditImageDrawView*)drawView
 {
     if (!_drawView) {
-        _drawView = [[BKDrawView alloc]initWithFrame:self.editImageView.frame];
+        _drawView = [[BKEditImageDrawView alloc]initWithFrame:self.editImageView.frame];
         _drawView.delegate = self;
-        [self.view insertSubview:_drawView aboveSubview:_editImageView];
+        [self.editImageBgView.contentView addSubview:_drawView];
     }
     return _drawView;
 }
 
-#pragma mark - BKDrawViewDelegate
+#pragma mark - BKEditImageDrawViewDelegate
 
 /**
  画的马赛克轨迹
@@ -311,7 +330,7 @@
     
     if ([self.drawView.pointArray count] > 0) {
         
-        BKDrawModel * model = [[BKDrawModel alloc]init];
+        BKEditImageDrawModel * model = [[BKEditImageDrawModel alloc]init];
         model.pointArray = [self.drawView.pointArray copy];
         model.selectColor = self.drawView.selectColor;
         model.selectPaintingType = self.drawView.selectPaintingType;
@@ -372,6 +391,8 @@
     self.bottomNavViewHeight = BK_SYSTEM_TABBAR_HEIGHT;
     [self.bottomNavView addSubview:self.bottomView];
 }
+
+#pragma mark - BKEditImageBottomView
 
 -(BKEditImageBottomView*)bottomView
 {
@@ -564,8 +585,8 @@
     if (textView == _writeTextView) {
         if (self.bottomView.isSaveEditWrite) {
             self.writeView.writeString = self.writeTextView.text;
-            if (![[self.view subviews] containsObject:self.writeView]) {
-                [self.view addSubview:self.writeView];
+            if (![[self.editImageBgView.contentView subviews] containsObject:self.writeView]) {
+                [self.editImageBgView.contentView addSubview:self.writeView];
             }
             if (![self.writeViewArr containsObject:self.writeView]) {
                 [self.writeViewArr addObject:self.writeView];
@@ -588,7 +609,7 @@
     }
 }
 
-#pragma mark - writeView
+#pragma mark - BKEditImageWriteView
 
 -(NSMutableArray*)writeViewArr
 {
@@ -603,6 +624,7 @@ static BOOL writeDeleteFlag = NO;
 {
     if (!_writeView) {
         _writeView = [[BKEditImageWriteView alloc]init];
+        _writeView.delegate = self;
         
         BK_WEAK_SELF(self);
         [_writeView setReeditAction:^(BKEditImageWriteView *writeView) {
@@ -635,17 +657,15 @@ static BOOL writeDeleteFlag = NO;
                     strongSelf.topNavView.hidden = YES;
                     strongSelf.bottomNavView.hidden = YES;
                     
+                    strongSelf.editImageBgView.contentView.clipsToBounds = NO;
+                    
                     [strongSelf.view addSubview:strongSelf.bottomDeleteWriteView];
-                    [strongSelf.view bringSubviewToFront:writeView];
-                    [strongSelf.view bringSubviewToFront:strongSelf.topNavView];
-                    [strongSelf.view bringSubviewToFront:strongSelf.bottomNavView];
-                    [strongSelf.view bringSubviewToFront:strongSelf.writeTextView];
                 }
                     break;
                 case UIGestureRecognizerStateChanged:
                 {
                     CGPoint point = [panGesture locationInView:strongSelf.view];
-                    if (CGRectContainsPoint(strongSelf.bottomDeleteWriteView.frame, point)) {
+                    if (CGRectContainsPoint(strongSelf.bottomDeleteWriteView.frame, point) || !CGRectIntersectsRect(strongSelf.editImageView.frame, writeView.frame)) {
                         strongSelf.bottomDeleteWriteView.backgroundColor = BK_HEX_RGB(0xff725c);
                         writeDeleteFlag = YES;
                     }else{
@@ -665,6 +685,8 @@ static BOOL writeDeleteFlag = NO;
                     [strongSelf.bottomDeleteWriteView removeFromSuperview];
                     strongSelf.bottomDeleteWriteView = nil;
                     
+                    strongSelf.editImageBgView.contentView.clipsToBounds = YES;
+                    
                     if (writeDeleteFlag) {
                         [strongSelf.writeViewArr removeObject:writeView];
                         [writeView removeFromSuperview];
@@ -678,6 +700,13 @@ static BOOL writeDeleteFlag = NO;
     }
     
     return _writeView;
+}
+
+#pragma mark - BKEditImageWriteViewDelegate
+
+-(CGFloat)getNowImageZoomScale
+{
+    return _editImageBgView.zoomScale;
 }
 
 #pragma mark - bottomDeleteWriteView
@@ -695,6 +724,16 @@ static BOOL writeDeleteFlag = NO;
         [_bottomDeleteWriteView addSubview:deleteImageView];
     }
     return _bottomDeleteWriteView;
+}
+
+#pragma mark - BKEditImageCropView
+
+-(BKEditImageCropView*)cropView
+{
+    if (!_cropView) {
+        _cropView = [[BKEditImageCropView alloc]initWithFrame:self.view.bounds];
+    }
+    return _cropView;
 }
 
 @end

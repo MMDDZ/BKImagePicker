@@ -1,5 +1,5 @@
 //
-//  BKDrawModel.h
+//  BKEditImageDrawModel.h
 //  BKImagePicker
 //
 //  Created by 兆林 on 2017/6/21.
@@ -10,7 +10,7 @@
 #import <UIKit/UIKit.h>
 #import "BKEditImageViewController.h"
 
-@interface BKDrawModel : NSObject
+@interface BKEditImageDrawModel : NSObject
 
 /**
  上次画的数组

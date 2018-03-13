@@ -1,5 +1,5 @@
 //
-//  BKDrawView.h
+//  BKEditImageDrawView.h
 //  BKImagePicker
 //
 //  Created by 兆林 on 2017/6/21.
@@ -7,10 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "BKDrawModel.h"
+#import "BKEditImageDrawModel.h"
 #import "BKEditImageViewController.h"
 
-@protocol BKDrawViewDelegate <NSObject>
+@protocol BKEditImageDrawViewDelegate <NSObject>
 
 @optional
 
@@ -23,17 +23,17 @@
 
 @end
 
-@interface BKDrawView : UIView
+@interface BKEditImageDrawView : UIView
 
 //这一次画的数组
 @property (nonatomic,strong) NSMutableArray * pointArray;
 //之前保存画的数组model
-@property (nonatomic,strong) NSMutableArray<BKDrawModel*> * lineArray;
+@property (nonatomic,strong) NSMutableArray<BKEditImageDrawModel*> * lineArray;
 //开始点
 @property (nonatomic,assign) CGPoint beginPoint;
 
 
-@property (nonatomic,assign) id<BKDrawViewDelegate> delegate;
+@property (nonatomic,assign) id<BKEditImageDrawViewDelegate> delegate;
 
 
 /**
