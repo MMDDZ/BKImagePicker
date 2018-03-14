@@ -63,7 +63,7 @@
 
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView
 {
-    self.contentSize = CGSizeMake(self.contentView.bk_width, self.contentView.bk_height);
+    self.contentSize = CGSizeMake(self.contentView.bk_width<self.bk_width?self.bk_width:self.contentView.bk_width, self.contentView.bk_height<self.bk_height?self.bk_height:self.contentView.bk_height);
     
     self.contentView.bk_centerX = self.contentView.bk_width>self.bk_width?self.contentSize.width/2.0f:self.bk_centerX;
     self.contentView.bk_centerY = self.contentView.bk_height>self.bk_height?self.contentSize.height/2.0f:self.bk_centerY;

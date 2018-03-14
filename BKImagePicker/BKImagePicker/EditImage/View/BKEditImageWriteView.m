@@ -30,20 +30,37 @@
         return;
     }
     
-    _width = [[BKTool sharedManager] sizeWithString:_writeString UIHeight:MAXFLOAT font:[UIFont systemFontOfSize:30]].width + 20;
-    if (_width > BK_SCREENW - 20) {
-        _width = BK_SCREENW - 20;
+    _width = [[BKTool sharedManager] sizeWithString:_writeString UIHeight:MAXFLOAT font:[UIFont systemFontOfSize:50]].width + 20;
+    if (_width > (BK_SCREENW - 20)*2) {
+        _width = (BK_SCREENW - 20)*2;
     }
     
-    _height = [[BKTool sharedManager] sizeWithString:_writeString UIWidth:_width font:[UIFont systemFontOfSize:30]].height + 20;
+    _height = [[BKTool sharedManager] sizeWithString:_writeString UIWidth:_width font:[UIFont systemFontOfSize:50]].height + 20;
     
     self.transform = CGAffineTransformIdentity;
     
+    UIView * superView = [self superview];
+    if ([self.delegate respondsToSelector:@selector(getWriteViewSupperView)]) {
+        superView = [self.delegate getWriteViewSupperView];
+    }
+    
+    CGFloat nowImageZoomScale = 0;
+    if ([self.delegate respondsToSelector:@selector(getNowImageZoomScale)]) {
+        nowImageZoomScale = [self.delegate getNowImageZoomScale];
+        if (nowImageZoomScale == 0) {
+            nowImageZoomScale = 1;
+        }
+    }
+    
     if (CGRectEqualToRect(self.frame, CGRectZero)) {
-        self.frame = CGRectMake((BK_SCREENW - _width)/2, (BK_SCREENH - _width)/2, _width, _height);
+        self.frame = CGRectMake((superView.bk_width/nowImageZoomScale - _width)/2, (superView.bk_height/nowImageZoomScale - _height)/2, _width, _height);
     }else{
+        
+        CGPoint center = self.center;
+        
         self.bk_width = _width;
         self.bk_height = _height;
+        self.center = center;
     }
     
     [self setNeedsDisplay];
@@ -77,7 +94,7 @@
 {
     [super drawRect:rect];
     
-    NSDictionary * attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:30],NSForegroundColorAttributeName:_writeColor?_writeColor:[UIColor redColor]};
+    NSDictionary * attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:50],NSForegroundColorAttributeName:_writeColor?_writeColor:[UIColor redColor]};
     [self.writeString drawWithRect:CGRectMake(10, 10, self.bk_width - 20, self.bk_height - 20) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil];
     
     [self resetTransform];
@@ -88,6 +105,7 @@
 -(void)addGesture
 {
     UITapGestureRecognizer * tapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapGesture:)];
+    tapGesture.strTag = @"tap";
     [self addGestureRecognizer:tapGesture];
     
     UIPanGestureRecognizer * panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panGesture:)];
@@ -98,7 +116,7 @@
     rotationGesture.delegate = self;
     [self addGestureRecognizer:rotationGesture];
     
-    _scale = 1;
+    _scale = 0.5;
     
     UIPinchGestureRecognizer * pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(pinchGesture:)];
     pinchGesture.delegate = self;
@@ -161,10 +179,10 @@
 -(void)pinchGesture:(UIPinchGestureRecognizer*)pinchGesture
 {
     _scale = _scale + (pinchGesture.scale - 1)/2;
-    if (_scale > 2.5) {
-        _scale = 2.5;
-    }else if (_scale < 0.5) {
-        _scale = 0.5;
+    if (_scale > 1.5) {
+        _scale = 1.5;
+    }else if (_scale < 0.15) {
+        _scale = 0.15;
     }
     [self resetTransform];
     
@@ -190,7 +208,7 @@
 
 -(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
-    if ([otherGestureRecognizer.view isKindOfClass:[UIScrollView class]]) {
+    if ([otherGestureRecognizer.view isKindOfClass:[UIScrollView class]] || [otherGestureRecognizer.strTag isEqualToString:@"tap"]) {
         otherGestureRecognizer.enabled = NO;
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             otherGestureRecognizer.enabled = YES;

@@ -13,6 +13,11 @@
 @required
 
 /**
+ 获取该视图的父视图
+ */
+-(UIView*)getWriteViewSupperView;
+
+/**
  目前图片放大比例 (移动前必传)
  */
 -(CGFloat)getNowImageZoomScale;
