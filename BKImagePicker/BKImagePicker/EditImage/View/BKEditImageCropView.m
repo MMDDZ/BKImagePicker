@@ -52,12 +52,20 @@
 
 -(void)showCropView
 {
-    _editImageBgView.minimumZoomScale = 0.8;
     _editImageBgView.clipsToBounds = NO;
     _editImageBgView.bk_height = self.bk_height - self.bottomNav.bk_height;
+ 
+    CGFloat minZoomScale = 0.8;
+    if (_editImageBgView.contentView.bk_height > _editImageBgView.contentView.bk_width) {
+        if (_editImageBgView.contentView.bk_height > _editImageBgView.bk_height) {
+            CGFloat gap = _editImageBgView.contentView.bk_height - _editImageBgView.bk_height;
+            minZoomScale = (1 - gap/_editImageBgView.contentView.bk_height)*0.8;
+        }
+    }
+    _editImageBgView.minimumZoomScale = minZoomScale;
     
     [UIView animateWithDuration:0.2 animations:^{
-        [_editImageBgView setZoomScale:0.8];
+        [_editImageBgView setZoomScale:minZoomScale];
     } completion:^(BOOL finished) {
         [self addSubview:self.clipFrameView];
         [self addShadowView];
