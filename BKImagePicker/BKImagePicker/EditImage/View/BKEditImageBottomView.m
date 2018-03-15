@@ -89,6 +89,14 @@
     [_affirmBtn setTitle:@"确认" forState:UIControlStateNormal];
 }
 
+#pragma mark - 结束裁剪
+
+-(void)endEditCrop
+{
+    UIButton * button = (UIButton*)[_firstLevelScrollView viewWithTag:300];
+    [self editBtnClick:button];
+}
+
 #pragma mark - init
 
 -(instancetype)init

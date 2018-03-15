@@ -25,28 +25,16 @@
 @property (nonatomic,strong) UIPanGestureRecognizer * editImageBgPanGesture;//修改图片背景移动手势
 @property (nonatomic,strong) NSTimer * drawTimer;//倒计时定时器
 
-/**
- 要修改的图片
- */
-@property (nonatomic,strong) UIImageView * editImageView;
-/**
- 全图马赛克处理
- */
-@property (nonatomic,strong) UIImage * mosaicImage;
+@property (nonatomic,strong) UIImageView * editImageView;//要修改的图片
+@property (nonatomic,strong) UIImage * mosaicImage;//全图马赛克处理
 @property (nonatomic,strong) CAShapeLayer * mosaicImageShapeLayer;
-
-/**
- 画图(包括线、圆角矩形、圆、箭头)
- */
-@property (nonatomic,strong) BKEditImageDrawView * drawView;
-
-
 
 @property (nonatomic,strong) BKEditImageBottomView * bottomView;
 
+@property (nonatomic,strong) BKEditImageDrawView * drawView;//画图(包括线、圆角矩形、圆、箭头)
 
-@property (nonatomic,strong) UITextView * writeTextView;
-@property (nonatomic,strong) BKEditImageWriteView * writeView;
+@property (nonatomic,strong) UITextView * writeTextView;//写字view
+@property (nonatomic,strong) BKEditImageWriteView * writeView;//显示字的view
 @property (nonatomic,strong) NSMutableArray * writeViewArr;
 @property (nonatomic,strong) UIView * bottomDeleteWriteView;
 
@@ -255,6 +243,12 @@
                 case BKEditImageSelectEditTypeClip:
                 {
                     strongSelf.bottomNavViewHeight = strongSelf.bottomView.bk_height + BK_SYSTEM_TABBAR_HEIGHT - BK_SYSTEM_TABBAR_UI_HEIGHT;
+                    
+                    strongSelf.topNavView.hidden = YES;
+                    strongSelf.bottomNavView.hidden = YES;
+                    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+                    
+                    [strongSelf.cropView showCropView];
                 }
                     break;
                 default:
@@ -294,6 +288,13 @@
         _editImageBgPanGesture.maximumNumberOfTouches = 1;
         [_editImageBgView addGestureRecognizer:_editImageBgPanGesture];
         
+        BK_WEAK_SELF(self);
+        [_editImageBgView setChangeZoomScaleAction:^{
+            BK_STRONG_SELF(self);
+            if (strongSelf.bottomView.selectEditType == BKEditImageSelectEditTypeClip) {
+                [strongSelf.cropView changeBgScrollViewZoomScale];
+            }
+        }];
     }
     return _editImageBgView;
 }
@@ -302,6 +303,9 @@
 
 -(void)editImageBgTapRecognizer:(UITapGestureRecognizer*)recognizer
 {
+    [_drawTimer invalidate];
+    _drawTimer = nil;
+    
     if (self.topNavView.alpha == 1) {
         [UIView animateWithDuration:0.2 animations:^{
             self.topNavView.alpha = 0;
@@ -778,6 +782,26 @@ static BOOL writeDeleteFlag = NO;
 {
     if (!_cropView) {
         _cropView = [[BKEditImageCropView alloc]initWithFrame:self.view.bounds];
+        _cropView.editImageBgView = _editImageBgView;
+        [self.view addSubview:_cropView];
+        
+        BK_WEAK_SELF(self);
+        [_cropView setBackAction:^{
+            BK_STRONG_SELF(self);
+            [strongSelf.cropView removeFromSuperview];
+            strongSelf.cropView = nil;
+            
+            [strongSelf.bottomView endEditCrop];
+            
+            strongSelf.topNavView.hidden = NO;
+            strongSelf.bottomNavView.hidden = NO;
+            [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+            
+            [strongSelf.editImageBgView setZoomScale:1 animated:YES];
+        }];
+        [_cropView setFinishAction:^{
+            BK_STRONG_SELF(self);
+        }];
     }
     return _cropView;
 }

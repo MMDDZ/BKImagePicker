@@ -41,7 +41,7 @@
     self.showsVerticalScrollIndicator = NO;
     self.delegate = self;
     self.backgroundColor = [UIColor clearColor];
-    self.minimumZoomScale = 1.0;
+    self.minimumZoomScale = 1;
     if (@available(iOS 11.0, *)) {
         self.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     }
@@ -67,6 +67,10 @@
     
     self.contentView.bk_centerX = self.contentView.bk_width>self.bk_width?self.contentSize.width/2.0f:self.bk_centerX;
     self.contentView.bk_centerY = self.contentView.bk_height>self.bk_height?self.contentSize.height/2.0f:self.bk_centerY;
+    
+    if (self.changeZoomScaleAction) {
+        self.changeZoomScaleAction();
+    }
 }
 
 - (nullable UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView

@@ -7,13 +7,16 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "BKEditImageDrawView.h"
-#import "BKEditImageWriteView.h"
+#import "BKEditImageBgView.h"
 
 @interface BKEditImageCropView : UIView
 
-@property (nonatomic,strong) UIImageView * editImageView;
-@property (nonatomic,strong) BKEditImageDrawView * drawView;
-@property (nonatomic,strong) NSArray * writeViewArr;
+@property (nonatomic,weak) BKEditImageBgView * editImageBgView;
+
+@property (nonatomic,copy) void (^backAction)(void);
+@property (nonatomic,copy) void (^finishAction)(void);
+
+-(void)showCropView;//显示方法
+-(void)changeBgScrollViewZoomScale;//改变背景ScrollView的ZoomScale
 
 @end
