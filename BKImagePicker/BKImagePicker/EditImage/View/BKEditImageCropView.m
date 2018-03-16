@@ -44,15 +44,15 @@ typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
         self.editImageBgView.contentView.bk_centerY = self.editImageBgView.contentView.bk_height>self.editImageBgView.bk_height?self.editImageBgView.contentSize.height/2.0f:self.editImageBgView.bk_centerY;
     }else{
         
-        self.editImageBgView.contentSize = CGSizeMake(self.editImageBgView.contentView.bk_height<self.editImageBgView.bk_width?self.editImageBgView.bk_width:self.editImageBgView.contentView.bk_height, self.editImageBgView.contentView.bk_width<self.editImageBgView.bk_height?self.editImageBgView.bk_height:self.editImageBgView.contentView.bk_width);
+        self.editImageBgView.contentSize = CGSizeMake(self.editImageBgView.contentView.bk_height<self.editImageBgView.bk_height?self.editImageBgView.bk_height:self.editImageBgView.contentView.bk_width, self.editImageBgView.contentView.bk_width<self.editImageBgView.bk_width?self.editImageBgView.bk_width:self.editImageBgView.contentView.bk_height);
         
         CGFloat width_gap = (self.editImageBgView.contentView.bk_height > self.editImageBgView.bk_width ? self.editImageBgView.bk_width : self.editImageBgView.contentView.bk_height) - self.clipFrameView.bk_width;
         CGFloat height_gap = (self.editImageBgView.contentView.bk_width > self.editImageBgView.bk_height ? self.editImageBgView.bk_height : self.editImageBgView.contentView.bk_width) - self.clipFrameView.bk_height;
         
         self.editImageBgView.contentInset = UIEdgeInsetsMake(width_gap/2, height_gap/2, width_gap/2, height_gap/2);
         
-        self.editImageBgView.contentView.bk_centerX = self.editImageBgView.contentView.bk_height>self.editImageBgView.bk_height?self.editImageBgView.contentSize.height/2.0f:self.editImageBgView.bk_centerY;
-        self.editImageBgView.contentView.bk_centerY = self.editImageBgView.contentView.bk_width>self.editImageBgView.bk_width?self.editImageBgView.contentSize.width/2.0f:self.editImageBgView.bk_centerX;
+        self.editImageBgView.contentView.bk_centerX = self.editImageBgView.contentView.bk_height>self.editImageBgView.bk_height?self.editImageBgView.contentSize.width/2.0f:self.editImageBgView.bk_centerY;
+        self.editImageBgView.contentView.bk_centerY = self.editImageBgView.contentView.bk_width>self.editImageBgView.bk_width?self.editImageBgView.contentSize.height/2.0f:self.editImageBgView.bk_centerX;
     }
     
     
