@@ -9,6 +9,11 @@
 #import "BKEditImageCropView.h"
 #import "BKImagePickerConst.h"
 
+typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
+    BKEditImageRotationVertical = 0, //竖直
+    BKEditImageRotationHorizontal, //水平
+};
+
 @interface BKEditImageCropView()
 
 @property (nonatomic,strong) UIView * shadowView;
@@ -16,7 +21,7 @@
 
 @property (nonatomic,strong) UIView * bottomNav;
 
-@property (nonatomic,assign) CGFloat angle;
+@property (nonatomic,assign) BKEditImageRotation rotation;
 
 @end
 
@@ -26,13 +31,31 @@
 
 -(void)changeBgScrollViewZoomScale
 {
-    CGFloat width_gap = (self.editImageBgView.contentView.bk_width > self.editImageBgView.bk_width ? self.editImageBgView.bk_width : self.editImageBgView.contentView.bk_width) - self.clipFrameView.bk_width;
-    CGFloat height_gap = (self.editImageBgView.contentView.bk_height > self.editImageBgView.bk_height ? self.editImageBgView.bk_height : self.editImageBgView.contentView.bk_height) - self.clipFrameView.bk_height;
+    if (_rotation == BKEditImageRotationVertical) {
+        
+        self.editImageBgView.contentSize = CGSizeMake(self.editImageBgView.contentView.bk_width<self.editImageBgView.bk_width?self.editImageBgView.bk_width:self.editImageBgView.contentView.bk_width, self.editImageBgView.contentView.bk_height<self.editImageBgView.bk_height?self.editImageBgView.bk_height:self.editImageBgView.contentView.bk_height);
+        
+        CGFloat width_gap = (self.editImageBgView.contentView.bk_width > self.editImageBgView.bk_width ? self.editImageBgView.bk_width : self.editImageBgView.contentView.bk_width) - self.clipFrameView.bk_width;
+        CGFloat height_gap = (self.editImageBgView.contentView.bk_height > self.editImageBgView.bk_height ? self.editImageBgView.bk_height : self.editImageBgView.contentView.bk_height) - self.clipFrameView.bk_height;
+        
+        self.editImageBgView.contentInset = UIEdgeInsetsMake(height_gap/2, width_gap/2, height_gap/2, width_gap/2);
+        
+        self.editImageBgView.contentView.bk_centerX = self.editImageBgView.contentView.bk_width>self.editImageBgView.bk_width?self.editImageBgView.contentSize.width/2.0f:self.editImageBgView.bk_centerX;
+        self.editImageBgView.contentView.bk_centerY = self.editImageBgView.contentView.bk_height>self.editImageBgView.bk_height?self.editImageBgView.contentSize.height/2.0f:self.editImageBgView.bk_centerY;
+    }else{
+        
+        self.editImageBgView.contentSize = CGSizeMake(self.editImageBgView.contentView.bk_height<self.editImageBgView.bk_width?self.editImageBgView.bk_width:self.editImageBgView.contentView.bk_height, self.editImageBgView.contentView.bk_width<self.editImageBgView.bk_height?self.editImageBgView.bk_height:self.editImageBgView.contentView.bk_width);
+        
+        CGFloat width_gap = (self.editImageBgView.contentView.bk_height > self.editImageBgView.bk_width ? self.editImageBgView.bk_width : self.editImageBgView.contentView.bk_height) - self.clipFrameView.bk_width;
+        CGFloat height_gap = (self.editImageBgView.contentView.bk_width > self.editImageBgView.bk_height ? self.editImageBgView.bk_height : self.editImageBgView.contentView.bk_width) - self.clipFrameView.bk_height;
+        
+        self.editImageBgView.contentInset = UIEdgeInsetsMake(width_gap/2, height_gap/2, width_gap/2, height_gap/2);
+        
+        self.editImageBgView.contentView.bk_centerX = self.editImageBgView.contentView.bk_height>self.editImageBgView.bk_height?self.editImageBgView.contentSize.height/2.0f:self.editImageBgView.bk_centerY;
+        self.editImageBgView.contentView.bk_centerY = self.editImageBgView.contentView.bk_width>self.editImageBgView.bk_width?self.editImageBgView.contentSize.width/2.0f:self.editImageBgView.bk_centerX;
+    }
     
-    self.editImageBgView.contentInset = UIEdgeInsetsMake(height_gap/2, width_gap/2, height_gap/2, width_gap/2);
     
-    self.editImageBgView.contentView.bk_centerX = self.editImageBgView.contentView.bk_width>self.editImageBgView.bk_width?self.editImageBgView.contentSize.width/2.0f:self.editImageBgView.bk_centerX;
-    self.editImageBgView.contentView.bk_centerY = self.editImageBgView.contentView.bk_height>self.editImageBgView.bk_height?self.editImageBgView.contentSize.height/2.0f:self.editImageBgView.bk_centerY;
 }
 
 #pragma mark - init
@@ -213,6 +236,12 @@
     
     [self removeShadowView];
     
+    if (_rotation == BKEditImageRotationVertical) {
+        _rotation = BKEditImageRotationHorizontal;
+    }else{
+        _rotation = BKEditImageRotationVertical;
+    }
+    
     CGFloat w_h_ratio = _clipFrameView.bk_width / _clipFrameView.bk_height;
     _editImageBgView.minimumZoomScale = _editImageBgView.minimumZoomScale * w_h_ratio;
     
@@ -223,15 +252,14 @@
         
         _clipFrameView.transform = CGAffineTransformRotate(_clipFrameView.transform, -M_PI_2);
         _clipFrameView.transform = CGAffineTransformScale(_clipFrameView.transform, w_h_ratio, w_h_ratio);
-    } completion:^(BOOL finished) {
         
-//        CGFloat width_gap = self.editImageBgView.bk_width - self.clipFrameView.bk_width;
-//        CGFloat height_gap = self.editImageBgView.bk_height - self.clipFrameView.bk_height;
-//        self.editImageBgView.contentSize = CGSizeMake(self.editImageBgView.contentView.bk_height + width_gap, self.editImageBgView.contentView.bk_width + height_gap);
+        [self changeBgScrollViewZoomScale];
+    } completion:^(BOOL finished) {
         
         NSLog(@"%@",NSStringFromCGRect(self.editImageBgView.frame));
         NSLog(@"%@",NSStringFromCGRect(self.clipFrameView.frame));
         NSLog(@"%@",NSStringFromCGRect(self.editImageBgView.contentView.frame));
+        NSLog(@"%@",NSStringFromCGSize(self.editImageBgView.contentSize));
         
         [self addShadowView];
         button.userInteractionEnabled = YES;
