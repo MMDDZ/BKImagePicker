@@ -16,6 +16,8 @@
 
 @property (nonatomic,strong) UIView * bottomNav;
 
+@property (nonatomic,assign) CGFloat angle;
+
 @end
 
 @implementation BKEditImageCropView
@@ -24,13 +26,13 @@
 
 -(void)changeBgScrollViewZoomScale
 {
-    CGFloat width_gap = self.editImageBgView.bk_width - self.clipFrameView.bk_width;
-    CGFloat height_gap = self.editImageBgView.bk_height - self.clipFrameView.bk_height;
+    CGFloat width_gap = (self.editImageBgView.contentView.bk_width > self.editImageBgView.bk_width ? self.editImageBgView.bk_width : self.editImageBgView.contentView.bk_width) - self.clipFrameView.bk_width;
+    CGFloat height_gap = (self.editImageBgView.contentView.bk_height > self.editImageBgView.bk_height ? self.editImageBgView.bk_height : self.editImageBgView.contentView.bk_height) - self.clipFrameView.bk_height;
     
-    self.editImageBgView.contentSize = CGSizeMake(self.editImageBgView.contentView.bk_width + width_gap, self.editImageBgView.contentView.bk_height + height_gap);
+    self.editImageBgView.contentInset = UIEdgeInsetsMake(height_gap/2, width_gap/2, height_gap/2, width_gap/2);
     
-    self.editImageBgView.contentView.bk_centerX = self.editImageBgView.contentView.bk_width>self.editImageBgView.bk_width?self.editImageBgView.contentSize.width/2.0f:self.editImageBgView.bk_centerX + (self.editImageBgView.contentView.bk_width - self.clipFrameView.bk_width)/2;
-    self.editImageBgView.contentView.bk_centerY = self.editImageBgView.contentView.bk_height>self.editImageBgView.bk_height?self.editImageBgView.contentSize.height/2.0f:self.editImageBgView.bk_centerY + (self.editImageBgView.contentView.bk_height - self.clipFrameView.bk_height)/2;
+    self.editImageBgView.contentView.bk_centerX = self.editImageBgView.contentView.bk_width>self.editImageBgView.bk_width?self.editImageBgView.contentSize.width/2.0f:self.editImageBgView.bk_centerX;
+    self.editImageBgView.contentView.bk_centerY = self.editImageBgView.contentView.bk_height>self.editImageBgView.bk_height?self.editImageBgView.contentSize.height/2.0f:self.editImageBgView.bk_centerY;
 }
 
 #pragma mark - init
@@ -74,19 +76,21 @@
     }];
 }
 
-#pragma mark - addShadowView
+#pragma mark - shadowView
+
+-(void)removeShadowView
+{
+    [_shadowView removeFromSuperview];
+    _shadowView = nil;
+}
 
 -(void)addShadowView
 {
     if (_shadowView) {
-        [_shadowView removeFromSuperview];
-        _shadowView = nil;
+        [self removeShadowView];
     }
-    
     [self addSubview:self.shadowView];
 }
-
-#pragma mark - shadowView
 
 -(UIView*)shadowView
 {
@@ -154,6 +158,17 @@
         finishImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/EditImage/%@",imagePath,@"clip_finish"]];
         [finishBtn addSubview:finishImageView];
         
+        UIButton * rotationBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        rotationBtn.frame = CGRectMake((_bottomNav.bk_width - 64)/2, 0, 64, BK_SYSTEM_TABBAR_UI_HEIGHT);
+        [rotationBtn addTarget:self action:@selector(rotationBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+        [_bottomNav addSubview:rotationBtn];
+        
+        UIImageView * rotationImageView = [[UIImageView alloc]initWithFrame:CGRectMake((rotationBtn.bk_width - 20)/2, (rotationBtn.bk_height - 20)/2, 20, 20)];
+        rotationImageView.clipsToBounds = YES;
+        rotationImageView.contentMode = UIViewContentModeScaleAspectFit;
+        rotationImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/EditImage/%@",imagePath,@"left_rotation_90"]];
+        [rotationBtn addSubview:rotationImageView];
+        
         UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, _bottomNav.bk_width, BK_ONE_PIXEL)];
         line.backgroundColor = BKLineColor;
         [_bottomNav addSubview:line];
@@ -187,6 +202,40 @@
     if (self.finishAction) {
         self.finishAction();
     }
+}
+
+-(void)rotationBtnClick:(UIButton*)button
+{
+    if (!button.userInteractionEnabled) {
+        return;
+    }
+    button.userInteractionEnabled = NO;
+    
+    [self removeShadowView];
+    
+    CGFloat w_h_ratio = _clipFrameView.bk_width / _clipFrameView.bk_height;
+    _editImageBgView.minimumZoomScale = _editImageBgView.minimumZoomScale * w_h_ratio;
+    
+    [UIView animateWithDuration:0.3 animations:^{
+        _editImageBgView.transform = CGAffineTransformRotate(_editImageBgView.transform, -M_PI_2);
+        _editImageBgView.frame = CGRectMake(0, 0, self.bk_width, self.bk_height - self.bottomNav.bk_height);
+        _editImageBgView.zoomScale = _editImageBgView.zoomScale * w_h_ratio;
+        
+        _clipFrameView.transform = CGAffineTransformRotate(_clipFrameView.transform, -M_PI_2);
+        _clipFrameView.transform = CGAffineTransformScale(_clipFrameView.transform, w_h_ratio, w_h_ratio);
+    } completion:^(BOOL finished) {
+        
+//        CGFloat width_gap = self.editImageBgView.bk_width - self.clipFrameView.bk_width;
+//        CGFloat height_gap = self.editImageBgView.bk_height - self.clipFrameView.bk_height;
+//        self.editImageBgView.contentSize = CGSizeMake(self.editImageBgView.contentView.bk_height + width_gap, self.editImageBgView.contentView.bk_width + height_gap);
+        
+        NSLog(@"%@",NSStringFromCGRect(self.editImageBgView.frame));
+        NSLog(@"%@",NSStringFromCGRect(self.clipFrameView.frame));
+        NSLog(@"%@",NSStringFromCGRect(self.editImageBgView.contentView.frame));
+        
+        [self addShadowView];
+        button.userInteractionEnabled = YES;
+    }];
 }
 
 @end
