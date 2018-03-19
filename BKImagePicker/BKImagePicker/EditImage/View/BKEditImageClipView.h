@@ -1,5 +1,5 @@
 //
-//  BKEditImageCropView.h
+//  BKEditImageClipView.h
 //  BKImagePicker
 //
 //  Created by zhaolin on 2018/3/5.
@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "BKEditImageBgView.h"
 
-@interface BKEditImageCropView : UIView
+@interface BKEditImageClipView : UIView
 
 @property (nonatomic,weak) BKEditImageBgView * editImageBgView;
 

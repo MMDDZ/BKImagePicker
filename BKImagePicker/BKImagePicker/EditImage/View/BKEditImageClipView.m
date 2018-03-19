@@ -1,23 +1,24 @@
 //
-//  BKEditImageCropView.m
+//  BKEditImageClipView.m
 //  BKImagePicker
 //
 //  Created by zhaolin on 2018/3/5.
 //  Copyright © 2018年 BIKE. All rights reserved.
 //
 
-#import "BKEditImageCropView.h"
+#import "BKEditImageClipView.h"
 #import "BKImagePickerConst.h"
+#import "BKEditImageClipFrameView.h"
 
 typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
     BKEditImageRotationVertical = 0, //竖直
     BKEditImageRotationHorizontal, //水平
 };
 
-@interface BKEditImageCropView()
+@interface BKEditImageClipView()
 
 @property (nonatomic,strong) UIView * shadowView;
-@property (nonatomic,strong) UIView * clipFrameView;
+@property (nonatomic,strong) BKEditImageClipFrameView * clipFrameView;
 
 @property (nonatomic,strong) UIView * bottomNav;
 
@@ -25,14 +26,12 @@ typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
 
 @end
 
-@implementation BKEditImageCropView
+@implementation BKEditImageClipView
 
 #pragma mark - 改变背景ScrollView的ZoomScale
 
 -(void)changeBgScrollViewZoomScale
 {
-//    self.editImageBgView.contentSize = CGSizeMake(self.editImageBgView.contentView.bk_width<self.editImageBgView.bk_width?self.editImageBgView.bk_width:self.editImageBgView.contentView.bk_width, self.editImageBgView.contentView.bk_height<self.editImageBgView.bk_height?self.editImageBgView.bk_height:self.editImageBgView.contentView.bk_height);
-    
     if (_rotation == BKEditImageRotationVertical) {
         
         self.editImageBgView.contentSize = CGSizeMake(self.editImageBgView.contentView.bk_width<self.editImageBgView.bk_width?self.editImageBgView.bk_width:self.editImageBgView.contentView.bk_width, self.editImageBgView.contentView.bk_height<self.editImageBgView.bk_height?self.editImageBgView.bk_height:self.editImageBgView.contentView.bk_height);
@@ -56,9 +55,6 @@ typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
         self.editImageBgView.contentView.bk_centerX = self.editImageBgView.contentView.bk_width>self.editImageBgView.bk_height?self.editImageBgView.contentSize.width/2.0f:self.editImageBgView.bk_centerY;
         self.editImageBgView.contentView.bk_centerY = self.editImageBgView.contentView.bk_height>self.editImageBgView.bk_width?self.editImageBgView.contentSize.height/2.0f:self.editImageBgView.bk_centerX;
     }
-    
-    NSLog(@"%d",self.editImageBgView.contentView.bk_height>self.editImageBgView.bk_width);
-    NSLog(@"editImageBgView.center %@",NSStringFromCGPoint(self.editImageBgView.contentView.center));
 }
 
 #pragma mark - init
@@ -115,7 +111,7 @@ typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
     if (_shadowView) {
         [self removeShadowView];
     }
-    [self addSubview:self.shadowView];
+    [self insertSubview:self.shadowView belowSubview:self.clipFrameView];
 }
 
 -(UIView*)shadowView
@@ -138,16 +134,15 @@ typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
 
 #pragma mark - clipFrameView
 
--(UIView*)clipFrameView
+-(BKEditImageClipFrameView*)clipFrameView
 {
     if (!_clipFrameView) {
         
         CGRect clipFrame = [[_editImageBgView.contentView superview] convertRect:_editImageBgView.contentView.frame toView:self];
         
-        _clipFrameView = [[UIView alloc]initWithFrame:clipFrame];
-        _clipFrameView.layer.borderColor = [UIColor whiteColor].CGColor;
-        _clipFrameView.layer.borderWidth = 1;
+        _clipFrameView = [[BKEditImageClipFrameView alloc]initWithFrame:clipFrame];
     }
+    
     return _clipFrameView;
 }
 
@@ -252,6 +247,14 @@ typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
 
     _editImageBgView.minimumZoomScale = _editImageBgView.minimumZoomScale * w_h_ratio;
     
+
+//    CGRect frame = [[_clipFrameView superview] convertRect:_clipFrameView.frame toView:_editImageBgView.contentView];
+//    NSLog(@"%@",NSStringFromCGRect(frame));
+    
+    CGPoint contentOffset = CGPointMake(_editImageBgView.contentOffset.y * w_h_ratio, _editImageBgView.contentOffset.x);
+    NSLog(@"%@",NSStringFromCGPoint(_editImageBgView.contentOffset));
+//    NSLog(@"%@",NSStringFromCGPoint(contentOffset));
+    
     [UIView animateWithDuration:0.3 animations:^{
         _editImageBgView.transform = CGAffineTransformRotate(_editImageBgView.transform, -M_PI_2);
         _editImageBgView.frame = CGRectMake(0, 0, self.bk_width, self.bk_height - self.bottomNav.bk_height);
@@ -261,14 +264,12 @@ typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
         _clipFrameView.transform = CGAffineTransformScale(_clipFrameView.transform, w_h_ratio, w_h_ratio);
         
         [self changeBgScrollViewZoomScale];
+        _editImageBgView.contentOffset = contentOffset;
+        
+//        _editImageBgView.contentOffset = CGPointMake(frame.origin.y * w_h_ratio + self.editImageBgView.contentInset.top, frame.origin.x * w_h_ratio + self.editImageBgView.contentInset.left);
+//        NSLog(@"%@",NSStringFromCGPoint(_editImageBgView.contentOffset));
+        
     } completion:^(BOOL finished) {
-        
-        NSLog(@"editImageBgView %@",NSStringFromCGRect(self.editImageBgView.frame));
-        NSLog(@"clipFrameView %@",NSStringFromCGRect(self.clipFrameView.frame));
-        NSLog(@"editImageBgView.contentView %@",NSStringFromCGRect(self.editImageBgView.contentView.frame));
-        NSLog(@"editImageBgView.contentSize %@",NSStringFromCGSize(self.editImageBgView.contentSize));
-        
-//        NSLog(@"%f %f",self.clipFrameView.bk_width,self.clipFrameView.bk_height);
         
         [self addShadowView];
         button.userInteractionEnabled = YES;

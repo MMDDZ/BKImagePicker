@@ -15,7 +15,7 @@
 #import "BKImageCropView.h"
 #import "BKEditImageBottomView.h"
 #import "BKEditImageWriteView.h"
-#import "BKEditImageCropView.h"
+#import "BKEditImageClipView.h"
 
 @interface BKEditImageViewController ()<BKEditImageDrawViewDelegate,UITextViewDelegate,BKEditImageWriteViewDelegate,UIGestureRecognizerDelegate>
 
@@ -38,7 +38,7 @@
 @property (nonatomic,strong) NSMutableArray * writeViewArr;
 @property (nonatomic,strong) UIView * bottomDeleteWriteView;
 
-@property (nonatomic,strong) BKEditImageCropView * cropView;
+@property (nonatomic,strong) BKEditImageClipView * cropView;
 
 @end
 
@@ -776,12 +776,12 @@ static BOOL writeDeleteFlag = NO;
     return _bottomDeleteWriteView;
 }
 
-#pragma mark - BKEditImageCropView
+#pragma mark - BKEditImageClipView
 
--(BKEditImageCropView*)cropView
+-(BKEditImageClipView*)cropView
 {
     if (!_cropView) {
-        _cropView = [[BKEditImageCropView alloc]initWithFrame:self.view.bounds];
+        _cropView = [[BKEditImageClipView alloc]initWithFrame:self.view.bounds];
         _cropView.editImageBgView = _editImageBgView;
         [self.view addSubview:_cropView];
         

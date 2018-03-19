@@ -7,7 +7,6 @@
 //
 
 #import "BKEditImageDrawView.h"
-#import "UIBezierPath+BKImagePicker.h"
 #import "BKImagePickerConst.h"
 
 @interface BKEditImageDrawView()
