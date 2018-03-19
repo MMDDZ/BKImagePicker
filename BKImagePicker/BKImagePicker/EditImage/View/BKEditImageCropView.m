@@ -242,7 +242,11 @@ typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
         _rotation = BKEditImageRotationVertical;
     }
     
-    CGFloat w_h_ratio = _clipFrameView.bk_width / _clipFrameView.bk_height;
+    CGFloat w_h_ratio = (_editImageBgView.bk_height * 0.8) / _clipFrameView.bk_width;
+    if (_clipFrameView.bk_height * w_h_ratio > _editImageBgView.bk_width * 0.8) {
+        w_h_ratio = (_editImageBgView.bk_width * 0.8) / _clipFrameView.bk_height;
+    }
+
     _editImageBgView.minimumZoomScale = _editImageBgView.minimumZoomScale * w_h_ratio;
     
     [UIView animateWithDuration:0.3 animations:^{
@@ -256,10 +260,12 @@ typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
         [self changeBgScrollViewZoomScale];
     } completion:^(BOOL finished) {
         
-        NSLog(@"%@",NSStringFromCGRect(self.editImageBgView.frame));
-        NSLog(@"%@",NSStringFromCGRect(self.clipFrameView.frame));
-        NSLog(@"%@",NSStringFromCGRect(self.editImageBgView.contentView.frame));
-        NSLog(@"%@",NSStringFromCGSize(self.editImageBgView.contentSize));
+//        NSLog(@"%@",NSStringFromCGRect(self.editImageBgView.frame));
+//        NSLog(@"%@",NSStringFromCGRect(self.clipFrameView.frame));
+//        NSLog(@"%@",NSStringFromCGRect(self.editImageBgView.contentView.frame));
+//        NSLog(@"%@",NSStringFromCGSize(self.editImageBgView.contentSize));
+        
+        NSLog(@"%f %f",self.clipFrameView.bk_width,self.clipFrameView.bk_height);
         
         [self addShadowView];
         button.userInteractionEnabled = YES;
