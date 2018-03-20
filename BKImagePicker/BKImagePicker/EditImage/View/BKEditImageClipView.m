@@ -68,6 +68,11 @@ typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
         self.userInteractionEnabled = NO;
         
         [[UIApplication sharedApplication].keyWindow addSubview:self.bottomNav];
+        
+//        NSTimer * timer = [NSTimer scheduledTimerWithTimeInterval:0.1 repeats:YES block:^(NSTimer * _Nonnull timer) {
+//           NSLog(@"%@",NSStringFromCGPoint(_editImageBgView.contentOffset));
+//        }];
+//        [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
     }
     return self;
 }
@@ -246,14 +251,9 @@ typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
     }
 
     _editImageBgView.minimumZoomScale = _editImageBgView.minimumZoomScale * w_h_ratio;
-    
 
-//    CGRect frame = [[_clipFrameView superview] convertRect:_clipFrameView.frame toView:_editImageBgView.contentView];
-//    NSLog(@"%@",NSStringFromCGRect(frame));
-    
-    CGPoint contentOffset = CGPointMake(_editImageBgView.contentOffset.y * w_h_ratio, _editImageBgView.contentOffset.x);
-    NSLog(@"%@",NSStringFromCGPoint(_editImageBgView.contentOffset));
-//    NSLog(@"%@",NSStringFromCGPoint(contentOffset));
+    UIEdgeInsets oldContentInsets = _editImageBgView.contentInset;
+    CGPoint oldContentOffset = _editImageBgView.contentOffset;
     
     [UIView animateWithDuration:0.3 animations:^{
         _editImageBgView.transform = CGAffineTransformRotate(_editImageBgView.transform, -M_PI_2);
@@ -264,7 +264,13 @@ typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
         _clipFrameView.transform = CGAffineTransformScale(_clipFrameView.transform, w_h_ratio, w_h_ratio);
         
         [self changeBgScrollViewZoomScale];
-        _editImageBgView.contentOffset = contentOffset;
+        
+        UIEdgeInsets contentInsets = _editImageBgView.contentInset;
+        CGPoint contentOffset = _editImageBgView.contentOffset;
+        
+        NSLog(@"old = %@ \n new = %@",NSStringFromUIEdgeInsets(oldContentInsets),NSStringFromUIEdgeInsets(contentInsets));
+        
+        _editImageBgView.contentOffset = CGPointMake(oldContentOffset.y + oldContentInsets.left - contentInsets.top, oldContentOffset.x + oldContentInsets.top - contentInsets.left);
         
 //        _editImageBgView.contentOffset = CGPointMake(frame.origin.y * w_h_ratio + self.editImageBgView.contentInset.top, frame.origin.x * w_h_ratio + self.editImageBgView.contentInset.left);
 //        NSLog(@"%@",NSStringFromCGPoint(_editImageBgView.contentOffset));
