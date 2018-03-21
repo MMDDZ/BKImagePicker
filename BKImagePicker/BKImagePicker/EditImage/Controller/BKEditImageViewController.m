@@ -38,7 +38,7 @@
 @property (nonatomic,strong) NSMutableArray * writeViewArr;
 @property (nonatomic,strong) UIView * bottomDeleteWriteView;
 
-@property (nonatomic,strong) BKEditImageClipView * cropView;
+@property (nonatomic,strong) BKEditImageClipView * clipView;
 
 @end
 
@@ -248,7 +248,7 @@
                     strongSelf.bottomNavView.hidden = YES;
                     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
                     
-                    [strongSelf.cropView showCropView];
+                    [strongSelf.clipView showClipView];
                 }
                     break;
                 default:
@@ -292,7 +292,7 @@
         [_editImageBgView setChangeZoomScaleAction:^{
             BK_STRONG_SELF(self);
             if (strongSelf.bottomView.selectEditType == BKEditImageSelectEditTypeClip) {
-                [strongSelf.cropView changeBgScrollViewZoomScale];
+                [strongSelf.clipView changeBgScrollViewZoomScale];
             }
         }];
     }
@@ -778,18 +778,18 @@ static BOOL writeDeleteFlag = NO;
 
 #pragma mark - BKEditImageClipView
 
--(BKEditImageClipView*)cropView
+-(BKEditImageClipView*)clipView
 {
-    if (!_cropView) {
-        _cropView = [[BKEditImageClipView alloc]initWithFrame:self.view.bounds];
-        _cropView.editImageBgView = _editImageBgView;
-        [self.view addSubview:_cropView];
+    if (!_clipView) {
+        _clipView = [[BKEditImageClipView alloc]initWithFrame:self.view.bounds];
+        _clipView.editImageBgView = _editImageBgView;
+        [self.view addSubview:_clipView];
         
         BK_WEAK_SELF(self);
-        [_cropView setBackAction:^{
+        [_clipView setBackAction:^{
             BK_STRONG_SELF(self);
-            [strongSelf.cropView removeFromSuperview];
-            strongSelf.cropView = nil;
+            [strongSelf.clipView removeFromSuperview];
+            strongSelf.clipView = nil;
             
             [strongSelf.bottomView endEditCrop];
             
@@ -799,11 +799,11 @@ static BOOL writeDeleteFlag = NO;
             
             [strongSelf.editImageBgView setZoomScale:1 animated:YES];
         }];
-        [_cropView setFinishAction:^{
+        [_clipView setFinishAction:^{
             BK_STRONG_SELF(self);
         }];
     }
-    return _cropView;
+    return _clipView;
 }
 
 @end

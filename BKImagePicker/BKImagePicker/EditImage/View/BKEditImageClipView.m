@@ -10,12 +10,19 @@
 #import "BKImagePickerConst.h"
 #import "BKEditImageClipFrameView.h"
 
+typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
+    BKEditImagePanAngleLeftTop = 0,
+    BKEditImagePanAngleRightTop,
+    BKEditImagePanAngleLeftBottom,
+    BKEditImagePanAngleRightBottom,
+};
+
 typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
     BKEditImageRotationVertical = 0, //竖直
     BKEditImageRotationHorizontal, //水平
 };
 
-@interface BKEditImageClipView()
+@interface BKEditImageClipView()<UIGestureRecognizerDelegate>
 
 @property (nonatomic,strong) UIView * shadowView;
 @property (nonatomic,strong) BKEditImageClipFrameView * clipFrameView;
@@ -73,13 +80,228 @@ typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
 //           NSLog(@"%@",NSStringFromCGPoint(_editImageBgView.contentOffset));
 //        }];
 //        [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
+        
+        UIPanGestureRecognizer * panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(windowPanGesture:)];
+        panGesture.delegate = self;
+        panGesture.maximumNumberOfTouches = 1;
+        panGesture.dicTag = @{@"type":@"window",@"angle":@""};
+        [[UIApplication sharedApplication].keyWindow addGestureRecognizer:panGesture];
     }
     return self;
 }
 
-#pragma mark - showCropView
+#pragma mark - UIPanGestureRecognizer
 
--(void)showCropView
+-(void)windowPanGesture:(UIPanGestureRecognizer*)panGesture
+{
+    if ([panGesture.dicTag[@"angle"] isEqual:@""]) {
+
+        panGesture.enabled = NO;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            panGesture.enabled = YES;
+        });
+
+        return;
+    }
+    
+    CGPoint translation = [panGesture translationInView:[UIApplication sharedApplication].keyWindow];
+    
+    CGRect contentRect = [[_editImageBgView.contentView superview] convertRect:_editImageBgView.contentView.frame toView:self];
+    
+    CGFloat minX = _editImageBgView.bk_width * 0.1 < CGRectGetMinX(contentRect) ? CGRectGetMinX(contentRect) : _editImageBgView.bk_width * 0.1;
+    CGFloat minY = _editImageBgView.bk_height * 0.1 < CGRectGetMinY(contentRect) ? CGRectGetMinY(contentRect) : _editImageBgView.bk_height * 0.1;
+    CGFloat maxX = _editImageBgView.bk_width * 0.9 > CGRectGetMaxX(contentRect) ? CGRectGetMaxX(contentRect) : _editImageBgView.bk_width * 0.9;
+    CGFloat maxY = _editImageBgView.bk_height * 0.9 > CGRectGetMaxY(contentRect) ? CGRectGetMaxY(contentRect) : _editImageBgView.bk_height * 0.9;
+    
+    CGFloat minL = 40;//最小宽度
+    CGFloat maxW = _editImageBgView.bk_width * 0.8 > CGRectGetWidth(contentRect) ? CGRectGetWidth(contentRect) : _editImageBgView.bk_width * 0.8;
+    CGFloat maxH = _editImageBgView.bk_height * 0.8 > CGRectGetHeight(contentRect) ? CGRectGetHeight(contentRect) : _editImageBgView.bk_height * 0.8;
+    
+    CGFloat X = _clipFrameView.bk_x;
+    CGFloat Y = _clipFrameView.bk_y;
+    CGFloat width = _clipFrameView.bk_width;
+    CGFloat height = _clipFrameView.bk_height;
+    
+    switch ([panGesture.dicTag[@"angle"] integerValue]) {
+        case BKEditImagePanAngleLeftTop:
+        {
+            if (X + translation.x < minX) {
+                X = minX;
+                width = CGRectGetMaxX(_clipFrameView.frame) - X;
+            }else if (width - translation.x < minL) {
+                width = minL;
+                X = CGRectGetMaxX(_clipFrameView.frame) - width;
+            }else{
+                X = X + translation.x;
+                width = width - translation.x;
+            }
+            
+            if (Y + translation.y < minY) {
+                Y = minY;
+                height = CGRectGetMaxY(_clipFrameView.frame) - Y;
+            }else if (height - translation.y < minL) {
+                height = minL;
+                Y = CGRectGetMaxY(_clipFrameView.frame) - height;
+            }else{
+                Y = Y + translation.y;
+                height = height - translation.y;
+            }
+        }
+            break;
+        case BKEditImagePanAngleRightTop:
+        {
+            if (width + translation.x < minL) {
+                X = CGRectGetMaxX(_clipFrameView.frame) - minL;
+                width = minL;
+            }else if (X + width + translation.x > maxX) {
+                width = maxX - X;
+                X = maxX - width;
+            }else{
+                width = width + translation.x;
+            }
+            
+            if (Y + translation.y < minY) {
+                Y = minY;
+                height = CGRectGetMaxY(_clipFrameView.frame) - Y;
+            }else if (height - translation.y < minL) {
+                height = minL;
+                Y = CGRectGetMaxY(_clipFrameView.frame) - height;
+            }else{
+                Y = Y + translation.y;
+                height = height - translation.y;
+            }
+        }
+            break;
+        case BKEditImagePanAngleLeftBottom:
+        {
+            if (X + translation.x < minX) {
+                X = minX;
+                width = CGRectGetMaxX(_clipFrameView.frame) - X;
+            }else if (width - translation.x < minL) {
+                width = minL;
+                X = CGRectGetMaxX(_clipFrameView.frame) - width;
+            }else{
+                X = X + translation.x;
+                width = width - translation.x;
+            }
+            
+            if (height + translation.y < minL) {
+                Y = CGRectGetMaxY(_clipFrameView.frame) - minL;
+                height = minL;
+            }else if (Y + height + translation.y > maxY) {
+                height = maxY - Y;
+                Y = maxY - height;
+            }else{
+                height = height + translation.y;
+            }
+        }
+            break;
+        case BKEditImagePanAngleRightBottom:
+        {
+            if (width + translation.x < minL) {
+                X = CGRectGetMaxX(_clipFrameView.frame) - minL;
+                width = minL;
+            }else if (X + width + translation.x > maxX) {
+                width = maxX - X;
+                X = maxX - width;
+            }else{
+                width = width + translation.x;
+            }
+            
+            if (height + translation.y < minL) {
+                Y = CGRectGetMaxY(_clipFrameView.frame) - minL;
+                height = minL;
+            }else if (Y + height + translation.y > maxY) {
+                height = maxY - Y;
+                Y = maxY - height;
+            }else{
+                height = height + translation.y;
+            }
+        }
+            break;
+        default:
+            break;
+    }
+    
+    if (width > maxW) {
+        width = maxW;
+    }
+    
+    if (height > maxH) {
+        height = maxH;
+    }
+    
+    _clipFrameView.frame = CGRectMake(X, Y, width, height);
+    
+    if (panGesture.state == UIGestureRecognizerStateEnded || panGesture.state == UIGestureRecognizerStateFailed || panGesture.state == UIGestureRecognizerStateCancelled) {
+        panGesture.dicTag = @{@"type":@"window",@"angle":@""};
+    }
+    
+    [panGesture setTranslation:CGPointZero inView:panGesture.view];
+}
+
+#pragma mark - UIGestureRecognizerDelegate
+
+-(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+    if ([gestureRecognizer.dicTag[@"type"] isEqualToString:@"window"]) {
+        
+        CGPoint point = [gestureRecognizer locationInView:self];
+        
+        NSArray * frame_angle_rectArr = @[NSStringFromCGRect(CGRectMake(CGRectGetMinX(_clipFrameView.frame) - 20, CGRectGetMinY(_clipFrameView.frame) - 20, 40, 40)),
+                                          NSStringFromCGRect(CGRectMake(CGRectGetMaxX(_clipFrameView.frame) - 20, CGRectGetMinY(_clipFrameView.frame) - 20, 40, 40)),
+                                          NSStringFromCGRect(CGRectMake(CGRectGetMinX(_clipFrameView.frame) - 20, CGRectGetMaxY(_clipFrameView.frame) - 20, 40, 40)),
+                                          NSStringFromCGRect(CGRectMake(CGRectGetMaxX(_clipFrameView.frame) - 20, CGRectGetMaxY(_clipFrameView.frame) - 20, 40, 40))];
+        
+        [frame_angle_rectArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            
+            CGRect rect = CGRectFromString(obj);
+            
+            if (CGRectContainsPoint(rect, point)) {
+                
+                switch (idx) {
+                    case 0:
+                    {
+                        gestureRecognizer.dicTag = @{@"type":@"window",@"angle":@(BKEditImagePanAngleLeftTop)};
+                    }
+                        break;
+                    case 1:
+                    {
+                        gestureRecognizer.dicTag = @{@"type":@"window",@"angle":@(BKEditImagePanAngleRightTop)};
+                    }
+                        break;
+                    case 2:
+                    {
+                        gestureRecognizer.dicTag = @{@"type":@"window",@"angle":@(BKEditImagePanAngleLeftBottom)};
+                    }
+                        break;
+                    case 3:
+                    {
+                        gestureRecognizer.dicTag = @{@"type":@"window",@"angle":@(BKEditImagePanAngleRightBottom)};
+                    }
+                        break;
+                    default:
+                        break;
+                }
+                
+                if ([otherGestureRecognizer.view isKindOfClass:[UIScrollView class]]) {
+                    otherGestureRecognizer.enabled = NO;
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        otherGestureRecognizer.enabled = YES;
+                    });
+                }
+                
+                *stop = YES;
+            }
+        }];
+    }
+    
+    return YES;
+}
+
+#pragma mark - showClipView
+
+-(void)showClipView
 {
     _editImageBgView.clipsToBounds = NO;
     _editImageBgView.bk_height = self.bk_height - self.bottomNav.bk_height;
@@ -143,9 +365,9 @@ typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
 {
     if (!_clipFrameView) {
         
-        CGRect clipFrame = [[_editImageBgView.contentView superview] convertRect:_editImageBgView.contentView.frame toView:self];
+        CGRect contentFrame = [[_editImageBgView.contentView superview] convertRect:_editImageBgView.contentView.frame toView:self];
         
-        _clipFrameView = [[BKEditImageClipFrameView alloc]initWithFrame:clipFrame];
+        _clipFrameView = [[BKEditImageClipFrameView alloc]initWithFrame:contentFrame];
     }
     
     return _clipFrameView;
@@ -268,10 +490,11 @@ typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
         UIEdgeInsets contentInsets = _editImageBgView.contentInset;
         CGPoint contentOffset = _editImageBgView.contentOffset;
         
-        NSLog(@"old = %@ \n new = %@",NSStringFromUIEdgeInsets(oldContentInsets),NSStringFromUIEdgeInsets(contentInsets));
+        NSLog(@"old = %@ \n new = %@ \n contentOffset = %@ ",NSStringFromUIEdgeInsets(oldContentInsets),NSStringFromUIEdgeInsets(contentInsets),NSStringFromCGPoint(oldContentOffset));
         
-        _editImageBgView.contentOffset = CGPointMake(oldContentOffset.y + oldContentInsets.left - contentInsets.top, oldContentOffset.x + oldContentInsets.top - contentInsets.left);
+        _editImageBgView.contentOffset = CGPointMake(oldContentOffset.y - oldContentInsets.top + contentInsets.top, oldContentOffset.x - oldContentInsets.left + contentInsets.left);
         
+        NSLog(@"newContentOffset = %@",NSStringFromCGPoint(_editImageBgView.contentOffset));
 //        _editImageBgView.contentOffset = CGPointMake(frame.origin.y * w_h_ratio + self.editImageBgView.contentInset.top, frame.origin.x * w_h_ratio + self.editImageBgView.contentInset.left);
 //        NSLog(@"%@",NSStringFromCGPoint(_editImageBgView.contentOffset));
         

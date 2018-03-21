@@ -29,10 +29,21 @@
     [self removeObserver:self forKeyPath:@"frame"];
 }
 
+#pragma mark - KVO
+
+-(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:@"frame"]) {
+        [self changeSelfFrame];
+    }
+}
+
 #pragma mark - changeSelfFrame
 
 -(void)changeSelfFrame
 {
+    [[self.layer sublayers] makeObjectsPerformSelector:@selector(removeFromSuperlayer)];
+    
     UIBezierPath * linePath = [UIBezierPath bezierPathWithRect:self.bounds];
     
     [linePath moveToPoint:CGPointMake(self.bk_width/3, 0)];

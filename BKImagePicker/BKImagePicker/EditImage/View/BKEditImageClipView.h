@@ -16,7 +16,7 @@
 @property (nonatomic,copy) void (^backAction)(void);
 @property (nonatomic,copy) void (^finishAction)(void);
 
--(void)showCropView;//显示方法
+-(void)showClipView;//显示方法
 -(void)changeBgScrollViewZoomScale;//改变背景ScrollView的ZoomScale
 
 @end
