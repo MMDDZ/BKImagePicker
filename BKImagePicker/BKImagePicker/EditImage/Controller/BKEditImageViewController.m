@@ -289,6 +289,12 @@
         [_editImageBgView addGestureRecognizer:_editImageBgPanGesture];
         
         BK_WEAK_SELF(self);
+        [_editImageBgView setSlideBgScrollViewAction:^{
+            BK_STRONG_SELF(self);
+            if (strongSelf.bottomView.selectEditType == BKEditImageSelectEditTypeClip) {
+                [strongSelf.clipView slideBgScrollView];
+            }
+        }];
         [_editImageBgView setChangeZoomScaleAction:^{
             BK_STRONG_SELF(self);
             if (strongSelf.bottomView.selectEditType == BKEditImageSelectEditTypeClip) {

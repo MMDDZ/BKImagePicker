@@ -7,7 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "BKEditImageClipView.h"
 
 @interface BKEditImageClipFrameView : UIView
+
+@property (nonatomic,assign) BKEditImageRotation rotation;
 
 @end

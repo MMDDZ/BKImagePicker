@@ -61,6 +61,13 @@
 
 #pragma mark - UIScrollViewDelete
 
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    if (self.slideBgScrollViewAction) {
+        self.slideBgScrollViewAction();
+    }
+}
+
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView
 {
     self.contentSize = CGSizeMake(self.contentView.bk_width<self.bk_width?self.bk_width:self.contentView.bk_width, self.contentView.bk_height<self.bk_height?self.bk_height:self.contentView.bk_height);

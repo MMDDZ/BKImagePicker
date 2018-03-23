@@ -17,14 +17,11 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
     BKEditImagePanAngleRightBottom,
 };
 
-typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
-    BKEditImageRotationVertical = 0, //竖直
-    BKEditImageRotationHorizontal, //水平
-};
-
 @interface BKEditImageClipView()<UIGestureRecognizerDelegate>
 
+@property (nonatomic,assign) CGRect shadowViewRect;
 @property (nonatomic,strong) UIView * shadowView;
+
 @property (nonatomic,strong) BKEditImageClipFrameView * clipFrameView;
 
 @property (nonatomic,strong) UIView * bottomNav;
@@ -41,27 +38,36 @@ typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
 {
     if (_rotation == BKEditImageRotationVertical) {
         
-        self.editImageBgView.contentSize = CGSizeMake(self.editImageBgView.contentView.bk_width<self.editImageBgView.bk_width?self.editImageBgView.bk_width:self.editImageBgView.contentView.bk_width, self.editImageBgView.contentView.bk_height<self.editImageBgView.bk_height?self.editImageBgView.bk_height:self.editImageBgView.contentView.bk_height);
+        _editImageBgView.contentSize = CGSizeMake(_editImageBgView.contentView.bk_width<_editImageBgView.bk_width?_editImageBgView.bk_width:_editImageBgView.contentView.bk_width, _editImageBgView.contentView.bk_height<_editImageBgView.bk_height?_editImageBgView.bk_height:_editImageBgView.contentView.bk_height);
         
-        CGFloat width_gap = (self.editImageBgView.contentView.bk_width > self.editImageBgView.bk_width ? self.editImageBgView.bk_width : self.editImageBgView.contentView.bk_width) - self.clipFrameView.bk_width;
-        CGFloat height_gap = (self.editImageBgView.contentView.bk_height > self.editImageBgView.bk_height ? self.editImageBgView.bk_height : self.editImageBgView.contentView.bk_height) - self.clipFrameView.bk_height;
+        CGFloat width_gap = (_editImageBgView.contentView.bk_width > _editImageBgView.bk_width ? _editImageBgView.bk_width : _editImageBgView.contentView.bk_width) - (_clipFrameView?_clipFrameView.bk_width:CGRectGetWidth(_shadowViewRect));
+        CGFloat height_gap = (_editImageBgView.contentView.bk_height > _editImageBgView.bk_height ? _editImageBgView.bk_height : _editImageBgView.contentView.bk_height) - (_clipFrameView?_clipFrameView.bk_height:CGRectGetHeight(_shadowViewRect));
         
-        self.editImageBgView.contentInset = UIEdgeInsetsMake(height_gap/2, width_gap/2, height_gap/2, width_gap/2);
+        _editImageBgView.contentInset = UIEdgeInsetsMake(height_gap/2, width_gap/2, height_gap/2, width_gap/2);
         
-        self.editImageBgView.contentView.bk_centerX = self.editImageBgView.contentView.bk_width>self.editImageBgView.bk_width?self.editImageBgView.contentSize.width/2.0f:self.editImageBgView.bk_centerX;
-        self.editImageBgView.contentView.bk_centerY = self.editImageBgView.contentView.bk_height>self.editImageBgView.bk_height?self.editImageBgView.contentSize.height/2.0f:self.editImageBgView.bk_centerY;
+        _editImageBgView.contentView.bk_centerX = _editImageBgView.contentView.bk_width>_editImageBgView.bk_width?_editImageBgView.contentSize.width/2.0f:_editImageBgView.bk_centerX;
+        _editImageBgView.contentView.bk_centerY = _editImageBgView.contentView.bk_height>_editImageBgView.bk_height?_editImageBgView.contentSize.height/2.0f:_editImageBgView.bk_centerY;
     }else{
         
-        self.editImageBgView.contentSize = CGSizeMake(self.editImageBgView.contentView.bk_width<self.editImageBgView.bk_height?self.editImageBgView.bk_height:self.editImageBgView.contentView.bk_width, self.editImageBgView.contentView.bk_height<self.editImageBgView.bk_width?self.editImageBgView.bk_width:self.editImageBgView.contentView.bk_height);
+        _editImageBgView.contentSize = CGSizeMake(_editImageBgView.contentView.bk_width<_editImageBgView.bk_height?_editImageBgView.bk_height:_editImageBgView.contentView.bk_width, _editImageBgView.contentView.bk_height<_editImageBgView.bk_width?_editImageBgView.bk_width:_editImageBgView.contentView.bk_height);
         
-        CGFloat width_gap = (self.editImageBgView.contentView.bk_height > self.editImageBgView.bk_width ? self.editImageBgView.bk_width : self.editImageBgView.contentView.bk_height) - self.clipFrameView.bk_width;
-        CGFloat height_gap = (self.editImageBgView.contentView.bk_width > self.editImageBgView.bk_height ? self.editImageBgView.bk_height : self.editImageBgView.contentView.bk_width) - self.clipFrameView.bk_height;
+        CGFloat width_gap = (_editImageBgView.contentView.bk_height > _editImageBgView.bk_width ? _editImageBgView.bk_width : _editImageBgView.contentView.bk_height) - (_clipFrameView?_clipFrameView.bk_width:CGRectGetWidth(_shadowViewRect));
+        CGFloat height_gap = (_editImageBgView.contentView.bk_width > _editImageBgView.bk_height ? _editImageBgView.bk_height : _editImageBgView.contentView.bk_width) - (_clipFrameView?_clipFrameView.bk_height:CGRectGetHeight(_shadowViewRect));
         
-        self.editImageBgView.contentInset = UIEdgeInsetsMake(width_gap/2, height_gap/2, width_gap/2, height_gap/2);
+        _editImageBgView.contentInset = UIEdgeInsetsMake(width_gap/2, height_gap/2, width_gap/2, height_gap/2);
         
-        self.editImageBgView.contentView.bk_centerX = self.editImageBgView.contentView.bk_width>self.editImageBgView.bk_height?self.editImageBgView.contentSize.width/2.0f:self.editImageBgView.bk_centerY;
-        self.editImageBgView.contentView.bk_centerY = self.editImageBgView.contentView.bk_height>self.editImageBgView.bk_width?self.editImageBgView.contentSize.height/2.0f:self.editImageBgView.bk_centerX;
+        _editImageBgView.contentView.bk_centerX = _editImageBgView.contentView.bk_width>_editImageBgView.bk_height?_editImageBgView.contentSize.width/2.0f:_editImageBgView.bk_centerY;
+        _editImageBgView.contentView.bk_centerY = _editImageBgView.contentView.bk_height>_editImageBgView.bk_width?_editImageBgView.contentSize.height/2.0f:_editImageBgView.bk_centerX;
     }
+    
+    [self changeShadowViewRect];
+}
+
+#pragma mark - 移动背景scrollView
+
+-(void)slideBgScrollView
+{
+    [self changeShadowViewRect];
 }
 
 #pragma mark - init
@@ -92,6 +98,7 @@ typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
 
 #pragma mark - UIPanGestureRecognizer
 
+static CGRect beginClipFrameViewRect;
 -(void)windowPanGesture:(UIPanGestureRecognizer*)panGesture
 {
     if ([panGesture.dicTag[@"angle"] isEqual:@""]) {
@@ -102,6 +109,10 @@ typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
         });
 
         return;
+    }
+    
+    if (panGesture.state == UIGestureRecognizerStateBegan) {
+        beginClipFrameViewRect = _clipFrameView.frame;
     }
     
     CGPoint translation = [panGesture translationInView:[UIApplication sharedApplication].keyWindow];
@@ -151,7 +162,6 @@ typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
         case BKEditImagePanAngleRightTop:
         {
             if (width + translation.x < minL) {
-                X = CGRectGetMaxX(_clipFrameView.frame) - minL;
                 width = minL;
             }else if (X + width + translation.x > maxX) {
                 width = maxX - X;
@@ -186,7 +196,6 @@ typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
             }
             
             if (height + translation.y < minL) {
-                Y = CGRectGetMaxY(_clipFrameView.frame) - minL;
                 height = minL;
             }else if (Y + height + translation.y > maxY) {
                 height = maxY - Y;
@@ -199,7 +208,6 @@ typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
         case BKEditImagePanAngleRightBottom:
         {
             if (width + translation.x < minL) {
-                X = CGRectGetMaxX(_clipFrameView.frame) - minL;
                 width = minL;
             }else if (X + width + translation.x > maxX) {
                 width = maxX - X;
@@ -209,7 +217,6 @@ typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
             }
             
             if (height + translation.y < minL) {
-                Y = CGRectGetMaxY(_clipFrameView.frame) - minL;
                 height = minL;
             }else if (Y + height + translation.y > maxY) {
                 height = maxY - Y;
@@ -232,9 +239,28 @@ typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
     }
     
     _clipFrameView.frame = CGRectMake(X, Y, width, height);
+    [self changeShadowViewRect];
     
     if (panGesture.state == UIGestureRecognizerStateEnded || panGesture.state == UIGestureRecognizerStateFailed || panGesture.state == UIGestureRecognizerStateCancelled) {
         panGesture.dicTag = @{@"type":@"window",@"angle":@""};
+        
+        if (![UIApplication sharedApplication].keyWindow.userInteractionEnabled) {
+            return;
+        }
+        [UIApplication sharedApplication].keyWindow.userInteractionEnabled = NO;
+        
+        [UIView animateWithDuration:0.3 animations:^{
+            
+            _editImageBgView.contentOffset = CGPointMake(_editImageBgView.contentOffset.x + (_clipFrameView.center.x - CGRectGetMidX(beginClipFrameViewRect)), _editImageBgView.contentOffset.y + (_clipFrameView.center.y - CGRectGetMidY(beginClipFrameViewRect)));
+            
+            _clipFrameView.center = CGPointMake(_editImageBgView.bk_width / 2, _editImageBgView.bk_height / 2);
+            
+            [self changeBgScrollViewZoomScale];
+            
+        } completion:^(BOOL finished) {
+           [UIApplication sharedApplication].keyWindow.userInteractionEnabled = YES;
+        }];
+        
     }
     
     [panGesture setTranslation:CGPointZero inView:panGesture.view];
@@ -248,10 +274,10 @@ typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
         
         CGPoint point = [gestureRecognizer locationInView:self];
         
-        NSArray * frame_angle_rectArr = @[NSStringFromCGRect(CGRectMake(CGRectGetMinX(_clipFrameView.frame) - 20, CGRectGetMinY(_clipFrameView.frame) - 20, 40, 40)),
-                                          NSStringFromCGRect(CGRectMake(CGRectGetMaxX(_clipFrameView.frame) - 20, CGRectGetMinY(_clipFrameView.frame) - 20, 40, 40)),
-                                          NSStringFromCGRect(CGRectMake(CGRectGetMinX(_clipFrameView.frame) - 20, CGRectGetMaxY(_clipFrameView.frame) - 20, 40, 40)),
-                                          NSStringFromCGRect(CGRectMake(CGRectGetMaxX(_clipFrameView.frame) - 20, CGRectGetMaxY(_clipFrameView.frame) - 20, 40, 40))];
+        NSArray * frame_angle_rectArr = @[NSStringFromCGRect(CGRectMake(CGRectGetMinX(_clipFrameView.frame) - 25, CGRectGetMinY(_clipFrameView.frame) - 25, 50, 50)),
+                                          NSStringFromCGRect(CGRectMake(CGRectGetMaxX(_clipFrameView.frame) - 25, CGRectGetMinY(_clipFrameView.frame) - 25, 50, 50)),
+                                          NSStringFromCGRect(CGRectMake(CGRectGetMinX(_clipFrameView.frame) - 25, CGRectGetMaxY(_clipFrameView.frame) - 25, 50, 50)),
+                                          NSStringFromCGRect(CGRectMake(CGRectGetMaxX(_clipFrameView.frame) - 25, CGRectGetMaxY(_clipFrameView.frame) - 25, 50, 50))];
         
         [frame_angle_rectArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             
@@ -318,8 +344,9 @@ typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
     [UIView animateWithDuration:0.2 animations:^{
         [_editImageBgView setZoomScale:minZoomScale];
     } completion:^(BOOL finished) {
-        [self addSubview:self.clipFrameView];
+        
         [self addShadowView];
+        [self addSubview:self.clipFrameView];
         
         [self changeBgScrollViewZoomScale];
     }];
@@ -338,16 +365,42 @@ typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
     if (_shadowView) {
         [self removeShadowView];
     }
-    [self insertSubview:self.shadowView belowSubview:self.clipFrameView];
+    [_editImageBgView.contentView addSubview:self.shadowView];
+}
+
+/**
+ 起始阴影框大小
+
+ @return 阴影框大小
+ */
+-(CGRect)shadowViewRect
+{
+    if (CGRectEqualToRect(_shadowViewRect, CGRectZero)) {
+        _shadowViewRect = _editImageBgView.contentView.bounds;
+    }
+    return _shadowViewRect;
+}
+
+/**
+ 修改阴影框大小
+ */
+-(void)changeShadowViewRect
+{
+    if (_shadowView) {
+        _shadowViewRect = [[_clipFrameView superview] convertRect:_clipFrameView.frame toView:_editImageBgView.contentView];
+        
+        [self removeShadowView];
+        [self addShadowView];
+    }
 }
 
 -(UIView*)shadowView
 {
     if (!_shadowView) {
-        _shadowView = [[UIView alloc] initWithFrame:self.bounds];
+        _shadowView = [[UIView alloc] initWithFrame:_editImageBgView.contentView.bounds];
         
         UIBezierPath * path = [UIBezierPath bezierPathWithRect:_shadowView.bounds];
-        UIBezierPath * rectPath = [UIBezierPath bezierPathWithRect:self.clipFrameView.frame];
+        UIBezierPath * rectPath = [UIBezierPath bezierPathWithRect:self.shadowViewRect];
         [path appendPath:rectPath];
         
         CAShapeLayer * shapeLayer = [CAShapeLayer layer];
@@ -361,11 +414,30 @@ typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
 
 #pragma mark - clipFrameView
 
+-(void)removeClipFrameView
+{
+    [_clipFrameView removeFromSuperview];
+    _clipFrameView = nil;
+}
+
+-(void)addClipFrameView
+{
+    if (_clipFrameView) {
+        [self removeClipFrameView];
+    }
+    [self addSubview:self.clipFrameView];
+}
+
 -(BKEditImageClipFrameView*)clipFrameView
 {
     if (!_clipFrameView) {
         
-        CGRect contentFrame = [[_editImageBgView.contentView superview] convertRect:_editImageBgView.contentView.frame toView:self];
+        CGRect contentFrame;
+        if (CGRectEqualToRect(_shadowViewRect, CGRectZero)) {
+            contentFrame = [[_editImageBgView.contentView superview] convertRect:_editImageBgView.contentView.frame toView:self];
+        }else{
+            contentFrame = [[_editImageBgView.contentView superview] convertRect:_shadowViewRect toView:self];
+        }
         
         _clipFrameView = [[BKEditImageClipFrameView alloc]initWithFrame:contentFrame];
     }
@@ -454,54 +526,58 @@ typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
 
 -(void)rotationBtnClick:(UIButton*)button
 {
-    if (!button.userInteractionEnabled) {
+    if (![UIApplication sharedApplication].keyWindow.userInteractionEnabled) {
         return;
     }
-    button.userInteractionEnabled = NO;
+    [UIApplication sharedApplication].keyWindow.userInteractionEnabled = NO;
     
-    [self removeShadowView];
     
+    CGFloat w_h_ratio = 0;
     if (_rotation == BKEditImageRotationVertical) {
         _rotation = BKEditImageRotationHorizontal;
+        
+        w_h_ratio = _editImageBgView.bk_height / (_editImageBgView.contentView.bk_width / _editImageBgView.zoomScale);
+        if ((_editImageBgView.contentView.bk_height / _editImageBgView.zoomScale) * w_h_ratio > _editImageBgView.bk_width) {
+            w_h_ratio = _editImageBgView.bk_width / (_editImageBgView.contentView.bk_height / _editImageBgView.zoomScale);
+        }
     }else{
         _rotation = BKEditImageRotationVertical;
+        
+        w_h_ratio = _editImageBgView.bk_width / (_editImageBgView.contentView.bk_height / _editImageBgView.zoomScale);
+        if ((_editImageBgView.contentView.bk_width / _editImageBgView.zoomScale) * w_h_ratio > _editImageBgView.bk_height) {
+            w_h_ratio = _editImageBgView.bk_height / (_editImageBgView.contentView.bk_width / _editImageBgView.zoomScale);
+        }
     }
+//    _clipFrameView.rotation = _rotation;
     
-    CGFloat w_h_ratio = (_editImageBgView.bk_height * 0.8) / _clipFrameView.bk_width;
-    if (_clipFrameView.bk_height * w_h_ratio > _editImageBgView.bk_width * 0.8) {
-        w_h_ratio = (_editImageBgView.bk_width * 0.8) / _clipFrameView.bk_height;
-    }
+//    CGFloat w_h_ratio = (_editImageBgView.bk_height * 0.8) / _clipFrameView.bk_width;
+//    if (_clipFrameView.bk_height * w_h_ratio > _editImageBgView.bk_width * 0.8) {
+//        w_h_ratio = (_editImageBgView.bk_width * 0.8) / _clipFrameView.bk_height;
+//    }
 
+    
+    
     _editImageBgView.minimumZoomScale = _editImageBgView.minimumZoomScale * w_h_ratio;
-
-    UIEdgeInsets oldContentInsets = _editImageBgView.contentInset;
-    CGPoint oldContentOffset = _editImageBgView.contentOffset;
+    
+    [self removeShadowView];
+    [self removeClipFrameView];
     
     [UIView animateWithDuration:0.3 animations:^{
         _editImageBgView.transform = CGAffineTransformRotate(_editImageBgView.transform, -M_PI_2);
         _editImageBgView.frame = CGRectMake(0, 0, self.bk_width, self.bk_height - self.bottomNav.bk_height);
         _editImageBgView.zoomScale = _editImageBgView.zoomScale * w_h_ratio;
         
-        _clipFrameView.transform = CGAffineTransformRotate(_clipFrameView.transform, -M_PI_2);
-        _clipFrameView.transform = CGAffineTransformScale(_clipFrameView.transform, w_h_ratio, w_h_ratio);
+//        _clipFrameView.transform = CGAffineTransformRotate(_clipFrameView.transform, -M_PI_2);
+//        _clipFrameView.transform = CGAffineTransformScale(_clipFrameView.transform, w_h_ratio, w_h_ratio);
         
         [self changeBgScrollViewZoomScale];
         
-        UIEdgeInsets contentInsets = _editImageBgView.contentInset;
-        CGPoint contentOffset = _editImageBgView.contentOffset;
         
-        NSLog(@"old = %@ \n new = %@ \n contentOffset = %@ ",NSStringFromUIEdgeInsets(oldContentInsets),NSStringFromUIEdgeInsets(contentInsets),NSStringFromCGPoint(oldContentOffset));
-        
-        _editImageBgView.contentOffset = CGPointMake(oldContentOffset.y - oldContentInsets.top + contentInsets.top, oldContentOffset.x - oldContentInsets.left + contentInsets.left);
-        
-        NSLog(@"newContentOffset = %@",NSStringFromCGPoint(_editImageBgView.contentOffset));
-//        _editImageBgView.contentOffset = CGPointMake(frame.origin.y * w_h_ratio + self.editImageBgView.contentInset.top, frame.origin.x * w_h_ratio + self.editImageBgView.contentInset.left);
-//        NSLog(@"%@",NSStringFromCGPoint(_editImageBgView.contentOffset));
         
     } completion:^(BOOL finished) {
-        
         [self addShadowView];
-        button.userInteractionEnabled = YES;
+        [self addClipFrameView];
+        [UIApplication sharedApplication].keyWindow.userInteractionEnabled = YES;
     }];
 }
 
