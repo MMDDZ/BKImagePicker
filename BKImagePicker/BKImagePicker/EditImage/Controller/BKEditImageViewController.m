@@ -289,10 +289,22 @@
         [_editImageBgView addGestureRecognizer:_editImageBgPanGesture];
         
         BK_WEAK_SELF(self);
+        [_editImageBgView setWillChangeZoomScaleAction:^{
+            BK_STRONG_SELF(self);
+            if (strongSelf.bottomView.selectEditType == BKEditImageSelectEditTypeClip) {
+                [strongSelf.clipView willChangeBgScrollViewZoomScale];
+            }
+        }];
         [_editImageBgView setSlideBgScrollViewAction:^{
             BK_STRONG_SELF(self);
             if (strongSelf.bottomView.selectEditType == BKEditImageSelectEditTypeClip) {
                 [strongSelf.clipView slideBgScrollView];
+            }
+        }];
+        [_editImageBgView setEndChangeZoomScaleAction:^{
+            BK_STRONG_SELF(self);
+            if (strongSelf.bottomView.selectEditType == BKEditImageSelectEditTypeClip) {
+                [strongSelf.clipView endChangeBgScrollViewZoomScale];
             }
         }];
         [_editImageBgView setChangeZoomScaleAction:^{

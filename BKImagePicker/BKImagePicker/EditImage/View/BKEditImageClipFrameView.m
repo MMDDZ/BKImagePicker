@@ -46,7 +46,7 @@
     
     CGFloat width = 0;
     CGFloat height = 0;
-    if (_rotation == BKEditImageRotationVertical) {
+    if (_rotation == BKEditImageRotationPortrait || _rotation == BKEditImageRotationUpsideDown) {
         width = self.bk_width;
         height = self.bk_height;
     }else{

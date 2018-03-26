@@ -68,6 +68,13 @@
     }
 }
 
+- (void)scrollViewWillBeginZooming:(UIScrollView *)scrollView withView:(UIView *)view
+{
+    if (self.willChangeZoomScaleAction) {
+        self.willChangeZoomScaleAction();
+    }
+}
+
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView
 {
     self.contentSize = CGSizeMake(self.contentView.bk_width<self.bk_width?self.bk_width:self.contentView.bk_width, self.contentView.bk_height<self.bk_height?self.bk_height:self.contentView.bk_height);
@@ -77,6 +84,13 @@
     
     if (self.changeZoomScaleAction) {
         self.changeZoomScaleAction();
+    }
+}
+
+-(void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(CGFloat)scale
+{
+    if (self.endChangeZoomScaleAction) {
+        self.endChangeZoomScaleAction();
     }
 }
 

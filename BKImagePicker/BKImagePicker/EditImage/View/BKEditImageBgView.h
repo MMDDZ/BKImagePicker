@@ -13,6 +13,8 @@
 @property (nonatomic,strong) UIView * contentView;
 
 @property (nonatomic,copy) void (^slideBgScrollViewAction)(void);
+@property (nonatomic,copy) void (^willChangeZoomScaleAction)(void);
 @property (nonatomic,copy) void (^changeZoomScaleAction)(void);
+@property (nonatomic,copy) void (^endChangeZoomScaleAction)(void);
 
 @end

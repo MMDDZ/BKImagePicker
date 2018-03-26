@@ -10,8 +10,10 @@
 #import "BKEditImageBgView.h"
 
 typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
-    BKEditImageRotationVertical = 0, //竖直
-    BKEditImageRotationHorizontal, //水平
+    BKEditImageRotationPortrait = 0, //初始
+    BKEditImageRotationLandscapeLeft, //左倒
+    BKEditImageRotationUpsideDown, //颠倒
+    BKEditImageRotationLandscapeRight, //右倒
 };
 
 @interface BKEditImageClipView : UIView
@@ -22,7 +24,9 @@ typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
 @property (nonatomic,copy) void (^finishAction)(void);
 
 -(void)showClipView;//显示方法
+-(void)willChangeBgScrollViewZoomScale;
 -(void)changeBgScrollViewZoomScale;//改变背景ScrollView的ZoomScale
+-(void)endChangeBgScrollViewZoomScale;
 -(void)slideBgScrollView;//滑动背景scrollview
 
 @end
