@@ -113,65 +113,146 @@
 
 -(void)rightNavBtnAction:(UIButton *)button
 {
-    [[BKImagePicker sharedManager] saveImage:[self createNewImage]];
+    UIImage * saveImage = [self createNewImageWithFrame:CGRectZero editImageRotation:BKEditImageRotationPortrait];
+    if (saveImage) {
+        [[BKImagePicker sharedManager] saveImage:saveImage];
+    }
 }
 
 #pragma mark - 生成图片
 
--(UIImage*)createNewImage
+-(UIImage*)createNewImageWithFrame:(CGRect)frame editImageRotation:(BKEditImageRotation)rotation
 {
-    BOOL flag = [UIApplication sharedApplication].statusBarHidden;
-    CGFloat alpha1 = self.topNavView.alpha;
-    CGFloat alpha2 = self.bottomNavView.alpha;
+    UIWindow * window = [[UIApplication sharedApplication].delegate window];
+    [[BKTool sharedManager] showLoadInView:window];
     
-    [UIApplication sharedApplication].statusBarHidden = YES;
-    self.topNavView.alpha = 0;
-    self.bottomNavView.alpha = 0;
+    CGPoint contentOffset = _editImageBgView.contentOffset;
+    CGFloat zoomScale = _editImageBgView.zoomScale;
     
-    _editImageView.image = nil;
-    self.view.backgroundColor = [UIColor clearColor];
+    _editImageBgView.zoomScale = 1;
+    _editImageBgView.contentOffset = CGPointZero;
     
-    CGFloat scale = [UIScreen mainScreen].scale;
+    CGImageRef editImageRef = self.editImage.CGImage;
+    BOOL hasAlpha = [[BKTool sharedManager] checkHaveAlphaWithImageRef:editImageRef];
     
-    UIGraphicsBeginImageContextWithOptions(self.view.bounds.size, NO, scale);
+    CGFloat scale = _editImage.size.width / self.view.bk_width;
+    
+    UIGraphicsBeginImageContextWithOptions(_editImageBgView.contentView.frame.size, hasAlpha?NO:YES, scale);
     CGContextRef context = UIGraphicsGetCurrentContext();
-    [self.view.layer renderInContext:context];
+    [_editImageBgView.contentView.layer renderInContext:context];
     UIImage * image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
-    CGRect rect = self.editImageView.frame;
-    rect.origin.x = rect.origin.x * scale;
-    rect.origin.y = rect.origin.y * scale;
-    rect.size.width = rect.size.width * scale;
-    rect.size.height = rect.size.height * scale;
+    CGRect clipRect = CGRectZero;
+    if (!CGRectEqualToRect(frame, CGRectZero)) {
+        clipRect.origin.x = frame.origin.x * scale;
+        clipRect.origin.y = frame.origin.y * scale;
+        clipRect.size.width = frame.size.width * scale;
+        clipRect.size.height = frame.size.height * scale;
+        
+        CGImageRef clipImageRef = image.CGImage;
+        CGImageRef newImageRef = CGImageCreateWithImageInRect(clipImageRef, clipRect);
+        image = [UIImage imageWithCGImage:newImageRef];
+    }
     
+    CGRect rect = CGRectMake(0, 0, image.size.width * image.scale, image.size.height * image.scale);
+
     CGImageRef imageRef = CGImageCreateWithImageInRect(image.CGImage, rect);
     image = [UIImage imageWithCGImage:imageRef];
+
+//    UIGraphicsBeginImageContextWithOptions(rect.size, hasAlpha?NO:YES, 1);
+////    [image drawInRect:CGRectMake(0, 0, rect.size.width, rect.size.height)];
+//
+//
+//
+//
+//    UIImage * resultImage = UIGraphicsGetImageFromCurrentImageContext();
+//    UIGraphicsEndImageContext();
     
-    UIGraphicsBeginImageContextWithOptions(CGSizeMake(_editImage.size.width, _editImage.size.height), NO, 1);
-    [_editImage drawInRect:CGRectMake(0, 0, _editImage.size.width, _editImage.size.height)];
-    [image drawInRect:CGRectMake(0, 0, _editImage.size.width, _editImage.size.height)];
+    UIImage * resultImage = [self rotationImage:image editRotation:rotation hasAlpha:hasAlpha];
+
+    NSData * imageData;
+    NSString * path;
+    if (hasAlpha) {
+        imageData = UIImagePNGRepresentation(resultImage);
+        path = [NSString stringWithFormat:@"%@/save.png",NSTemporaryDirectory()];
+    }else{
+        imageData = UIImageJPEGRepresentation(resultImage, 1);
+        path = [NSString stringWithFormat:@"%@/save.jpg",NSTemporaryDirectory()];
+    }
+    BOOL saveflag = [imageData writeToFile:path atomically:YES];
+    if (saveflag) {
+        resultImage = [UIImage imageWithContentsOfFile:path];
+    }else{
+        [[BKTool sharedManager] showRemind:@"图片生成失败"];
+    }
+    
+    _editImageBgView.zoomScale = zoomScale;
+    _editImageBgView.contentOffset = contentOffset;
+    
+    [[BKTool sharedManager] hideLoad];
+
+    return saveflag?resultImage:nil;
+}
+
+-(UIImage *)rotationImage:(UIImage*)image editRotation:(BKEditImageRotation)rotation hasAlpha:(BOOL)hasAlpha
+{
+    long double rotate = 0.0;
+    CGRect rect = CGRectZero;
+    float translateX = 0;
+    float translateY = 0;
+    float scaleX = 1.0;
+    float scaleY = 1.0;
+    
+    switch (rotation) {
+        case BKEditImageRotationLandscapeLeft:
+        {
+            rotate = M_PI_2;
+            rect = CGRectMake(0, 0, image.size.height, image.size.width);
+            translateX = 0;
+            translateY = - rect.size.width;
+            scaleY = rect.size.width / rect.size.height;
+            scaleX = rect.size.height / rect.size.width;
+        }
+            break;
+        case BKEditImageRotationLandscapeRight:
+        {
+            rotate = 3 * M_PI_2;
+            rect = CGRectMake(0, 0, image.size.height, image.size.width);
+            translateX = - rect.size.height;
+            translateY = 0;
+            scaleY = rect.size.width / rect.size.height;
+            scaleX = rect.size.height / rect.size.width;
+        }
+            break;
+        case BKEditImageRotationUpsideDown:
+        {
+            rotate = M_PI;
+            rect = CGRectMake(0, 0, image.size.width, image.size.height);
+            translateX = - rect.size.width;
+            translateY = - rect.size.height;
+        }
+            break;
+        default:
+        {
+            rotate = 0.0;
+            rect = CGRectMake(0, 0, image.size.width, image.size.height);
+            translateX = 0;
+            translateY = 0;
+        }
+            break;
+    }
+    
+    UIGraphicsBeginImageContextWithOptions(rect.size, hasAlpha?NO:YES, 1);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextTranslateCTM(context, 0.0, rect.size.height);
+    CGContextScaleCTM(context, 1.0, -1.0);
+    CGContextRotateCTM(context, rotate);
+    CGContextTranslateCTM(context, translateX,translateY);
+    CGContextScaleCTM(context, scaleX,scaleY);
+    CGContextDrawImage(context, CGRectMake(0, 0, rect.size.width, rect.size.height), image.CGImage);
     UIImage * resultImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
-    
-    NSData * imageData = UIImagePNGRepresentation(resultImage);
-    BOOL saveflag = [imageData writeToFile:[NSString stringWithFormat:@"%@/save.png",NSTemporaryDirectory()] atomically:YES];
-    if (saveflag) {
-        resultImage = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/save.png",NSTemporaryDirectory()]];
-    }
-    
-    if (!flag) {
-        [UIApplication sharedApplication].statusBarHidden = NO;
-    }
-    if (alpha1 != 0) {
-        self.topNavView.alpha = alpha1;
-    }
-    if (alpha2 != 0) {
-        self.bottomNavView.alpha = alpha1;
-    }
-    
-    _editImageView.image = _editImage;
-    self.view.backgroundColor = [UIColor blackColor];
     
     return resultImage;
 }
@@ -806,22 +887,29 @@ static BOOL writeDeleteFlag = NO;
         BK_WEAK_SELF(self);
         [_clipView setBackAction:^{
             BK_STRONG_SELF(self);
-            [strongSelf.clipView removeFromSuperview];
-            strongSelf.clipView = nil;
-            
-            [strongSelf.bottomView endEditCrop];
-            
-            strongSelf.topNavView.hidden = NO;
-            strongSelf.bottomNavView.hidden = NO;
-            [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
-            
-            [strongSelf.editImageBgView setZoomScale:1 animated:YES];
+            [strongSelf removeClipView];
         }];
-        [_clipView setFinishAction:^{
+        [_clipView setFinishAction:^(CGRect clipFrame, BKEditImageRotation rotation) {
             BK_STRONG_SELF(self);
+            [[BKImagePicker sharedManager] saveImage:[strongSelf createNewImageWithFrame:clipFrame editImageRotation:rotation]];
+            //            [strongSelf removeClipView];
         }];
     }
     return _clipView;
+}
+
+-(void)removeClipView
+{
+    [_clipView removeFromSuperview];
+    _clipView = nil;
+    
+    [_bottomView endEditCrop];
+    
+    self.topNavView.hidden = NO;
+    self.bottomNavView.hidden = NO;
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+    
+    [_editImageBgView setZoomScale:1 animated:YES];
 }
 
 @end

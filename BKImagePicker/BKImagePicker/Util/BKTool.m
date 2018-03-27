@@ -306,15 +306,7 @@
         return nil;
     }
     
-    CGImageAlphaInfo alphaInfo = CGImageGetAlphaInfo(imageRef) & kCGBitmapAlphaInfoMask;
-    
-    BOOL hasAlpha = NO;
-    if (alphaInfo == kCGImageAlphaPremultipliedLast ||
-        alphaInfo == kCGImageAlphaPremultipliedFirst ||
-        alphaInfo == kCGImageAlphaLast ||
-        alphaInfo == kCGImageAlphaFirst) {
-        hasAlpha = YES;
-    }
+    BOOL hasAlpha = [self checkHaveAlphaWithImageRef:imageRef];
     
     CGBitmapInfo bitmapInfo = kCGBitmapByteOrder32Host;
     bitmapInfo |= hasAlpha ? kCGImageAlphaPremultipliedFirst : kCGImageAlphaNoneSkipFirst;
@@ -329,6 +321,21 @@
     CFRelease(context);
     
     return newImage;
+}
+
+-(BOOL)checkHaveAlphaWithImageRef:(CGImageRef)imageRef
+{
+    CGImageAlphaInfo alphaInfo = CGImageGetAlphaInfo(imageRef) & kCGBitmapAlphaInfoMask;
+    
+    BOOL hasAlpha = NO;
+    if (alphaInfo == kCGImageAlphaPremultipliedLast ||
+        alphaInfo == kCGImageAlphaPremultipliedFirst ||
+        alphaInfo == kCGImageAlphaLast ||
+        alphaInfo == kCGImageAlphaFirst) {
+        hasAlpha = YES;
+    }
+    
+    return hasAlpha;
 }
 
 @end

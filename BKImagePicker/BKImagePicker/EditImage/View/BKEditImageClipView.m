@@ -19,7 +19,7 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
 
 @interface BKEditImageClipView()<UIGestureRecognizerDelegate>
 
-@property (nonatomic,assign) CGRect shadowViewRect;
+@property (nonatomic,assign) CGRect shadowViewClipRect;
 @property (nonatomic,strong) UIView * shadowView;
 
 @property (nonatomic,strong) BKEditImageClipFrameView * clipFrameView;
@@ -407,12 +407,12 @@ static CGRect beginClipFrameViewRect;
 
  @return 阴影框大小
  */
--(CGRect)shadowViewRect
+-(CGRect)shadowViewClipRect
 {
-    if (CGRectEqualToRect(_shadowViewRect, CGRectZero)) {
-        _shadowViewRect = _editImageBgView.contentView.bounds;
+    if (CGRectEqualToRect(_shadowViewClipRect, CGRectZero)) {
+        _shadowViewClipRect = _editImageBgView.contentView.bounds;
     }
-    return _shadowViewRect;
+    return _shadowViewClipRect;
 }
 
 /**
@@ -421,7 +421,7 @@ static CGRect beginClipFrameViewRect;
 -(void)changeShadowViewRect
 {
     if (_shadowView) {
-        _shadowViewRect = [[_clipFrameView superview] convertRect:_clipFrameView.frame toView:_editImageBgView.contentView];
+        _shadowViewClipRect = [[_clipFrameView superview] convertRect:_clipFrameView.frame toView:_editImageBgView.contentView];
         
         [self removeShadowView];
         [self addShadowView];
@@ -434,7 +434,7 @@ static CGRect beginClipFrameViewRect;
         _shadowView = [[UIView alloc] initWithFrame:_editImageBgView.contentView.bounds];
         
         UIBezierPath * path = [UIBezierPath bezierPathWithRect:_shadowView.bounds];
-        UIBezierPath * rectPath = [UIBezierPath bezierPathWithRect:self.shadowViewRect];
+        UIBezierPath * rectPath = [UIBezierPath bezierPathWithRect:self.shadowViewClipRect];
         [path appendPath:rectPath];
         
         CAShapeLayer * shapeLayer = [CAShapeLayer layer];
@@ -467,10 +467,10 @@ static CGRect beginClipFrameViewRect;
     if (!_clipFrameView) {
         
         CGRect contentFrame;
-        if (CGRectEqualToRect(_shadowViewRect, CGRectZero)) {
+        if (CGRectEqualToRect(_shadowViewClipRect, CGRectZero)) {
             contentFrame = [[_editImageBgView.contentView superview] convertRect:_editImageBgView.contentView.frame toView:self];
         }else{
-            contentFrame = [[_shadowView superview] convertRect:_shadowViewRect toView:self];
+            contentFrame = [[_shadowView superview] convertRect:_shadowViewClipRect toView:self];
         }
         
         _clipFrameView = [[BKEditImageClipFrameView alloc]initWithFrame:contentFrame];
@@ -532,15 +532,7 @@ static CGRect beginClipFrameViewRect;
 
 -(void)backBtnClick
 {
-    _editImageBgView.clipsToBounds = YES;
-    _editImageBgView.bk_height = self.bk_height;
-    _editImageBgView.minimumZoomScale = 1;
-    
-    [_shadowView removeFromSuperview];
-    _shadowView = nil;
-    
-    [_bottomNav removeFromSuperview];
-    _bottomNav = nil;
+    [self removeSelf];
     
     if (self.backAction) {
         self.backAction();
@@ -548,6 +540,15 @@ static CGRect beginClipFrameViewRect;
 }
 
 -(void)finishBtnClick
+{
+//    [self removeSelf];
+    
+    if (self.finishAction) {
+        self.finishAction(_shadowViewClipRect,_rotation);
+    }
+}
+
+-(void)removeSelf
 {
     _editImageBgView.clipsToBounds = YES;
     _editImageBgView.bk_height = self.bk_height;
@@ -558,10 +559,6 @@ static CGRect beginClipFrameViewRect;
     
     [_bottomNav removeFromSuperview];
     _bottomNav = nil;
-    
-    if (self.finishAction) {
-        self.finishAction();
-    }
 }
 
 -(void)rotationBtnClick:(UIButton*)button
@@ -627,7 +624,7 @@ static CGRect beginClipFrameViewRect;
         [self changeShadowViewRect];
         [self changeBgScrollViewZoomScale];
         
-        _editImageBgView.contentOffset = CGPointMake((_shadowView.bk_width - _shadowViewRect.size.width)/2, (_shadowView.bk_height - _shadowViewRect.size.height)/2);
+        _editImageBgView.contentOffset = CGPointMake((_shadowView.bk_width - _shadowViewClipRect.size.width)/2, (_shadowView.bk_height - _shadowViewClipRect.size.height)/2);
         
     } completion:^(BOOL finished) {
         [self removeShadowView];

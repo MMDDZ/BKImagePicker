@@ -21,7 +21,7 @@ typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
 @property (nonatomic,weak) BKEditImageBgView * editImageBgView;
 
 @property (nonatomic,copy) void (^backAction)(void);
-@property (nonatomic,copy) void (^finishAction)(void);
+@property (nonatomic,copy) void (^finishAction)(CGRect clipFrame,BKEditImageRotation rotation);
 
 -(void)showClipView;//显示方法
 -(void)willChangeBgScrollViewZoomScale;

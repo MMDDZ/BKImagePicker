@@ -60,13 +60,15 @@
         _startImageView.frame = _endRect;
         toVC.view.backgroundColor = [UIColor colorWithWhite:0 alpha:1];
     } completion:^(BOOL finished) {
-        if (self.endTransitionAnimateAction) {
-            self.endTransitionAnimateAction();
-        }
+        
         [_startImageView removeFromSuperview];
         [toVC.view addSubview:toVC.topNavView];
         [toVC.view addSubview:toVC.bottomNavView];
         [transitionContext completeTransition:YES];
+        
+        if (self.endTransitionAnimateAction) {
+            self.endTransitionAnimateAction();
+        }
     }];
 }
 
@@ -95,11 +97,15 @@
         }
         
     } completion:^(BOOL finished) {
+        
+        [_startImageView removeFromSuperview];
+        [transitionContext completeTransition:YES];
+        
         if (self.endTransitionAnimateAction) {
             self.endTransitionAnimateAction();
         }
-        [_startImageView removeFromSuperview];
-        [transitionContext completeTransition:YES];
+        
+        [fromVC removeFromParentViewController];
     }];
 }
 

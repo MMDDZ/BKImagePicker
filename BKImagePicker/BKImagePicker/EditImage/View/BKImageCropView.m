@@ -96,7 +96,7 @@
 -(UIImage *)rotationImage:(UIImage *)image orientation:(UIImageOrientation)orientation
 {
     long double rotate = 0.0;
-    CGRect rect;
+    CGRect rect = CGRectZero;
     float translateX = 0;
     float translateY = 0;
     float scaleX = 1.0;

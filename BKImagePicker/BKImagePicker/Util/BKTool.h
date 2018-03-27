@@ -72,4 +72,12 @@
  */
 -(NSData *)compressImageData:(NSData *)imageData;
 
+/**
+ 查看图片是否含有alpha
+
+ @param imageRef imageRef
+ @return 结果
+ */
+-(BOOL)checkHaveAlphaWithImageRef:(CGImageRef)imageRef;
+
 @end
