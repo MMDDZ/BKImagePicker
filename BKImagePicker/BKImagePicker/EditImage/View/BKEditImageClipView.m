@@ -70,6 +70,9 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
 
 -(void)endChangeBgScrollViewZoomScale
 {
+    //结束改变缩放比例时 调整最小缩放比例
+    _editImageBgView.minimumZoomScale = [self calculateScrollMinZoomScaleWithNowMinZoomScale:_editImageBgView.minimumZoomScale];
+    
     [self addShadowView];
     [self changeShadowViewRect];
 }
@@ -646,23 +649,25 @@ static CGRect beginClipFrameViewRect;
 {
     CGFloat minimumZoomScale = minZoomScale;
     
-    CGFloat clipFrameViewWidth = 0;
-    CGFloat clipFrameViewHeight = 0;
+    CGFloat clipFrameViewMaxLength = 0;
     if (_clipFrameView.bk_width > _clipFrameView.bk_height) {
-        clipFrameViewHeight = _clipFrameView.bk_width;
-        clipFrameViewWidth = _clipFrameView.bk_height;
+        clipFrameViewMaxLength = _clipFrameView.bk_width;
     }else{
-        clipFrameViewWidth = _clipFrameView.bk_width;
-        clipFrameViewHeight = _clipFrameView.bk_height;
+        clipFrameViewMaxLength = _clipFrameView.bk_height;
     }
     
-    if (_editImageBgView.contentView.bk_width / _editImageBgView.zoomScale * minimumZoomScale > clipFrameViewWidth) {
-        minimumZoomScale = clipFrameViewWidth / (_editImageBgView.contentView.bk_width / _editImageBgView.zoomScale);
-        if (_editImageBgView.contentView.bk_height / _editImageBgView.zoomScale * minimumZoomScale > clipFrameViewHeight) {
-            minimumZoomScale = clipFrameViewHeight / (_editImageBgView.contentView.bk_height / _editImageBgView.zoomScale);
+    if (_editImageBgView.contentView.bk_width > _editImageBgView.contentView.bk_height) {
+        if (_editImageBgView.contentView.bk_height / _editImageBgView.zoomScale * minimumZoomScale > clipFrameViewMaxLength) {
+            minimumZoomScale = clipFrameViewMaxLength / (_editImageBgView.contentView.bk_height / _editImageBgView.zoomScale);
         }
-    }else if (_editImageBgView.contentView.bk_height / _editImageBgView.zoomScale * minimumZoomScale > clipFrameViewHeight) {
-        minimumZoomScale = clipFrameViewHeight / (_editImageBgView.contentView.bk_height / _editImageBgView.zoomScale);
+    }else{
+        if (_editImageBgView.contentView.bk_width / _editImageBgView.zoomScale * minimumZoomScale > clipFrameViewMaxLength) {
+            minimumZoomScale = clipFrameViewMaxLength / (_editImageBgView.contentView.bk_width / _editImageBgView.zoomScale);
+        }
+    }
+    //缩小最小比例为0.5
+    if (minimumZoomScale < 0.5) {
+        minimumZoomScale = 0.5;
     }
     
     return minimumZoomScale;

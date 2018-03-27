@@ -44,34 +44,24 @@
 {
     [[self.layer sublayers] makeObjectsPerformSelector:@selector(removeFromSuperlayer)];
     
-    CGFloat width = 0;
-    CGFloat height = 0;
-    if (_rotation == BKEditImageRotationPortrait || _rotation == BKEditImageRotationUpsideDown) {
-        width = self.bk_width;
-        height = self.bk_height;
-    }else{
-        width = self.bk_height;
-        height = self.bk_width;
-    }
-    
     UIBezierPath * linePath = [UIBezierPath bezierPath];
     [linePath moveToPoint:CGPointMake(0, 0)];
-    [linePath addLineToPoint:CGPointMake(width, 0)];
-    [linePath addLineToPoint:CGPointMake(width, height)];
-    [linePath addLineToPoint:CGPointMake(0, height)];
+    [linePath addLineToPoint:CGPointMake(self.bk_width, 0)];
+    [linePath addLineToPoint:CGPointMake(self.bk_width, self.bk_height)];
+    [linePath addLineToPoint:CGPointMake(0, self.bk_height)];
     [linePath addLineToPoint:CGPointMake(0, 0)];
     
-    [linePath moveToPoint:CGPointMake(width/3, 0)];
-    [linePath addLineToPoint:CGPointMake(width/3, height)];
+    [linePath moveToPoint:CGPointMake(self.bk_width/3, 0)];
+    [linePath addLineToPoint:CGPointMake(self.bk_width/3, self.bk_height)];
     
-    [linePath moveToPoint:CGPointMake(width/3*2, 0)];
-    [linePath addLineToPoint:CGPointMake(width/3*2, height)];
+    [linePath moveToPoint:CGPointMake(self.bk_width/3*2, 0)];
+    [linePath addLineToPoint:CGPointMake(self.bk_width/3*2, self.bk_height)];
     
-    [linePath moveToPoint:CGPointMake(0, height/3)];
-    [linePath addLineToPoint:CGPointMake(width, height/3)];
+    [linePath moveToPoint:CGPointMake(0, self.bk_height/3)];
+    [linePath addLineToPoint:CGPointMake(self.bk_width, self.bk_height/3)];
     
-    [linePath moveToPoint:CGPointMake(0, height/3*2)];
-    [linePath addLineToPoint:CGPointMake(width, height/3*2)];
+    [linePath moveToPoint:CGPointMake(0, self.bk_height/3*2)];
+    [linePath addLineToPoint:CGPointMake(self.bk_width, self.bk_height/3*2)];
     
     CAShapeLayer * border  = [[CAShapeLayer alloc] init];
     border.frame = self.bounds;
@@ -87,17 +77,17 @@
     [anglePath addLineToPoint:CGPointMake(-1, -1)];
     [anglePath addLineToPoint:CGPointMake(20, -1)];
     
-    [anglePath moveToPoint:CGPointMake(width + 1, 20)];
-    [anglePath addLineToPoint:CGPointMake(width + 1, -1)];
-    [anglePath addLineToPoint:CGPointMake(width - 20, -1)];
+    [anglePath moveToPoint:CGPointMake(self.bk_width + 1, 20)];
+    [anglePath addLineToPoint:CGPointMake(self.bk_width + 1, -1)];
+    [anglePath addLineToPoint:CGPointMake(self.bk_width - 20, -1)];
     
-    [anglePath moveToPoint:CGPointMake(width + 1, height - 20)];
-    [anglePath addLineToPoint:CGPointMake(width + 1, height + 1)];
-    [anglePath addLineToPoint:CGPointMake(width - 20, height + 1)];
+    [anglePath moveToPoint:CGPointMake(self.bk_width + 1, self.bk_height - 20)];
+    [anglePath addLineToPoint:CGPointMake(self.bk_width + 1, self.bk_height + 1)];
+    [anglePath addLineToPoint:CGPointMake(self.bk_width - 20, self.bk_height + 1)];
     
-    [anglePath moveToPoint:CGPointMake(-1, height - 20)];
-    [anglePath addLineToPoint:CGPointMake(-1, height + 1)];
-    [anglePath addLineToPoint:CGPointMake(20, height + 1)];
+    [anglePath moveToPoint:CGPointMake(-1, self.bk_height - 20)];
+    [anglePath addLineToPoint:CGPointMake(-1, self.bk_height + 1)];
+    [anglePath addLineToPoint:CGPointMake(20, self.bk_height + 1)];
     
     CAShapeLayer * angle  = [[CAShapeLayer alloc] init];
     angle.frame = self.bounds;
