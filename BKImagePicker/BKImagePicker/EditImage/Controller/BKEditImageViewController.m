@@ -159,15 +159,6 @@
 
     CGImageRef imageRef = CGImageCreateWithImageInRect(image.CGImage, rect);
     image = [UIImage imageWithCGImage:imageRef];
-
-//    UIGraphicsBeginImageContextWithOptions(rect.size, hasAlpha?NO:YES, 1);
-////    [image drawInRect:CGRectMake(0, 0, rect.size.width, rect.size.height)];
-//
-//
-//
-//
-//    UIImage * resultImage = UIGraphicsGetImageFromCurrentImageContext();
-//    UIGraphicsEndImageContext();
     
     UIImage * resultImage = [self rotationImage:image editRotation:rotation hasAlpha:hasAlpha];
 
@@ -256,8 +247,8 @@
     CGContextTranslateCTM(context, 0.0, rect.size.height);
     CGContextScaleCTM(context, 1.0, -1.0);
     CGContextRotateCTM(context, rotate);
-    CGContextTranslateCTM(context, translateX,translateY);
-    CGContextScaleCTM(context, scaleX,scaleY);
+    CGContextTranslateCTM(context, translateX, translateY);
+    CGContextScaleCTM(context, scaleX, scaleY);
     CGContextDrawImage(context, CGRectMake(0, 0, rect.size.width, rect.size.height), image.CGImage);
     UIImage * resultImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
