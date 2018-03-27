@@ -195,6 +195,14 @@
     return saveflag?resultImage:nil;
 }
 
+/**
+ 旋转图片
+
+ @param image 图片
+ @param rotation 角度
+ @param hasAlpha 是否有透明度
+ @return 图片
+ */
 -(UIImage *)rotationImage:(UIImage*)image editRotation:(BKEditImageRotation)rotation hasAlpha:(BOOL)hasAlpha
 {
     long double rotate = 0.0;
