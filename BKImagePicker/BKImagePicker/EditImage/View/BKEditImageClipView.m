@@ -96,6 +96,12 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
         
         [[UIApplication sharedApplication].keyWindow addSubview:self.bottomNav];
         
+        NSTimer * timer = [NSTimer scheduledTimerWithTimeInterval:0.5 repeats:YES block:^(NSTimer * _Nonnull timer) {
+            NSLog(@"%@",NSStringFromCGPoint(_editImageBgView.contentOffset));
+//            NSLog(@"%@",NSStringFromUIEdgeInsets(_editImageBgView.contentInset));
+        }];
+        [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
+        
         UIPanGestureRecognizer * panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(windowPanGesture:)];
         panGesture.delegate = self;
         panGesture.maximumNumberOfTouches = 1;
@@ -541,7 +547,7 @@ static CGRect beginClipFrameViewRect;
 
 -(void)finishBtnClick
 {
-//    [self removeSelf];
+    [self removeSelf];
     
     if (self.finishAction) {
         self.finishAction(_shadowViewClipRect,_rotation);
@@ -550,10 +556,6 @@ static CGRect beginClipFrameViewRect;
 
 -(void)removeSelf
 {
-    _editImageBgView.clipsToBounds = YES;
-    _editImageBgView.bk_height = self.bk_height;
-    _editImageBgView.minimumZoomScale = 1;
-    
     [_shadowView removeFromSuperview];
     _shadowView = nil;
     
@@ -615,6 +617,24 @@ static CGRect beginClipFrameViewRect;
     _shadowView.hidden = YES;
     _clipFrameView.hidden = YES;
     
+    CGFloat contentOffsetX = 0;
+    CGFloat contentOffsetY = 0;
+    CGFloat inset_X_scale = 0;
+    CGFloat inset_Y_scale = 0;
+    if (_editImageBgView.contentOffset.x < 0) {
+        inset_X_scale = _editImageBgView.contentOffset.x / _editImageBgView.contentInset.left;
+    }else{
+        contentOffsetX = _editImageBgView.contentOffset.x;
+        inset_X_scale = 1;
+    }
+    
+    if (_editImageBgView.contentOffset.y < 0) {
+        inset_Y_scale = _editImageBgView.contentOffset.y / _editImageBgView.contentInset.top;
+    }else{
+        contentOffsetY = _editImageBgView.contentOffset.y;
+        inset_Y_scale = 1;
+    }
+    
     [UIView animateWithDuration:0.3 animations:^{
         
         _editImageBgView.transform = CGAffineTransformRotate(_editImageBgView.transform, -M_PI_2);
@@ -624,7 +644,7 @@ static CGRect beginClipFrameViewRect;
         [self changeShadowViewRect];
         [self changeBgScrollViewZoomScale];
         
-        _editImageBgView.contentOffset = CGPointMake((_shadowView.bk_width - _shadowViewClipRect.size.width)/2, (_shadowView.bk_height - _shadowViewClipRect.size.height)/2);
+        _editImageBgView.contentOffset = CGPointMake(contentOffsetX * w_h_ratio + _editImageBgView.contentInset.top * inset_X_scale, contentOffsetY * w_h_ratio + _editImageBgView.contentInset.left * inset_Y_scale);
         
     } completion:^(BOOL finished) {
         [self removeShadowView];

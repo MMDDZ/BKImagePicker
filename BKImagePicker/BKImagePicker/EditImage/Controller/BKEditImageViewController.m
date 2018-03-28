@@ -12,7 +12,6 @@
 #import "BKEditImageBgView.h"
 #import "BKEditImageDrawView.h"
 #import "BKEditImageDrawModel.h"
-#import "BKImageCropView.h"
 #import "BKEditImageBottomView.h"
 #import "BKEditImageWriteView.h"
 #import "BKEditImageClipView.h"
@@ -114,6 +113,26 @@
 -(void)rightNavBtnAction:(UIButton *)button
 {
     UIImage * saveImage = [self createNewImageWithFrame:CGRectZero editImageRotation:BKEditImageRotationPortrait];
+    
+    CGImageRef editImageRef = _editImage.CGImage;
+    BOOL hasAlpha = [[BKTool sharedManager] checkHaveAlphaWithImageRef:editImageRef];
+    
+    NSData * imageData;
+    NSString * path;
+    if (hasAlpha) {
+        imageData = UIImagePNGRepresentation(saveImage);
+        path = [NSString stringWithFormat:@"%@/save.png",NSTemporaryDirectory()];
+    }else{
+        imageData = UIImageJPEGRepresentation(saveImage, 1);
+        path = [NSString stringWithFormat:@"%@/save.jpg",NSTemporaryDirectory()];
+    }
+    BOOL saveflag = [imageData writeToFile:path atomically:YES];
+    if (saveflag) {
+        saveImage = [UIImage imageWithContentsOfFile:path];
+    }else{
+        [[BKTool sharedManager] showRemind:@"图片生成失败"];
+    }
+    
     if (saveImage) {
         [[BKImagePicker sharedManager] saveImage:saveImage];
     }
@@ -132,7 +151,7 @@
     _editImageBgView.zoomScale = 1;
     _editImageBgView.contentOffset = CGPointZero;
     
-    CGImageRef editImageRef = self.editImage.CGImage;
+    CGImageRef editImageRef = _editImage.CGImage;
     BOOL hasAlpha = [[BKTool sharedManager] checkHaveAlphaWithImageRef:editImageRef];
     
     CGFloat scale = _editImage.size.width / self.view.bk_width;
@@ -162,28 +181,12 @@
     
     UIImage * resultImage = [self rotationImage:image editRotation:rotation hasAlpha:hasAlpha];
 
-    NSData * imageData;
-    NSString * path;
-    if (hasAlpha) {
-        imageData = UIImagePNGRepresentation(resultImage);
-        path = [NSString stringWithFormat:@"%@/save.png",NSTemporaryDirectory()];
-    }else{
-        imageData = UIImageJPEGRepresentation(resultImage, 1);
-        path = [NSString stringWithFormat:@"%@/save.jpg",NSTemporaryDirectory()];
-    }
-    BOOL saveflag = [imageData writeToFile:path atomically:YES];
-    if (saveflag) {
-        resultImage = [UIImage imageWithContentsOfFile:path];
-    }else{
-        [[BKTool sharedManager] showRemind:@"图片生成失败"];
-    }
-    
     _editImageBgView.zoomScale = zoomScale;
     _editImageBgView.contentOffset = contentOffset;
     
     [[BKTool sharedManager] hideLoad];
 
-    return saveflag?resultImage:nil;
+    return resultImage;
 }
 
 /**
@@ -324,8 +327,8 @@
                 {
                     strongSelf.bottomNavViewHeight = strongSelf.bottomView.bk_height + BK_SYSTEM_TABBAR_HEIGHT - BK_SYSTEM_TABBAR_UI_HEIGHT;
                     
-                    strongSelf.topNavView.hidden = YES;
-                    strongSelf.bottomNavView.hidden = YES;
+                    strongSelf.topNavView.alpha = 0;
+                    strongSelf.bottomNavView.alpha = 0;
                     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
                     
                     [strongSelf.clipView showClipView];
@@ -543,17 +546,14 @@
 
 #pragma mark - 图片
 
--(void)setEditImage:(UIImage *)editImage
-{
-    //图片取正
-    _editImage = [editImage editImageOrientation];
-}
-
 -(UIImageView*)editImageView
 {
     if (!_editImageView) {
         _editImageView = [[UIImageView alloc]initWithFrame:self.editImageBgView.contentView.bounds];
-        _editImageView.image = self.editImage;
+        
+        _editImage = [_editImage editImageOrientation];
+        _editImageView.image = _editImage;
+        
         [self.editImageBgView.contentView addSubview:_editImageView];
         
         //全图做马赛克处理 添加在图片图层上
@@ -594,7 +594,7 @@
 -(UIImage *)mosaicImage
 {
     if (!_mosaicImage) {
-        CIImage *ciImage = [CIImage imageWithCGImage:self.editImage.CGImage];
+        CIImage *ciImage = [CIImage imageWithCGImage:_editImage.CGImage];
         //生成马赛克
         CIFilter *filter = [CIFilter filterWithName:@"CIPixellate"];
         [filter setValue:ciImage forKey:kCIInputImageKey];
@@ -603,7 +603,7 @@
         CIImage *outImage = [filter valueForKey:kCIOutputImageKey];
         
         CIContext *context = [CIContext contextWithOptions:nil];
-        CGImageRef cgImage = [context createCGImage:outImage fromRect:CGRectMake(0, 0, self.editImage.size.width, self.editImage.size.height)];
+        CGImageRef cgImage = [context createCGImage:outImage fromRect:CGRectMake(0, 0, _editImage.size.width, _editImage.size.height)];
         _mosaicImage = [UIImage imageWithCGImage:cgImage];
         CGImageRelease(cgImage);
     }
@@ -795,8 +795,8 @@ static BOOL writeDeleteFlag = NO;
                 case UIGestureRecognizerStateBegan:
                 {
                     [UIApplication sharedApplication].statusBarHidden = YES;
-                    strongSelf.topNavView.hidden = YES;
-                    strongSelf.bottomNavView.hidden = YES;
+                    strongSelf.topNavView.alpha = 0;
+                    strongSelf.bottomNavView.alpha = 0;
                     
                     strongSelf.editImageBgView.contentView.clipsToBounds = NO;
                     
@@ -822,8 +822,8 @@ static BOOL writeDeleteFlag = NO;
                 case UIGestureRecognizerStateFailed:
                 {
                     [UIApplication sharedApplication].statusBarHidden = NO;
-                    strongSelf.topNavView.hidden = NO;
-                    strongSelf.bottomNavView.hidden = NO;
+                    strongSelf.topNavView.alpha = 1;
+                    strongSelf.bottomNavView.alpha = 1;
                     
                     [strongSelf.bottomDeleteWriteView removeFromSuperview];
                     strongSelf.bottomDeleteWriteView = nil;
@@ -886,12 +886,26 @@ static BOOL writeDeleteFlag = NO;
         BK_WEAK_SELF(self);
         [_clipView setBackAction:^{
             BK_STRONG_SELF(self);
+            
             [strongSelf removeClipView];
+            
+            strongSelf.editImageBgView.clipsToBounds = YES;
+            strongSelf.editImageBgView.minimumZoomScale = 1;
+            
+            
+            
+            [UIView animateWithDuration:0.2 animations:^{
+                strongSelf.editImageBgView.contentInset = UIEdgeInsetsZero;
+                [strongSelf.editImageBgView setZoomScale:1 animated:NO];
+                strongSelf.editImageBgView.transform = CGAffineTransformIdentity;
+                strongSelf.editImageBgView.frame = strongSelf.view.bounds;
+            }];
         }];
         [_clipView setFinishAction:^(CGRect clipFrame, BKEditImageRotation rotation) {
             BK_STRONG_SELF(self);
-            [[BKImagePicker sharedManager] saveImage:[strongSelf createNewImageWithFrame:clipFrame editImageRotation:rotation]];
-            //            [strongSelf removeClipView];
+            
+            [strongSelf removeClipView];
+            [strongSelf resetEditImageWithClipFrame:clipFrame rotation:rotation];
         }];
     }
     return _clipView;
@@ -902,13 +916,54 @@ static BOOL writeDeleteFlag = NO;
     [_clipView removeFromSuperview];
     _clipView = nil;
     
-    [_bottomView endEditCrop];
+    [self.bottomView endEditCrop];
     
-    self.topNavView.hidden = NO;
-    self.bottomNavView.hidden = NO;
+    self.topNavView.alpha = 1;
+    self.bottomNavView.alpha = 1;
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+}
+
+-(void)resetEditImageWithClipFrame:(CGRect)clipFrame rotation:(BKEditImageRotation)rotation
+{
+    CGRect frame = [_editImageBgView.contentView convertRect:clipFrame toView:self.view];
     
-    [_editImageBgView setZoomScale:1 animated:YES];
+    _editImage = [self createNewImageWithFrame:clipFrame editImageRotation:rotation];
+    
+    [_editImageBgView removeFromSuperview];
+    _editImageBgView = nil;
+    _editImageBgPanGesture = nil;
+    [_drawTimer invalidate];
+    _drawTimer = nil;
+    [_editImageView removeFromSuperview];
+    _editImageView = nil;
+    _mosaicImage = nil;
+    [_mosaicImageShapeLayer removeFromSuperlayer];
+    _mosaicImageShapeLayer = nil;
+    [_drawView removeFromSuperview];
+    _drawView = nil;
+    [_writeTextView removeFromSuperview];
+    _writeTextView = nil;
+    [_writeViewArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [obj removeFromSuperview];
+        obj = nil;
+    }];
+    [_bottomDeleteWriteView removeFromSuperview];
+    _bottomDeleteWriteView = nil;
+
+    UIImageView * imageView = [[UIImageView alloc]initWithFrame:frame];
+    imageView.image = _editImage;
+    [self.view insertSubview:imageView atIndex:0];
+    
+    [UIView animateWithDuration:0.2 animations:^{
+        
+        imageView.frame = [self calculataImageRect];
+        
+    } completion:^(BOOL finished) {
+        [imageView removeFromSuperview];
+        
+        [self editImageView];
+        [self drawView];
+    }];
 }
 
 @end
