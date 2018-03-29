@@ -104,8 +104,6 @@
         if (self.endTransitionAnimateAction) {
             self.endTransitionAnimateAction();
         }
-        
-        [fromVC removeFromParentViewController];
     }];
 }
 

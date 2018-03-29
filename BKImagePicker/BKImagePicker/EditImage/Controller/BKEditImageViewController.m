@@ -887,22 +887,32 @@ static BOOL writeDeleteFlag = NO;
         [_clipView setBackAction:^{
             BK_STRONG_SELF(self);
             
+            if (!strongSelf.view.userInteractionEnabled) {
+                return;
+            }
+            strongSelf.view.userInteractionEnabled = NO;
+            
             [strongSelf removeClipView];
             
             strongSelf.editImageBgView.clipsToBounds = YES;
             strongSelf.editImageBgView.minimumZoomScale = 1;
             
-            
-            
             [UIView animateWithDuration:0.2 animations:^{
-                strongSelf.editImageBgView.contentInset = UIEdgeInsetsZero;
-                [strongSelf.editImageBgView setZoomScale:1 animated:NO];
                 strongSelf.editImageBgView.transform = CGAffineTransformIdentity;
                 strongSelf.editImageBgView.frame = strongSelf.view.bounds;
+                strongSelf.editImageBgView.contentInset = UIEdgeInsetsZero;
+                [strongSelf.editImageBgView setZoomScale:1 animated:NO];
+            } completion:^(BOOL finished) {
+                strongSelf.view.userInteractionEnabled = YES;
             }];
         }];
         [_clipView setFinishAction:^(CGRect clipFrame, BKEditImageRotation rotation) {
             BK_STRONG_SELF(self);
+            
+            if (!strongSelf.view.userInteractionEnabled) {
+                return;
+            }
+            strongSelf.view.userInteractionEnabled = NO;
             
             [strongSelf removeClipView];
             [strongSelf resetEditImageWithClipFrame:clipFrame rotation:rotation];
@@ -963,6 +973,8 @@ static BOOL writeDeleteFlag = NO;
         
         [self editImageView];
         [self drawView];
+        
+        self.view.userInteractionEnabled = YES;
     }];
 }
 

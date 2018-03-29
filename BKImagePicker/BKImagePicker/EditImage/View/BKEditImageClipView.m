@@ -23,6 +23,7 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
 @property (nonatomic,strong) UIView * shadowView;
 
 @property (nonatomic,strong) BKEditImageClipFrameView * clipFrameView;
+@property (nonatomic,assign) CGRect beginClipFrameViewRect;
 
 @property (nonatomic,strong) UIView * bottomNav;
 
@@ -97,8 +98,9 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
         [[UIApplication sharedApplication].keyWindow addSubview:self.bottomNav];
         
         NSTimer * timer = [NSTimer scheduledTimerWithTimeInterval:0.5 repeats:YES block:^(NSTimer * _Nonnull timer) {
-            NSLog(@"%@",NSStringFromCGPoint(_editImageBgView.contentOffset));
-//            NSLog(@"%@",NSStringFromUIEdgeInsets(_editImageBgView.contentInset));
+            NSLog(@"contentOffset : %@",NSStringFromCGPoint(_editImageBgView.contentOffset));
+            NSLog(@"contentInset : %@",NSStringFromUIEdgeInsets(_editImageBgView.contentInset));
+            NSLog(@"contentSize : %@",NSStringFromCGSize(_editImageBgView.contentSize));
         }];
         [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
         
@@ -113,7 +115,6 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
 
 #pragma mark - UIPanGestureRecognizer
 
-static CGRect beginClipFrameViewRect;
 -(void)windowPanGesture:(UIPanGestureRecognizer*)panGesture
 {
     if ([panGesture.dicTag[@"angle"] isEqual:@""]) {
@@ -127,7 +128,7 @@ static CGRect beginClipFrameViewRect;
     }
     
     if (panGesture.state == UIGestureRecognizerStateBegan) {
-        beginClipFrameViewRect = _clipFrameView.frame;
+        _beginClipFrameViewRect = _clipFrameView.frame;
     }
     
     CGPoint translation = [panGesture translationInView:[UIApplication sharedApplication].keyWindow];
@@ -269,22 +270,22 @@ static CGRect beginClipFrameViewRect;
             switch (_rotation) {
                 case BKEditImageRotationPortrait:
                 {
-                    _editImageBgView.contentOffset = CGPointMake(_editImageBgView.contentOffset.x + (_clipFrameView.center.x - CGRectGetMidX(beginClipFrameViewRect)), _editImageBgView.contentOffset.y + (_clipFrameView.center.y - CGRectGetMidY(beginClipFrameViewRect)));
+                    _editImageBgView.contentOffset = CGPointMake(_editImageBgView.contentOffset.x + (_clipFrameView.center.x - CGRectGetMidX(_beginClipFrameViewRect)), _editImageBgView.contentOffset.y + (_clipFrameView.center.y - CGRectGetMidY(_beginClipFrameViewRect)));
                 }
                     break;
                 case BKEditImageRotationLandscapeLeft:
                 {
-                    _editImageBgView.contentOffset = CGPointMake(_editImageBgView.contentOffset.x - (_clipFrameView.center.y - CGRectGetMidY(beginClipFrameViewRect)), _editImageBgView.contentOffset.y + (_clipFrameView.center.x - CGRectGetMidX(beginClipFrameViewRect)));
+                    _editImageBgView.contentOffset = CGPointMake(_editImageBgView.contentOffset.x - (_clipFrameView.center.y - CGRectGetMidY(_beginClipFrameViewRect)), _editImageBgView.contentOffset.y + (_clipFrameView.center.x - CGRectGetMidX(_beginClipFrameViewRect)));
                 }
                     break;
                 case BKEditImageRotationUpsideDown:
                 {
-                    _editImageBgView.contentOffset = CGPointMake(_editImageBgView.contentOffset.x - (_clipFrameView.center.x - CGRectGetMidX(beginClipFrameViewRect)), _editImageBgView.contentOffset.y - (_clipFrameView.center.y - CGRectGetMidY(beginClipFrameViewRect)));
+                    _editImageBgView.contentOffset = CGPointMake(_editImageBgView.contentOffset.x - (_clipFrameView.center.x - CGRectGetMidX(_beginClipFrameViewRect)), _editImageBgView.contentOffset.y - (_clipFrameView.center.y - CGRectGetMidY(_beginClipFrameViewRect)));
                 }
                     break;
                 case BKEditImageRotationLandscapeRight:
                 {
-                    _editImageBgView.contentOffset = CGPointMake(_editImageBgView.contentOffset.x + (_clipFrameView.center.y - CGRectGetMidY(beginClipFrameViewRect)), _editImageBgView.contentOffset.y - (_clipFrameView.center.x - CGRectGetMidX(beginClipFrameViewRect)));
+                    _editImageBgView.contentOffset = CGPointMake(_editImageBgView.contentOffset.x + (_clipFrameView.center.y - CGRectGetMidY(_beginClipFrameViewRect)), _editImageBgView.contentOffset.y - (_clipFrameView.center.x - CGRectGetMidX(_beginClipFrameViewRect)));
                 }
                     break;
                 default:
@@ -635,6 +636,9 @@ static CGRect beginClipFrameViewRect;
         inset_Y_scale = 1;
     }
     
+    CGFloat contentInsetTop = _editImageBgView.contentInset.top;
+    CGFloat contentInsetLeft = _editImageBgView.contentInset.left;
+    
     [UIView animateWithDuration:0.3 animations:^{
         
         _editImageBgView.transform = CGAffineTransformRotate(_editImageBgView.transform, -M_PI_2);
@@ -644,7 +648,15 @@ static CGRect beginClipFrameViewRect;
         [self changeShadowViewRect];
         [self changeBgScrollViewZoomScale];
         
-        _editImageBgView.contentOffset = CGPointMake(contentOffsetX * w_h_ratio + _editImageBgView.contentInset.top * inset_X_scale, contentOffsetY * w_h_ratio + _editImageBgView.contentInset.left * inset_Y_scale);
+        if (inset_X_scale < 1 && inset_Y_scale < 1) {
+            _editImageBgView.contentOffset = CGPointMake(_editImageBgView.contentInset.left * inset_X_scale, _editImageBgView.contentInset.top * inset_Y_scale);
+        }else if (inset_X_scale == 1 && inset_Y_scale < 1) {
+            _editImageBgView.contentOffset = CGPointMake((contentOffsetX + contentInsetLeft) * w_h_ratio - _editImageBgView.contentInset.left, _editImageBgView.contentInset.top * inset_Y_scale);
+        }else if (inset_X_scale < 1 && inset_Y_scale == 1) {
+            _editImageBgView.contentOffset = CGPointMake(_editImageBgView.contentInset.left * inset_X_scale, (contentOffsetY + contentInsetTop) * w_h_ratio - _editImageBgView.contentInset.top);
+        }else if (inset_X_scale == 1 && inset_Y_scale == 1) {
+            _editImageBgView.contentOffset = CGPointMake((contentOffsetX + contentInsetLeft) * w_h_ratio - _editImageBgView.contentInset.left, (contentOffsetY + contentInsetTop) * w_h_ratio - _editImageBgView.contentInset.top);
+        }
         
     } completion:^(BOOL finished) {
         [self removeShadowView];
