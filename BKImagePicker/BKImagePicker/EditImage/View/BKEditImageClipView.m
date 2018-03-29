@@ -97,13 +97,6 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
         
         [[UIApplication sharedApplication].keyWindow addSubview:self.bottomNav];
         
-        NSTimer * timer = [NSTimer scheduledTimerWithTimeInterval:0.5 repeats:YES block:^(NSTimer * _Nonnull timer) {
-            NSLog(@"contentOffset : %@",NSStringFromCGPoint(_editImageBgView.contentOffset));
-            NSLog(@"contentInset : %@",NSStringFromUIEdgeInsets(_editImageBgView.contentInset));
-            NSLog(@"contentSize : %@",NSStringFromCGSize(_editImageBgView.contentSize));
-        }];
-        [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
-        
         UIPanGestureRecognizer * panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(windowPanGesture:)];
         panGesture.delegate = self;
         panGesture.maximumNumberOfTouches = 1;
@@ -301,7 +294,6 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
         } completion:^(BOOL finished) {
            [UIApplication sharedApplication].keyWindow.userInteractionEnabled = YES;
         }];
-        
     }
     
     [panGesture setTranslation:CGPointZero inView:panGesture.view];
