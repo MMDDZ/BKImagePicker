@@ -131,17 +131,17 @@
         NSArray * imageArr_n = @[[[BKTool sharedManager] editImageWithImageName:@"draw_n"],
                                  [[BKTool sharedManager] editImageWithImageName:@"write_n"],
                                  [[BKTool sharedManager] editImageWithImageName:@"clip_n"]];
-        NSArray * imageArr_s = @[[[BKTool sharedManager] editImageWithImageName:@"draw_s"],
-                                 [[BKTool sharedManager] editImageWithImageName:@"write_s"],
-                                 [[BKTool sharedManager] editImageWithImageName:@"clip_s"]];
+//        NSArray * imageArr_s = @[[[BKTool sharedManager] editImageWithImageName:@"draw_s"],
+//                                 [[BKTool sharedManager] editImageWithImageName:@"write_s"],
+//                                 [[BKTool sharedManager] editImageWithImageName:@"clip_s"]];
         
         __block UIView * lastView;
         [imageArr_n enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             UIButton * button = [UIButton buttonWithType:UIButtonTypeCustom];
-            button.frame = CGRectMake(idx*50, 0, 50, _firstLevelScrollView.bk_height);
+            button.frame = CGRectMake(idx*50, 0, 50, self.firstLevelScrollView.bk_height);
             [button addTarget:self action:@selector(editBtnClick:) forControlEvents:UIControlEventTouchUpInside];
             button.tag = (idx+1)*100;
-            [_firstLevelScrollView addSubview:button];
+            [self.firstLevelScrollView addSubview:button];
             
             UIImageView * imageView = [[UIImageView alloc]initWithFrame:CGRectMake((button.bk_width - 20)/2, (button.bk_height - 20)/2, 20, 20)];
             imageView.clipsToBounds = YES;
@@ -443,10 +443,10 @@
         __block UIView * lastView;
         [self.colorArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             UIButton * button = [UIButton buttonWithType:UIButtonTypeCustom];
-            button.frame = CGRectMake(idx*50, 0, 50, _paintingScrollView.bk_height);
+            button.frame = CGRectMake(idx*50, 0, 50, self.paintingScrollView.bk_height);
             [button addTarget:self action:@selector(selectPaintingTypeBtnClick:) forControlEvents:UIControlEventTouchUpInside];
             button.tag = (idx+1)*100;
-            [_paintingScrollView addSubview:button];
+            [self.paintingScrollView addSubview:button];
             
             UIImageView * imageBgView = [[UIImageView alloc]initWithFrame:CGRectMake((button.bk_width - 25)/2, (button.bk_height - 25)/2, 25, 25)];
             imageBgView.tag = button.tag+1;
@@ -461,14 +461,14 @@
                 imageView.backgroundColor = obj;
             }else if ([obj isKindOfClass:[UIImage class]]){
                 imageView.image = obj;
-                _mosaicBtn = button;
+                self.mosaicBtn = button;
             }
             imageView.layer.cornerRadius = 4;
             [button addSubview:imageView];
             
-            if (_selectPaintingColor) {
+            if (self.selectPaintingColor) {
                 if ([obj isKindOfClass:[UIColor class]]) {
-                    if (CGColorEqualToColor(((UIColor*)obj).CGColor, _selectPaintingColor.CGColor)) {
+                    if (CGColorEqualToColor(((UIColor*)obj).CGColor, self.selectPaintingColor.CGColor)) {
                         self.selectPaintingBtn = button;
                         imageBgView.backgroundColor = BKHighlightColor;
                     }

@@ -181,7 +181,7 @@
         [self requestPlayerItemHandler:^(AVPlayerItem *playerItem) {
             self.player = [AVPlayer playerWithPlayerItem:playerItem];
             dispatch_async(dispatch_get_main_queue(), ^{
-                [_playerView.layer addSublayer:self.playerLayer];
+                [self.playerView.layer addSublayer:self.playerLayer];
             });
         }];
     }

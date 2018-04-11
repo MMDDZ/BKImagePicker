@@ -110,9 +110,9 @@ typedef NS_ENUM(NSUInteger, BKShutterState) {
 {
     [UIView animateWithDuration:0.1 animations:^{
         if (state == BKShutterStateNormal) {
-            _middle_circle_whiteView.transform = CGAffineTransformIdentity;
+            self.middle_circle_whiteView.transform = CGAffineTransformIdentity;
         }else if (state == BKShutterStateLongPress) {
-            _middle_circle_whiteView.transform = CGAffineTransformMakeScale(0.8, 0.8);
+            self.middle_circle_whiteView.transform = CGAffineTransformMakeScale(0.8, 0.8);
         }
     }];
 }

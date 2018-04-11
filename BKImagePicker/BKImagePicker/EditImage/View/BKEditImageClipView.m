@@ -260,34 +260,34 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
         
         [UIView animateWithDuration:0.3 animations:^{
             
-            switch (_rotation) {
+            switch (self.rotation) {
                 case BKEditImageRotationPortrait:
                 {
-                    _editImageBgView.contentOffset = CGPointMake(_editImageBgView.contentOffset.x + (_clipFrameView.center.x - CGRectGetMidX(_beginClipFrameViewRect)), _editImageBgView.contentOffset.y + (_clipFrameView.center.y - CGRectGetMidY(_beginClipFrameViewRect)));
+                    self.editImageBgView.contentOffset = CGPointMake(self.editImageBgView.contentOffset.x + (self.clipFrameView.center.x - CGRectGetMidX(self.beginClipFrameViewRect)), self.editImageBgView.contentOffset.y + (self.clipFrameView.center.y - CGRectGetMidY(self.beginClipFrameViewRect)));
                 }
                     break;
                 case BKEditImageRotationLandscapeLeft:
                 {
-                    _editImageBgView.contentOffset = CGPointMake(_editImageBgView.contentOffset.x - (_clipFrameView.center.y - CGRectGetMidY(_beginClipFrameViewRect)), _editImageBgView.contentOffset.y + (_clipFrameView.center.x - CGRectGetMidX(_beginClipFrameViewRect)));
+                    self.editImageBgView.contentOffset = CGPointMake(self.editImageBgView.contentOffset.x - (self.clipFrameView.center.y - CGRectGetMidY(self.beginClipFrameViewRect)), self.editImageBgView.contentOffset.y + (self.clipFrameView.center.x - CGRectGetMidX(self.beginClipFrameViewRect)));
                 }
                     break;
                 case BKEditImageRotationUpsideDown:
                 {
-                    _editImageBgView.contentOffset = CGPointMake(_editImageBgView.contentOffset.x - (_clipFrameView.center.x - CGRectGetMidX(_beginClipFrameViewRect)), _editImageBgView.contentOffset.y - (_clipFrameView.center.y - CGRectGetMidY(_beginClipFrameViewRect)));
+                    self.editImageBgView.contentOffset = CGPointMake(self.editImageBgView.contentOffset.x - (self.clipFrameView.center.x - CGRectGetMidX(self.beginClipFrameViewRect)), self.editImageBgView.contentOffset.y - (self.clipFrameView.center.y - CGRectGetMidY(self.beginClipFrameViewRect)));
                 }
                     break;
                 case BKEditImageRotationLandscapeRight:
                 {
-                    _editImageBgView.contentOffset = CGPointMake(_editImageBgView.contentOffset.x + (_clipFrameView.center.y - CGRectGetMidY(_beginClipFrameViewRect)), _editImageBgView.contentOffset.y - (_clipFrameView.center.x - CGRectGetMidX(_beginClipFrameViewRect)));
+                    self.editImageBgView.contentOffset = CGPointMake(self.editImageBgView.contentOffset.x + (self.clipFrameView.center.y - CGRectGetMidY(self.beginClipFrameViewRect)), self.editImageBgView.contentOffset.y - (self.clipFrameView.center.x - CGRectGetMidX(self.beginClipFrameViewRect)));
                 }
                     break;
                 default:
                     break;
             }
             //改变裁剪框时 调整最小缩放比例
-            _editImageBgView.minimumZoomScale = [self calculateScrollMinZoomScaleWithNowMinZoomScale:_editImageBgView.minimumZoomScale];
+            self.editImageBgView.minimumZoomScale = [self calculateScrollMinZoomScaleWithNowMinZoomScale:self.editImageBgView.minimumZoomScale];
             
-            _clipFrameView.center = CGPointMake(_editImageBgView.bk_width / 2, _editImageBgView.bk_height / 2);
+            self.clipFrameView.center = CGPointMake(self.editImageBgView.bk_width / 2, self.editImageBgView.bk_height / 2);
             
             [self changeBgScrollViewZoomScale];
             
@@ -376,7 +376,7 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
     _editImageBgView.minimumZoomScale = minZoomScale;
     
     [UIView animateWithDuration:0.2 animations:^{
-        [_editImageBgView setZoomScale:minZoomScale];
+        [self.editImageBgView setZoomScale:minZoomScale];
     } completion:^(BOOL finished) {
         
         [self addShadowView];
@@ -486,9 +486,6 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
     if (!_bottomNav) {
         _bottomNav = [[UIView alloc]initWithFrame:CGRectMake(0, self.bk_height - BK_SYSTEM_TABBAR_HEIGHT, self.bk_width, BK_SYSTEM_TABBAR_HEIGHT)];
         _bottomNav.backgroundColor = BKNavBackgroundColor;
-        
-        NSString * imageBundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
-        NSString * imagePath = [NSString stringWithFormat:@"%@",imageBundlePath];
         
         UIButton * backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         backBtn.frame = CGRectMake(0, 0, 64, BK_SYSTEM_TABBAR_UI_HEIGHT);

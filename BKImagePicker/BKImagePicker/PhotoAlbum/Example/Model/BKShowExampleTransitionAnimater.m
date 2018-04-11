@@ -57,11 +57,11 @@
     [containerView addSubview:toVC.bottomNavView];
     
     [UIView animateWithDuration:[self transitionDuration:transitionContext] animations:^{
-        _startImageView.frame = _endRect;
+        self.startImageView.frame = self.endRect;
         toVC.view.backgroundColor = [UIColor colorWithWhite:0 alpha:1];
     } completion:^(BOOL finished) {
         
-        [_startImageView removeFromSuperview];
+        [self.startImageView removeFromSuperview];
         [toVC.view addSubview:toVC.topNavView];
         [toVC.view addSubview:toVC.bottomNavView];
         [transitionContext completeTransition:YES];
@@ -88,17 +88,17 @@
     
     [UIView animateWithDuration:[self transitionDuration:transitionContext] animations:^{
         
-        if (CGRectEqualToRect(_endRect, CGRectZero)) {
-            _startImageView.alpha = 0;
+        if (CGRectEqualToRect(self.endRect, CGRectZero)) {
+            self.startImageView.alpha = 0;
             fromVC.view.alpha = 0;
         }else{
-            _startImageView.frame = _endRect;
+            self.startImageView.frame = self.endRect;
             fromVC.view.alpha = 0.3;
         }
         
     } completion:^(BOOL finished) {
         
-        [_startImageView removeFromSuperview];
+        [self.startImageView removeFromSuperview];
         [transitionContext completeTransition:YES];
         
         if (self.endTransitionAnimateAction) {

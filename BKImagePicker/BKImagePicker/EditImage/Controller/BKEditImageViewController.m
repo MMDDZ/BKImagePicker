@@ -72,8 +72,8 @@
 {
     [super viewWillAppear:animated];
     
-    self.navigationController.interactivePopGestureRecognizer.enabled = NO;
-    ((BKImageNavViewController*)self.navigationController).customTransition.enble = NO;
+//    self.navigationController.interactivePopGestureRecognizer.enabled = NO;
+//    ((BKImageNavViewController*)self.navigationController).customTransition.enble = NO;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
@@ -83,8 +83,8 @@
 {
     [super viewWillDisappear:animated];
     
-    self.navigationController.interactivePopGestureRecognizer.enabled = YES;
-    ((BKImageNavViewController*)self.navigationController).customTransition.enble = YES;
+//    self.navigationController.interactivePopGestureRecognizer.enabled = YES;
+//    ((BKImageNavViewController*)self.navigationController).customTransition.enble = YES;
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
