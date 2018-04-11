@@ -7,7 +7,7 @@
 //
 
 #import "BKEditImageWriteView.h"
-#import "BKImagePickerConst.h"
+#import "BKTool.h"
 
 @interface BKEditImageWriteView()<UIGestureRecognizerDelegate>
 

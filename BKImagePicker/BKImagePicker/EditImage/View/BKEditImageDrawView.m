@@ -7,7 +7,7 @@
 //
 
 #import "BKEditImageDrawView.h"
-#import "BKImagePickerConst.h"
+#import "BKTool.h"
 
 @interface BKEditImageDrawView()
 

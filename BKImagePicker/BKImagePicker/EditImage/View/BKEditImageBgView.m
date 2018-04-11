@@ -7,7 +7,7 @@
 //
 
 #import "BKEditImageBgView.h"
-#import "BKImagePickerConst.h"
+#import "BKTool.h"
 
 @interface BKEditImageBgView()<UIScrollViewDelegate>
 

@@ -7,7 +7,7 @@
 //
 
 #import "BKEditImageBottomView.h"
-#import "BKImagePickerConst.h"
+#import "BKTool.h"
 
 @interface BKEditImageBottomView()
 
@@ -105,8 +105,7 @@
     if (self) {
         self.backgroundColor = [UIColor clearColor];
         
-        NSString * bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
-        UIImage * masaike = [UIImage imageWithContentsOfFile:[bundlePath stringByAppendingString:@"/EditImage/masaike.png"]];
+        UIImage * masaike = [[BKTool sharedManager] editImageWithImageName:@"masaike"];
         self.colorArr = @[[UIColor redColor],[UIColor orangeColor],[UIColor yellowColor],[UIColor greenColor],[UIColor blueColor],[UIColor purpleColor],[UIColor blackColor],[UIColor whiteColor],[UIColor lightGrayColor],masaike];
         
         [self addSubview:self.firstLevelView];
@@ -129,9 +128,12 @@
         _firstLevelScrollView.showsHorizontalScrollIndicator = NO;
         [_firstLevelView addSubview:_firstLevelScrollView];
         
-        NSString * bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
-        NSArray * imageArr_n = @[[bundlePath stringByAppendingString:@"/EditImage/draw_n.png"],[bundlePath stringByAppendingString:@"/EditImage/write_n.png"],[bundlePath stringByAppendingString:@"/EditImage/clip_n.png"]];
-        NSArray * imageArr_s = @[[bundlePath stringByAppendingString:@"/EditImage/draw_s.png"],[bundlePath stringByAppendingString:@"/EditImage/write_s.png"],[bundlePath stringByAppendingString:@"/EditImage/clip_s.png"]];
+        NSArray * imageArr_n = @[[[BKTool sharedManager] editImageWithImageName:@"draw_n"],
+                                 [[BKTool sharedManager] editImageWithImageName:@"write_n"],
+                                 [[BKTool sharedManager] editImageWithImageName:@"clip_n"]];
+        NSArray * imageArr_s = @[[[BKTool sharedManager] editImageWithImageName:@"draw_s"],
+                                 [[BKTool sharedManager] editImageWithImageName:@"write_s"],
+                                 [[BKTool sharedManager] editImageWithImageName:@"clip_s"]];
         
         __block UIView * lastView;
         [imageArr_n enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -144,7 +146,7 @@
             UIImageView * imageView = [[UIImageView alloc]initWithFrame:CGRectMake((button.bk_width - 20)/2, (button.bk_height - 20)/2, 20, 20)];
             imageView.clipsToBounds = YES;
             imageView.contentMode = UIViewContentModeScaleAspectFit;
-            imageView.image = [UIImage imageWithContentsOfFile:obj];
+            imageView.image = obj;
             imageView.tag = button.tag+1;
             [button addSubview:imageView];
             
@@ -184,13 +186,16 @@
 
 -(void)editBtnClick:(UIButton*)button
 {
-    NSString * bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
-    NSArray * imageArr_n = @[[bundlePath stringByAppendingString:@"/EditImage/draw_n.png"],[bundlePath stringByAppendingString:@"/EditImage/write_n.png"],[bundlePath stringByAppendingString:@"/EditImage/clip_n.png"]];
-    NSArray * imageArr_s = @[[bundlePath stringByAppendingString:@"/EditImage/draw_s.png"],[bundlePath stringByAppendingString:@"/EditImage/write_s.png"],[bundlePath stringByAppendingString:@"/EditImage/clip_s.png"]];
+    NSArray * imageArr_n = @[[[BKTool sharedManager] editImageWithImageName:@"draw_n"],
+                             [[BKTool sharedManager] editImageWithImageName:@"write_n"],
+                             [[BKTool sharedManager] editImageWithImageName:@"clip_n"]];
+    NSArray * imageArr_s = @[[[BKTool sharedManager] editImageWithImageName:@"draw_s"],
+                             [[BKTool sharedManager] editImageWithImageName:@"write_s"],
+                             [[BKTool sharedManager] editImageWithImageName:@"clip_s"]];
     
     if (_selectFirstLevelBtn) {
         UIImageView * oldImageView = (UIImageView*)[self.selectFirstLevelBtn viewWithTag:self.selectFirstLevelBtn.tag+1];
-        oldImageView.image = [UIImage imageWithContentsOfFile:imageArr_n[self.selectFirstLevelBtn.tag/100-1]];
+        oldImageView.image = imageArr_n[self.selectFirstLevelBtn.tag/100-1];
     }
     
     if (_paintingView) {
@@ -223,7 +228,7 @@
     
     self.selectFirstLevelBtn = button;
     UIImageView * imageView = (UIImageView*)[self.selectFirstLevelBtn viewWithTag:self.selectFirstLevelBtn.tag+1];
-    imageView.image = [UIImage imageWithContentsOfFile:imageArr_s[self.selectFirstLevelBtn.tag/100-1]];
+    imageView.image = imageArr_s[self.selectFirstLevelBtn.tag/100-1];
     
     switch (button.tag/100-1) {
         case 0:
@@ -311,9 +316,14 @@
         scrollView.showsHorizontalScrollIndicator = NO;
         [_drawTypeView addSubview:scrollView];
         
-        NSString * bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
-        NSArray * imageArr_n = @[[bundlePath stringByAppendingString:@"/EditImage/line_n.png"],[bundlePath stringByAppendingString:@"/EditImage/circle_n.png"],[bundlePath stringByAppendingString:@"/EditImage/rounded_rectangle_n.png"],[bundlePath stringByAppendingString:@"/EditImage/arrow_n.png"]];
-        NSArray * imageArr_s = @[[bundlePath stringByAppendingString:@"/EditImage/line_s.png"],[bundlePath stringByAppendingString:@"/EditImage/circle_s.png"],[bundlePath stringByAppendingString:@"/EditImage/rounded_rectangle_s.png"],[bundlePath stringByAppendingString:@"/EditImage/arrow_s.png"]];
+        NSArray * imageArr_n = @[[[BKTool sharedManager] editImageWithImageName:@"line_n"],
+                                 [[BKTool sharedManager] editImageWithImageName:@"circle_n"],
+                                 [[BKTool sharedManager] editImageWithImageName:@"rounded_rectangle_n"],
+                                 [[BKTool sharedManager] editImageWithImageName:@"arrow_n"]];
+        NSArray * imageArr_s = @[[[BKTool sharedManager] editImageWithImageName:@"line_s"],
+                                 [[BKTool sharedManager] editImageWithImageName:@"circle_s"],
+                                 [[BKTool sharedManager] editImageWithImageName:@"rounded_rectangle_s"],
+                                 [[BKTool sharedManager] editImageWithImageName:@"arrow_s"]];
         
         __block UIView * lastView;
         [imageArr_n enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -326,13 +336,13 @@
             UIImageView * imageView = [[UIImageView alloc]initWithFrame:CGRectMake((button.bk_width - 20)/2, (button.bk_height - 20)/2, 20, 20)];
             imageView.clipsToBounds = YES;
             imageView.contentMode = UIViewContentModeScaleAspectFit;
-            imageView.image = [UIImage imageWithContentsOfFile:obj];
+            imageView.image = obj;
             imageView.tag = button.tag+1;
             [button addSubview:imageView];
             
             if (idx == 0) {
                 self.selectDrawTypeBtn = button;
-                imageView.image = [UIImage imageWithContentsOfFile:imageArr_s[idx]];
+                imageView.image = imageArr_s[idx];
             }
             
             lastView = button;
@@ -352,17 +362,22 @@
         return;
     }
     
-    NSString * bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
-    NSArray * imageArr_n = @[[bundlePath stringByAppendingString:@"/EditImage/line_n.png"],[bundlePath stringByAppendingString:@"/EditImage/circle_n.png"],[bundlePath stringByAppendingString:@"/EditImage/rounded_rectangle_n.png"],[bundlePath stringByAppendingString:@"/EditImage/arrow_n.png"]];
-    NSArray * imageArr_s = @[[bundlePath stringByAppendingString:@"/EditImage/line_s.png"],[bundlePath stringByAppendingString:@"/EditImage/circle_s.png"],[bundlePath stringByAppendingString:@"/EditImage/rounded_rectangle_s.png"],[bundlePath stringByAppendingString:@"/EditImage/arrow_s.png"]];
+    NSArray * imageArr_n = @[[[BKTool sharedManager] editImageWithImageName:@"line_n"],
+                             [[BKTool sharedManager] editImageWithImageName:@"circle_n"],
+                             [[BKTool sharedManager] editImageWithImageName:@"rounded_rectangle_n"],
+                             [[BKTool sharedManager] editImageWithImageName:@"arrow_n"]];
+    NSArray * imageArr_s = @[[[BKTool sharedManager] editImageWithImageName:@"line_s"],
+                             [[BKTool sharedManager] editImageWithImageName:@"circle_s"],
+                             [[BKTool sharedManager] editImageWithImageName:@"rounded_rectangle_s"],
+                             [[BKTool sharedManager] editImageWithImageName:@"arrow_s"]];
     
     if (_selectDrawTypeBtn) {
         UIImageView * oldImageView = (UIImageView*)[self.selectDrawTypeBtn viewWithTag:self.selectDrawTypeBtn.tag+1];
-        oldImageView.image = [UIImage imageWithContentsOfFile:imageArr_n[self.selectDrawTypeBtn.tag/100-1]];
+        oldImageView.image = imageArr_n[self.selectDrawTypeBtn.tag/100-1];
     }
     self.selectDrawTypeBtn = button;
     UIImageView * imageView = (UIImageView*)[self.selectDrawTypeBtn viewWithTag:self.selectDrawTypeBtn.tag+1];
-    imageView.image = [UIImage imageWithContentsOfFile:imageArr_s[self.selectDrawTypeBtn.tag/100-1]];
+    imageView.image = imageArr_s[self.selectDrawTypeBtn.tag/100-1];
     
     switch (self.selectDrawTypeBtn.tag) {
         case 100:
@@ -474,11 +489,10 @@
         [_revocationBtn addTarget:self action:@selector(revocationBtnClick) forControlEvents:UIControlEventTouchUpInside];
         [_paintingView insertSubview:_revocationBtn belowSubview:_paintingScrollView];
         
-        NSString * bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
         UIImageView * revocationImageView = [[UIImageView alloc]initWithFrame:CGRectMake((_revocationBtn.bk_width - 20)/2, (_revocationBtn.bk_height - 20)/2, 20, 20)];
         revocationImageView.clipsToBounds = YES;
         revocationImageView.contentMode = UIViewContentModeScaleAspectFit;
-        revocationImageView.image = [UIImage imageWithContentsOfFile:[bundlePath stringByAppendingString:@"/EditImage/revocation.png"]];
+        revocationImageView.image = [[BKTool sharedManager] editImageWithImageName:@"revocation"];
         [_revocationBtn addSubview:revocationImageView];
         
         UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, BK_ONE_PIXEL, _paintingView.bk_height)];

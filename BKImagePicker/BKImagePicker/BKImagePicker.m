@@ -11,6 +11,7 @@
 #import "BKPhotoAlbumListViewController.h"
 #import "BKImagePickerViewController.h"
 #import "BKImageTakePhotoViewController.h"
+#import "BKImageModel.h"
 
 @interface BKImagePicker ()
 
@@ -128,9 +129,10 @@ static BKImagePicker * sharedManagerInstance = nil;
  
  @param photoType 相册类型
  @param maxSelect 最大选择数 (最大999)
+ @param isHaveOriginal 是否有原图选项
  @param complete  选择图片/GIF/视频
  */
--(void)showPhotoAlbumWithTypePhoto:(BKPhotoType)photoType maxSelect:(NSInteger)maxSelect complete:(void (^)(UIImage * image , NSData * data , NSURL * url , BKSelectPhotoType selectPhotoType))complete
+-(void)showPhotoAlbumWithTypePhoto:(BKPhotoType)photoType maxSelect:(NSInteger)maxSelect isHaveOriginal:(BOOL)isHaveOriginal complete:(void (^)(UIImage * image, NSData * data, NSURL * url, BKSelectPhotoType selectPhotoType))complete
 {
     [self checkAllowVisitPhotoAlbumHandler:^(BOOL handleFlag) {
         if (handleFlag) {
@@ -156,39 +158,26 @@ static BKImagePicker * sharedManagerInstance = nil;
                 }
             }];
             
+            [BKTool sharedManager].isHaveOriginal = isHaveOriginal;
+            [BKTool sharedManager].max_select = maxSelect>999?999:maxSelect;
+            [BKTool sharedManager].photoType = photoType;
+            [BKTool sharedManager].selectImageArray = @[].mutableCopy;
+            [BKTool sharedManager].isOriginal = NO;
+            
             BKPhotoAlbumListViewController * imageClassVC = [[BKPhotoAlbumListViewController alloc]init];
-            imageClassVC.max_select = maxSelect>999?999:maxSelect;
-            imageClassVC.photoType = photoType;
           
             BKImagePickerViewController * imageVC = [[BKImagePickerViewController alloc]init];
-            imageVC.max_select = maxSelect>999?999:maxSelect;
-            imageVC.photoType = photoType;
           
             imageClassVC.title = @"相册";
             imageVC.title = albumName;
             
             __block id observer = [[NSNotificationCenter defaultCenter] addObserverForName:BKFinishSelectImageNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
                 
-                NSDictionary * userInfo = note.userInfo;
-                
-                if ([userInfo[@"object"] isKindOfClass:[NSArray class]]) {
-                    NSArray * selectImageArray = userInfo[@"object"];
-                    BOOL isOriginal = [userInfo[@"isOriginal"] boolValue];
-                    for (BKImageModel * model in selectImageArray) {
-                        if (complete) {
-                            if (isOriginal) {
-                                complete([UIImage imageWithData:model.originalImageData], model.originalImageData, model.url, model.photoType);
-                            }else{
-                                complete([UIImage imageWithData:model.thumbImageData], model.thumbImageData, model.url, model.photoType);
-                            }
-                        }
-                    }
-                }else{
-                    BKImageModel * model = userInfo[@"object"];
+                if ([[BKTool sharedManager].selectImageArray count] == 1) {
+                    BKImageModel * model = [[BKTool sharedManager].selectImageArray firstObject];
                     if (model.photoType != BKSelectPhotoTypeVideo) {
-                        BOOL isOriginal = [userInfo[@"isOriginal"] boolValue];
                         if (complete) {
-                            if (isOriginal) {
+                            if ([BKTool sharedManager].isOriginal) {
                                 complete([UIImage imageWithData:model.originalImageData], model.originalImageData, model.url, model.photoType);
                             }else{
                                 complete([UIImage imageWithData:model.thumbImageData], model.thumbImageData, model.url, model.photoType);
@@ -197,6 +186,16 @@ static BKImagePicker * sharedManagerInstance = nil;
                     }else{
                         if (complete) {
                             complete([UIImage imageWithData:model.originalImageData], [NSData dataWithContentsOfURL:model.url], model.url, model.photoType);
+                        }
+                    }
+                }else{
+                    for (BKImageModel * model in [BKTool sharedManager].selectImageArray) {
+                        if (complete) {
+                            if ([BKTool sharedManager].isOriginal) {
+                                complete([UIImage imageWithData:model.originalImageData], model.originalImageData, model.url, model.photoType);
+                            }else{
+                                complete([UIImage imageWithData:model.thumbImageData], model.thumbImageData, model.url, model.photoType);
+                            }
                         }
                     }
                 }
@@ -292,12 +291,10 @@ static BKImagePicker * sharedManagerInstance = nil;
  保存图片
  
  @param image 图片
+ @param complete 保存完成方法
  */
-- (void)saveImage:(UIImage*)image
+- (void)saveImage:(UIImage*)image complete:(void (^)(PHAsset * asset,BOOL success))complete
 {
-    UIWindow * window = [[[UIApplication sharedApplication] delegate] window];
-    [[BKTool sharedManager] showLoadInView:window];
-    
     [self checkAllowVisitPhotoAlbumHandler:^(BOOL handleFlag) {
         if (handleFlag) {
          
@@ -308,32 +305,27 @@ static BKImagePicker * sharedManagerInstance = nil;
             } completionHandler:^(BOOL success, NSError * _Nullable error) {
                 if (error) {
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [[BKTool sharedManager] hideLoad];
-                        [[BKTool sharedManager] showRemind:@"图片保存失败"];
+                        if (complete) {
+                            complete(nil,success);
+                        }
                     });
                     return;
                 }
                 
+                PHAsset * asset = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetId] options:nil].firstObject;
+                
                 // 把相机胶卷图片保存到自己创建的相册中
                 PHAssetCollection *collection = [self collection];
                 [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-                    PHAssetCollectionChangeRequest *request = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:collection];
-                    
-                    PHAsset *asset = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetId] options:nil].firstObject;
+                    PHAssetCollectionChangeRequest * request = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:collection];
                     [request addAssets:@[asset]];
                     
                 } completionHandler:^(BOOL success, NSError * _Nullable error) {
                     
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        
-                        [[BKTool sharedManager] hideLoad];
-                        
-                        if (error) {
-                            [[BKTool sharedManager] showRemind:@"图片保存失败"];
-                            return;
+                        if (complete) {
+                            complete(asset,success);
                         }
-                        
-                        [[BKTool sharedManager] showRemind:@"保存成功"];
                     });
                 }];
             }];

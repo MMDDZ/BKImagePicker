@@ -7,7 +7,7 @@
 //
 
 #import "BKEditImageClipView.h"
-#import "BKImagePickerConst.h"
+#import "BKTool.h"
 #import "BKEditImageClipFrameView.h"
 
 typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
@@ -367,9 +367,10 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
  
     CGFloat minZoomScale = 0.8;
     if (_editImageBgView.contentView.bk_height > _editImageBgView.contentView.bk_width) {
-        if (_editImageBgView.contentView.bk_height > _editImageBgView.bk_height) {
-            CGFloat gap = _editImageBgView.contentView.bk_height - _editImageBgView.bk_height;
-            minZoomScale = (1 - gap/_editImageBgView.contentView.bk_height)*0.8;
+        CGFloat editImageBgViewHeight = _editImageBgView.contentView.bk_height/_editImageBgView.zoomScale;
+        if (editImageBgViewHeight > _editImageBgView.bk_height) {
+            CGFloat gap = editImageBgViewHeight - _editImageBgView.bk_height;
+            minZoomScale = (1 - gap/editImageBgViewHeight)*0.8;
         }
     }
     _editImageBgView.minimumZoomScale = minZoomScale;
@@ -497,7 +498,7 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
         UIImageView * backImageView = [[UIImageView alloc]initWithFrame:CGRectMake((backBtn.bk_width - 20)/2, (backBtn.bk_height - 20)/2, 20, 20)];
         backImageView.clipsToBounds = YES;
         backImageView.contentMode = UIViewContentModeScaleAspectFit;
-        backImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/EditImage/%@",imagePath,@"clip_back"]];
+        backImageView.image = [[BKTool sharedManager] editImageWithImageName:@"clip_back"];
         [backBtn addSubview:backImageView];
         
         UIButton * finishBtn = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -508,7 +509,7 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
         UIImageView * finishImageView = [[UIImageView alloc]initWithFrame:CGRectMake((finishBtn.bk_width - 20)/2, (finishBtn.bk_height - 20)/2, 20, 20)];
         finishImageView.clipsToBounds = YES;
         finishImageView.contentMode = UIViewContentModeScaleAspectFit;
-        finishImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/EditImage/%@",imagePath,@"clip_finish"]];
+        finishImageView.image = [[BKTool sharedManager] editImageWithImageName:@"clip_finish"];
         [finishBtn addSubview:finishImageView];
         
         UIButton * rotationBtn = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -519,7 +520,7 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
         UIImageView * rotationImageView = [[UIImageView alloc]initWithFrame:CGRectMake((rotationBtn.bk_width - 20)/2, (rotationBtn.bk_height - 20)/2, 20, 20)];
         rotationImageView.clipsToBounds = YES;
         rotationImageView.contentMode = UIViewContentModeScaleAspectFit;
-        rotationImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/EditImage/%@",imagePath,@"left_rotation_90"]];
+        rotationImageView.image = [[BKTool sharedManager] editImageWithImageName:@"left_rotation_90"];
         [rotationBtn addSubview:rotationImageView];
         
         UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, _bottomNav.bk_width, BK_ONE_PIXEL)];
@@ -610,52 +611,41 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
     _shadowView.hidden = YES;
     _clipFrameView.hidden = YES;
     
-    CGFloat contentOffsetX = 0;
-    CGFloat contentOffsetY = 0;
-    CGFloat inset_X_scale = 0;
-    CGFloat inset_Y_scale = 0;
-    if (_editImageBgView.contentOffset.x < 0) {
-        inset_X_scale = _editImageBgView.contentOffset.x / _editImageBgView.contentInset.left;
-    }else{
-        contentOffsetX = _editImageBgView.contentOffset.x;
-        inset_X_scale = 1;
-    }
-    
-    if (_editImageBgView.contentOffset.y < 0) {
-        inset_Y_scale = _editImageBgView.contentOffset.y / _editImageBgView.contentInset.top;
-    }else{
-        contentOffsetY = _editImageBgView.contentOffset.y;
-        inset_Y_scale = 1;
-    }
+    CGFloat contentOffsetX = _editImageBgView.contentOffset.x;
+    CGFloat contentOffsetY = _editImageBgView.contentOffset.y;
     
     CGFloat contentInsetTop = _editImageBgView.contentInset.top;
     CGFloat contentInsetLeft = _editImageBgView.contentInset.left;
     
+    BK_WEAK_SELF(self);
     [UIView animateWithDuration:0.3 animations:^{
+        BK_STRONG_SELF(self);
         
-        _editImageBgView.transform = CGAffineTransformRotate(_editImageBgView.transform, -M_PI_2);
-        _editImageBgView.frame = CGRectMake(0, 0, self.bk_width, self.bk_height - self.bottomNav.bk_height);
-        _editImageBgView.zoomScale = _editImageBgView.zoomScale * w_h_ratio;
+        strongSelf.editImageBgView.transform = CGAffineTransformRotate(strongSelf.editImageBgView.transform, -M_PI_2);
+        strongSelf.editImageBgView.frame = CGRectMake(0, 0, strongSelf.bk_width, strongSelf.bk_height - strongSelf.bottomNav.bk_height);
+        strongSelf.editImageBgView.zoomScale = strongSelf.editImageBgView.zoomScale * w_h_ratio;
         
-        [self changeShadowViewRect];
-        [self changeBgScrollViewZoomScale];
+        [strongSelf changeShadowViewRect];
+        [strongSelf changeBgScrollViewZoomScale];
         
-        if (inset_X_scale < 1 && inset_Y_scale < 1) {
-            _editImageBgView.contentOffset = CGPointMake(_editImageBgView.contentInset.left * inset_X_scale, _editImageBgView.contentInset.top * inset_Y_scale);
-        }else if (inset_X_scale == 1 && inset_Y_scale < 1) {
-            _editImageBgView.contentOffset = CGPointMake((contentOffsetX + contentInsetLeft) * w_h_ratio - _editImageBgView.contentInset.left, _editImageBgView.contentInset.top * inset_Y_scale);
-        }else if (inset_X_scale < 1 && inset_Y_scale == 1) {
-            _editImageBgView.contentOffset = CGPointMake(_editImageBgView.contentInset.left * inset_X_scale, (contentOffsetY + contentInsetTop) * w_h_ratio - _editImageBgView.contentInset.top);
-        }else if (inset_X_scale == 1 && inset_Y_scale == 1) {
-            _editImageBgView.contentOffset = CGPointMake((contentOffsetX + contentInsetLeft) * w_h_ratio - _editImageBgView.contentInset.left, (contentOffsetY + contentInsetTop) * w_h_ratio - _editImageBgView.contentInset.top);
+        if (contentOffsetX < 0 && contentOffsetY < 0) {
+            strongSelf.editImageBgView.contentOffset = CGPointMake((fabs(contentInsetLeft) - fabs(contentOffsetX)) * w_h_ratio - strongSelf.editImageBgView.contentInset.left, (fabs(contentInsetTop) - fabs(contentOffsetY)) * w_h_ratio - strongSelf.editImageBgView.contentInset.top);
+        }else if (contentOffsetX >= 0 && contentOffsetY < 0) {
+            strongSelf.editImageBgView.contentOffset = CGPointMake((contentOffsetX + contentInsetLeft) * w_h_ratio - strongSelf.editImageBgView.contentInset.left, (fabs(contentInsetTop) - fabs(contentOffsetY)) * w_h_ratio - strongSelf.editImageBgView.contentInset.top);
+        }else if (contentOffsetX < 0 && contentOffsetY >= 0) {
+            strongSelf.editImageBgView.contentOffset = CGPointMake((fabs(contentInsetLeft) - fabs(contentOffsetX)) * w_h_ratio - strongSelf.editImageBgView.contentInset.left, (contentOffsetY + contentInsetTop) * w_h_ratio - strongSelf.editImageBgView.contentInset.top);
+        }else if (contentOffsetX >= 0 && contentOffsetY >= 0) {
+            strongSelf.editImageBgView.contentOffset = CGPointMake((contentOffsetX + contentInsetLeft) * w_h_ratio - strongSelf.editImageBgView.contentInset.left, (contentOffsetY + contentInsetTop) * w_h_ratio - strongSelf.editImageBgView.contentInset.top);
         }
         
     } completion:^(BOOL finished) {
-        [self removeShadowView];
-        [self addShadowView];
+        BK_STRONG_SELF(self);
         
-        [self removeClipFrameView];
-        [self addClipFrameView];
+        [strongSelf removeShadowView];
+        [strongSelf addShadowView];
+        
+        [strongSelf removeClipFrameView];
+        [strongSelf addClipFrameView];
         [UIApplication sharedApplication].keyWindow.userInteractionEnabled = YES;
     }];
 }
@@ -670,22 +660,34 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
 {
     CGFloat minimumZoomScale = minZoomScale;
     
-    CGFloat clipFrameViewMaxLength = 0;
-    if (_clipFrameView.bk_width > _clipFrameView.bk_height) {
-        clipFrameViewMaxLength = _clipFrameView.bk_width;
-    }else{
-        clipFrameViewMaxLength = _clipFrameView.bk_height;
+    CGFloat width_minimumZoomScale = 0;
+    CGFloat height_minimumZoomScale = 0;
+    
+    switch (_rotation) {
+        case BKEditImageRotationPortrait:
+        case BKEditImageRotationUpsideDown:
+        {
+            width_minimumZoomScale = _clipFrameView.bk_width / (_editImageBgView.contentView.bk_width / _editImageBgView.zoomScale);
+            height_minimumZoomScale = _clipFrameView.bk_height / (_editImageBgView.contentView.bk_height / _editImageBgView.zoomScale);
+        }
+            break;
+        case BKEditImageRotationLandscapeLeft:
+        case BKEditImageRotationLandscapeRight:
+        {
+            width_minimumZoomScale = _clipFrameView.bk_width / (_editImageBgView.contentView.bk_height / _editImageBgView.zoomScale);
+            height_minimumZoomScale = _clipFrameView.bk_height / (_editImageBgView.contentView.bk_width / _editImageBgView.zoomScale);
+        }
+            break;
+        default:
+            break;
     }
     
-    if (_editImageBgView.contentView.bk_width > _editImageBgView.contentView.bk_height) {
-        if (_editImageBgView.contentView.bk_height / _editImageBgView.zoomScale * minimumZoomScale > clipFrameViewMaxLength) {
-            minimumZoomScale = clipFrameViewMaxLength / (_editImageBgView.contentView.bk_height / _editImageBgView.zoomScale);
-        }
+    if (width_minimumZoomScale > height_minimumZoomScale) {
+        minimumZoomScale = width_minimumZoomScale;
     }else{
-        if (_editImageBgView.contentView.bk_width / _editImageBgView.zoomScale * minimumZoomScale > clipFrameViewMaxLength) {
-            minimumZoomScale = clipFrameViewMaxLength / (_editImageBgView.contentView.bk_width / _editImageBgView.zoomScale);
-        }
+        minimumZoomScale = height_minimumZoomScale;
     }
+    
     //缩小最小比例为0.5
     if (minimumZoomScale < 0.5) {
         minimumZoomScale = 0.5;

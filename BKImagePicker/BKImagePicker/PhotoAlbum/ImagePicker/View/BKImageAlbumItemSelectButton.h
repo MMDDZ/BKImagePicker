@@ -20,6 +20,8 @@
  */
 @property (nonatomic,copy) void (^selectButtonClick)(BKImageAlbumItemSelectButton*button);
 
--(void)selectClickNum:(NSInteger)num addMethod:(void (^)(void))method;
+-(void)selectClickNum:(NSInteger)num;//点击赋值index（有动画）
+-(void)refreshSelectClickNum:(NSInteger)num;//刷新赋值index（无动画）
+-(void)cancelSelect;//取消选中
 
 @end

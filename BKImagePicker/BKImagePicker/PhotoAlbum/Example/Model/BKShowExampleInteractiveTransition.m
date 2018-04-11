@@ -159,23 +159,25 @@
 {
     CGFloat duration = percentage < 0 ? fabs(0.75 * percentage) : (1 * percentage);
     
+    BK_WEAK_SELF(self);
     [UIView animateWithDuration:duration animations:^{
+        BK_STRONG_SELF(self);
         
-        _panImageView.center = CGPointMake(CGRectGetMidX(_startImageViewRect), CGRectGetMidY(_startImageViewRect));
-        _panImageView.transform = CGAffineTransformMakeScale(1, 1);
+        strongSelf.panImageView.center = CGPointMake(CGRectGetMidX(strongSelf.startImageViewRect), CGRectGetMidY(strongSelf.startImageViewRect));
+        strongSelf.panImageView.transform = CGAffineTransformMakeScale(1, 1);
         
-        _vc.view.alpha = 1;
+        strongSelf.vc.view.alpha = 1;
         
     } completion:^(BOOL finished) {
+        BK_STRONG_SELF(self);
         
         [lastVC.view removeFromSuperview];
-        [_panImageView removeFromSuperview];
-        _panImageView = nil;
+        [strongSelf.panImageView removeFromSuperview];
         
-        [[_vc.view subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [[strongSelf.vc.view subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             [obj setHidden:NO];
         }];
-        if (_isNavHidden) {
+        if (strongSelf.isNavHidden) {
             [UIApplication sharedApplication].statusBarHidden = YES;
         }else{
             [UIApplication sharedApplication].statusBarHidden = NO;

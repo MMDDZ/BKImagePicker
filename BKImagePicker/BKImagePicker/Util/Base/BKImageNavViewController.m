@@ -7,7 +7,7 @@
 //
 
 #import "BKImageNavViewController.h"
-#import "BKImagePickerConst.h"
+#import "BKTool.h"
 
 @interface BKImageNavViewController ()<UIGestureRecognizerDelegate,UINavigationControllerDelegate>
 
@@ -179,12 +179,12 @@
     return [self.viewControllers count] != 1 && ![[self valueForKey:@"isTransitioning"] boolValue];
 }
 
-#pragma iPhoneX黑条隐藏
-
--(BOOL)prefersHomeIndicatorAutoHidden
-{
-    return YES;
-}
+//#pragma iPhoneX黑条隐藏
+//
+//-(BOOL)prefersHomeIndicatorAutoHidden
+//{
+//    return YES;
+//}
 
 #pragma mark - 屏幕旋转处理
 

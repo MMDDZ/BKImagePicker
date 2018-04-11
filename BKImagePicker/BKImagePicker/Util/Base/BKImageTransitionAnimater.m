@@ -7,7 +7,7 @@
 //
 
 #import "BKImageTransitionAnimater.h"
-#import "BKImagePickerConst.h"
+#import "BKTool.h"
 
 @interface BKImageTransitionAnimater ()
 
@@ -33,10 +33,14 @@
 
 - (NSTimeInterval)transitionDuration:(nullable id <UIViewControllerContextTransitioning>)transitionContext
 {
-    if (_interation) {
-        return 0.5;
-    }else{
+    if ([[UIDevice currentDevice].systemVersion floatValue] < 11) {
         return 0.25;
+    }else{
+        if (_interation) {
+            return 0.5;
+        }else{
+            return 0.25;
+        }
     }
 }
 
@@ -79,9 +83,11 @@
     }
     [containerView addSubview:toVC.view];
     
+    BK_WEAK_SELF(self);
     [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
+        BK_STRONG_SELF(self);
         
-        if (_direction == BKImageTransitionAnimaterDirectionRight) {
+        if (strongSelf.direction == BKImageTransitionAnimaterDirectionRight) {
             fromVC.view.bk_x = -BK_SCREENW/2;
         }else {
             fromVC.view.bk_x = BK_SCREENW/2;
@@ -103,9 +109,34 @@
     UIViewController * fromVC = [transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
     UIViewController * toVC = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
     
-    UITabBarController * tabBarVC = nil;
-    if (toVC.tabBarController && [[fromVC.navigationController viewControllers] count] == 1) {
-        tabBarVC = toVC.tabBarController;
+    UITabBarController * tabBarVC = toVC.tabBarController;
+    if (toVC.tabBarController) {
+        __block BOOL flag = NO;
+        [toVC.tabBarController.viewControllers enumerateObjectsUsingBlock:^(__kindof UIViewController * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if ([obj isKindOfClass:[UINavigationController class]]) {
+                if ([[(UINavigationController*)obj viewControllers] firstObject] == toVC) {
+                    flag = YES;
+                    *stop = YES;
+                }
+            }else{
+                if (obj == toVC) {
+                    flag = YES;
+                    *stop = YES;
+                }
+            }
+        }];
+        
+        if (!flag) {
+            if ([[toVC.navigationController viewControllers] count] == 1) {
+                flag = YES;
+            }
+        }
+        
+        if (flag) {
+            tabBarVC.tabBar.hidden = NO;
+        }else{
+            tabBarVC.tabBar.hidden = YES;
+        }
     }
     
     UIView * containerView = [transitionContext containerView];
@@ -138,38 +169,43 @@
     
     [containerView addSubview:fromVC.view];
     
+    BK_WEAK_SELF(self);
     [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
+        BK_STRONG_SELF(self);
         
-        if (_direction == BKImageTransitionAnimaterDirectionRight) {
+        if (strongSelf.direction == BKImageTransitionAnimaterDirectionRight) {
             fromVC.view.bk_x = BK_SCREENW;
-            _fromShadowView.bk_x = BK_SCREENW;
+            strongSelf.fromShadowView.bk_x = BK_SCREENW;
         }else{
             fromVC.view.bk_x = -BK_SCREENW;
-            _fromShadowView.bk_x = -BK_SCREENW;
+            strongSelf.fromShadowView.bk_x = -BK_SCREENW;
         }
-        _fromShadowView.alpha = 0;
+        strongSelf.fromShadowView.alpha = 0;
         toVC.view.bk_x = 0;
-        _toShadowView.bk_x = 0;
-        _toShadowView.alpha = 0;
+        strongSelf.toShadowView.bk_x = 0;
+        strongSelf.toShadowView.alpha = 0;
         
     } completion:^(BOOL finished) {
+        BK_STRONG_SELF(self);
         
-        [_fromShadowView removeFromSuperview];
-        _fromShadowView = nil;
-        [_toShadowView removeFromSuperview];
-        _toShadowView = nil;
+        [strongSelf.fromShadowView removeFromSuperview];
+        strongSelf.fromShadowView = nil;
+        [strongSelf.toShadowView removeFromSuperview];
+        strongSelf.toShadowView = nil;
         
         [transitionContext completeTransition:![transitionContext transitionWasCancelled]];
         if ([transitionContext transitionWasCancelled]) {
             fromVC.view.bk_x = 0;
             [toVC.view removeFromSuperview];
         }else {
-            if (self.backFinishAction) {
-                self.backFinishAction();
+            if (strongSelf.backFinishAction) {
+                strongSelf.backFinishAction();
             }
             [fromVC.view removeFromSuperview];
-            if (tabBarVC) {
-                [tabBarVC.view addSubview:tabBarVC.tabBar];
+            if (!tabBarVC.tabBar.hidden) {
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [tabBarVC.view addSubview:tabBarVC.tabBar];
+                });
             }
         }
     }];

@@ -29,6 +29,6 @@ typedef NS_ENUM(NSUInteger, BKEditImageSelectPaintingType) {
 /**
  要修改的图片
  */
-@property (nonatomic,strong) UIImage * editImage;
+@property (nonatomic,strong) NSArray<UIImage*> * editImageArr;
 
 @end

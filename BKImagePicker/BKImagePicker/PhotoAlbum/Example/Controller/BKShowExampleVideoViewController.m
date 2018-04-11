@@ -8,7 +8,7 @@
 
 #import "BKShowExampleVideoViewController.h"
 #import <AVFoundation/AVFoundation.h>
-#import "BKImagePickerConst.h"
+#import "BKTool.h"
 
 @interface BKShowExampleVideoViewController ()
 
@@ -35,6 +35,7 @@
     options.resizeMode = PHImageRequestOptionsResizeModeExact;
     options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
     options.synchronous = NO;
+    options.networkAccessAllowed = YES;
     
     [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
         
@@ -46,8 +47,7 @@
 
 -(void)playbackFinished:(NSNotification *)notification
 {
-    NSString * bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
-    UIImage * start_image = [UIImage imageWithContentsOfFile:[bundlePath stringByAppendingString:@"/video_start.png"]];
+    UIImage * start_image = [[BKTool sharedManager] imageWithImageName:@"video_start"];
     [_start_pause setImage:start_image forState:UIControlStateNormal];
     
     [self.player seekToTime:CMTimeMake(0, 1)];
@@ -128,8 +128,7 @@
 -(UIButton*)start_pause
 {
     if (!_start_pause) {
-        NSString * bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
-        UIImage * start_image = [UIImage imageWithContentsOfFile:[bundlePath stringByAppendingString:@"/video_start.png"]];
+        UIImage * start_image = [[BKTool sharedManager] imageWithImageName:@"video_start"];
         
         _start_pause = [UIButton buttonWithType:UIButtonTypeCustom];
         _start_pause.frame = CGRectMake((self.bottomNavView.bk_width - 64)/2.0f, 0, 64, 64);
@@ -150,22 +149,21 @@
 -(void)selectBtnClick
 {
     self.tapVideoModel.url = ((AVURLAsset*)self.player.currentItem.asset).URL;
+    [[BKTool sharedManager].selectImageArray addObject:self.tapVideoModel];
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:BKFinishSelectImageNotification object:nil userInfo:@{@"object":self.tapVideoModel}];
+    [[NSNotificationCenter defaultCenter] postNotificationName:BKFinishSelectImageNotification object:nil userInfo:nil];
     [self.getCurrentVC dismissViewControllerAnimated:YES completion:nil];
 }
 
 -(void)start_pauseBtnClick:(UIButton*)button
 {
-    NSString * bundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
-    
     if (self.player.rate == 0) {
-        UIImage * pause_image = [UIImage imageWithContentsOfFile:[bundlePath stringByAppendingString:@"/video_pause.png"]];
+        UIImage * pause_image = [[BKTool sharedManager] imageWithImageName:@"video_pause"];
         [button setImage:pause_image forState:UIControlStateNormal];
         
         [self.player play];
     }else {
-        UIImage * start_image = [UIImage imageWithContentsOfFile:[bundlePath stringByAppendingString:@"/video_start.png"]];
+        UIImage * start_image = [[BKTool sharedManager] imageWithImageName:@"video_start"];
         [button setImage:start_image forState:UIControlStateNormal];
         
         [self.player pause];
@@ -193,6 +191,7 @@
 -(void)requestPlayerItemHandler:(void (^)(AVPlayerItem * playerItem))handler
 {
     PHVideoRequestOptions * options = [[PHVideoRequestOptions alloc]init];
+    options.networkAccessAllowed = YES;
     
     [[PHImageManager defaultManager] requestPlayerItemForVideo:self.tapVideoModel.asset options:options resultHandler:^(AVPlayerItem * _Nullable playerItem, NSDictionary * _Nullable info) {
         if (handler) {

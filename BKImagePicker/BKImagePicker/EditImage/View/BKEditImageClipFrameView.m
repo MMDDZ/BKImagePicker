@@ -7,7 +7,7 @@
 //
 
 #import "BKEditImageClipFrameView.h"
-#import "BKImagePickerConst.h"
+#import "BKTool.h"
 
 @implementation BKEditImageClipFrameView
 

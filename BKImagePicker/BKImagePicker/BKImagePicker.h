@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "BKImagePickerConst.h"
+#import "BKTool.h"
 
 @interface BKImagePicker : NSObject
 
@@ -34,26 +34,17 @@
  */
 -(void)takePhotoWithComplete:(void (^)(UIImage * image , NSData * data))complete;
 
-#pragma mark - 相机
-
-/**
- 是否有编辑
- */
-@property (nonatomic,assign) BOOL isHaveEdit;
-
-/**
- 是否有原图按钮
- */
-@property (nonatomic,assign) BOOL isHaveOriginal;
+#pragma mark - 相册
 
 /**
  相册
  
  @param photoType 相册类型
  @param maxSelect 最大选择数 (最大999)
+ @param isHaveOriginal 是否有原图选项
  @param complete  选择图片/GIF/视频
  */
--(void)showPhotoAlbumWithTypePhoto:(BKPhotoType)photoType maxSelect:(NSInteger)maxSelect complete:(void (^)(UIImage * image , NSData * data , NSURL * url , BKSelectPhotoType selectPhotoType))complete;
+-(void)showPhotoAlbumWithTypePhoto:(BKPhotoType)photoType maxSelect:(NSInteger)maxSelect isHaveOriginal:(BOOL)isHaveOriginal complete:(void (^)(UIImage * image, NSData * data, NSURL * url, BKSelectPhotoType selectPhotoType))complete;
 
 /**
  检测是否允许调用相册
@@ -64,9 +55,10 @@
 
 /**
  保存图片
-
+ 
  @param image 图片
+ @param complete 保存完成方法
  */
--(void)saveImage:(UIImage*)image;
+- (void)saveImage:(UIImage*)image complete:(void (^)(PHAsset * asset,BOOL success))complete;
 
 @end

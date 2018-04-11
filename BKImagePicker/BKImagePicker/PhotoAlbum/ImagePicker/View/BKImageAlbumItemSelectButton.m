@@ -7,14 +7,14 @@
 //
 
 #import "BKImageAlbumItemSelectButton.h"
-#import "BKImagePickerConst.h"
+#import "BKTool.h"
 
 @interface BKImageAlbumItemSelectButton()
 
+@property (nonatomic,assign) CGRect selfRect;
+
 @property (nonatomic,strong) NSString * showTitle;
 @property (nonatomic,strong) UIColor * fillColor;
-
-@property (nonatomic,assign) BOOL isAnimate;
 
 @end
 
@@ -49,6 +49,15 @@
     return _fillColor;
 }
 
+-(instancetype)initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    if (self) {
+        self.selfRect = frame;
+    }
+    return self;
+}
+
 -(void)layoutSubviews
 {
     [super layoutSubviews];
@@ -66,11 +75,11 @@
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetStrokeColorWithColor(context, [[UIColor whiteColor] CGColor]);
     CGContextSetLineWidth(context, 1.5);
-    CGContextAddArc(context, self.bk_width/2.0f, self.bk_height/2.0f, self.bk_width/2.0f - 4, 0, 2*M_PI, 0);
+    CGContextAddArc(context, self.selfRect.size.width/2.0f, self.selfRect.size.height/2.0f, self.selfRect.size.width/2.0f - 4, 0, 2*M_PI, 0);
     CGContextDrawPath(context, kCGPathStroke);
 
     CGContextSetFillColorWithColor(context, [self.fillColor CGColor]);
-    CGContextAddArc(context, self.bk_width/2.0f, self.bk_height/2.0f, self.bk_width/2.0f - 4.5, 0, 2*M_PI, 0);
+    CGContextAddArc(context, self.selfRect.size.width/2.0f, self.selfRect.size.height/2.0f, self.selfRect.size.width/2.0f - 4.5, 0, 2*M_PI, 0);
     CGContextDrawPath(context, kCGPathFill);
     
     NSMutableParagraphStyle* paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
@@ -79,10 +88,10 @@
     
     if ([self.showTitle integerValue] > 99) {
         NSDictionary * attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:8],NSParagraphStyleAttributeName:paragraphStyle,NSForegroundColorAttributeName:[UIColor whiteColor]};
-        [self.showTitle drawWithRect:CGRectMake(5, 10, self.bk_width - 10, self.bk_height - 20) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil];
+        [self.showTitle drawWithRect:CGRectMake(5, 10, self.selfRect.size.width - 10, self.selfRect.size.height - 20) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil];
     }else{
         NSDictionary * attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:12],NSParagraphStyleAttributeName:paragraphStyle,NSForegroundColorAttributeName:[UIColor whiteColor]};
-        [self.showTitle drawWithRect:CGRectMake(5, 7.5, self.bk_width - 10, self.bk_height - 15) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil];
+        [self.showTitle drawWithRect:CGRectMake(5, 7.5, self.selfRect.size.width - 10, self.selfRect.size.height - 15) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil];
     }
 }
 
@@ -93,40 +102,37 @@
     }
 }
 
--(void)selectClickNum:(NSInteger)num addMethod:(void (^)(void))method
+-(void)selectClickNum:(NSInteger)num
 {
-    if (self.isAnimate) {
-        return;
-    }
-    
-    if ([self.showTitle length] == 0) {
+    [self refreshSelectClickNum:num];
         
+    [UIView animateWithDuration:0.25 animations:^{
+        self.transform = CGAffineTransformMakeScale(1.15, 1.15);
+    } completion:^(BOOL finished) {
+        [UIView animateWithDuration:0.25 animations:^{
+            self.transform = CGAffineTransformMakeScale(1, 1);
+        }];
+    }];
+}
+
+-(void)refreshSelectClickNum:(NSInteger)num
+{
+    if (num != 0) {
         self.showTitle = [NSString stringWithFormat:@"%ld",num];
         self.fillColor = BKHighlightColor;
         [self setNeedsDisplay];
-        
-        self.isAnimate = YES;
-        
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [UIView animateWithDuration:0.25 animations:^{
-                self.transform = CGAffineTransformMakeScale(1.15, 1.15);
-            } completion:^(BOOL finished) {
-                [UIView animateWithDuration:0.25 animations:^{
-                    self.transform = CGAffineTransformMakeScale(1, 1);
-                } completion:^(BOOL finished) {
-                    self.isAnimate = NO;
-                }];
-            }];
-        });
     }else{
         self.showTitle = @"";
         self.fillColor = BKSelectImageCircleNormalColor;
         [self setNeedsDisplay];
     }
-    
-    if (method) {
-        method();
-    }
+}
+
+-(void)cancelSelect
+{
+    self.showTitle = @"";
+    self.fillColor = BKSelectImageCircleNormalColor;
+    [self setNeedsDisplay];
 }
 
 @end

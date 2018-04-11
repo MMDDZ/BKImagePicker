@@ -31,11 +31,8 @@
 
 /**
  刷新选中
-
- @param selectImageArr 选中数组
- @param isOriginal 是否是原图
  */
--(void)refreshSelectPhotoWithSelectImageArr:(NSArray*)selectImageArr isOriginal:(BOOL)isOriginal;
+-(void)refreshSelectPhoto;
 
 @end
 
@@ -52,21 +49,9 @@
  */
 @property (nonatomic,strong) NSArray * imageListArray;
 /**
- 选取数组
- */
-@property (nonatomic,strong) NSMutableArray * selectImageArray;
-/**
  选取的Image model
  */
 @property (nonatomic,strong) BKImageModel * tapImageModel;
-/**
- 最大选取量
- */
-@property (nonatomic,assign) NSInteger maxSelect;
-/**
- 是否选择原图
- */
-@property (nonatomic,assign) BOOL isOriginal;
 
 /**
  显示方法

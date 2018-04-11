@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "BKImagePickerConst.h"
+#import "BKTool.h"
 
 @interface BKImageBaseViewController : UIViewController
 

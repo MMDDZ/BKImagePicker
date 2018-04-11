@@ -7,14 +7,12 @@
 //
 
 #import "BKImageTakePhotoViewController.h"
-#import "BKImagePickerConst.h"
+#import "BKTool.h"
 #import <AVFoundation/AVFoundation.h>
 #import "BKImageTakePhotoBtn.h"
 //#import "BKEditPhotoView.h"
 
 @interface BKImageTakePhotoViewController ()<AVCaptureVideoDataOutputSampleBufferDelegate>
-
-@property (nonatomic,copy) NSString * imagePath;//图片路径
 
 @property (nonatomic,strong) UIView * previewView;//预览界面
 @property (nonatomic,strong) dispatch_queue_t videoQueue;//视频队列
@@ -37,22 +35,6 @@
 @end
 
 @implementation BKImageTakePhotoViewController
-
-#pragma mark - 图片路径
-
--(NSString*)imagePath
-{
-    if (!_imagePath) {
-        NSString * imageBundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
-        _imagePath = [NSString stringWithFormat:@"%@/TakePhoto",imageBundlePath];
-    }
-    return _imagePath;
-}
-
--(UIImage*)imageWithImageName:(NSString*)imageName
-{
-    return [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@",self.imagePath,imageName]];
-}
 
 #pragma mark - viewDidLoad
 
@@ -368,7 +350,7 @@
         _focusImageView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, BK_SCREENW/4, BK_SCREENW/4)];
         _focusImageView.clipsToBounds = YES;
         _focusImageView.contentMode = UIViewContentModeScaleAspectFit;
-        _focusImageView.image = [self imageWithImageName:@"takephoto_focus"];
+        _focusImageView.image = [[BKTool sharedManager] takePhotoImageWithImageName:@"takephoto_focus"];
         [self.view insertSubview:_focusImageView aboveSubview:_previewView];
     }
     return _focusImageView;
@@ -390,7 +372,7 @@
         [_closeBtn addTarget:self action:@selector(closeBtnClick:) forControlEvents:UIControlEventTouchUpInside];
         
         UIImageView * closeImageView = [[UIImageView alloc]initWithFrame:CGRectMake((_closeBtn.bk_width - 25)/2, (_closeBtn.bk_height - 25)/2, 25, 25)];
-        closeImageView.image = [self imageWithImageName:@"takephoto_close"];
+        closeImageView.image = [[BKTool sharedManager] takePhotoImageWithImageName:@"takephoto_close"];
         [_closeBtn addSubview:closeImageView];
     }
     return _closeBtn;
@@ -411,7 +393,7 @@
         [_switchShotBtn addTarget:self action:@selector(switchShotBtnClick:) forControlEvents:UIControlEventTouchUpInside];
         
         UIImageView * switchShotImageView = [[UIImageView alloc]initWithFrame:CGRectMake((_switchShotBtn.bk_width - 25)/2, (_switchShotBtn.bk_height - 25)/2, 25, 25)];
-        switchShotImageView.image = [self imageWithImageName:@"takephoto_switch_shot"];
+        switchShotImageView.image = [[BKTool sharedManager] takePhotoImageWithImageName:@"takephoto_switch_shot"];
         [_switchShotBtn addSubview:switchShotImageView];
     }
     return _switchShotBtn;
@@ -485,7 +467,7 @@
         [_lightBtn addTarget:self action:@selector(lightBtnClick:) forControlEvents:UIControlEventTouchUpInside];
         
         UIImageView * lightImageView = [[UIImageView alloc]initWithFrame:CGRectMake((_lightBtn.bk_width - 25)/2, (_lightBtn.bk_height - 25)/2, 25, 25)];
-        lightImageView.image = [self imageWithImageName:@"takephoto_close_light"];
+        lightImageView.image = [[BKTool sharedManager] takePhotoImageWithImageName:@"takephoto_close_light"];
         lightImageView.tag = 1;
         [_lightBtn addSubview:lightImageView];
     }

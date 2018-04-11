@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <Photos/Photos.h>
-#import "BKImagePickerConst.h"
+#import "BKTool.h"
 
 @interface BKImageModel : NSObject
 
@@ -36,6 +36,10 @@
  原图data (当photoType == BKSelectPhotoTypeVideo时 为封面图data)
  */
 @property (nonatomic,strong) NSData * originalImageData;
+/**
+ 是否有原图data
+ */
+@property (nonatomic,assign) BOOL isHaveOriginalImageFlag;
 /**
  原图大小
  */

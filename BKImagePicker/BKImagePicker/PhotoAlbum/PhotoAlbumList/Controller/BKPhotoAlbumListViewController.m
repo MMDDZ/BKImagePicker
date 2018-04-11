@@ -13,6 +13,7 @@
 #import <Photos/Photos.h>
 #import "BKPhotoAlbumListModel.h"
 #import "BKPhotoAlbumListTableViewCell.h"
+#import "BKImagePicker.h"
 
 @interface BKPhotoAlbumListViewController ()<UITableViewDelegate,UITableViewDataSource>
 
@@ -60,7 +61,7 @@
             __block NSInteger assetsCount = [assets count];
             [assets enumerateObjectsUsingBlock:^(PHAsset * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 
-                switch (self.photoType) {
+                switch ([BKTool sharedManager].photoType) {
                     case BKPhotoTypeDefault:
                         break;
                     case BKPhotoTypeImageAndGif:
@@ -118,8 +119,9 @@
                 options.resizeMode = PHImageRequestOptionsResizeModeFast;
                 options.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
                 options.synchronous = YES;
+                options.networkAccessAllowed = YES;
                 
-                [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(BK_SCREENW/2.0f, BK_SCREENW/2.0f) contentMode:PHImageContentModeAspectFill options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+                [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(BK_SCREENW/2.0f, BK_SCREENW/2.0f) contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
                     
                     // 排除取消，错误，低清图三种情况，即已经获取到了高清图
                     BOOL downImageloadFinined = ![[info objectForKey:PHImageCancelledKey] boolValue] && ![info objectForKey:PHImageErrorKey] && ![[info objectForKey:PHImageResultIsDegradedKey] boolValue];
@@ -252,12 +254,7 @@
     BKPhotoAlbumListModel * model = self.imageClassArray[indexPath.row];
     
     BKImagePickerViewController * imageVC = [[BKImagePickerViewController alloc]init];
-    imageVC.title = model.albumName;
-    imageVC.selectImageArray = [NSMutableArray arrayWithArray:self.selectImageArray];
-    imageVC.isOriginal = self.isOriginal;
-    imageVC.max_select = self.max_select;
-    imageVC.photoType = self.photoType;
-    
+    imageVC.title = model.albumName;    
     [self.navigationController pushViewController:imageVC animated:YES];
 }
 

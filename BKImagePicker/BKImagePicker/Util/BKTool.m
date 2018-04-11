@@ -8,16 +8,33 @@
 
 #import "BKTool.h"
 #import <ImageIO/ImageIO.h>
-#import "BKImagePickerConst.h"
 #import <MobileCoreServices/MobileCoreServices.h>
+
+NSString * const BKFinishSelectImageNotification = @"BKFinishSelectImageNotification";//选择完成通知
+
+float const BKAlbumImagesSpacing = 1;//相簿图片间距
+float const BKExampleImagesSpacing = 10;//查看的大图图片间距
+float const BKCheckExampleImageAnimateTime = 0.5;//查看大图图片过场动画时间
+float const BKCheckExampleGifAndVideoAnimateTime = 0.3;//查看Gif、Video过场动画时间
+float const BKThumbImageCompressSizeMultiplier = 0.5;//图片压缩比例
 
 @interface BKTool()
 
-@property (nonatomic,strong) CALayer * loadLayer;
+@property (nonatomic,strong) CALayer * loadLayer;//加载layer
+
+@property (nonatomic,copy) NSString * imagePath;//图片路径
 
 @end
 
 @implementation BKTool
+
+-(NSMutableArray*)selectImageArray
+{
+    if (!_selectImageArray) {
+        _selectImageArray = [NSMutableArray array];
+    }
+    return _selectImageArray;
+}
 
 +(instancetype)sharedManager
 {
@@ -215,6 +232,51 @@
     self.loadLayer = nil;
 }
 
+#pragma mark - 图片路径
+
+-(NSString*)imagePath
+{
+    if (!_imagePath) {
+        NSString * imageBundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
+        _imagePath = [NSString stringWithFormat:@"%@",imageBundlePath];
+    }
+    return _imagePath;
+}
+
+/**
+ 基础模块图片
+ 
+ @param imageName 图片名称
+ @return 图片
+ */
+-(UIImage*)imageWithImageName:(NSString*)imageName
+{
+    return [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@",self.imagePath,imageName]];
+}
+
+
+/**
+ 编辑模块图片
+ 
+ @param imageName 图片名称
+ @return 图片
+ */
+-(UIImage*)editImageWithImageName:(NSString*)imageName
+{
+    return [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/EditImage/%@",self.imagePath,imageName]];
+}
+
+/**
+ 拍照模块图片
+ 
+ @param imageName 图片名称
+ @return 图片
+ */
+-(UIImage*)takePhotoImageWithImageName:(NSString*)imageName
+{
+    return [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/TakePhoto/%@",self.imagePath,imageName]];
+}
+
 #pragma mark - 压缩图片
 
 /**
@@ -273,10 +335,13 @@
                 NSDictionary * frameProperties =
                 (__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(imageSource, i, NULL);
                 
+                CGImageRef compressImageRef = [self compressImageRef:imageRef];
                 //写入图片
-                CGImageDestinationAddImage(destinationRef, [self compressImageRef:imageRef], (CFDictionaryRef)frameProperties);
+                CGImageDestinationAddImage(destinationRef, compressImageRef, (CFDictionaryRef)frameProperties);
                 //写入图片属性
                 CGImageDestinationSetProperties(destinationRef, (CFDictionaryRef)imageProperties);
+                
+                CGImageRelease(compressImageRef);
             }
             
             CGImageRelease(imageRef);
@@ -317,10 +382,10 @@
     }
     
     CGContextDrawImage(context, CGRectMake(0, 0, width, height), imageRef);
-    CGImageRef newImage = CGBitmapContextCreateImage(context);
+    CGImageRef newImageRef = CGBitmapContextCreateImage(context);
     CFRelease(context);
     
-    return newImage;
+    return newImageRef;
 }
 
 -(BOOL)checkHaveAlphaWithImageRef:(CGImageRef)imageRef
@@ -336,6 +401,87 @@
     }
     
     return hasAlpha;
+}
+
+#pragma mark - 获取图片
+
+/**
+ 获取对应缩略图
+ 
+ @param asset 相簿
+ @param complete 完成方法
+ */
+-(void)getThumbImageSizeWithAsset:(PHAsset*)asset complete:(void (^)(UIImage * thumbImage))complete
+{
+    PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+    options.resizeMode = PHImageRequestOptionsResizeModeFast;
+    options.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
+    options.synchronous = NO;
+    options.networkAccessAllowed = YES;
+    
+    [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(BK_SCREENW/2.0f, BK_SCREENW/2.0f) contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+        
+        // 排除取消，错误，低清图三种情况，即已经获取到了高清图
+        BOOL downImageloadFinined = ![[info objectForKey:PHImageCancelledKey] boolValue] && ![info objectForKey:PHImageErrorKey] && ![[info objectForKey:PHImageResultIsDegradedKey] boolValue];
+        if (downImageloadFinined) {
+            if(result) {
+                if (complete) {
+                    complete(result);
+                }
+            }
+        }
+    }];
+}
+
+/**
+ 获取对应原图
+ 
+ @param asset 相簿
+ @param complete 完成方法
+ */
+-(void)getOriginalImageSizeWithAsset:(PHAsset*)asset complete:(void (^)(UIImage * originalImage))complete
+{
+    PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+    options.resizeMode = PHImageRequestOptionsResizeModeExact;
+    options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+    options.synchronous = NO;
+    options.networkAccessAllowed = YES;
+    
+    [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+        
+        // 排除取消，错误，低清图三种情况，即已经获取到了高清图
+        BOOL downImageloadFinined = ![[info objectForKey:PHImageCancelledKey] boolValue] && ![info objectForKey:PHImageErrorKey] && ![[info objectForKey:PHImageResultIsDegradedKey] boolValue];
+        if (downImageloadFinined) {
+            if(result) {
+                if (complete) {
+                    complete(result);
+                }
+            }
+        }
+    }];
+}
+
+/**
+ 获取对应原图data
+ 
+ @param asset 相簿
+ @param complete 完成方法
+ */
+-(void)getOriginalImageDataSizeWithAsset:(PHAsset*)asset complete:(void (^)(NSData * originalImageData,NSURL * url))complete
+{
+    PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+    options.resizeMode = PHImageRequestOptionsResizeModeExact;
+    options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+    options.synchronous = NO;
+    options.networkAccessAllowed = YES;
+    
+    [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
+        
+        NSURL * url = info[@"PHImageFileURLKey"];
+        if (complete) {
+            complete(imageData,url);
+        }
+    }];
 }
 
 @end

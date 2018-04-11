@@ -26,16 +26,14 @@
     
     [self.view addSubview:self.topNavView];
     [self.view addSubview:self.bottomNavView];
-    [self addTopNavConstraint];
-    [self addBottomNavConstraint];
 }
 
 -(void)viewWillLayoutSubviews
 {
     [super viewWillLayoutSubviews];
     
-    [self addTopNavConstraint];
-    [self addBottomNavConstraint];
+    _topNavView.frame = CGRectMake(0, 0, BK_SCREENW, BK_SYSTEM_NAV_HEIGHT);
+    _bottomNavView.frame = CGRectMake(0, self.view.bk_height - _bottomNavViewHeight, BK_SCREENW, _bottomNavViewHeight);
 }
 
 #pragma mark - 顶部导航
@@ -49,10 +47,10 @@
 -(UIView*)topNavView
 {
     if (!_topNavView) {
-        _topNavView = [[UIView alloc]init];
+        _topNavView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, BK_SCREENW, BK_SYSTEM_NAV_HEIGHT)];
         _topNavView.backgroundColor = BKNavBackgroundColor;
         
-        _titleLab = [[UILabel alloc]init];
+        _titleLab = [[UILabel alloc]initWithFrame:CGRectMake(64, BK_SYSTEM_STATUSBAR_HEIGHT, BK_SCREENW - 64*2, BK_SYSTEM_NAV_UI_HEIGHT)];
         _titleLab.textColor = [UIColor blackColor];
         _titleLab.font = [UIFont boldSystemFontOfSize:17];
         _titleLab.textAlignment = NSTextAlignmentCenter;
@@ -71,11 +69,10 @@
         _leftLab.textAlignment = NSTextAlignmentCenter;
         [_leftBtn addSubview:_leftLab];
         
-        NSString * backPath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
         _leftImageView = [[UIImageView alloc]initWithFrame:CGRectMake(10, 0, 20, 20)];
         _leftImageView.bk_centerY = _leftLab.bk_centerY;
         if ([self.navigationController.viewControllers count] != 1) {
-            _leftImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/blue_back.png",backPath]];
+            _leftImageView.image = [[BKTool sharedManager] imageWithImageName:@"blue_back"];
         }
         _leftImageView.contentMode = UIViewContentModeScaleAspectFit;
         _leftImageView.clipsToBounds = YES;
@@ -100,20 +97,11 @@
         _rightImageView.clipsToBounds = YES;
         [_rightBtn addSubview:_rightImageView];
         
-        _topLine = [[UIImageView alloc]init];
+        _topLine = [[UIImageView alloc]initWithFrame:CGRectMake(0, _topNavView.bk_height - BK_ONE_PIXEL, BK_SCREENW, BK_ONE_PIXEL)];
         _topLine.backgroundColor = BKLineColor;
         [_topNavView addSubview:_topLine];
     }
     return _topNavView;
-}
-
--(void)addTopNavConstraint
-{
-    _topNavView.frame = CGRectMake(0, 0, self.view.bk_width, BK_SYSTEM_NAV_HEIGHT);
-    _leftBtn.frame = CGRectMake(0, BK_SYSTEM_STATUSBAR_HEIGHT, 64, BK_SYSTEM_NAV_UI_HEIGHT);
-    _titleLab.frame = CGRectMake(64, BK_SYSTEM_STATUSBAR_HEIGHT, self.view.bk_width - 128, BK_SYSTEM_NAV_UI_HEIGHT);
-    _rightBtn.frame = CGRectMake(self.view.bk_width - 64, BK_SYSTEM_STATUSBAR_HEIGHT, 64, BK_SYSTEM_NAV_UI_HEIGHT);
-    _topLine.frame = CGRectMake(0, _topNavView.bk_height - BK_ONE_PIXEL, _topNavView.bk_width, BK_ONE_PIXEL);
 }
 
 -(void)leftNavBtnAction:(UIButton*)button
@@ -137,20 +125,14 @@
 -(UIView*)bottomNavView
 {
     if (!_bottomNavView) {
-        _bottomNavView = [[UIView alloc]init];
+        _bottomNavView = [[UIView alloc]initWithFrame:CGRectMake(0, self.view.bk_height - _bottomNavViewHeight, BK_SCREENW, _bottomNavViewHeight)];
         _bottomNavView.backgroundColor = BKNavBackgroundColor;
         
-        _bottomLine = [[UIImageView alloc]init];
+        _bottomLine = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, BK_SCREENW, BK_ONE_PIXEL)];
         _bottomLine.backgroundColor = BKLineColor;
         [_bottomNavView addSubview:_bottomLine];
     }
     return _bottomNavView;
-}
-
--(void)addBottomNavConstraint
-{
-    _bottomNavView.frame = CGRectMake(0, self.view.bk_height - _bottomNavViewHeight, self.view.bk_width, _bottomNavViewHeight);
-    _bottomLine.frame = CGRectMake(0, 0, _bottomNavView.bk_width, BK_ONE_PIXEL);
 }
 
 -(void)setBottomNavViewHeight:(CGFloat)bottomNavViewHeight
@@ -161,12 +143,12 @@
     _bottomNavView.bk_y = self.view.bk_height - _bottomNavView.bk_height;
 }
 
-#pragma iPhoneX黑条隐藏
-
--(BOOL)prefersHomeIndicatorAutoHidden
-{
-    return YES;
-}
+//#pragma iPhoneX黑条隐藏
+//
+//-(BOOL)prefersHomeIndicatorAutoHidden
+//{
+//    return YES;
+//}
 
 #pragma mark - 屏幕旋转处理
 

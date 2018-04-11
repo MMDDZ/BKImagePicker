@@ -7,18 +7,25 @@
 //
 
 #import "BKEditImageViewController.h"
-#import "BKImagePickerConst.h"
+#import "BKTool.h"
 #import "BKImagePicker.h"
+#import "BKEditImagePreviewCollectionViewFlowLayout.h"
+#import "BKEditImagePreviewCollectionViewCell.h"
 #import "BKEditImageBgView.h"
 #import "BKEditImageDrawView.h"
 #import "BKEditImageDrawModel.h"
 #import "BKEditImageBottomView.h"
 #import "BKEditImageWriteView.h"
 #import "BKEditImageClipView.h"
+#import "BKImageModel.h"
+#import <pthread.h>
 
-@interface BKEditImageViewController ()<BKEditImageDrawViewDelegate,UITextViewDelegate,BKEditImageWriteViewDelegate,UIGestureRecognizerDelegate>
+@interface BKEditImageViewController ()<BKEditImageDrawViewDelegate,UITextViewDelegate,BKEditImageWriteViewDelegate,UIGestureRecognizerDelegate,UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout>
 
-@property (nonatomic,copy) NSString * imagePath;//图片路径
+@property (nonatomic,strong) UIImage * currentEditImage;//当前编辑的图片
+@property (nonatomic,assign) NSInteger currentEditIndex;//当前编辑的图片index
+
+@property (nonatomic,strong) UICollectionView * previewCollectionView;
 
 @property (nonatomic,strong) BKEditImageBgView * editImageBgView;//修改图片背景
 @property (nonatomic,strong) UIPanGestureRecognizer * editImageBgPanGesture;//修改图片背景移动手势
@@ -26,6 +33,7 @@
 
 @property (nonatomic,strong) UIImageView * editImageView;//要修改的图片
 @property (nonatomic,strong) UIImage * mosaicImage;//全图马赛克处理
+@property (nonatomic,assign) BOOL isSuccessMosaicFlag;//是否成功马赛克处理
 @property (nonatomic,strong) CAShapeLayer * mosaicImageShapeLayer;
 
 @property (nonatomic,strong) BKEditImageBottomView * bottomView;
@@ -43,22 +51,6 @@
 
 @implementation BKEditImageViewController
 
-#pragma mark - 图片路径
-
--(NSString*)imagePath
-{
-    if (!_imagePath) {
-        NSString * imageBundlePath = [[NSBundle mainBundle] pathForResource:@"BKImage" ofType:@"bundle"];
-        _imagePath = [NSString stringWithFormat:@"%@",imageBundlePath];
-    }
-    return _imagePath;
-}
-
--(UIImage*)imageWithImageName:(NSString*)imageName
-{
-    return [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/EditImage/%@",self.imagePath,imageName]];
-}
-
 #pragma mark - viewDidLoad
 
 - (void)viewDidLoad {
@@ -67,11 +59,13 @@
     
     self.view.backgroundColor = [UIColor blackColor];
     
+    _currentEditImage = [self.editImageArr firstObject];
+    _currentEditIndex = 0;
+
     [self initTopNav];
     [self initBottomNav];
-    
+
     [self editImageView];
-    [self drawView];
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -102,91 +96,124 @@
     self.leftImageView.image = nil;
     self.leftLab.text = @"取消";
     
-    self.rightImageView.image = [self imageWithImageName:@"save"];
+    self.rightImageView.image = [[BKTool sharedManager] editImageWithImageName:@"save"];
+    
+    [self.topNavView addSubview:self.previewCollectionView];
 }
 
 -(void)leftNavBtnAction:(UIButton *)button
 {
-    [self.navigationController popViewControllerAnimated:NO];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 -(void)rightNavBtnAction:(UIButton *)button
 {
-    UIImage * saveImage = [self createNewImageWithFrame:CGRectZero editImageRotation:BKEditImageRotationPortrait];
+    UIWindow * window = [[UIApplication sharedApplication].delegate window];
+    [[BKTool sharedManager] showLoadInView:window];
     
-    CGImageRef editImageRef = _editImage.CGImage;
+    [self createNewImageWithFrame:CGRectZero editImageRotation:BKEditImageRotationPortrait complete:^(UIImage *resultImage) {
+        
+        UIImage * saveImage = [self reCreateImage:resultImage];
+        
+        if (saveImage) {
+            
+            [[BKImagePicker sharedManager] saveImage:saveImage complete:^(PHAsset *asset, BOOL success) {
+                [[BKTool sharedManager] hideLoad];
+                
+                if (!success) {
+                    [[BKTool sharedManager] showRemind:@"图片保存失败"];
+                }else{
+                    [[BKTool sharedManager] showRemind:@"图片保存成功"];
+                }
+            }];
+        }
+    }];
+}
+
+/**
+ 根据图片是否含有透明度重新生成新图片
+
+ @param image 旧图片
+ @return 新图片
+ */
+-(UIImage*)reCreateImage:(UIImage*)image
+{
+    CGImageRef editImageRef = image.CGImage;
     BOOL hasAlpha = [[BKTool sharedManager] checkHaveAlphaWithImageRef:editImageRef];
     
     NSData * imageData;
     NSString * path;
-    if (hasAlpha) {
-        imageData = UIImagePNGRepresentation(saveImage);
-        path = [NSString stringWithFormat:@"%@/save.png",NSTemporaryDirectory()];
+    if (hasAlpha) {//如果图片含有 alpha 保存本地生成新图片 （否则图片保存相册 alpha 会消失）
+        imageData = UIImagePNGRepresentation(image);
+        path = [NSString stringWithFormat:@"%@%.0f.png",NSTemporaryDirectory(),[[NSDate date] timeIntervalSince1970]];
     }else{
-        imageData = UIImageJPEGRepresentation(saveImage, 1);
-        path = [NSString stringWithFormat:@"%@/save.jpg",NSTemporaryDirectory()];
+//        imageData = UIImageJPEGRepresentation(image, 1);
+//        path = [NSString stringWithFormat:@"%@%.0f.jpg",NSTemporaryDirectory(),[[NSDate date] timeIntervalSince1970]];
+        return image;
     }
     BOOL saveflag = [imageData writeToFile:path atomically:YES];
-    if (saveflag) {
-        saveImage = [UIImage imageWithContentsOfFile:path];
-    }else{
-        [[BKTool sharedManager] showRemind:@"图片生成失败"];
-    }
     
-    if (saveImage) {
-        [[BKImagePicker sharedManager] saveImage:saveImage];
+    if (saveflag) {
+        return [UIImage imageWithContentsOfFile:path];
+    }else{
+        return image;
     }
 }
 
 #pragma mark - 生成图片
 
--(UIImage*)createNewImageWithFrame:(CGRect)frame editImageRotation:(BKEditImageRotation)rotation
+-(void)createNewImageWithFrame:(CGRect)frame editImageRotation:(BKEditImageRotation)rotation complete:(void (^)(UIImage * resultImage))complete
 {
-    UIWindow * window = [[UIApplication sharedApplication].delegate window];
-    [[BKTool sharedManager] showLoadInView:window];
-    
     CGPoint contentOffset = _editImageBgView.contentOffset;
     CGFloat zoomScale = _editImageBgView.zoomScale;
     
     _editImageBgView.zoomScale = 1;
     _editImageBgView.contentOffset = CGPointZero;
     
-    CGImageRef editImageRef = _editImage.CGImage;
+    CGImageRef editImageRef = self.currentEditImage.CGImage;
     BOOL hasAlpha = [[BKTool sharedManager] checkHaveAlphaWithImageRef:editImageRef];
     
-    CGFloat scale = _editImage.size.width / self.view.bk_width;
+    CGFloat scale = self.currentEditImage.size.width / self.view.bk_width;
     
-    UIGraphicsBeginImageContextWithOptions(_editImageBgView.contentView.frame.size, hasAlpha?NO:YES, scale);
+    UIGraphicsBeginImageContextWithOptions(self.editImageBgView.contentView.frame.size, hasAlpha?NO:YES, scale);
     CGContextRef context = UIGraphicsGetCurrentContext();
-    [_editImageBgView.contentView.layer renderInContext:context];
-    UIImage * image = UIGraphicsGetImageFromCurrentImageContext();
+    [self.editImageBgView.contentView.layer renderInContext:context];
+    __block UIImage * image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
+    self.editImageBgView.contentView.layer.contents = nil;
     
-    CGRect clipRect = CGRectZero;
-    if (!CGRectEqualToRect(frame, CGRectZero)) {
-        clipRect.origin.x = frame.origin.x * scale;
-        clipRect.origin.y = frame.origin.y * scale;
-        clipRect.size.width = frame.size.width * scale;
-        clipRect.size.height = frame.size.height * scale;
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
         
-        CGImageRef clipImageRef = image.CGImage;
-        CGImageRef newImageRef = CGImageCreateWithImageInRect(clipImageRef, clipRect);
-        image = [UIImage imageWithCGImage:newImageRef];
-    }
-    
-    CGRect rect = CGRectMake(0, 0, image.size.width * image.scale, image.size.height * image.scale);
-
-    CGImageRef imageRef = CGImageCreateWithImageInRect(image.CGImage, rect);
-    image = [UIImage imageWithCGImage:imageRef];
-    
-    UIImage * resultImage = [self rotationImage:image editRotation:rotation hasAlpha:hasAlpha];
-
-    _editImageBgView.zoomScale = zoomScale;
-    _editImageBgView.contentOffset = contentOffset;
-    
-    [[BKTool sharedManager] hideLoad];
-
-    return resultImage;
+        CGRect clipRect = CGRectZero;
+        if (!CGRectEqualToRect(frame, CGRectZero)) {
+            clipRect.origin.x = frame.origin.x * scale;
+            clipRect.origin.y = frame.origin.y * scale;
+            clipRect.size.width = frame.size.width * scale;
+            clipRect.size.height = frame.size.height * scale;
+            
+            CGImageRef clipImageRef = image.CGImage;
+            CGImageRef newImageRef = CGImageCreateWithImageInRect(clipImageRef, clipRect);
+            image = [UIImage imageWithCGImage:newImageRef];
+            CGImageRelease(newImageRef);
+        }
+        
+        CGRect rect = CGRectMake(0, 0, image.size.width * image.scale, image.size.height * image.scale);
+        
+        CGImageRef imageRef = CGImageCreateWithImageInRect(image.CGImage, rect);
+        image = [UIImage imageWithCGImage:imageRef];
+        CGImageRelease(imageRef);
+        
+        UIImage * resultImage = [self rotationImage:image editRotation:rotation hasAlpha:hasAlpha];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.editImageBgView.zoomScale = zoomScale;
+            self.editImageBgView.contentOffset = contentOffset;
+            
+            if (complete) {
+                complete(resultImage);
+            }
+        });
+    });
 }
 
 /**
@@ -259,12 +286,135 @@
     return resultImage;
 }
 
+#pragma mark - UICollectionView
+
+-(UICollectionView*)previewCollectionView
+{
+    if (!_previewCollectionView) {
+        
+        BKEditImagePreviewCollectionViewFlowLayout * layout = [[BKEditImagePreviewCollectionViewFlowLayout alloc]init];
+        
+        _previewCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(80, BK_SYSTEM_STATUSBAR_HEIGHT, self.topNavView.bk_width - 160, BK_SYSTEM_NAV_UI_HEIGHT) collectionViewLayout:layout];
+        _previewCollectionView.delegate = self;
+        _previewCollectionView.dataSource = self;
+        _previewCollectionView.backgroundColor = [UIColor clearColor];
+        _previewCollectionView.showsHorizontalScrollIndicator = NO;
+        if (@available(iOS 11.0, *)) {
+            _previewCollectionView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+        }
+        [_previewCollectionView registerClass:[BKEditImagePreviewCollectionViewCell class] forCellWithReuseIdentifier:@"BKEditImagePreviewCollectionViewCell"];
+    }
+    return _previewCollectionView;
+}
+
+#pragma mark - UICollectionViewDelegate
+
+-(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
+{
+    return [_editImageArr count];
+}
+
+-(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    BKEditImagePreviewCollectionViewCell * cell  = [collectionView dequeueReusableCellWithReuseIdentifier:@"BKEditImagePreviewCollectionViewCell" forIndexPath:indexPath];
+    
+    if (_currentEditIndex == indexPath.item) {
+        cell.selectColorView.hidden = NO;
+    }else{
+        cell.selectColorView.hidden = YES;
+    }
+    
+    UIImage * currentImage = _editImageArr[indexPath.item];
+    cell.showImageView.image = currentImage;
+    
+    return cell;
+}
+
+-(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    [self createNewImageWithFrame:CGRectZero editImageRotation:BKEditImageRotationPortrait complete:^(UIImage *resultImage) {
+        
+        NSMutableArray * editImageArr = [NSMutableArray arrayWithArray:self.editImageArr];
+        [editImageArr replaceObjectAtIndex:self.currentEditIndex withObject:resultImage];
+        self.editImageArr = [editImageArr copy];
+        
+        self.currentEditIndex = indexPath.item;
+        [self.previewCollectionView reloadData];
+        
+        self.currentEditImage = self.editImageArr[self.currentEditIndex];
+        
+        [self removeEditImageTemplate];
+        [self editImageView];
+    }];
+}
+
 #pragma mark - initBottomNav
 
 -(void)initBottomNav
 {
     self.bottomNavViewHeight = BK_SYSTEM_TABBAR_HEIGHT;
     [self.bottomNavView addSubview:self.bottomView];
+}
+
+#pragma mark - 发送
+
+-(void)sendPhoto
+{
+    UIWindow * window = [UIApplication sharedApplication].keyWindow;
+    [[BKTool sharedManager] showLoadInView:window];
+    
+    [self createNewImageWithFrame:CGRectZero editImageRotation:BKEditImageRotationPortrait complete:^(UIImage *resultImage) {
+        
+        NSMutableArray * editImageArr = [NSMutableArray arrayWithArray:self.editImageArr];
+        [editImageArr replaceObjectAtIndex:self.currentEditIndex withObject:resultImage];
+        self.editImageArr = [editImageArr copy];
+        
+        dispatch_queue_t queue = dispatch_queue_create("save", NULL);
+        
+        pthread_mutexattr_t attr;
+        pthread_mutexattr_init(&attr);
+        pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_NORMAL);
+        
+        __block pthread_mutex_t mutex;
+        pthread_mutex_init(&mutex, &attr);
+        
+        __block NSMutableArray * resultArr = [NSMutableArray array];
+        for (UIImage * editImage in self.editImageArr) {
+            dispatch_async(queue, ^{
+                
+                pthread_mutex_lock(&mutex);
+                
+                [[BKImagePicker sharedManager] saveImage:[self reCreateImage:editImage] complete:^(PHAsset *asset, BOOL success) {
+                    
+                    pthread_mutex_unlock(&mutex);
+                    
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if (!success) {
+                            [[BKTool sharedManager] showRemind:@"图片发送失败"];
+                            pthread_mutex_destroy(&mutex);
+                        }else{
+                            [[BKTool sharedManager] getOriginalImageDataSizeWithAsset:asset complete:^(NSData *originalImageData, NSURL *url) {
+                                BKImageModel * imageModel = [[BKImageModel alloc]init];
+                                imageModel.originalImageData = originalImageData;
+                                imageModel.url = url;
+                                imageModel.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];
+                                [resultArr addObject:imageModel];
+                                
+                                if ([resultArr count] == [editImageArr count]) {
+                                    [[BKTool sharedManager] hideLoad];
+                                    pthread_mutex_destroy(&mutex);
+                                    
+                                    [[NSNotificationCenter defaultCenter] postNotificationName:BKFinishSelectImageNotification object:nil userInfo:nil];
+                                    [self dismissViewControllerAnimated:YES completion:nil];
+                                }
+                            }];
+                        }
+                    });
+                }];
+                
+            });
+        }
+    }];
 }
 
 #pragma mark - BKEditImageBottomView
@@ -345,6 +495,10 @@
             BK_STRONG_SELF(self);
             [strongSelf.drawView cleanFinallyDraw];
         }];
+        [_bottomView setSendBtnAction:^{
+            BK_STRONG_SELF(self);
+            [strongSelf sendPhoto];
+        }];
     }
     return _bottomView;
 }
@@ -358,7 +512,7 @@
         
         _editImageBgView.contentView.frame = [self calculataImageRect];
         _editImageBgView.contentSize = CGSizeMake(_editImageBgView.contentView.bk_width<self.view.bk_width?self.view.bk_width:_editImageBgView.contentView.bk_width, _editImageBgView.contentView.bk_height<self.view.bk_height?self.view.bk_height:_editImageBgView.contentView.bk_height);
-        CGFloat scale = _editImage.size.width / self.view.bk_width;
+        CGFloat scale = _currentEditImage.size.width / self.view.bk_width;
         _editImageBgView.maximumZoomScale = scale<2?2:scale;
         
         [self.view insertSubview:_editImageBgView atIndex:0];
@@ -404,6 +558,10 @@
 
 -(void)editImageBgTapRecognizer:(UITapGestureRecognizer*)recognizer
 {
+    if (self.bottomView.selectEditType == BKEditImageSelectEditTypeClip) {
+        return;
+    }
+    
     [_drawTimer invalidate];
     _drawTimer = nil;
     
@@ -551,19 +709,28 @@
     if (!_editImageView) {
         _editImageView = [[UIImageView alloc]initWithFrame:self.editImageBgView.contentView.bounds];
         
-        _editImage = [_editImage editImageOrientation];
-        _editImageView.image = _editImage;
+        _currentEditImage = [_currentEditImage editImageOrientation];
+        _editImageView.image = _currentEditImage;
         
         [self.editImageBgView.contentView addSubview:_editImageView];
         
-        //全图做马赛克处理 添加在图片图层上
-        CALayer * imageLayer = [CALayer layer];
-        imageLayer.frame = _editImageView.bounds;
-        imageLayer.contents = (id)self.mosaicImage.CGImage;
-        [_editImageView.layer addSublayer:imageLayer];
-        //添加遮罩shapeLayer
-        [_editImageView.layer addSublayer:self.mosaicImageShapeLayer];
-        imageLayer.mask = self.mosaicImageShapeLayer;
+        //延迟0.5秒 优化切换速度
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            
+            if (self.isSuccessMosaicFlag) {
+                return;
+            }
+            self.isSuccessMosaicFlag = YES;
+            
+            //全图做马赛克处理 添加在图片图层上
+            CALayer * imageLayer = [CALayer layer];
+            imageLayer.frame = self.editImageView.bounds;
+            imageLayer.contents = (id)self.mosaicImage.CGImage;
+            [self.editImageView.layer addSublayer:imageLayer];
+            //添加遮罩shapeLayer
+            [self.editImageView.layer addSublayer:self.mosaicImageShapeLayer];
+            imageLayer.mask = self.mosaicImageShapeLayer;
+        });
     }
     return _editImageView;
 }
@@ -575,9 +742,9 @@
     CGRect targetFrame = CGRectZero;
     
     targetFrame.size.width = self.view.frame.size.width;
-    if (_editImage) {
-        CGFloat scale = _editImage.size.width / targetFrame.size.width;
-        targetFrame.size.height = _editImage.size.height/scale;
+    if (_currentEditImage) {
+        CGFloat scale = _currentEditImage.size.width / targetFrame.size.width;
+        targetFrame.size.height = _currentEditImage.size.height/scale;
         if (targetFrame.size.height < self.view.frame.size.height) {
             targetFrame.origin.y = (self.view.frame.size.height - targetFrame.size.height)/2;
         }
@@ -594,7 +761,7 @@
 -(UIImage *)mosaicImage
 {
     if (!_mosaicImage) {
-        CIImage *ciImage = [CIImage imageWithCGImage:_editImage.CGImage];
+        CIImage *ciImage = [CIImage imageWithCGImage:_currentEditImage.CGImage];
         //生成马赛克
         CIFilter *filter = [CIFilter filterWithName:@"CIPixellate"];
         [filter setValue:ciImage forKey:kCIInputImageKey];
@@ -603,7 +770,7 @@
         CIImage *outImage = [filter valueForKey:kCIOutputImageKey];
         
         CIContext *context = [CIContext contextWithOptions:nil];
-        CGImageRef cgImage = [context createCGImage:outImage fromRect:CGRectMake(0, 0, _editImage.size.width, _editImage.size.height)];
+        CGImageRef cgImage = [context createCGImage:outImage fromRect:CGRectMake(0, 0, _currentEditImage.size.width, _currentEditImage.size.height)];
         _mosaicImage = [UIImage imageWithCGImage:cgImage];
         CGImageRelease(cgImage);
     }
@@ -866,7 +1033,7 @@ static BOOL writeDeleteFlag = NO;
         _bottomDeleteWriteView.backgroundColor = BKHighlightColor;
         
         UIImageView * deleteImageView = [[UIImageView alloc]initWithFrame:CGRectMake((_bottomDeleteWriteView.bk_width - 30)/2, (_bottomDeleteWriteView.bk_height - 30)/2, 30, 30)];
-        deleteImageView.image = [self imageWithImageName:@"delete_write"];
+        deleteImageView.image = [[BKTool sharedManager] editImageWithImageName:@"delete_write"];
         deleteImageView.clipsToBounds = YES;
         deleteImageView.contentMode = UIViewContentModeScaleAspectFit;
         [_bottomDeleteWriteView addSubview:deleteImageView];
@@ -933,12 +1100,8 @@ static BOOL writeDeleteFlag = NO;
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
 }
 
--(void)resetEditImageWithClipFrame:(CGRect)clipFrame rotation:(BKEditImageRotation)rotation
+-(void)removeEditImageTemplate
 {
-    CGRect frame = [_editImageBgView.contentView convertRect:clipFrame toView:self.view];
-    
-    _editImage = [self createNewImageWithFrame:clipFrame editImageRotation:rotation];
-    
     [_editImageBgView removeFromSuperview];
     _editImageBgView = nil;
     _editImageBgPanGesture = nil;
@@ -947,6 +1110,7 @@ static BOOL writeDeleteFlag = NO;
     [_editImageView removeFromSuperview];
     _editImageView = nil;
     _mosaicImage = nil;
+    _isSuccessMosaicFlag = NO;
     [_mosaicImageShapeLayer removeFromSuperlayer];
     _mosaicImageShapeLayer = nil;
     [_drawView removeFromSuperview];
@@ -959,22 +1123,39 @@ static BOOL writeDeleteFlag = NO;
     }];
     [_bottomDeleteWriteView removeFromSuperview];
     _bottomDeleteWriteView = nil;
+}
 
-    UIImageView * imageView = [[UIImageView alloc]initWithFrame:frame];
-    imageView.image = _editImage;
-    [self.view insertSubview:imageView atIndex:0];
+-(void)resetEditImageWithClipFrame:(CGRect)clipFrame rotation:(BKEditImageRotation)rotation
+{
+    CGRect frame = [_editImageBgView.contentView convertRect:clipFrame toView:self.view];
     
-    [UIView animateWithDuration:0.2 animations:^{
+    [self createNewImageWithFrame:clipFrame editImageRotation:rotation complete:^(UIImage *resultImage) {
         
-        imageView.frame = [self calculataImageRect];
+        self.currentEditImage = resultImage;
         
-    } completion:^(BOOL finished) {
-        [imageView removeFromSuperview];
+        NSMutableArray * editImageArr = [NSMutableArray arrayWithArray:self.editImageArr];
+        [editImageArr replaceObjectAtIndex:self.currentEditIndex withObject:self.currentEditImage];
+        self.editImageArr = [editImageArr copy];
         
-        [self editImageView];
-        [self drawView];
+        [self.previewCollectionView reloadData];
         
-        self.view.userInteractionEnabled = YES;
+        [self removeEditImageTemplate];
+        
+        UIImageView * imageView = [[UIImageView alloc]initWithFrame:frame];
+        imageView.image = self.currentEditImage;
+        [self.view insertSubview:imageView atIndex:0];
+        
+        [UIView animateWithDuration:0.2 animations:^{
+            
+            imageView.frame = [self calculataImageRect];
+            
+        } completion:^(BOOL finished) {
+            [imageView removeFromSuperview];
+            
+            [self editImageView];
+            
+            self.view.userInteractionEnabled = YES;
+        }];
     }];
 }
 
