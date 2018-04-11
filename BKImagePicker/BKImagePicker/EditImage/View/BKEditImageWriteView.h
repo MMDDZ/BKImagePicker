@@ -7,15 +7,16 @@
 //
 
 #import <UIKit/UIKit.h>
+@class BKEditImageWriteView;
 
 @protocol BKEditImageWriteViewDelegate <NSObject>
 
 @required
 
 /**
- 获取该视图的父视图
+ 第一次编辑完成设置view中心
  */
--(UIView*)getWriteViewSupperView;
+-(CGPoint)settingWriteViewCenter:(BKEditImageWriteView*)writeView;
 
 /**
  目前图片放大比例 (移动前必传)

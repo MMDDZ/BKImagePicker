@@ -10,7 +10,7 @@
 #import "BKTool.h"
 #import <AVFoundation/AVFoundation.h>
 #import "BKImageTakePhotoBtn.h"
-//#import "BKEditPhotoView.h"
+#import "BKEditImageViewController.h"
 
 @interface BKImageTakePhotoViewController ()<AVCaptureVideoDataOutputSampleBufferDelegate>
 
@@ -41,6 +41,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    self.topNavView.hidden = YES;
+    self.bottomNavView.hidden = YES;
     
     [self.view addSubview:self.previewView];
     
@@ -482,17 +485,22 @@
         if ([device hasTorch] && [device hasFlash]){
             
             [device lockForConfiguration:nil];
+            UIImageView * lightImageView = (UIImageView*)[_lightBtn viewWithTag:1];
             
             if (!button.isSelected) {
                 button.selected = YES;
                 
                 [device setTorchMode:AVCaptureTorchModeOn];
                 [device setFlashMode:AVCaptureFlashModeOn];
+                
+                lightImageView.image = [[BKTool sharedManager] takePhotoImageWithImageName:@"takephoto_open_light"];
             }else{
                 button.selected = NO;
                 
                 [device setTorchMode:AVCaptureTorchModeOff];
                 [device setFlashMode:AVCaptureFlashModeOff];
+                
+                lightImageView.image = [[BKTool sharedManager] takePhotoImageWithImageName:@"takephoto_close_light"];
             }
             
             [device unlockForConfiguration];
@@ -509,8 +517,9 @@
         BK_WEAK_SELF(self);
         [_shutterBtn setShutterAction:^{
             BK_STRONG_SELF(self);
-//            BKEditPhotoView * editPhotoView = [[BKEditPhotoView alloc]initWithImage:strongSelf.currentImage];
-//            [strongSelf.view addSubview:editPhotoView];
+            BKEditImageViewController * vc = [[BKEditImageViewController alloc]init];
+            vc.editImageArr = @[strongSelf.currentImage];
+            [strongSelf.navigationController pushViewController:vc animated:YES];
         }];
     }
     return _shutterBtn;

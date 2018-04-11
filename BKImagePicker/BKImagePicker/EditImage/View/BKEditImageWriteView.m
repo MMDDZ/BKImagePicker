@@ -39,21 +39,12 @@
     
     self.transform = CGAffineTransformIdentity;
     
-    UIView * superView = [self superview];
-    if ([self.delegate respondsToSelector:@selector(getWriteViewSupperView)]) {
-        superView = [self.delegate getWriteViewSupperView];
-    }
-    
-    CGFloat nowImageZoomScale = 0;
-    if ([self.delegate respondsToSelector:@selector(getNowImageZoomScale)]) {
-        nowImageZoomScale = [self.delegate getNowImageZoomScale];
-        if (nowImageZoomScale == 0) {
-            nowImageZoomScale = 1;
-        }
-    }
-    
     if (CGRectEqualToRect(self.frame, CGRectZero)) {
-        self.frame = CGRectMake((superView.bk_width/nowImageZoomScale - _width)/2, (superView.bk_height/nowImageZoomScale - _height)/2, _width, _height);
+        self.frame = CGRectMake(0, 0, _width, _height);
+        if ([self.delegate respondsToSelector:@selector(settingWriteViewCenter:)]) {
+            CGPoint center = [self.delegate settingWriteViewCenter:self];
+            self.center = center;
+        }
     }else{
         
         CGPoint center = self.center;

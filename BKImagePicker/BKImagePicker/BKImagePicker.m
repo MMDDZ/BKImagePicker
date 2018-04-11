@@ -40,8 +40,7 @@ static BKImagePicker * sharedManagerInstance = nil;
             UIViewController * lastVC = [[BKTool sharedManager] getCurrentVC];
             
             BKImageTakePhotoViewController * vc = [[BKImageTakePhotoViewController alloc]init];
-            UINavigationController * nav = [[UINavigationController alloc]initWithRootViewController:vc];
-            nav.navigationBarHidden = YES;
+            BKImageNavViewController * nav = [[BKImageNavViewController alloc]initWithRootViewController:vc];
             [lastVC presentViewController:nav animated:YES completion:nil];
             
         }

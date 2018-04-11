@@ -196,25 +196,22 @@
     }
     
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        
-        CGRect clipRect = CGRectZero;
         if (!CGRectEqualToRect(frame, CGRectZero)) {
-            clipRect.origin.x = frame.origin.x * scale;
-            clipRect.origin.y = frame.origin.y * scale;
-            clipRect.size.width = frame.size.width * scale;
-            clipRect.size.height = frame.size.height * scale;
+            CGRect clipRect = CGRectMake(frame.origin.x * scale,
+                                         frame.origin.y * scale,
+                                         frame.size.width * scale,
+                                         frame.size.height * scale);
             
-            CGImageRef clipImageRef = image.CGImage;
-            CGImageRef newImageRef = CGImageCreateWithImageInRect(clipImageRef, clipRect);
+            CGImageRef newImageRef = CGImageCreateWithImageInRect(image.CGImage, clipRect);
             image = [UIImage imageWithCGImage:newImageRef];
             CGImageRelease(newImageRef);
+        }else{
+            CGRect rect = CGRectMake(0, 0, image.size.width * image.scale, image.size.height * image.scale);
+            
+            CGImageRef imageRef = CGImageCreateWithImageInRect(image.CGImage, rect);
+            image = [UIImage imageWithCGImage:imageRef];
+            CGImageRelease(imageRef);
         }
-        
-        CGRect rect = CGRectMake(0, 0, image.size.width * image.scale, image.size.height * image.scale);
-        
-        CGImageRef imageRef = CGImageCreateWithImageInRect(image.CGImage, rect);
-        image = [UIImage imageWithCGImage:imageRef];
-        CGImageRelease(imageRef);
         
         UIImage * resultImage = [self rotationImage:image editRotation:rotation hasAlpha:hasAlpha];
         
@@ -1025,9 +1022,26 @@ static BOOL writeDeleteFlag = NO;
 
 #pragma mark - BKEditImageWriteViewDelegate
 
--(UIView*)getWriteViewSupperView
-{
-    return _editImageBgView.contentView;
+-(CGPoint)settingWriteViewCenter:(BKEditImageWriteView *)writeView
+{    
+    CGFloat x = 0;
+    //= (_editImageBgView.contentView.bk_width + _editImageBgView.contentOffset.x/2) / _editImageBgView.zoomScale / 2;
+    CGFloat y = 0;
+    //= (_editImageBgView.contentView.bk_height + _editImageBgView.contentOffset.y/2) / _editImageBgView.zoomScale / 2;
+    
+    if (_editImageBgView.contentOffset.x > (_editImageBgView.contentSize.width - _editImageBgView.bk_width) / 2) {
+        x = (_editImageBgView.contentView.bk_width + _editImageBgView.contentOffset.x/2) / _editImageBgView.zoomScale / 2;
+    }else{
+        x = (_editImageBgView.contentView.bk_width - _editImageBgView.contentOffset.x/2) / _editImageBgView.zoomScale / 2;
+    }
+    
+    if (_editImageBgView.contentOffset.y > (_editImageBgView.contentSize.height - _editImageBgView.bk_height) / 2) {
+        y = (_editImageBgView.contentView.bk_height + _editImageBgView.contentOffset.y/2) / _editImageBgView.zoomScale / 2;
+    }else{
+        y = (_editImageBgView.contentView.bk_height - _editImageBgView.contentOffset.y/2) / _editImageBgView.zoomScale / 2;
+    }
+    
+    return CGPointMake(x, y);
 }
 
 -(CGFloat)getNowImageZoomScale

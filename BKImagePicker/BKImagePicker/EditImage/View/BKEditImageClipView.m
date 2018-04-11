@@ -672,9 +672,9 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
         minimumZoomScale = height_minimumZoomScale;
     }
     
-    //缩小最小比例为0.5
-    if (minimumZoomScale < 0.5) {
-        minimumZoomScale = 0.5;
+    //缩小最小比例为0.4
+    if (minimumZoomScale < 0.4) {
+        minimumZoomScale = 0.4;
     }
     
     return minimumZoomScale;

@@ -189,14 +189,14 @@
 		1D627ABA207DDA7C00E7B3F0 /* Expand */ = {
 			isa = PBXGroup;
 			children = (
+				1D627ABF207DDA7C00E7B3F0 /* NSObject+BKImagePicker.h */,
 				1D627ABB207DDA7C00E7B3F0 /* NSObject+BKImagePicker.m */,
 				1D627ABC207DDA7C00E7B3F0 /* UIBezierPath+BKImagePicker.h */,
-				1D627ABD207DDA7C00E7B3F0 /* UIView+BKImagePicker.m */,
-				1D627ABE207DDA7C00E7B3F0 /* UIImage+BKImagePicker.m */,
-				1D627ABF207DDA7C00E7B3F0 /* NSObject+BKImagePicker.h */,
 				1D627AC0207DDA7C00E7B3F0 /* UIBezierPath+BKImagePicker.m */,
-				1D627AC1207DDA7C00E7B3F0 /* UIImage+BKImagePicker.h */,
 				1D627AC2207DDA7C00E7B3F0 /* UIView+BKImagePicker.h */,
+				1D627ABD207DDA7C00E7B3F0 /* UIView+BKImagePicker.m */,
+				1D627AC1207DDA7C00E7B3F0 /* UIImage+BKImagePicker.h */,
+				1D627ABE207DDA7C00E7B3F0 /* UIImage+BKImagePicker.m */,
 			);
 			path = Expand;
 			sourceTree = "<group>";
@@ -219,10 +219,10 @@
 		1D627AD2207DDA7C00E7B3F0 /* TakePhoto */ = {
 			isa = PBXGroup;
 			children = (
-				1D627AD3207DDA7C00E7B3F0 /* BKImageTakePhotoBtn.h */,
-				1D627AD4207DDA7C00E7B3F0 /* BKImageTakePhotoViewController.m */,
-				1D627AD5207DDA7C00E7B3F0 /* BKImageTakePhotoBtn.m */,
 				1D627AD6207DDA7C00E7B3F0 /* BKImageTakePhotoViewController.h */,
+				1D627AD4207DDA7C00E7B3F0 /* BKImageTakePhotoViewController.m */,
+				1D627AD3207DDA7C00E7B3F0 /* BKImageTakePhotoBtn.h */,
+				1D627AD5207DDA7C00E7B3F0 /* BKImageTakePhotoBtn.m */,
 			);
 			path = TakePhoto;
 			sourceTree = "<group>";

@@ -6,8 +6,8 @@
 //  Copyright © 2017年 zhaolin. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "BKImageBaseViewController.h"
 
-@interface BKImageTakePhotoViewController : UIViewController
+@interface BKImageTakePhotoViewController : BKImageBaseViewController
 
 @end
