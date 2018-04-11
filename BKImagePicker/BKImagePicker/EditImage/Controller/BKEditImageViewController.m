@@ -72,8 +72,8 @@
 {
     [super viewWillAppear:animated];
     
-//    self.navigationController.interactivePopGestureRecognizer.enabled = NO;
-//    ((BKImageNavViewController*)self.navigationController).customTransition.enble = NO;
+    self.navigationController.interactivePopGestureRecognizer.enabled = NO;
+    ((BKImageNavViewController*)self.navigationController).customTransition.enble = NO;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
@@ -83,8 +83,8 @@
 {
     [super viewWillDisappear:animated];
     
-//    self.navigationController.interactivePopGestureRecognizer.enabled = YES;
-//    ((BKImageNavViewController*)self.navigationController).customTransition.enble = YES;
+    self.navigationController.interactivePopGestureRecognizer.enabled = YES;
+    ((BKImageNavViewController*)self.navigationController).customTransition.enble = YES;
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -170,6 +170,10 @@
     _editImageBgView.zoomScale = 1;
     _editImageBgView.contentOffset = CGPointZero;
     
+    if (_clipView) {
+        [_clipView hiddenSelfAuxiliaryUI];
+    }
+    
     CGImageRef editImageRef = self.currentEditImage.CGImage;
     BOOL hasAlpha = [[BKTool sharedManager] checkHaveAlphaWithImageRef:editImageRef];
     
@@ -181,6 +185,13 @@
     __block UIImage * image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     self.editImageBgView.contentView.layer.contents = nil;
+    
+    self.editImageBgView.zoomScale = zoomScale;
+    self.editImageBgView.contentOffset = contentOffset;
+    
+    if (_clipView) {
+        [_clipView showSelfAuxiliaryUI];
+    }
     
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         
@@ -206,9 +217,6 @@
         UIImage * resultImage = [self rotationImage:image editRotation:rotation hasAlpha:hasAlpha];
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            self.editImageBgView.zoomScale = zoomScale;
-            self.editImageBgView.contentOffset = contentOffset;
-            
             if (complete) {
                 complete(resultImage);
             }
@@ -1081,7 +1089,8 @@ static BOOL writeDeleteFlag = NO;
             }
             strongSelf.view.userInteractionEnabled = NO;
             
-            [strongSelf removeClipView];
+            [strongSelf.clipView removeFromSuperview];
+            
             [strongSelf resetEditImageWithClipFrame:clipFrame rotation:rotation];
         }];
     }
@@ -1152,6 +1161,7 @@ static BOOL writeDeleteFlag = NO;
         } completion:^(BOOL finished) {
             [imageView removeFromSuperview];
             
+            [self removeClipView];
             [self editImageView];
             
             self.view.userInteractionEnabled = YES;

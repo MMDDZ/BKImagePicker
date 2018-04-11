@@ -529,7 +529,7 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
 
 -(void)backBtnClick
 {
-    [self removeSelf];
+    [self removeSelfAuxiliaryUI];
     
     if (self.backAction) {
         self.backAction();
@@ -538,20 +538,9 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
 
 -(void)finishBtnClick
 {
-    [self removeSelf];
-    
     if (self.finishAction) {
         self.finishAction(_shadowViewClipRect,_rotation);
     }
-}
-
--(void)removeSelf
-{
-    [_shadowView removeFromSuperview];
-    _shadowView = nil;
-    
-    [_bottomNav removeFromSuperview];
-    _bottomNav = nil;
 }
 
 -(void)rotationBtnClick:(UIButton*)button
@@ -691,6 +680,29 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
     }
     
     return minimumZoomScale;
+}
+
+#pragma mark - 辅助UI
+
+-(void)hiddenSelfAuxiliaryUI
+{
+    _shadowView.hidden = YES;
+    _bottomNav.hidden = YES;
+}
+
+-(void)showSelfAuxiliaryUI
+{
+    _shadowView.hidden = NO;
+    _bottomNav.hidden = NO;
+}
+
+-(void)removeSelfAuxiliaryUI
+{
+    [_shadowView removeFromSuperview];
+    _shadowView = nil;
+    
+    [_bottomNav removeFromSuperview];
+    _bottomNav = nil;
 }
 
 @end

@@ -29,4 +29,9 @@ typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
 -(void)endChangeBgScrollViewZoomScale;
 -(void)slideBgScrollView;//滑动背景scrollview
 
+#pragma mark - 辅助UI
+
+-(void)hiddenSelfAuxiliaryUI;
+-(void)showSelfAuxiliaryUI;
+
 @end
