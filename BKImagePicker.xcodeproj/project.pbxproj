@@ -249,8 +249,8 @@
 		1D627ADB207DDA7C00E7B3F0 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				1D627ADC207DDA7C00E7B3F0 /* BKEditImageDrawModel.m */,
 				1D627ADD207DDA7C00E7B3F0 /* BKEditImageDrawModel.h */,
+				1D627ADC207DDA7C00E7B3F0 /* BKEditImageDrawModel.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -258,22 +258,22 @@
 		1D627ADE207DDA7C00E7B3F0 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				1D627ADF207DDA7C00E7B3F0 /* BKEditImageWriteView.h */,
-				1D627AE0207DDA7C00E7B3F0 /* BKEditImageBgView.h */,
-				1D627AE1207DDA7C00E7B3F0 /* BKEditImagePreviewCollectionViewFlowLayout.m */,
-				1D627AE2207DDA7C00E7B3F0 /* BKEditImageBottomView.h */,
-				1D627AE3207DDA7C00E7B3F0 /* BKEditImageClipFrameView.m */,
-				1D627AE4207DDA7C00E7B3F0 /* BKEditImagePreviewCollectionViewCell.h */,
-				1D627AE5207DDA7C00E7B3F0 /* BKEditImageClipView.m */,
-				1D627AE6207DDA7C00E7B3F0 /* BKEditImageDrawView.m */,
-				1D627AE7207DDA7C00E7B3F0 /* BKEditImageWriteView.m */,
-				1D627AE8207DDA7C00E7B3F0 /* BKEditImageBottomView.m */,
 				1D627AE9207DDA7C00E7B3F0 /* BKEditImagePreviewCollectionViewFlowLayout.h */,
-				1D627AEA207DDA7C00E7B3F0 /* BKEditImageBgView.m */,
-				1D627AEB207DDA7C00E7B3F0 /* BKEditImageClipFrameView.h */,
-				1D627AEC207DDA7C00E7B3F0 /* BKEditImageDrawView.h */,
-				1D627AED207DDA7C00E7B3F0 /* BKEditImageClipView.h */,
+				1D627AE1207DDA7C00E7B3F0 /* BKEditImagePreviewCollectionViewFlowLayout.m */,
+				1D627AE4207DDA7C00E7B3F0 /* BKEditImagePreviewCollectionViewCell.h */,
 				1D627AEE207DDA7C00E7B3F0 /* BKEditImagePreviewCollectionViewCell.m */,
+				1D627AE0207DDA7C00E7B3F0 /* BKEditImageBgView.h */,
+				1D627AEA207DDA7C00E7B3F0 /* BKEditImageBgView.m */,
+				1D627AE2207DDA7C00E7B3F0 /* BKEditImageBottomView.h */,
+				1D627AE8207DDA7C00E7B3F0 /* BKEditImageBottomView.m */,
+				1D627AEC207DDA7C00E7B3F0 /* BKEditImageDrawView.h */,
+				1D627AE6207DDA7C00E7B3F0 /* BKEditImageDrawView.m */,
+				1D627ADF207DDA7C00E7B3F0 /* BKEditImageWriteView.h */,
+				1D627AE7207DDA7C00E7B3F0 /* BKEditImageWriteView.m */,
+				1D627AED207DDA7C00E7B3F0 /* BKEditImageClipView.h */,
+				1D627AE5207DDA7C00E7B3F0 /* BKEditImageClipView.m */,
+				1D627AEB207DDA7C00E7B3F0 /* BKEditImageClipFrameView.h */,
+				1D627AE3207DDA7C00E7B3F0 /* BKEditImageClipFrameView.m */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -309,14 +309,14 @@
 		1D627AF4207DDA7C00E7B3F0 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				1D627AF5207DDA7C00E7B3F0 /* BKImageAlbumItemView.m */,
-				1D627AF6207DDA7C00E7B3F0 /* BKImagePickerFooterCollectionReusableView.m */,
-				1D627AF7207DDA7C00E7B3F0 /* BKImageAlbumItemSelectButton.m */,
-				1D627AF8207DDA7C00E7B3F0 /* BKImagePickerCollectionViewCell.m */,
 				1D627AF9207DDA7C00E7B3F0 /* BKImagePickerFooterCollectionReusableView.h */,
-				1D627AFA207DDA7C00E7B3F0 /* BKImageAlbumItemView.h */,
+				1D627AF6207DDA7C00E7B3F0 /* BKImagePickerFooterCollectionReusableView.m */,
 				1D627AFB207DDA7C00E7B3F0 /* BKImagePickerCollectionViewCell.h */,
+				1D627AF8207DDA7C00E7B3F0 /* BKImagePickerCollectionViewCell.m */,
 				1D627AFC207DDA7C00E7B3F0 /* BKImageAlbumItemSelectButton.h */,
+				1D627AF7207DDA7C00E7B3F0 /* BKImageAlbumItemSelectButton.m */,
+				1D627AFA207DDA7C00E7B3F0 /* BKImageAlbumItemView.h */,
+				1D627AF5207DDA7C00E7B3F0 /* BKImageAlbumItemView.m */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -334,10 +334,10 @@
 		1D627AFE207DDA7C00E7B3F0 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				1D627AFF207DDA7C00E7B3F0 /* BKShowExampleVideoViewController.m */,
 				1D627B00207DDA7C00E7B3F0 /* BKShowExampleImageViewController.h */,
-				1D627B01207DDA7C00E7B3F0 /* BKShowExampleVideoViewController.h */,
 				1D627B02207DDA7C00E7B3F0 /* BKShowExampleImageViewController.m */,
+				1D627B01207DDA7C00E7B3F0 /* BKShowExampleVideoViewController.h */,
+				1D627AFF207DDA7C00E7B3F0 /* BKShowExampleVideoViewController.m */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -345,12 +345,12 @@
 		1D627B03207DDA7C00E7B3F0 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				1D627B06207DDA7C00E7B3F0 /* BKShowExampleImageCollectionViewFlowLayout.h */,
+				1D627B09207DDA7C00E7B3F0 /* BKShowExampleImageCollectionViewFlowLayout.m */,
+				1D627B07207DDA7C00E7B3F0 /* BKShowExampleInteractiveTransition.h */,
 				1D627B04207DDA7C00E7B3F0 /* BKShowExampleInteractiveTransition.m */,
 				1D627B05207DDA7C00E7B3F0 /* BKShowExampleTransitionAnimater.h */,
-				1D627B06207DDA7C00E7B3F0 /* BKShowExampleImageCollectionViewFlowLayout.h */,
-				1D627B07207DDA7C00E7B3F0 /* BKShowExampleInteractiveTransition.h */,
 				1D627B08207DDA7C00E7B3F0 /* BKShowExampleTransitionAnimater.m */,
-				1D627B09207DDA7C00E7B3F0 /* BKShowExampleImageCollectionViewFlowLayout.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -358,8 +358,8 @@
 		1D627B0A207DDA7C00E7B3F0 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				1D627B0B207DDA7C00E7B3F0 /* BKShowExampleImageCollectionViewCell.m */,
 				1D627B0C207DDA7C00E7B3F0 /* BKShowExampleImageCollectionViewCell.h */,
+				1D627B0B207DDA7C00E7B3F0 /* BKShowExampleImageCollectionViewCell.m */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -386,8 +386,8 @@
 		1D627B11207DDA7C00E7B3F0 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				1D627B12207DDA7C00E7B3F0 /* BKPhotoAlbumListModel.m */,
 				1D627B13207DDA7C00E7B3F0 /* BKPhotoAlbumListModel.h */,
+				1D627B12207DDA7C00E7B3F0 /* BKPhotoAlbumListModel.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -395,8 +395,8 @@
 		1D627B14207DDA7C00E7B3F0 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				1D627B15207DDA7C00E7B3F0 /* BKPhotoAlbumListTableViewCell.m */,
 				1D627B16207DDA7C00E7B3F0 /* BKPhotoAlbumListTableViewCell.h */,
+				1D627B15207DDA7C00E7B3F0 /* BKPhotoAlbumListTableViewCell.m */,
 			);
 			path = View;
 			sourceTree = "<group>";
