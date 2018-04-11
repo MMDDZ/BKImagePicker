@@ -353,6 +353,7 @@
         
         self.currentEditImage = self.editImageArr[self.currentEditIndex];
         
+        [self.bottomView cancelEditOperation];
         [self removeEditImageTemplate];
         [self editImageView];
     }];
@@ -1105,7 +1106,7 @@ static BOOL writeDeleteFlag = NO;
     [_clipView removeSelfAuxiliaryUI];
     _clipView = nil;
     
-    [self.bottomView endEditCrop];
+    [self.bottomView cancelEditOperation];
     
     self.topNavView.alpha = 1;
     self.bottomNavView.alpha = 1;

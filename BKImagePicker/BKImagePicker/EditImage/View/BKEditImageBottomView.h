@@ -64,8 +64,8 @@
 -(void)keyboardWillHide:(NSNotification*)notification;
 
 /**
- 结束编辑裁剪
+ 取消本次选中的编辑
  */
--(void)endEditCrop;
+-(void)cancelEditOperation;
 
 @end

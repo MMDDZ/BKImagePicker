@@ -62,7 +62,6 @@
     _paintingView.bk_y = 0;
     _firstLevelView.bk_y = CGRectGetMaxY(_paintingView.frame);
     self.bk_height = CGRectGetMaxY(_firstLevelView.frame);
-    
 }
 
 #pragma mark - NSNotification
@@ -81,20 +80,18 @@
 
 -(void)keyboardWillHide:(NSNotification*)notification
 {
-    UIButton * button = (UIButton*)[_firstLevelScrollView viewWithTag:200];
-    [self editBtnClick:button];
+    [self cancelEditOperation];
     
     _firstLevelScrollView.hidden = NO;
     _cancelWriteBtn.hidden = YES;
     [_affirmBtn setTitle:@"确认" forState:UIControlStateNormal];
 }
 
-#pragma mark - 结束裁剪
+#pragma mark - 取消本次选中的编辑
 
--(void)endEditCrop
+-(void)cancelEditOperation
 {
-    UIButton * button = (UIButton*)[_firstLevelScrollView viewWithTag:300];
-    [self editBtnClick:button];
+    [self editBtnClick:_selectFirstLevelBtn];
 }
 
 #pragma mark - init
