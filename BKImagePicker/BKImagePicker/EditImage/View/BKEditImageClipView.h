@@ -33,5 +33,6 @@ typedef NS_ENUM(NSUInteger, BKEditImageRotation) {
 
 -(void)hiddenSelfAuxiliaryUI;
 -(void)showSelfAuxiliaryUI;
+-(void)removeSelfAuxiliaryUI;
 
 @end

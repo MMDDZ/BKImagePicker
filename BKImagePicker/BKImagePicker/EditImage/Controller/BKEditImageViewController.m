@@ -98,7 +98,9 @@
     
     self.rightImageView.image = [[BKTool sharedManager] editImageWithImageName:@"save"];
     
-    [self.topNavView addSubview:self.previewCollectionView];
+    if ([_editImageArr count] > 1) {
+        [self.topNavView addSubview:self.previewCollectionView];
+    }
 }
 
 -(void)leftNavBtnAction:(UIButton *)button
@@ -1100,6 +1102,7 @@ static BOOL writeDeleteFlag = NO;
 -(void)removeClipView
 {
     [_clipView removeFromSuperview];
+    [_clipView removeSelfAuxiliaryUI];
     _clipView = nil;
     
     [self.bottomView endEditCrop];

@@ -529,8 +529,6 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
 
 -(void)backBtnClick
 {
-    [self removeSelfAuxiliaryUI];
-    
     if (self.backAction) {
         self.backAction();
     }
