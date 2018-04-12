@@ -24,6 +24,10 @@ float const BKThumbImageCompressSizeMultiplier = 0.5;//图片压缩比例
 
 @property (nonatomic,copy) NSString * imagePath;//图片路径
 
+@property (nonatomic,strong) PHCachingImageManager * cachingImageManager;//图片缓存管理者
+@property (nonatomic,strong) PHImageRequestOptions * thumbImageOptions;//缩略图请求选项
+@property (nonatomic,strong) PHImageRequestOptions * originalImageOptions;//原图请求选项
+
 @end
 
 @implementation BKTool
@@ -34,6 +38,14 @@ float const BKThumbImageCompressSizeMultiplier = 0.5;//图片压缩比例
         _selectImageArray = [NSMutableArray array];
     }
     return _selectImageArray;
+}
+
+-(PHCachingImageManager*)cachingImageManager
+{
+    if (!_cachingImageManager) {
+        _cachingImageManager = [[PHCachingImageManager alloc] init];
+    }
+    return _cachingImageManager;
 }
 
 +(instancetype)sharedManager
@@ -405,6 +417,18 @@ float const BKThumbImageCompressSizeMultiplier = 0.5;//图片压缩比例
 
 #pragma mark - 获取图片
 
+-(PHImageRequestOptions*)thumbImageOptions
+{
+    if (!_thumbImageOptions) {
+        _thumbImageOptions = [[PHImageRequestOptions alloc] init];
+        _thumbImageOptions.resizeMode = PHImageRequestOptionsResizeModeFast;
+        _thumbImageOptions.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
+        _thumbImageOptions.synchronous = NO;
+        _thumbImageOptions.networkAccessAllowed = YES;
+    }
+    return _thumbImageOptions;
+}
+
 /**
  获取对应缩略图
  
@@ -413,24 +437,32 @@ float const BKThumbImageCompressSizeMultiplier = 0.5;//图片压缩比例
  */
 -(void)getThumbImageSizeWithAsset:(PHAsset*)asset complete:(void (^)(UIImage * thumbImage))complete
 {
-    PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
-    options.resizeMode = PHImageRequestOptionsResizeModeFast;
-    options.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
-    options.synchronous = NO;
-    options.networkAccessAllowed = YES;
-    
-    [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(BK_SCREENW/2.0f, BK_SCREENW/2.0f) contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+    [[BKTool sharedManager].cachingImageManager requestImageForAsset:asset targetSize:CGSizeMake(BK_SCREENW/2.0f, BK_SCREENW/2.0f) contentMode:PHImageContentModeDefault options:self.thumbImageOptions resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
         
         // 排除取消，错误，低清图三种情况，即已经获取到了高清图
         BOOL downImageloadFinined = ![[info objectForKey:PHImageCancelledKey] boolValue] && ![info objectForKey:PHImageErrorKey] && ![[info objectForKey:PHImageResultIsDegradedKey] boolValue];
         if (downImageloadFinined) {
             if(result) {
-                if (complete) {
-                    complete(result);
-                }
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (complete) {
+                        complete(result);
+                    }
+                });
             }
         }
     }];
+}
+
+-(PHImageRequestOptions*)originalImageOptions
+{
+    if (!_originalImageOptions) {
+        _originalImageOptions = [[PHImageRequestOptions alloc] init];
+        _originalImageOptions.resizeMode = PHImageRequestOptionsResizeModeExact;
+        _originalImageOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+        _originalImageOptions.synchronous = NO;
+        _originalImageOptions.networkAccessAllowed = YES;
+    }
+    return _originalImageOptions;
 }
 
 /**
@@ -441,21 +473,17 @@ float const BKThumbImageCompressSizeMultiplier = 0.5;//图片压缩比例
  */
 -(void)getOriginalImageSizeWithAsset:(PHAsset*)asset complete:(void (^)(UIImage * originalImage))complete
 {
-    PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
-    options.resizeMode = PHImageRequestOptionsResizeModeExact;
-    options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
-    options.synchronous = NO;
-    options.networkAccessAllowed = YES;
-    
-    [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+    [[BKTool sharedManager].cachingImageManager requestImageForAsset:asset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:self.originalImageOptions resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
         
         // 排除取消，错误，低清图三种情况，即已经获取到了高清图
         BOOL downImageloadFinined = ![[info objectForKey:PHImageCancelledKey] boolValue] && ![info objectForKey:PHImageErrorKey] && ![[info objectForKey:PHImageResultIsDegradedKey] boolValue];
         if (downImageloadFinined) {
             if(result) {
-                if (complete) {
-                    complete(result);
-                }
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (complete) {
+                        complete(result);
+                    }
+                });
             }
         }
     }];
@@ -469,18 +497,14 @@ float const BKThumbImageCompressSizeMultiplier = 0.5;//图片压缩比例
  */
 -(void)getOriginalImageDataSizeWithAsset:(PHAsset*)asset complete:(void (^)(NSData * originalImageData,NSURL * url))complete
 {
-    PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
-    options.resizeMode = PHImageRequestOptionsResizeModeExact;
-    options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
-    options.synchronous = NO;
-    options.networkAccessAllowed = YES;
-    
-    [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
+    [[BKTool sharedManager].cachingImageManager requestImageDataForAsset:asset options:self.originalImageOptions resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
         
         NSURL * url = info[@"PHImageFileURLKey"];
-        if (complete) {
-            complete(imageData,url);
-        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (complete) {
+                complete(imageData,url);
+            }
+        });
     }];
 }
 

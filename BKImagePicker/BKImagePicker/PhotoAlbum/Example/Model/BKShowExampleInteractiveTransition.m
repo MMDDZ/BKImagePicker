@@ -26,7 +26,7 @@
 -(FLAnimatedImageView*)panImageView
 {
     if (!_panImageView) {
-        _panImageView = [[FLAnimatedImageView alloc]initWithFrame:_startImageViewRect];
+        _panImageView = [[FLAnimatedImageView alloc] initWithFrame:_startImageViewRect];
         if (_startImageView.animatedImage) {
             _panImageView.animatedImage = _startImageView.animatedImage;
         }else{
@@ -34,6 +34,7 @@
         }
         _panImageView.clipsToBounds = YES;
         _panImageView.contentMode = UIViewContentModeScaleAspectFill;
+        _panImageView.runLoopMode = NSRunLoopCommonModes;
     }
     return _panImageView;
 }

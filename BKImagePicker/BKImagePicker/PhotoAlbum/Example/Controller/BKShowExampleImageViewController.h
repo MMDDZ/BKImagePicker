@@ -23,11 +23,11 @@
 -(void)refreshLookLocationActionWithImageModel:(BKImageModel*)model;
 
 /**
- 返回
+ 获取当前看的图片所在图片列表VC的位置
  
  @param model 目前观看image数据
  */
--(UIImageView*)backActionWithImageModel:(BKImageModel*)model;
+-(CGRect)getFrameOfCurrentImageInListVCWithImageModel:(BKImageModel*)model;
 
 /**
  刷新选中

@@ -77,14 +77,26 @@
     BKShowExampleImageViewController * fromVC = (BKShowExampleImageViewController *)[transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
     UIViewController * toVC = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
     
+//    NSLog(@"isMainThread %d",[NSThread currentThread].isMainThread);
+//    NSLog(@"BKShowExampleTransitionAnimater_80");
+    
     [[fromVC.view subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         [obj setHidden:YES];
     }];
+    
+//    NSLog(@"BKShowExampleTransitionAnimater_86");
+    
     [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+    
+//    NSLog(@"BKShowExampleTransitionAnimater_90");
     
     UIView * containerView = [transitionContext containerView];
     [containerView insertSubview:toVC.view atIndex:0];
     [containerView addSubview:_startImageView];
+    
+//    NSLog(@"BKShowExampleTransitionAnimater_96");
+//    NSLog(@"%f",[self transitionDuration:transitionContext]);
+//    NSLog(@"%@",self.startImageView);
     
     [UIView animateWithDuration:[self transitionDuration:transitionContext] animations:^{
         
@@ -96,7 +108,11 @@
             fromVC.view.alpha = 0.3;
         }
         
+//        NSLog(@"BKShowExampleTransitionAnimater_108");
+        
     } completion:^(BOOL finished) {
+        
+//        NSLog(@"BKShowExampleTransitionAnimater_112");
         
         [self.startImageView removeFromSuperview];
         [transitionContext completeTransition:YES];

@@ -41,9 +41,10 @@
     
     if (CGRectEqualToRect(self.frame, CGRectZero)) {
         self.frame = CGRectMake(0, 0, _width, _height);
-        if ([self.delegate respondsToSelector:@selector(settingWriteViewCenter:)]) {
-            CGPoint center = [self.delegate settingWriteViewCenter:self];
-            self.center = center;
+        if ([self.delegate respondsToSelector:@selector(settingWriteViewPosition:)]) {
+            CGPoint position = [self.delegate settingWriteViewPosition:self];
+            self.bk_x = position.x;
+            self.bk_y = position.y;
         }
     }else{
         

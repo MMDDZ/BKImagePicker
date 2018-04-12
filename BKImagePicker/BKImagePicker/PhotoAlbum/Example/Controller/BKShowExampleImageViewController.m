@@ -77,11 +77,7 @@
         
         _exampleImageCollectionView.hidden = YES;
         
-        UIImageView * imageView = [self.delegate backActionWithImageModel:self.imageListArray[_nowImageIndex]];
-        CGRect endRect = CGRectZero;
-        if (imageView) {
-            endRect = [imageView.superview convertRect:imageView.frame toView:self.view];
-        }
+        CGRect endRect = [self.delegate getFrameOfCurrentImageInListVCWithImageModel:self.imageListArray[_nowImageIndex]];
         
         BKShowExampleTransitionAnimater * transitionAnimater = [[BKShowExampleTransitionAnimater alloc] initWithTransitionType:BKShowExampleTransitionPop];
         transitionAnimater.startImageView = CGRectEqualToRect(self.interactiveTransition.panImageView.frame, CGRectZero)?self.interactiveTransition.startImageView:self.interactiveTransition.panImageView;
@@ -277,26 +273,25 @@
     }
     [self.bottomNavView addSubview:[self sendBtn]];
     
-    if ([BKTool sharedManager].max_select == 1) {
-        [_editBtn setTitleColor:BKHighlightColor forState:UIControlStateNormal];
-        [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [_sendBtn setBackgroundColor:BKHighlightColor];
-        
-        [_sendBtn setTitle:@"确认" forState:UIControlStateNormal];
-    }else{
-        if ([[BKTool sharedManager].selectImageArray count] == 1) {
-            [_editBtn setTitleColor:BKHighlightColor forState:UIControlStateNormal];
-            [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-            [_sendBtn setBackgroundColor:BKHighlightColor];
-            
-            [_sendBtn setTitle:[NSString stringWithFormat:@"确认(%ld)",[[BKTool sharedManager].selectImageArray count]] forState:UIControlStateNormal];
-        }else if ([[BKTool sharedManager].selectImageArray count] > 1) {
-            [_editBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
-            [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-            [_sendBtn setBackgroundColor:BKHighlightColor];
-            
-            [_sendBtn setTitle:[NSString stringWithFormat:@"确认(%ld)",[[BKTool sharedManager].selectImageArray count]] forState:UIControlStateNormal];
+    __block BOOL canEidtFlag = YES;
+    [[BKTool sharedManager].selectImageArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        BKImageModel * currentImageModel = obj;
+        if (currentImageModel.photoType != BKSelectPhotoTypeImage) {
+            canEidtFlag = NO;
+            *stop = YES;
         }
+    }];
+    
+    if (canEidtFlag) {
+        [_editBtn setTitleColor:BKHighlightColor forState:UIControlStateNormal];
+    }else{
+        [_editBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
+    }
+    
+    if ([[BKTool sharedManager].selectImageArray count] == 0) {
+        [_sendBtn setTitle:@"确认" forState:UIControlStateNormal];
+    }else {
+        [_sendBtn setTitle:[NSString stringWithFormat:@"确认(%ld)",[[BKTool sharedManager].selectImageArray count]] forState:UIControlStateNormal];
     }
 }
 
@@ -367,7 +362,9 @@
             [selectImageArr addObject:@""];
             
             [self prepareEditWithImageModel:model complete:^(UIImage *image) {
-                [selectImageArr replaceObjectAtIndex:idx withObject:image];
+                if (idx < [selectImageArr count]) {
+                    [selectImageArr replaceObjectAtIndex:idx withObject:image];
+                }
                 prepareIndex++;
                 
                 if (prepareIndex == [[BKTool sharedManager].selectImageArray count]) {
@@ -540,6 +537,24 @@
 {
     BKShowExampleImageCollectionViewCell * cell = (BKShowExampleImageCollectionViewCell*)[collectionView dequeueReusableCellWithReuseIdentifier:@"BKShowExampleImageCollectionViewCell" forIndexPath:indexPath];
     
+    BKImageModel * model = self.imageListArray[indexPath.item];
+    
+    if (model.thumbImage) {
+        [self editImageView:cell.showImageView image:model.thumbImage imageData:nil scrollView:cell.imageScrollView];
+        [[BKTool sharedManager] getOriginalImageSizeWithAsset:model.asset complete:^(UIImage *originalImage) {
+            [self editImageView:cell.showImageView image:originalImage imageData:nil scrollView:cell.imageScrollView];
+        }];
+    }else{
+        [[BKTool sharedManager] getThumbImageSizeWithAsset:model.asset complete:^(UIImage *thumbImage) {
+            [self editImageView:cell.showImageView image:thumbImage imageData:nil scrollView:cell.imageScrollView];
+            model.thumbImage = thumbImage;
+            
+            [[BKTool sharedManager] getOriginalImageSizeWithAsset:model.asset complete:^(UIImage *originalImage) {
+                [self editImageView:cell.showImageView image:originalImage imageData:nil scrollView:cell.imageScrollView];
+            }];
+        }];
+    }
+    
     return cell;
 }
 
@@ -549,71 +564,25 @@
     
     currentCell.imageScrollView.zoomScale = 1;
     currentCell.imageScrollView.contentSize = CGSizeMake(currentCell.bk_width-BKExampleImagesSpacing*2, currentCell.bk_height);
-    
-    BKImageModel * model = self.imageListArray[indexPath.item];
-    
-    if (model.photoType == BKSelectPhotoTypeImage) {
-        [_editBtn setTitleColor:BKHighlightColor forState:UIControlStateNormal];
-        
-        if (model.thumbImage) {
-            [self editImageView:currentCell.showImageView image:model.thumbImage imageData:nil scrollView:currentCell.imageScrollView];
-            [[BKTool sharedManager] getOriginalImageSizeWithAsset:model.asset complete:^(UIImage *originalImage) {
-                [self editImageView:currentCell.showImageView image:originalImage imageData:nil scrollView:currentCell.imageScrollView];
-            }];
-        }else{
-            [[BKTool sharedManager] getThumbImageSizeWithAsset:model.asset complete:^(UIImage *thumbImage) {
-                [self editImageView:currentCell.showImageView image:thumbImage imageData:nil scrollView:currentCell.imageScrollView];
-                model.thumbImage = thumbImage;
-                
-                [[BKTool sharedManager] getOriginalImageSizeWithAsset:model.asset complete:^(UIImage *originalImage) {
-                    [self editImageView:currentCell.showImageView image:originalImage imageData:nil scrollView:currentCell.imageScrollView];
-                }];
-            }];
-        }
-        
-        if (model.isHaveOriginalImageFlag) {
-            if ([BKTool sharedManager].isOriginal && [BKTool sharedManager].max_select == 1) {
-                [self calculataImageSize];
-            }
-        }else{
-            [[BKTool sharedManager] getOriginalImageDataSizeWithAsset:model.asset complete:^(NSData * originalImageData,NSURL * url) {
-                
-                model.originalImageData = originalImageData;
-                model.isHaveOriginalImageFlag = YES;
-                dispatch_async(dispatch_get_global_queue(0, 0), ^{
-                    model.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];
-                });
-                model.url = url;
-                model.originalImageSize = (double)originalImageData.length/1024/1024;
-                if ([BKTool sharedManager].isOriginal && [BKTool sharedManager].max_select == 1) {
-                    [self calculataImageSize];
-                }
-            }];
-        }
-    }else{
-        [_editBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
-        
-        if (model.thumbImage){
-            [self editImageView:currentCell.showImageView image:model.thumbImage imageData:nil scrollView:currentCell.imageScrollView];
-            
-            [self initCell:currentCell gifImageModel:model];
-            
-        }else{
-            [[BKTool sharedManager] getThumbImageSizeWithAsset:model.asset complete:^(UIImage *thumbImage) {
-                [self editImageView:currentCell.showImageView image:thumbImage imageData:nil scrollView:currentCell.imageScrollView];
-                model.thumbImage = thumbImage;
-                
-                [self initCell:currentCell gifImageModel:model];
-            }];
-        }
-    }
 }
 
--(void)initCell:(BKShowExampleImageCollectionViewCell*)cell gifImageModel:(BKImageModel*)model
+-(void)loadingOriginalImageData
 {
+    NSIndexPath * currentIndexPath = [NSIndexPath indexPathForItem:_nowImageIndex inSection:0];
+    BKShowExampleImageCollectionViewCell * currentCell = (BKShowExampleImageCollectionViewCell*)[_exampleImageCollectionView cellForItemAtIndexPath:currentIndexPath];
+    
+    self.interactiveTransition.startImageView = currentCell.showImageView;
+    self.interactiveTransition.supperScrollView = currentCell.imageScrollView;
+    
+    BKImageModel * model = self.imageListArray[currentIndexPath.item];
+    
     if (model.isHaveOriginalImageFlag) {
         
-        [self editImageView:cell.showImageView image:model.thumbImage imageData:model.originalImageData scrollView:cell.imageScrollView];
+        if (model.photoType == BKSelectPhotoTypeGIF) {
+            if (![model.originalImageData isEqualToData:currentCell.showImageView.animatedImage.data]) {
+                [self editImageView:currentCell.showImageView image:nil imageData:model.originalImageData scrollView:currentCell.imageScrollView];
+            }
+        }
         
         if ([BKTool sharedManager].isOriginal && [BKTool sharedManager].max_select == 1) {
             [self calculataImageSize];
@@ -621,15 +590,17 @@
     }else{
         [[BKTool sharedManager] getOriginalImageDataSizeWithAsset:model.asset complete:^(NSData * originalImageData,NSURL * url) {
             
-            [self editImageView:cell.showImageView image:model.thumbImage imageData:originalImageData scrollView:cell.imageScrollView];
-            
             model.originalImageData = originalImageData;
             model.isHaveOriginalImageFlag = YES;
+            
+            if (model.photoType == BKSelectPhotoTypeGIF) {
+                [self editImageView:currentCell.showImageView image:nil imageData:model.originalImageData scrollView:currentCell.imageScrollView];
+            }
+            
             dispatch_async(dispatch_get_global_queue(0, 0), ^{
                 model.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];
             });
-            
-            model.url = model.url;
+            model.url = url;
             model.originalImageSize = (double)originalImageData.length/1024/1024;
             if ([BKTool sharedManager].isOriginal && [BKTool sharedManager].max_select == 1) {
                 [self calculataImageSize];
@@ -654,7 +625,9 @@
         return;
     }
     
-    showImageView.image = image;
+    if (image) {
+        showImageView.image = image;
+    }
     
     if (imageData) {
         FLAnimatedImage * gifImage = [FLAnimatedImage animatedImageWithGIFData:imageData];
@@ -681,12 +654,15 @@
             NSIndexPath * indexPath = [self.exampleImageCollectionView indexPathForItemAtPoint:p];
             NSInteger item = indexPath.item;
             
-            BKShowExampleImageCollectionViewCell * cell = (BKShowExampleImageCollectionViewCell*)[_exampleImageCollectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:item inSection:0]];
-            self.interactiveTransition.startImageView = cell.showImageView;
-            self.interactiveTransition.supperScrollView = cell.imageScrollView;
-            
             self.nowImageIndex = item;
         }
+    }
+}
+
+-(void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    if (scrollView == _exampleImageCollectionView) {
+        [self loadingOriginalImageData];
     }
 }
 
@@ -729,10 +705,7 @@
         BK_WEAK_SELF(self);
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             BK_STRONG_SELF(self);
-            
-            BKShowExampleImageCollectionViewCell * cell = (BKShowExampleImageCollectionViewCell*)[strongSelf.exampleImageCollectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:strongSelf.nowImageIndex inSection:0]];
-            strongSelf.interactiveTransition.startImageView = cell.showImageView;
-            strongSelf.interactiveTransition.supperScrollView = cell.imageScrollView;
+            [strongSelf loadingOriginalImageData];
         });
     }
 }

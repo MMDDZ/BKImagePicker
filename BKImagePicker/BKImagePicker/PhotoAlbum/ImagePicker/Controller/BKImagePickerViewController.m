@@ -376,7 +376,7 @@
     BKShowExampleImageViewController * vc = [[BKShowExampleImageViewController alloc]init];
     vc.delegate = self;
     vc.tapImageView = cell.photoImageView;
-    vc.imageListArray = imageListArray;
+    vc.imageListArray = [imageListArray copy];
     vc.tapImageModel = tapModel;
     [vc showInNav:self.navigationController];
 }
@@ -406,11 +406,11 @@
     }
 }
 
--(UIImageView*)backActionWithImageModel:(BKImageModel*)model
+-(CGRect)getFrameOfCurrentImageInListVCWithImageModel:(BKImageModel*)model
 {
     __block BOOL isHaveFlag = NO;
     __block NSInteger item = 0;
-    [_listArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [self.listArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         BKImageModel * listModel = obj;
         if ([listModel.fileName isEqualToString:model.fileName]) {
             item = idx;
@@ -421,11 +421,11 @@
     
     if (isHaveFlag) {
         NSIndexPath * indexPath = [NSIndexPath indexPathForItem:item inSection:0];
-        
-        BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[_albumCollectionView cellForItemAtIndexPath:indexPath];
-        return cell.photoImageView;
+        CGRect in_list_rect = [self.albumCollectionView layoutAttributesForItemAtIndexPath:indexPath].frame;
+        CGRect in_view_rect = [self.albumCollectionView convertRect:in_list_rect toView:self.view];
+        return in_view_rect;
     }else{
-        return nil;
+        return CGRectZero;
     }
 }
 

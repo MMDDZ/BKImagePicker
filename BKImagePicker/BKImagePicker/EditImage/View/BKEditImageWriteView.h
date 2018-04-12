@@ -14,9 +14,9 @@
 @required
 
 /**
- 第一次编辑完成设置view中心
+ 第一次编辑完成设置view的X/Y
  */
--(CGPoint)settingWriteViewCenter:(BKEditImageWriteView*)writeView;
+-(CGPoint)settingWriteViewPosition:(BKEditImageWriteView *)writeView;
 
 /**
  目前图片放大比例 (移动前必传)

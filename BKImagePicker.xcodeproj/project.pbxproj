@@ -204,14 +204,14 @@
 		1D627AC8207DDA7C00E7B3F0 /* Base */ = {
 			isa = PBXGroup;
 			children = (
-				1D627AC9207DDA7C00E7B3F0 /* BKImageNavViewController.h */,
-				1D627ACA207DDA7C00E7B3F0 /* BKImagePercentDrivenInteractiveTransition.h */,
 				1D627ACB207DDA7C00E7B3F0 /* BKImageBaseViewController.h */,
-				1D627ACC207DDA7C00E7B3F0 /* BKImageTransitionAnimater.m */,
+				1D627AD0207DDA7C00E7B3F0 /* BKImageBaseViewController.m */,
+				1D627AC9207DDA7C00E7B3F0 /* BKImageNavViewController.h */,
 				1D627ACD207DDA7C00E7B3F0 /* BKImageNavViewController.m */,
+				1D627ACA207DDA7C00E7B3F0 /* BKImagePercentDrivenInteractiveTransition.h */,
 				1D627ACE207DDA7C00E7B3F0 /* BKImagePercentDrivenInteractiveTransition.m */,
 				1D627ACF207DDA7C00E7B3F0 /* BKImageTransitionAnimater.h */,
-				1D627AD0207DDA7C00E7B3F0 /* BKImageBaseViewController.m */,
+				1D627ACC207DDA7C00E7B3F0 /* BKImageTransitionAnimater.m */,
 			);
 			path = Base;
 			sourceTree = "<group>";
