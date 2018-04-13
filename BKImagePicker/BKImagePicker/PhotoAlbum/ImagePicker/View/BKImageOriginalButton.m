@@ -9,17 +9,7 @@
 #import "BKImageOriginalButton.h"
 #import "BKTool.h"
 
-@interface BKImageOriginalButton()
-
-/**
- 是否选中
- */
-@property (nonatomic,assign,readonly) BOOL isSelect;
-
-@end
-
 @implementation BKImageOriginalButton
-@synthesize isSelect = _isSelect;
 
 -(void)setTitle:(NSString *)title
 {
@@ -31,6 +21,13 @@
 -(void)setTitleColor:(UIColor *)titleColor
 {
     _titleColor = titleColor;
+    
+    [self setNeedsDisplay];
+}
+
+-(void)setIsSelect:(BOOL)isSelect
+{
+    _isSelect = isSelect;
     
     [self setNeedsDisplay];
 }

@@ -16,9 +16,14 @@
 @property (nonatomic,strong) NSString * title;
 
 /**
- 标题
+ 标题颜色
  */
 @property (nonatomic,strong) UIColor * titleColor;
+
+/**
+ 是否选中
+ */
+@property (nonatomic,assign) BOOL isSelect;
 
 /**
  点击事件

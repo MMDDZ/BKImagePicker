@@ -444,9 +444,11 @@
     
     if ([BKTool sharedManager].isOriginal) {
         [_originalBtn setTitleColor:BKHighlightColor];
+        _originalBtn.isSelect = YES;
         [self calculataImageSize];
     }else{
         [_originalBtn setTitleColor:BKNavGrayTitleColor];
+        _originalBtn.isSelect = NO;
         [_originalBtn setTitle:@"原图"];
     }
     
@@ -602,9 +604,11 @@
         _originalBtn = [[BKImageOriginalButton alloc]initWithFrame:CGRectMake(self.view.bk_width/6, 0, self.view.bk_width/7*3, 49)];
         if ([BKTool sharedManager].isOriginal) {
             [_originalBtn setTitleColor:BKHighlightColor];
+            _originalBtn.isSelect = YES;
             [self calculataImageSize];
         }else{
             [_originalBtn setTitleColor:BKNavGrayTitleColor];
+            _originalBtn.isSelect = NO;
             [_originalBtn setTitle:@"原图"];
         }
         BK_WEAK_SELF(self);

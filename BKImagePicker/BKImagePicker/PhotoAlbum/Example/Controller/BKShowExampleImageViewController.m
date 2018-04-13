@@ -325,9 +325,11 @@
         _originalBtn = [[BKImageOriginalButton alloc] initWithFrame:CGRectMake(BK_SCREENW/6, 0, BK_SCREENW/7*3, 49)];
         if ([BKTool sharedManager].isOriginal) {
             [_originalBtn setTitleColor:BKHighlightColor];
+            _originalBtn.isSelect = YES;
             [self calculataImageSize];
         }else{
             [_originalBtn setTitleColor:BKNavGrayTitleColor];
+            _originalBtn.isSelect = NO;
             [_originalBtn setTitle:@"原图"];
         }
         BK_WEAK_SELF(self);
