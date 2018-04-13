@@ -284,25 +284,30 @@
     cell.delegate = self;
     cell.max_select = [BKTool sharedManager].max_select;
     
+    return cell;
+}
+
+-(void)collectionView:(UICollectionView *)collectionView willDisplayCell:(nonnull UICollectionViewCell *)cell forItemAtIndexPath:(nonnull NSIndexPath *)indexPath
+{
+    BKImagePickerCollectionViewCell * currentCell = (BKImagePickerCollectionViewCell*)cell;
+    
     BKImageModel * model = self.listArray[indexPath.item];
     if (model.thumbImage) {
-        [cell revaluateIndexPath:indexPath listArr:[self.listArray copy] selectImageArr:[[BKTool sharedManager].selectImageArray copy]];
+        [currentCell revaluateIndexPath:indexPath listArr:[self.listArray copy] selectImageArr:[[BKTool sharedManager].selectImageArray copy]];
     }else{
-    
+        
         [[BKTool sharedManager] getThumbImageSizeWithAsset:model.asset complete:^(UIImage *thumbImage) {
             model.thumbImage = thumbImage;
             
             [self.listArray replaceObjectAtIndex:indexPath.item withObject:model];
-        
+            
             if ([self.albumCollectionView.indexPathsForVisibleItems containsObject:indexPath]) {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [cell revaluateIndexPath:indexPath listArr:[self.listArray copy] selectImageArr:[[BKTool sharedManager].selectImageArray copy]];
+                    [currentCell revaluateIndexPath:indexPath listArr:[self.listArray copy] selectImageArr:[[BKTool sharedManager].selectImageArray copy]];
                 });
             }
         }];
     }
-    
-    return cell;
 }
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath

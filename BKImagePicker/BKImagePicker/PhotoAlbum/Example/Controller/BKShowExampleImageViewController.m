@@ -537,24 +537,6 @@
 {
     BKShowExampleImageCollectionViewCell * cell = (BKShowExampleImageCollectionViewCell*)[collectionView dequeueReusableCellWithReuseIdentifier:@"BKShowExampleImageCollectionViewCell" forIndexPath:indexPath];
     
-    BKImageModel * model = self.imageListArray[indexPath.item];
-    
-    if (model.thumbImage) {
-        [self editImageView:cell.showImageView image:model.thumbImage imageData:nil scrollView:cell.imageScrollView];
-        [[BKTool sharedManager] getOriginalImageSizeWithAsset:model.asset complete:^(UIImage *originalImage) {
-            [self editImageView:cell.showImageView image:originalImage imageData:nil scrollView:cell.imageScrollView];
-        }];
-    }else{
-        [[BKTool sharedManager] getThumbImageSizeWithAsset:model.asset complete:^(UIImage *thumbImage) {
-            [self editImageView:cell.showImageView image:thumbImage imageData:nil scrollView:cell.imageScrollView];
-            model.thumbImage = thumbImage;
-            
-            [[BKTool sharedManager] getOriginalImageSizeWithAsset:model.asset complete:^(UIImage *originalImage) {
-                [self editImageView:cell.showImageView image:originalImage imageData:nil scrollView:cell.imageScrollView];
-            }];
-        }];
-    }
-    
     return cell;
 }
 
@@ -564,6 +546,24 @@
     
     currentCell.imageScrollView.zoomScale = 1;
     currentCell.imageScrollView.contentSize = CGSizeMake(currentCell.bk_width-BKExampleImagesSpacing*2, currentCell.bk_height);
+    
+    BKImageModel * model = self.imageListArray[indexPath.item];
+    
+    if (model.thumbImage) {
+        [self editImageView:currentCell.showImageView image:model.thumbImage imageData:nil scrollView:currentCell.imageScrollView];
+        [[BKTool sharedManager] getOriginalImageSizeWithAsset:model.asset complete:^(UIImage *originalImage) {
+            [self editImageView:currentCell.showImageView image:originalImage imageData:nil scrollView:currentCell.imageScrollView];
+        }];
+    }else{
+        [[BKTool sharedManager] getThumbImageSizeWithAsset:model.asset complete:^(UIImage *thumbImage) {
+            model.thumbImage = thumbImage;
+            [self editImageView:currentCell.showImageView image:thumbImage imageData:nil scrollView:currentCell.imageScrollView];
+            
+            [[BKTool sharedManager] getOriginalImageSizeWithAsset:model.asset complete:^(UIImage *originalImage) {
+                [self editImageView:currentCell.showImageView image:originalImage imageData:nil scrollView:currentCell.imageScrollView];
+            }];
+        }];
+    }
 }
 
 -(void)loadingOriginalImageData
