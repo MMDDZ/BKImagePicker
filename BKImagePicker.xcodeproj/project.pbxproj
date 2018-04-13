@@ -45,6 +45,7 @@
 		1D627B3A207DDA7C00E7B3F0 /* BKPhotoAlbumListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D627B10207DDA7C00E7B3F0 /* BKPhotoAlbumListViewController.m */; };
 		1D627B3B207DDA7C00E7B3F0 /* BKPhotoAlbumListModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D627B12207DDA7C00E7B3F0 /* BKPhotoAlbumListModel.m */; };
 		1D627B3C207DDA7C00E7B3F0 /* BKPhotoAlbumListTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D627B15207DDA7C00E7B3F0 /* BKPhotoAlbumListTableViewCell.m */; };
+		1DA7B800208055B400644D89 /* BKImageOriginalButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 1DA7B7FF208055B400644D89 /* BKImageOriginalButton.m */; };
 		2A06DE381EB6C67500C2CCDF /* FLAnimatedImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A06DE341EB6C67500C2CCDF /* FLAnimatedImage.m */; };
 		2A06DE391EB6C67500C2CCDF /* FLAnimatedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A06DE361EB6C67500C2CCDF /* FLAnimatedImageView.m */; };
 		2A06DE3A1EB6C67500C2CCDF /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2A06DE371EB6C67500C2CCDF /* Info.plist */; };
@@ -131,6 +132,8 @@
 		1D627B13207DDA7C00E7B3F0 /* BKPhotoAlbumListModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPhotoAlbumListModel.h; sourceTree = "<group>"; };
 		1D627B15207DDA7C00E7B3F0 /* BKPhotoAlbumListTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPhotoAlbumListTableViewCell.m; sourceTree = "<group>"; };
 		1D627B16207DDA7C00E7B3F0 /* BKPhotoAlbumListTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPhotoAlbumListTableViewCell.h; sourceTree = "<group>"; };
+		1DA7B7FE208055B400644D89 /* BKImageOriginalButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BKImageOriginalButton.h; sourceTree = "<group>"; };
+		1DA7B7FF208055B400644D89 /* BKImageOriginalButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BKImageOriginalButton.m; sourceTree = "<group>"; };
 		2A06DE331EB6C67500C2CCDF /* FLAnimatedImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FLAnimatedImage.h; sourceTree = "<group>"; };
 		2A06DE341EB6C67500C2CCDF /* FLAnimatedImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FLAnimatedImage.m; sourceTree = "<group>"; };
 		2A06DE351EB6C67500C2CCDF /* FLAnimatedImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FLAnimatedImageView.h; sourceTree = "<group>"; };
@@ -317,6 +320,8 @@
 				1D627AF7207DDA7C00E7B3F0 /* BKImageAlbumItemSelectButton.m */,
 				1D627AFA207DDA7C00E7B3F0 /* BKImageAlbumItemView.h */,
 				1D627AF5207DDA7C00E7B3F0 /* BKImageAlbumItemView.m */,
+				1DA7B7FE208055B400644D89 /* BKImageOriginalButton.h */,
+				1DA7B7FF208055B400644D89 /* BKImageOriginalButton.m */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -568,6 +573,7 @@
 				88500A9F1DAF1D2300102A35 /* main.m in Sources */,
 				1D627B21207DDA7C00E7B3F0 /* BKImageBaseViewController.m in Sources */,
 				1D627B1F207DDA7C00E7B3F0 /* BKImageNavViewController.m in Sources */,
+				1DA7B800208055B400644D89 /* BKImageOriginalButton.m in Sources */,
 				1D627B2B207DDA7C00E7B3F0 /* BKEditImageWriteView.m in Sources */,
 				1D627B2A207DDA7C00E7B3F0 /* BKEditImageDrawView.m in Sources */,
 				1D627B39207DDA7C00E7B3F0 /* BKShowExampleImageCollectionViewCell.m in Sources */,

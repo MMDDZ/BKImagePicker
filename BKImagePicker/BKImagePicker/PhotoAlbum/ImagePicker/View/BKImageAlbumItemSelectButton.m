@@ -49,6 +49,8 @@
     return _fillColor;
 }
 
+#pragma mark - init
+
 -(instancetype)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
@@ -67,6 +69,15 @@
     UITapGestureRecognizer * selfRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(selfRecognizer)];
     [self addGestureRecognizer:selfRecognizer];
 }
+
+-(void)selfRecognizer
+{
+    if (self.selectButtonClick) {
+        self.selectButtonClick(self);
+    }
+}
+
+#pragma mark - drawRect
 
 -(void)drawRect:(CGRect)rect
 {
@@ -92,13 +103,6 @@
     }else{
         NSDictionary * attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:12],NSParagraphStyleAttributeName:paragraphStyle,NSForegroundColorAttributeName:[UIColor whiteColor]};
         [self.showTitle drawWithRect:CGRectMake(5, 7.5, self.selfRect.size.width - 10, self.selfRect.size.height - 15) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil];
-    }
-}
-
--(void)selfRecognizer
-{
-    if (self.selectButtonClick) {
-        self.selectButtonClick(self);
     }
 }
 

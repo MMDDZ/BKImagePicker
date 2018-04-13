@@ -15,7 +15,7 @@
 #import "BKImageAlbumItemSelectButton.h"
 #import "BKShowExampleImageViewController.h"
 #import "BKShowExampleVideoViewController.h"
-#import <pthread.h>
+#import "BKImageOriginalButton.h"
 
 @interface BKImagePickerViewController ()<UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout,BKImagePickerCollectionViewCellDelegate,BKShowExampleImageViewControllerDelegate>
 
@@ -52,7 +52,7 @@
 
 
 @property (nonatomic,strong) UIButton * previewBtn;
-@property (nonatomic,strong) UIButton * originalBtn;
+@property (nonatomic,strong) BKImageOriginalButton * originalBtn;
 @property (nonatomic,strong) UIButton * sendBtn;
 
 @end
@@ -443,11 +443,11 @@
     [_albumCollectionView reloadItemsAtIndexPaths:[_albumCollectionView indexPathsForVisibleItems]];
     
     if ([BKTool sharedManager].isOriginal) {
-        [_originalBtn setTitleColor:BKHighlightColor forState:UIControlStateNormal];
+        [_originalBtn setTitleColor:BKHighlightColor];
         [self calculataImageSize];
     }else{
-        [_originalBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
-        [_originalBtn setTitle:@"原图" forState:UIControlStateNormal];
+        [_originalBtn setTitleColor:BKNavGrayTitleColor];
+        [_originalBtn setTitle:@"原图"];
     }
     
     [self refreshBottomNavBtnState];
@@ -596,23 +596,22 @@
     return _previewBtn;
 }
 
--(UIButton*)originalBtn
+-(BKImageOriginalButton*)originalBtn
 {
     if (!_originalBtn) {
-        _originalBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _originalBtn.frame = CGRectMake(self.view.bk_width/6, 0, self.view.bk_width/7*3, 49);
-        _originalBtn.bk_x = BK_SCREENW/6;
+        _originalBtn = [[BKImageOriginalButton alloc]initWithFrame:CGRectMake(self.view.bk_width/6, 0, self.view.bk_width/7*3, 49)];
         if ([BKTool sharedManager].isOriginal) {
-            [_originalBtn setTitleColor:BKHighlightColor forState:UIControlStateNormal];
+            [_originalBtn setTitleColor:BKHighlightColor];
             [self calculataImageSize];
         }else{
-            [_originalBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
-            [_originalBtn setTitle:@"原图" forState:UIControlStateNormal];
+            [_originalBtn setTitleColor:BKNavGrayTitleColor];
+            [_originalBtn setTitle:@"原图"];
         }
-        _originalBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
-        _originalBtn.titleEdgeInsets = UIEdgeInsetsMake(0, 10, 0, 0);
-        _originalBtn.titleLabel.font = [UIFont systemFontOfSize:15];
-        [_originalBtn addTarget:self action:@selector(originalBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+        BK_WEAK_SELF(self);
+        [_originalBtn setTapSelctAction:^{
+            BK_STRONG_SELF(self);
+            [strongSelf originalBtnClick];
+        }];
     }
     return _originalBtn;
 }
@@ -671,14 +670,14 @@
     }
 }
 
--(void)originalBtnClick:(UIButton*)button
+-(void)originalBtnClick
 {
     if (![BKTool sharedManager].isOriginal) {
-        [button setTitleColor:BKHighlightColor forState:UIControlStateNormal];
+        [_originalBtn setTitleColor:BKHighlightColor];
         [self calculataImageSize];
     }else{
-        [button setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
-        [button setTitle:@"原图" forState:UIControlStateNormal];
+        [_originalBtn setTitleColor:BKNavGrayTitleColor];
+        [_originalBtn setTitle:@"原图"];
     }
     [BKTool sharedManager].isOriginal = ![BKTool sharedManager].isOriginal;
     [self refreshBottomNavBtnState];
@@ -695,12 +694,12 @@
         allSize = allSize / 1024;
         if (allSize > 1024) {
             allSize = allSize / 1024;
-            [_originalBtn setTitle:[NSString stringWithFormat:@"原图(%.1fT)",allSize] forState:UIControlStateNormal];
+            [_originalBtn setTitle:[NSString stringWithFormat:@"原图(%.1fT)",allSize]];
         }else{
-            [_originalBtn setTitle:[NSString stringWithFormat:@"原图(%.1fG)",allSize] forState:UIControlStateNormal];
+            [_originalBtn setTitle:[NSString stringWithFormat:@"原图(%.1fG)",allSize]];
         }
     }else{
-        [_originalBtn setTitle:[NSString stringWithFormat:@"原图(%.1fM)",allSize] forState:UIControlStateNormal];
+        [_originalBtn setTitle:[NSString stringWithFormat:@"原图(%.1fM)",allSize]];
     }
 }
 

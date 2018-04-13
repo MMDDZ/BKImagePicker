@@ -111,6 +111,12 @@
 -(void)rightNavBtnAction:(UIButton *)button
 {
     UIWindow * window = [[UIApplication sharedApplication].delegate window];
+    
+    if (!window.userInteractionEnabled) {
+        return;
+    }
+    window.userInteractionEnabled = NO;
+    
     [[BKTool sharedManager] showLoadInView:window];
     
     [self createNewImageWithFrame:CGRectZero editImageRotation:BKEditImageRotationPortrait complete:^(UIImage *resultImage) {
@@ -121,6 +127,7 @@
             
             [[BKImagePicker sharedManager] saveImage:saveImage complete:^(PHAsset *asset, BOOL success) {
                 [[BKTool sharedManager] hideLoad];
+                window.userInteractionEnabled = YES;
                 
                 if (!success) {
                     [[BKTool sharedManager] showRemind:@"图片保存失败"];
