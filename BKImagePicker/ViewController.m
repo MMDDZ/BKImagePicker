@@ -38,14 +38,14 @@
     UIAlertController * alert = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     UIAlertAction * takePhoto = [UIAlertAction actionWithTitle:@"拍照" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         [[BKImagePicker sharedManager] takePhotoWithComplete:^(UIImage *image, NSData *data) {
-            
+            NSLog(@"image:%@, dataLength:%ld",image,[data length]);
         }];
     }];
     [alert addAction:takePhoto];
     UIAlertAction * photoAlbum = [UIAlertAction actionWithTitle:@"从相册中选择" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         
         [[BKImagePicker sharedManager] showPhotoAlbumWithTypePhoto:BKPhotoTypeDefault maxSelect:6 isHaveOriginal:YES complete:^(UIImage *image, NSData *data, NSURL *url, BKSelectPhotoType selectPhotoType) {
-            NSLog(@"%@ , %ld , %@ , %ld",image,[data length],url,selectPhotoType);
+            NSLog(@"image:%@, dataLength:%ld, url:%@, selectPhotoType:%ld",image,[data length],url,selectPhotoType);
         }];
     }];
     [alert addAction:photoAlbum];

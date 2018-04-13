@@ -426,18 +426,24 @@
                                 imageModel.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];
                                 [resultArr addObject:imageModel];
                                 
+                                [[BKTool sharedManager].selectImageArray removeAllObjects];
+                                [[BKTool sharedManager].selectImageArray addObjectsFromArray:resultArr];
+                                
                                 if ([resultArr count] == [editImageArr count]) {
                                     [[BKTool sharedManager] hideLoad];
                                     pthread_mutex_destroy(&mutex);
                                     
-                                    [[NSNotificationCenter defaultCenter] postNotificationName:BKFinishSelectImageNotification object:nil userInfo:nil];
+                                    if (self.fromModule == BKEditImageFromModulePhotoAlbum) {
+                                        [[NSNotificationCenter defaultCenter] postNotificationName:BKFinishSelectImageNotification object:nil userInfo:nil];
+                                    }else if (self.fromModule == BKEditImageFromModuleTakePhoto) {
+                                        [[NSNotificationCenter defaultCenter] postNotificationName:BKFinishTakePhotoNotification object:nil userInfo:nil];
+                                    }
                                     [self dismissViewControllerAnimated:YES completion:nil];
                                 }
                             }];
                         }
                     });
                 }];
-                
             });
         }
     }];

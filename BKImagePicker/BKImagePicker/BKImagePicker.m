@@ -37,12 +37,30 @@ static BKImagePicker * sharedManagerInstance = nil;
     [self checkAllowVisitCameraHandler:^(BOOL handleFlag) {
         if (handleFlag) {
             
+            //初始化数据
+            [BKTool sharedManager].selectImageArray = @[].mutableCopy;
+            [BKTool sharedManager].isOriginal = NO;
+            
             UIViewController * lastVC = [[BKTool sharedManager] getCurrentVC];
             
             BKImageTakePhotoViewController * vc = [[BKImageTakePhotoViewController alloc]init];
             BKImageNavViewController * nav = [[BKImageNavViewController alloc]initWithRootViewController:vc];
             [lastVC presentViewController:nav animated:YES completion:nil];
             
+            __block id observer = [[NSNotificationCenter defaultCenter] addObserverForName:BKFinishTakePhotoNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
+                
+                for (BKImageModel * model in [BKTool sharedManager].selectImageArray) {
+                    if (complete) {
+                        if ([BKTool sharedManager].isOriginal) {
+                            complete([UIImage imageWithData:model.originalImageData], model.originalImageData);
+                        }else{
+                            complete([UIImage imageWithData:model.thumbImageData], model.thumbImageData);
+                        }
+                    }
+                }
+                
+                [[NSNotificationCenter defaultCenter] removeObserver:observer];
+            }];
         }
     }];
 }
@@ -157,6 +175,7 @@ static BKImagePicker * sharedManagerInstance = nil;
                 }
             }];
             
+            //初始化数据
             [BKTool sharedManager].isHaveOriginal = isHaveOriginal;
             [BKTool sharedManager].max_select = maxSelect>999?999:maxSelect;
             [BKTool sharedManager].photoType = photoType;

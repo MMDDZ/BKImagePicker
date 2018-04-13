@@ -24,11 +24,21 @@ typedef NS_ENUM(NSUInteger, BKEditImageSelectPaintingType) {
     BKEditImageSelectPaintingTypeMosaic
 };
 
+typedef NS_ENUM(NSUInteger, BKEditImageFromModule) {
+    BKEditImageFromModulePhotoAlbum = 0,
+    BKEditImageFromModuleTakePhoto
+};
+
 @interface BKEditImageViewController : BKImageBaseViewController
 
 /**
  要修改的图片
  */
 @property (nonatomic,strong) NSArray<UIImage*> * editImageArr;
+
+/**
+ 来自哪个模块
+ */
+@property (nonatomic,assign) BKEditImageFromModule fromModule;
 
 @end

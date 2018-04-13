@@ -428,6 +428,7 @@
 {
     BKEditImageViewController * vc = [[BKEditImageViewController alloc]init];
     vc.editImageArr = imageArr;
+    vc.fromModule = BKEditImageFromModulePhotoAlbum;
     self.nav.delegate = nil;
     [self.nav pushViewController:vc animated:YES];
 }

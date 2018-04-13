@@ -519,6 +519,7 @@
             BK_STRONG_SELF(self);
             BKEditImageViewController * vc = [[BKEditImageViewController alloc]init];
             vc.editImageArr = @[strongSelf.currentImage];
+            vc.fromModule = BKEditImageFromModuleTakePhoto;
             [strongSelf.navigationController pushViewController:vc animated:YES];
         }];
     }

@@ -24,7 +24,7 @@
 {
     if ([title length] == 0) {
         self.showTitle = @"";
-        self.fillColor = BKSelectImageCircleNormalColor;
+        self.fillColor = BKSelectNormalColor;
     }else{
         self.showTitle = title;
         self.fillColor = BKHighlightColor;
@@ -44,7 +44,7 @@
 -(UIColor*)fillColor
 {
     if (!_fillColor) {
-        _fillColor = BKSelectImageCircleNormalColor;
+        _fillColor = BKSelectNormalColor;
     }
     return _fillColor;
 }
@@ -127,7 +127,7 @@
         [self setNeedsDisplay];
     }else{
         self.showTitle = @"";
-        self.fillColor = BKSelectImageCircleNormalColor;
+        self.fillColor = BKSelectNormalColor;
         [self setNeedsDisplay];
     }
 }
@@ -135,7 +135,7 @@
 -(void)cancelSelect
 {
     self.showTitle = @"";
-    self.fillColor = BKSelectImageCircleNormalColor;
+    self.fillColor = BKSelectNormalColor;
     [self setNeedsDisplay];
 }
 

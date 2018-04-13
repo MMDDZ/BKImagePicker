@@ -84,7 +84,7 @@
         CGContextSetLineWidth(context, 1.5);
         CGContextDrawPath(context, kCGPathStroke);
     }else{
-        CGContextSetStrokeColorWithColor(context, [BKSelectImageCircleNormalColor CGColor]);
+        CGContextSetStrokeColorWithColor(context, [BKSelectNormalColor CGColor]);
         CGContextSetLineWidth(context, 1);
         CGContextAddArc(context, 12, self.bk_height/2, 10, 0, 2*M_PI, 0);
         CGContextDrawPath(context, kCGPathStroke);

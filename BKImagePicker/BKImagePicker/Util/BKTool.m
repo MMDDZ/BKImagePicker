@@ -10,6 +10,7 @@
 #import <ImageIO/ImageIO.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 
+NSString * const BKFinishTakePhotoNotification = @"BKFinishTakePhotoNotification";//拍照完成通知
 NSString * const BKFinishSelectImageNotification = @"BKFinishSelectImageNotification";//选择完成通知
 
 float const BKAlbumImagesSpacing = 1;//相簿图片间距
