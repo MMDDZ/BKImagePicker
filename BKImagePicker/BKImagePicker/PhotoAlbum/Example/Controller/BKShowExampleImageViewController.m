@@ -86,7 +86,7 @@
         [transitionAnimater setEndTransitionAnimateAction:^{
             BK_STRONG_SELF(self);
             strongSelf.exampleImageCollectionView.hidden = NO;
-            strongSelf.navigationController.delegate = nil;
+            strongSelf.nav.delegate = nil;
         }];
         
         return transitionAnimater;
@@ -155,13 +155,11 @@
     [self exampleImageCollectionView];
 }
 
--(void)viewWillAppear:(BOOL)animated
+-(void)viewDidAppear:(BOOL)animated
 {
-    [super viewWillAppear:animated];
+    [super viewDidAppear:animated];
     
-    if (_nav) {
-        self.nav.delegate = self;
-    }
+    self.nav.delegate = self;
 }
 
 -(void)viewWillLayoutSubviews

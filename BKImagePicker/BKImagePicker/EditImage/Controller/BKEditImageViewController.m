@@ -1030,23 +1030,11 @@ static BOOL writeDeleteFlag = NO;
 
 -(CGPoint)settingWriteViewPosition:(BKEditImageWriteView *)writeView
 {
-    CGFloat offset_x = (_editImageBgView.contentOffset.x - _editImageBgView.contentView.bk_width / 2) / _editImageBgView.zoomScale;
-    CGFloat offset_y = (_editImageBgView.contentOffset.y - _editImageBgView.contentView.bk_height / 2) / _editImageBgView.zoomScale;
+    CGFloat offset_x = (_editImageBgView.contentOffset.x - (_editImageBgView.contentSize.width - self.view.bk_width) / 2) / _editImageBgView.zoomScale;
+    CGFloat offset_y = (_editImageBgView.contentOffset.y - (_editImageBgView.contentSize.height - self.view.bk_height) / 2) / _editImageBgView.zoomScale;
     
     CGFloat x = (_editImageBgView.contentView.bk_width / _editImageBgView.zoomScale - writeView.bk_width) / 2 + offset_x;
     CGFloat y = (_editImageBgView.contentView.bk_height / _editImageBgView.zoomScale - writeView.bk_height) / 2 + offset_y;
-    
-//    if (_editImageBgView.contentOffset.x > (_editImageBgView.contentSize.width - _editImageBgView.bk_width) / 2) {
-//        x = (_editImageBgView.contentView.bk_width/2 + _editImageBgView.contentOffset.x) / _editImageBgView.zoomScale / 2;
-//    }else{
-//        x = (_editImageBgView.contentView.bk_width/2 - _editImageBgView.contentOffset.x) / _editImageBgView.zoomScale / 2;
-//    }
-//
-//    if (_editImageBgView.contentOffset.y > (_editImageBgView.contentSize.height - _editImageBgView.bk_height) / 2) {
-//        y = (_editImageBgView.contentView.bk_height/2 + _editImageBgView.contentOffset.y/2) / _editImageBgView.zoomScale / 2;
-//    }else{
-//        y = (_editImageBgView.contentView.bk_height - _editImageBgView.contentOffset.y/2) / _editImageBgView.zoomScale / 2;
-//    }
     
     return CGPointMake(x, y);
 }
