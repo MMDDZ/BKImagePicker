@@ -288,13 +288,17 @@
     if (model.thumbImage) {
         [cell revaluateIndexPath:indexPath listArr:[self.listArray copy] selectImageArr:[[BKTool sharedManager].selectImageArray copy]];
     }else{
+    
         [[BKTool sharedManager] getThumbImageSizeWithAsset:model.asset complete:^(UIImage *thumbImage) {
             model.thumbImage = thumbImage;
             
             [self.listArray replaceObjectAtIndex:indexPath.item withObject:model];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [cell revaluateIndexPath:indexPath listArr:[self.listArray copy] selectImageArr:[[BKTool sharedManager].selectImageArray copy]];
-            });
+        
+            if ([self.albumCollectionView.indexPathsForVisibleItems containsObject:indexPath]) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [cell revaluateIndexPath:indexPath listArr:[self.listArray copy] selectImageArr:[[BKTool sharedManager].selectImageArray copy]];
+                });
+            }
         }];
     }
     
