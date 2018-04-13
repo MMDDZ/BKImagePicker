@@ -2,8 +2,8 @@
 //  BKImageTakePhotoBtn.m
 //  guoguanjuyanglao
 //
-//  Created by zhaolin on 2017/12/21.
-//  Copyright © 2017年 zhaolin. All rights reserved.
+//  Created by BIKE on 2017/12/21.
+//  Copyright © 2017年 BIKE. All rights reserved.
 //
 
 #import "BKImageTakePhotoBtn.h"

@@ -2,7 +2,7 @@
 //  AppDelegate.m
 //  BKImagePicker
 //
-//  Created by iMac on 16/10/13.
+//  Created by BIKE on 16/10/13.
 //  Copyright © 2016年 BIKE. All rights reserved.
 //
 

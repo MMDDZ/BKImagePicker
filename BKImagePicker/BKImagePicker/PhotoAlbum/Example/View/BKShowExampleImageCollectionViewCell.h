@@ -2,7 +2,7 @@
 //  BKShowExampleImageCollectionViewCell.h
 //  BKImagePicker
 //
-//  Created by 毕珂 on 16/10/15.
+//  Created by BIKE on 16/10/15.
 //  Copyright © 2016年 BIKE. All rights reserved.
 //
 

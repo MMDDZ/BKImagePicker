@@ -2,7 +2,7 @@
 //  NSObject+BKImagePicker.m
 //  BKImagePicker
 //
-//  Created by zhaolin on 2018/2/2.
+//  Created by BIKE on 2018/2/2.
 //  Copyright © 2018年 BIKE. All rights reserved.
 //
 

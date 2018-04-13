@@ -2,7 +2,7 @@
 //  BKEditImageClipView.m
 //  BKImagePicker
 //
-//  Created by zhaolin on 2018/3/5.
+//  Created by BIKE on 2018/3/5.
 //  Copyright © 2018年 BIKE. All rights reserved.
 //
 

@@ -2,7 +2,7 @@
 //  BKImageAlbumItemSelectButton.h
 //  BKImagePicker
 //
-//  Created by iMac on 16/10/18.
+//  Created by BIKE on 16/10/18.
 //  Copyright © 2016年 BIKE. All rights reserved.
 //
 

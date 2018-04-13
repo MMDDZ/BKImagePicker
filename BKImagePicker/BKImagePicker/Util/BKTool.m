@@ -2,7 +2,7 @@
 //  BKTool.m
 //  BKImagePicker
 //
-//  Created by iMac on 16/10/19.
+//  Created by BIKE on 16/10/19.
 //  Copyright © 2016年 BIKE. All rights reserved.
 //
 

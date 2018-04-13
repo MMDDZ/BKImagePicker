@@ -2,7 +2,7 @@
 //  UIView+BKImagePicker.h
 //  BKImagePicker
 //
-//  Created by iMac on 16/12/30.
+//  Created by BIKE on 16/12/30.
 //  Copyright © 2016年 BIKE. All rights reserved.
 //
 

@@ -2,8 +2,8 @@
 //  BKImagePercentDrivenInteractiveTransition.h
 //  zhaolin
 //
-//  Created by zhaolin on 2018/2/2.
-//  Copyright © 2018年 zhaolin. All rights reserved.
+//  Created by BIKE on 2018/2/2.
+//  Copyright © 2018年 BIKE. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>

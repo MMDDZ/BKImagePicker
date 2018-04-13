@@ -2,7 +2,7 @@
 //  BKImageAlbumItemView.m
 //  BKImagePicker
 //
-//  Created by iMac on 16/11/2.
+//  Created by BIKE on 16/11/2.
 //  Copyright © 2016年 BIKE. All rights reserved.
 //
 

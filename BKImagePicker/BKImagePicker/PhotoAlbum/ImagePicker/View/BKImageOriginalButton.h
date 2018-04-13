@@ -2,7 +2,7 @@
 //  BKImageOriginalButton.h
 //  BKImagePicker
 //
-//  Created by zhaolin on 2018/4/13.
+//  Created by BIKE on 2018/4/13.
 //  Copyright © 2018年 BIKE. All rights reserved.
 //
 
