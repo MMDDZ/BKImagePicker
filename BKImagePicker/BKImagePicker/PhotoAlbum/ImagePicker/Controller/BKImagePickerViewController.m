@@ -589,7 +589,7 @@
 {
     if (!_previewBtn) {
         _previewBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _previewBtn.frame = CGRectMake(0, 0, self.view.bk_width/6, 49);
+        _previewBtn.frame = CGRectMake(0, 0, self.view.bk_width/6, BK_SYSTEM_TABBAR_UI_HEIGHT);
         [_previewBtn setTitle:@"预览" forState:UIControlStateNormal];
         [_previewBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
         _previewBtn.titleLabel.font = [UIFont systemFontOfSize:15];
@@ -601,7 +601,7 @@
 -(BKImageOriginalButton*)originalBtn
 {
     if (!_originalBtn) {
-        _originalBtn = [[BKImageOriginalButton alloc]initWithFrame:CGRectMake(self.view.bk_width/6, 0, self.view.bk_width/7*3, 49)];
+        _originalBtn = [[BKImageOriginalButton alloc]initWithFrame:CGRectMake(self.view.bk_width/6, 0, self.view.bk_width/7*3, BK_SYSTEM_TABBAR_UI_HEIGHT)];
         if ([BKTool sharedManager].isOriginal) {
             [_originalBtn setTitleColor:BKHighlightColor];
             _originalBtn.isSelect = YES;

@@ -1056,10 +1056,10 @@ static BOOL writeDeleteFlag = NO;
 -(UIView*)bottomDeleteWriteView
 {
     if (!_bottomDeleteWriteView) {
-        _bottomDeleteWriteView = [[UIView alloc]initWithFrame:CGRectMake(0, self.view.bk_height - 49, self.view.bk_width, 49)];
+        _bottomDeleteWriteView = [[UIView alloc]initWithFrame:CGRectMake(0, self.view.bk_height - BK_SYSTEM_TABBAR_HEIGHT, self.view.bk_width, BK_SYSTEM_TABBAR_HEIGHT)];
         _bottomDeleteWriteView.backgroundColor = BKHighlightColor;
         
-        UIImageView * deleteImageView = [[UIImageView alloc]initWithFrame:CGRectMake((_bottomDeleteWriteView.bk_width - 30)/2, (_bottomDeleteWriteView.bk_height - 30)/2, 30, 30)];
+        UIImageView * deleteImageView = [[UIImageView alloc]initWithFrame:CGRectMake((_bottomDeleteWriteView.bk_width - 30)/2, (BK_SYSTEM_TABBAR_UI_HEIGHT - 30)/2, 30, 30)];
         deleteImageView.image = [[BKTool sharedManager] editImageWithImageName:@"delete_write"];
         deleteImageView.clipsToBounds = YES;
         deleteImageView.contentMode = UIViewContentModeScaleAspectFit;

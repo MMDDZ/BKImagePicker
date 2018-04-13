@@ -310,7 +310,7 @@
 {
     if (!_editBtn) {
         _editBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        _editBtn.frame = CGRectMake(0, 0, self.view.bk_width / 6, 49);
+        _editBtn.frame = CGRectMake(0, 0, self.view.bk_width / 6, BK_SYSTEM_TABBAR_UI_HEIGHT);
         [_editBtn setTitle:@"编辑" forState:UIControlStateNormal];
         [_editBtn setTitleColor:BKNavGrayTitleColor forState:UIControlStateNormal];
         _editBtn.titleLabel.font = [UIFont systemFontOfSize:15];
@@ -322,7 +322,7 @@
 -(BKImageOriginalButton*)originalBtn
 {
     if (!_originalBtn) {
-        _originalBtn = [[BKImageOriginalButton alloc] initWithFrame:CGRectMake(BK_SCREENW/6, 0, BK_SCREENW/7*3, 49)];
+        _originalBtn = [[BKImageOriginalButton alloc] initWithFrame:CGRectMake(BK_SCREENW/6, 0, BK_SCREENW/7*3, BK_SYSTEM_TABBAR_UI_HEIGHT)];
         if ([BKTool sharedManager].isOriginal) {
             [_originalBtn setTitleColor:BKHighlightColor];
             _originalBtn.isSelect = YES;
