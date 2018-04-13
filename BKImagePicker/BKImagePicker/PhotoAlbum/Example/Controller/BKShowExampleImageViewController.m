@@ -23,7 +23,7 @@
 @property (nonatomic,strong) UIButton * originalBtn;
 @property (nonatomic,strong) UIButton * sendBtn;
 
-@property (nonatomic,assign) NSInteger nowImageIndex;//当前看见image的index
+@property (nonatomic,assign) NSInteger currentImageIndex;//当前看见image的index
 @property (nonatomic,assign) BOOL isLoadOver;//是否加载完毕
 
 @property (nonatomic,strong) UICollectionView * exampleImageCollectionView;
@@ -77,7 +77,7 @@
         
         _exampleImageCollectionView.hidden = YES;
         
-        CGRect endRect = [self.delegate getFrameOfCurrentImageInListVCWithImageModel:self.imageListArray[_nowImageIndex]];
+        CGRect endRect = [self.delegate getFrameOfCurrentImageInListVCWithImageModel:self.imageListArray[_currentImageIndex]];
         
         BKShowExampleTransitionAnimater * transitionAnimater = [[BKShowExampleTransitionAnimater alloc] initWithTransitionType:BKShowExampleTransitionPop];
         transitionAnimater.startImageView = CGRectEqualToRect(self.interactiveTransition.panImageView.frame, CGRectZero)?self.interactiveTransition.startImageView:self.interactiveTransition.panImageView;
@@ -178,22 +178,22 @@
 
 -(void)dealloc
 {
-    [self removeObserver:self forKeyPath:@"nowImageIndex"];
+    [self removeObserver:self forKeyPath:@"currentImageIndex"];
 }
 
 #pragma mark - initTopNav
 
 -(void)initTopNav
 {
-    [self addObserver:self forKeyPath:@"nowImageIndex" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
+    [self addObserver:self forKeyPath:@"currentImageIndex" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
     
     if ([self.imageListArray count] == 1) {
         self.title = @"预览";
     }else{
         if ([_imageListArray count] > 0 && _tapImageModel) {
-            self.nowImageIndex = [self.imageListArray indexOfObject:self.tapImageModel];
+            self.currentImageIndex = [self.imageListArray indexOfObject:self.tapImageModel];
         }
-        self.title = [NSString stringWithFormat:@"%ld/%ld",_nowImageIndex+1,[self.imageListArray count]];
+        self.title = [NSString stringWithFormat:@"%ld/%ld",_currentImageIndex+1,[self.imageListArray count]];
     }
     
     [self.rightBtn addSubview:self.rightNavBtn];
@@ -221,7 +221,7 @@
 
 -(void)rightBtnClick:(BKImageAlbumItemSelectButton*)button
 {
-    BKImageModel * model = self.imageListArray[_nowImageIndex];
+    BKImageModel * model = self.imageListArray[_currentImageIndex];
     BOOL isHave = [[BKTool sharedManager].selectImageArray containsObject:model];
     if (!isHave && [[BKTool sharedManager].selectImageArray count] >= [BKTool sharedManager].max_select) {
         [[BKTool sharedManager] showRemind:[NSString stringWithFormat:@"最多只能选择%ld张照片",[BKTool sharedManager].max_select]];
@@ -286,6 +286,11 @@
             *stop = YES;
         }
     }];
+    
+    BKImageModel * currentImageModel = self.imageListArray[_currentImageIndex];
+    if (currentImageModel.photoType != BKSelectPhotoTypeImage) {
+        canEidtFlag = NO;
+    }
     
     if (canEidtFlag) {
         [_editBtn setTitleColor:BKHighlightColor forState:UIControlStateNormal];
@@ -381,7 +386,7 @@
         }];
         
     }else{
-        BKImageModel * model = _imageListArray[_nowImageIndex];
+        BKImageModel * model = _imageListArray[_currentImageIndex];
         if (model.photoType != BKSelectPhotoTypeImage) {
             return;
         }
@@ -443,7 +448,7 @@
 {
     __block double allSize = 0.0;
     if ([BKTool sharedManager].max_select == 1) {
-        BKImageModel * model = _imageListArray[_nowImageIndex];
+        BKImageModel * model = _imageListArray[_currentImageIndex];
         allSize = model.originalImageSize;
     }else{
         [[BKTool sharedManager].selectImageArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -471,7 +476,7 @@
     if ([[BKTool sharedManager].selectImageArray count] == 0) {
         if ([BKTool sharedManager].max_select == 1) {
             
-            BKImageModel * model = _imageListArray[_nowImageIndex];
+            BKImageModel * model = _imageListArray[_currentImageIndex];
             [[BKTool sharedManager].selectImageArray addObject:model];
             
             [[NSNotificationCenter defaultCenter] postNotificationName:BKFinishSelectImageNotification object:nil userInfo:nil];
@@ -573,7 +578,7 @@
 
 -(void)loadingOriginalImageData
 {
-    NSIndexPath * currentIndexPath = [NSIndexPath indexPathForItem:_nowImageIndex inSection:0];
+    NSIndexPath * currentIndexPath = [NSIndexPath indexPathForItem:_currentImageIndex inSection:0];
     BKShowExampleImageCollectionViewCell * currentCell = (BKShowExampleImageCollectionViewCell*)[_exampleImageCollectionView cellForItemAtIndexPath:currentIndexPath];
     
     self.interactiveTransition.startImageView = currentCell.showImageView;
@@ -659,7 +664,7 @@
             NSIndexPath * indexPath = [self.exampleImageCollectionView indexPathForItemAtPoint:p];
             NSInteger item = indexPath.item;
             
-            self.nowImageIndex = item;
+            self.currentImageIndex = item;
         }
     }
 }
@@ -675,15 +680,15 @@
 
 -(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
 {
-    if ([keyPath isEqualToString:@"nowImageIndex"]) {
+    if ([keyPath isEqualToString:@"currentImageIndex"]) {
         
         if ([change[@"old"] integerValue] == [change[@"new"] integerValue]) {
             return;
         }
         
-        self.titleLab.text = [NSString stringWithFormat:@"%ld/%ld",_nowImageIndex+1,[self.imageListArray count]];
+        self.titleLab.text = [NSString stringWithFormat:@"%ld/%ld",_currentImageIndex+1,[self.imageListArray count]];
         
-        BKImageModel * model = self.imageListArray[_nowImageIndex];
+        BKImageModel * model = self.imageListArray[_currentImageIndex];
         if (self.delegate) {
             [self.delegate refreshLookLocationActionWithImageModel:model];
         }
@@ -699,7 +704,7 @@
         
     }else if ([keyPath isEqualToString:@"contentSize"]) {
         
-        CGFloat contentOffX = (self.view.bk_width+BKExampleImagesSpacing*2) * _nowImageIndex;
+        CGFloat contentOffX = (self.view.bk_width+BKExampleImagesSpacing*2) * _currentImageIndex;
         if (_exampleImageCollectionView.contentSize.width - _exampleImageCollectionView.bk_width >= contentOffX) {
             [_exampleImageCollectionView setContentOffset:CGPointMake(contentOffX, 0) animated:NO];
         }
