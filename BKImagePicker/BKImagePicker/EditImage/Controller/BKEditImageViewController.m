@@ -346,6 +346,14 @@
 
 -(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
+    UIWindow * window = [UIApplication sharedApplication].keyWindow;
+    if (!window.userInteractionEnabled || _currentEditIndex == indexPath.item) {
+        return;
+    }
+    window.userInteractionEnabled = NO;
+    
+    [[BKTool sharedManager] showLoadInView:window];
+    
     [self createNewImageWithFrame:CGRectZero editImageRotation:BKEditImageRotationPortrait complete:^(UIImage *resultImage) {
         
         NSMutableArray * editImageArr = [NSMutableArray arrayWithArray:self.editImageArr];
@@ -360,6 +368,9 @@
         [self.bottomView cancelEditOperation];
         [self removeEditImageTemplate];
         [self editImageView];
+        
+        [[BKTool sharedManager] hideLoad];
+        window.userInteractionEnabled = YES;
     }];
 }
 
