@@ -377,7 +377,7 @@
         [editImageArr replaceObjectAtIndex:self.currentEditIndex withObject:resultImage];
         self.editImageArr = [editImageArr copy];
         
-        dispatch_queue_t queue = dispatch_queue_create("save", NULL);
+        dispatch_queue_t queue = dispatch_queue_create("save_lock", NULL);
         
         pthread_mutexattr_t attr;
         pthread_mutexattr_init(&attr);

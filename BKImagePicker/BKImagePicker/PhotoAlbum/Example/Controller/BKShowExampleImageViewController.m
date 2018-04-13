@@ -171,6 +171,13 @@
     self.exampleImageCollectionView.frame = CGRectMake(-BKExampleImagesSpacing, 0, self.view.bk_width + 2*BKExampleImagesSpacing, self.view.bk_height);
 }
 
+-(void)viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
+    
+    [self loadingOriginalImageData];
+}
+
 -(void)dealloc
 {
     [self removeObserver:self forKeyPath:@"nowImageIndex"];
@@ -701,12 +708,6 @@
         
         [_exampleImageCollectionView removeObserver:self forKeyPath:@"contentSize"];
         _isLoadOver = YES;
-        
-        BK_WEAK_SELF(self);
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            BK_STRONG_SELF(self);
-            [strongSelf loadingOriginalImageData];
-        });
     }
 }
 
