@@ -24,8 +24,9 @@
 @property (nonatomic,strong) BKImageOriginalButton * originalBtn;
 @property (nonatomic,strong) UIButton * sendBtn;
 
-@property (nonatomic,assign) NSInteger currentImageIndex;//当前看见image的index
+@property (nonatomic,assign) NSInteger currentImageIndex;//当前image的index
 @property (nonatomic,assign) BOOL isLoadOver;//是否加载完毕
+@property (nonatomic,assign) BOOL currentOriginalImageLoadedFlag;//当前image的原图是否加载完毕
 
 @property (nonatomic,strong) UICollectionView * exampleImageCollectionView;
 
@@ -168,13 +169,6 @@
     [super viewWillLayoutSubviews];
     
     self.exampleImageCollectionView.frame = CGRectMake(-BKExampleImagesSpacing, 0, self.view.bk_width + 2*BKExampleImagesSpacing, self.view.bk_height);
-}
-
--(void)viewDidLayoutSubviews
-{
-    [super viewDidLayoutSubviews];
-    
-    [self loadingOriginalImageData];
 }
 
 -(void)dealloc
@@ -563,10 +557,14 @@
     
     BKImageModel * model = self.imageListArray[indexPath.item];
     
+    _currentOriginalImageLoadedFlag = NO;
+    
     if (model.thumbImage) {
         [self editImageView:currentCell.showImageView image:model.thumbImage imageData:nil scrollView:currentCell.imageScrollView];
         [[BKTool sharedManager] getOriginalImageSizeWithAsset:model.asset complete:^(UIImage *originalImage) {
             [self editImageView:currentCell.showImageView image:originalImage imageData:nil scrollView:currentCell.imageScrollView];
+            
+            self.currentOriginalImageLoadedFlag = YES;
         }];
     }else{
         [[BKTool sharedManager] getThumbImageSizeWithAsset:model.asset complete:^(UIImage *thumbImage) {
@@ -575,6 +573,8 @@
             
             [[BKTool sharedManager] getOriginalImageSizeWithAsset:model.asset complete:^(UIImage *originalImage) {
                 [self editImageView:currentCell.showImageView image:originalImage imageData:nil scrollView:currentCell.imageScrollView];
+                
+                self.currentOriginalImageLoadedFlag = YES;
             }];
         }];
     }
@@ -583,6 +583,15 @@
 -(void)loadingOriginalImageData
 {
     NSIndexPath * currentIndexPath = [NSIndexPath indexPathForItem:_currentImageIndex inSection:0];
+    BOOL flag = [_exampleImageCollectionView.indexPathsForVisibleItems containsObject:currentIndexPath];
+    
+    while (!flag || !_currentOriginalImageLoadedFlag) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self loadingOriginalImageData];
+        });
+        return;
+    }
+    
     BKShowExampleImageCollectionViewCell * currentCell = (BKShowExampleImageCollectionViewCell*)[_exampleImageCollectionView cellForItemAtIndexPath:currentIndexPath];
     
     self.interactiveTransition.startImageView = currentCell.showImageView;
@@ -715,6 +724,8 @@
         
         [_exampleImageCollectionView removeObserver:self forKeyPath:@"contentSize"];
         _isLoadOver = YES;
+        
+        [self loadingOriginalImageData];
     }
 }
 
