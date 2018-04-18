@@ -64,6 +64,11 @@
 -(void)keyboardWillHide:(NSNotification*)notification;
 
 /**
+ 选中裁剪选项
+ */
+-(void)selectClipOption;
+
+/**
  取消本次选中的编辑
  */
 -(void)cancelEditOperation;

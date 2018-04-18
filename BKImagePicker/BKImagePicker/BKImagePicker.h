@@ -32,7 +32,15 @@
 
  @param complete 图片
  */
--(void)takePhotoWithComplete:(void (^)(UIImage * image , NSData * data))complete;
+-(void)takePhotoWithComplete:(void (^)(UIImage * image, NSData * data))complete;
+
+/**
+ 拍照 + 裁剪
+ 
+ @param ratio 预定裁剪大小宽高比
+ @param complete 图片
+ */
+-(void)takePhotoWithImageClipSizeWidthToHeightRatio:(CGFloat)ratio complete:(void (^)(UIImage * image, NSData * data))complete;
 
 #pragma mark - 相册
 
@@ -45,6 +53,15 @@
  @param complete  选择图片/GIF/视频
  */
 -(void)showPhotoAlbumWithTypePhoto:(BKPhotoType)photoType maxSelect:(NSInteger)maxSelect isHaveOriginal:(BOOL)isHaveOriginal complete:(void (^)(UIImage * image, NSData * data, NSURL * url, BKSelectPhotoType selectPhotoType))complete;
+
+/**
+ 相册 + 裁剪
+ 最大选择数:1 没有原图选项 只有图片选择（没有gif）
+ 
+ @param ratio 预定裁剪大小宽高比
+ @param complete 图片
+ */
+-(void)showPhotoAlbumWithImageClipSizeWidthToHeightRatio:(CGFloat)ratio complete:(void (^)(UIImage * image, NSData * data))complete;
 
 /**
  检测是否允许调用相册

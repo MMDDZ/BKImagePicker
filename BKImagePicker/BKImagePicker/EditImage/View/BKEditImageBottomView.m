@@ -87,6 +87,14 @@
     [_affirmBtn setTitle:@"确认" forState:UIControlStateNormal];
 }
 
+#pragma mark - 选中裁剪选项
+
+-(void)selectClipOption
+{
+    UIButton * button = (UIButton*)[_firstLevelScrollView viewWithTag:300];
+    [self editBtnClick:button];
+}
+
 #pragma mark - 取消本次选中的编辑
 
 -(void)cancelEditOperation

@@ -66,6 +66,11 @@
     [self initBottomNav];
 
     [self editImageView];
+    
+    //如果是预定裁剪模式 显示裁剪模式状态
+    if ([BKTool sharedManager].clipSize_width_height_ratio != 0) {
+        [self.bottomView selectClipOption];
+    }
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -386,6 +391,8 @@
 
 -(void)sendPhoto
 {
+    [self.bottomView cancelEditOperation];
+    
     UIWindow * window = [UIApplication sharedApplication].keyWindow;
     [[BKTool sharedManager] showLoadInView:window];
     
@@ -393,7 +400,6 @@
         
         NSMutableArray * editImageArr = [NSMutableArray arrayWithArray:self.editImageArr];
         [editImageArr replaceObjectAtIndex:self.currentEditIndex withObject:resultImage];
-        self.editImageArr = [editImageArr copy];
         
         dispatch_queue_t queue = dispatch_queue_create("save_lock", NULL);
         
@@ -404,8 +410,10 @@
         __block pthread_mutex_t mutex;
         pthread_mutex_init(&mutex, &attr);
         
+        __block BOOL saveError = NO;
+        
         __block NSMutableArray * resultArr = [NSMutableArray array];
-        for (UIImage * editImage in self.editImageArr) {
+        for (UIImage * editImage in editImageArr) {
             dispatch_async(queue, ^{
                 
                 pthread_mutex_lock(&mutex);
@@ -416,7 +424,11 @@
                     
                     dispatch_async(dispatch_get_main_queue(), ^{
                         if (!success) {
-                            [[BKTool sharedManager] showRemind:@"图片发送失败"];
+                            [[BKTool sharedManager] hideLoad];
+                            if (!saveError) {
+                                [[BKTool sharedManager] showRemind:@"图片发送失败"];
+                                saveError = YES;
+                            }
                             pthread_mutex_destroy(&mutex);
                         }else{
                             [[BKTool sharedManager] getOriginalImageDataSizeWithAsset:asset complete:^(NSData *originalImageData, NSURL *url) {
@@ -424,15 +436,16 @@
                                 imageModel.originalImageData = originalImageData;
                                 imageModel.url = url;
                                 imageModel.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];
+                                imageModel.photoType = BKSelectPhotoTypeImage;
                                 [resultArr addObject:imageModel];
-                                
+
                                 [[BKTool sharedManager].selectImageArray removeAllObjects];
                                 [[BKTool sharedManager].selectImageArray addObjectsFromArray:resultArr];
-                                
-                                if ([resultArr count] == [editImageArr count]) {
+
+                                if ([resultArr count] == [editImageArr count] && !saveError) {
                                     [[BKTool sharedManager] hideLoad];
                                     pthread_mutex_destroy(&mutex);
-                                    
+
                                     if (self.fromModule == BKEditImageFromModulePhotoAlbum) {
                                         [[NSNotificationCenter defaultCenter] postNotificationName:BKFinishSelectImageNotification object:nil userInfo:nil];
                                     }else if (self.fromModule == BKEditImageFromModuleTakePhoto) {
@@ -445,6 +458,50 @@
                     });
                 }];
             });
+        }
+    }];
+}
+
+/**
+ 发送预裁剪模式图片
+
+ @param sendImage 图片
+ @param successBlock 成功返回
+ */
+-(void)sendClipPhotoWithImage:(UIImage*)sendImage successBlock:(void (^)(void))successBlock
+{
+    UIWindow * window = [UIApplication sharedApplication].keyWindow;
+    [[BKTool sharedManager] showLoadInView:window];
+    
+    [[BKImagePicker sharedManager] saveImage:[self reCreateImage:sendImage] complete:^(PHAsset *asset, BOOL success) {
+        if (!success) {
+            [[BKTool sharedManager] showRemind:@"图片发送失败"];
+            [[BKTool sharedManager] hideLoad];
+            
+        }else{
+            [[BKTool sharedManager] getOriginalImageDataSizeWithAsset:asset complete:^(NSData *originalImageData, NSURL *url) {
+                BKImageModel * imageModel = [[BKImageModel alloc]init];
+                imageModel.originalImageData = originalImageData;
+                imageModel.url = url;
+                imageModel.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];
+                imageModel.photoType = BKSelectPhotoTypeImage;
+
+                [[BKTool sharedManager].selectImageArray removeAllObjects];
+                [[BKTool sharedManager].selectImageArray addObject:imageModel];
+
+                [[BKTool sharedManager] hideLoad];
+                
+                if (successBlock) {
+                    successBlock();
+                }
+
+                if (self.fromModule == BKEditImageFromModulePhotoAlbum) {
+                    [[NSNotificationCenter defaultCenter] postNotificationName:BKFinishSelectImageNotification object:nil userInfo:nil];
+                }else if (self.fromModule == BKEditImageFromModuleTakePhoto) {
+                    [[NSNotificationCenter defaultCenter] postNotificationName:BKFinishTakePhotoNotification object:nil userInfo:nil];
+                }
+                [self dismissViewControllerAnimated:YES completion:nil];
+            }];
         }
     }];
 }
@@ -746,23 +803,26 @@
         
         [self.editImageBgView.contentView addSubview:_editImageView];
         
-        //延迟0.5秒 优化切换速度
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            
-            if (self.isSuccessMosaicFlag) {
-                return;
-            }
-            self.isSuccessMosaicFlag = YES;
-            
-            //全图做马赛克处理 添加在图片图层上
-            CALayer * imageLayer = [CALayer layer];
-            imageLayer.frame = self.editImageView.bounds;
-            imageLayer.contents = (id)self.mosaicImage.CGImage;
-            [self.editImageView.layer addSublayer:imageLayer];
-            //添加遮罩shapeLayer
-            [self.editImageView.layer addSublayer:self.mosaicImageShapeLayer];
-            imageLayer.mask = self.mosaicImageShapeLayer;
-        });
+        //不是预定裁剪模式 添加马赛克layer
+        if ([BKTool sharedManager].clipSize_width_height_ratio == 0) {
+            //延迟0.5秒 优化切换速度
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                
+                if (self.isSuccessMosaicFlag) {
+                    return;
+                }
+                self.isSuccessMosaicFlag = YES;
+                
+                //全图做马赛克处理 添加在图片图层上
+                CALayer * imageLayer = [CALayer layer];
+                imageLayer.frame = self.editImageView.bounds;
+                imageLayer.contents = (id)self.mosaicImage.CGImage;
+                [self.editImageView.layer addSublayer:imageLayer];
+                //添加遮罩shapeLayer
+                [self.editImageView.layer addSublayer:self.mosaicImageShapeLayer];
+                imageLayer.mask = self.mosaicImageShapeLayer;
+            });
+        }
     }
     return _editImageView;
 }
@@ -1098,6 +1158,17 @@ static BOOL writeDeleteFlag = NO;
         [_clipView setBackAction:^{
             BK_STRONG_SELF(self);
             
+            //如果是预定裁剪模式 返回就是返回上一级
+            if ([BKTool sharedManager].clipSize_width_height_ratio != 0) {
+                
+                [strongSelf.clipView removeSelfAuxiliaryUI];
+                [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+                
+                [strongSelf.navigationController popViewControllerAnimated:YES];
+                
+                return;
+            }
+            
             if (!strongSelf.view.userInteractionEnabled) {
                 return;
             }
@@ -1124,8 +1195,6 @@ static BOOL writeDeleteFlag = NO;
                 return;
             }
             strongSelf.view.userInteractionEnabled = NO;
-            
-            [strongSelf.clipView removeFromSuperview];
             
             [strongSelf resetEditImageWithClipFrame:clipFrame rotation:rotation];
         }];
@@ -1177,6 +1246,19 @@ static BOOL writeDeleteFlag = NO;
     
     [self createNewImageWithFrame:clipFrame editImageRotation:rotation complete:^(UIImage *resultImage) {
         
+        //如果是预定裁剪模式 裁剪完成就代表发送
+        if ([BKTool sharedManager].clipSize_width_height_ratio != 0) {
+            
+            [self sendClipPhotoWithImage:resultImage successBlock:^{
+                [self.clipView removeSelfAuxiliaryUI];
+                [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+            }];
+            
+            self.view.userInteractionEnabled = YES;
+            
+            return;
+        }
+        
         self.currentEditImage = resultImage;
         
         NSMutableArray * editImageArr = [NSMutableArray arrayWithArray:self.editImageArr];
@@ -1186,6 +1268,7 @@ static BOOL writeDeleteFlag = NO;
         [self.previewCollectionView reloadData];
         
         [self removeEditImageTemplate];
+        [self.clipView removeFromSuperview];
         
         UIImageView * imageView = [[UIImageView alloc]initWithFrame:frame];
         imageView.image = self.currentEditImage;

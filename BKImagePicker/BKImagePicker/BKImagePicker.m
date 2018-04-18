@@ -30,16 +30,66 @@ static BKImagePicker * sharedManagerInstance = nil;
     return sharedManagerInstance;
 }
 
+/**
+ 初始化选项数据
+ */
+-(void)resetOptionData
+{
+    [BKTool sharedManager].isHaveOriginal = NO;
+    [BKTool sharedManager].max_select = 0;
+    [BKTool sharedManager].selectImageArray = @[].mutableCopy;
+    [BKTool sharedManager].isOriginal = NO;
+    [BKTool sharedManager].photoType = BKPhotoTypeDefault;
+    [BKTool sharedManager].clipSize_width_height_ratio = 0;
+}
+
 #pragma mark - 拍照
 
--(void)takePhotoWithComplete:(void (^)(UIImage *, NSData *))complete
+/**
+ 拍照
+ 
+ @param complete 图片
+ */
+-(void)takePhotoWithComplete:(void (^)(UIImage * image, NSData * data))complete
+{
+    //初始化数据
+    [self resetOptionData];
+    
+    [self skipTakePhotoVCWithComplete:^(UIImage *image, NSData *data) {
+        if (complete) {
+            complete(image,data);
+        }
+    }];
+}
+
+/**
+ 拍照 + 裁剪
+ 
+ @param ratio 预定裁剪大小宽高比
+ @param complete 图片
+ */
+-(void)takePhotoWithImageClipSizeWidthToHeightRatio:(CGFloat)ratio complete:(void (^)(UIImage *, NSData *))complete
+{
+    //初始化数据
+    [self resetOptionData];
+    [BKTool sharedManager].clipSize_width_height_ratio = ratio;
+    
+    [self skipTakePhotoVCWithComplete:^(UIImage *image, NSData *data) {
+        if (complete) {
+            complete(image,data);
+        }
+    }];
+}
+
+/**
+ 跳转拍照界面
+
+ @param complete 完成方法
+ */
+-(void)skipTakePhotoVCWithComplete:(void (^)(UIImage * image, NSData * data))complete
 {
     [self checkAllowVisitCameraHandler:^(BOOL handleFlag) {
         if (handleFlag) {
-            
-            //初始化数据
-            [BKTool sharedManager].selectImageArray = @[].mutableCopy;
-            [BKTool sharedManager].isOriginal = NO;
             
             UIViewController * lastVC = [[BKTool sharedManager] getCurrentVC];
             
@@ -151,6 +201,46 @@ static BKImagePicker * sharedManagerInstance = nil;
  */
 -(void)showPhotoAlbumWithTypePhoto:(BKPhotoType)photoType maxSelect:(NSInteger)maxSelect isHaveOriginal:(BOOL)isHaveOriginal complete:(void (^)(UIImage * image, NSData * data, NSURL * url, BKSelectPhotoType selectPhotoType))complete
 {
+    //初始化数据
+    [self resetOptionData];
+    
+    [BKTool sharedManager].isHaveOriginal = isHaveOriginal;
+    [BKTool sharedManager].max_select = maxSelect>999?999:maxSelect;
+    [BKTool sharedManager].photoType = photoType;
+    
+    [self skipPhotoAlbumVCWithComplete:^(UIImage *image, NSData *data, NSURL *url, BKSelectPhotoType selectPhotoType) {
+        if (complete) {
+            complete(image,data,url,selectPhotoType);
+        }
+    }];
+}
+
+/**
+ 相册 + 裁剪
+ 最大选择数:1 没有原图选项 只有图片选择（没有gif）
+ 
+ @param ratio 预定裁剪大小宽高比
+ @param complete 图片
+ */
+-(void)showPhotoAlbumWithImageClipSizeWidthToHeightRatio:(CGFloat)ratio complete:(void (^)(UIImage *, NSData *))complete
+{
+    //初始化数据
+    [self resetOptionData];
+    
+    [BKTool sharedManager].isHaveOriginal = NO;
+    [BKTool sharedManager].max_select = 1;
+    [BKTool sharedManager].photoType = BKPhotoTypeImage;
+    [BKTool sharedManager].clipSize_width_height_ratio = ratio;
+    
+    [self skipPhotoAlbumVCWithComplete:^(UIImage *image, NSData *data, NSURL *url, BKSelectPhotoType selectPhotoType) {
+        if (complete) {
+            complete(image,data);
+        }
+    }];
+}
+
+-(void)skipPhotoAlbumVCWithComplete:(void (^)(UIImage * image, NSData * data, NSURL * url, BKSelectPhotoType selectPhotoType))complete
+{
     [self checkAllowVisitPhotoAlbumHandler:^(BOOL handleFlag) {
         if (handleFlag) {
             
@@ -175,17 +265,10 @@ static BKImagePicker * sharedManagerInstance = nil;
                 }
             }];
             
-            //初始化数据
-            [BKTool sharedManager].isHaveOriginal = isHaveOriginal;
-            [BKTool sharedManager].max_select = maxSelect>999?999:maxSelect;
-            [BKTool sharedManager].photoType = photoType;
-            [BKTool sharedManager].selectImageArray = @[].mutableCopy;
-            [BKTool sharedManager].isOriginal = NO;
-            
             BKPhotoAlbumListViewController * imageClassVC = [[BKPhotoAlbumListViewController alloc]init];
-          
+            
             BKImagePickerViewController * imageVC = [[BKImagePickerViewController alloc]init];
-          
+            
             imageClassVC.title = @"相册";
             imageVC.title = albumName;
             

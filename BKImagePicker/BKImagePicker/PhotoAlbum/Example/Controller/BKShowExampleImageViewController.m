@@ -191,7 +191,9 @@
         self.title = [NSString stringWithFormat:@"%ld/%ld",_currentImageIndex+1,[self.imageListArray count]];
     }
     
-    [self.rightBtn addSubview:self.rightNavBtn];
+    if ([BKTool sharedManager].max_select > 1) {
+        [self.rightBtn addSubview:self.rightNavBtn];
+    }
 }
 
 -(BKImageAlbumItemSelectButton*)rightNavBtn

@@ -17,7 +17,7 @@ float const BKAlbumImagesSpacing = 1;//相簿图片间距
 float const BKExampleImagesSpacing = 10;//查看的大图图片间距
 float const BKCheckExampleImageAnimateTime = 0.5;//查看大图图片过场动画时间
 float const BKCheckExampleGifAndVideoAnimateTime = 0.3;//查看Gif、Video过场动画时间
-float const BKThumbImageCompressSizeMultiplier = 0.5;//图片压缩比例
+float const BKThumbImageCompressSizeMultiplier = 0.5;//图片长宽压缩比例 (小于1会把图片的长宽缩小)
 
 @interface BKTool()
 
@@ -303,11 +303,7 @@ float const BKThumbImageCompressSizeMultiplier = 0.5;//图片压缩比例
     if (!imageData) {
         return nil;
     }
-    
-    if (imageData.length < 200*1024) {
-        return imageData;
-    }
-   
+       
     NSData * newImageData = [self compressImageWithData:imageData];
     return newImageData;
 }
@@ -382,6 +378,12 @@ float const BKThumbImageCompressSizeMultiplier = 0.5;//图片压缩比例
     size_t height = floor(CGImageGetHeight(imageRef) * BKThumbImageCompressSizeMultiplier);
     if (width == 0 || height == 0) {
         return nil;
+    }
+    
+    CGFloat target_max_width = BK_SCREENW * [UIScreen mainScreen].scale;
+    if (width > target_max_width) {
+        height = target_max_width / width * height;
+        width = target_max_width;
     }
     
     BOOL hasAlpha = [self checkHaveAlphaWithImageRef:imageRef];

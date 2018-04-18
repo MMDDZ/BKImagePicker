@@ -16,6 +16,7 @@
 #import "BKShowExampleImageViewController.h"
 #import "BKShowExampleVideoViewController.h"
 #import "BKImageOriginalButton.h"
+#import "BKEditImageViewController.h"
 
 @interface BKImagePickerViewController ()<UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout,BKImagePickerCollectionViewCellDelegate,BKShowExampleImageViewControllerDelegate>
 
@@ -353,15 +354,27 @@
     
     if (model.asset.mediaType == PHAssetMediaTypeImage) {
         
-        BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
-        if (!cell) {
-            [self.albumCollectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:YES];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
-                [self previewWithCell:cell imageListArray:self.imageListArray tapModel:model];
-            });
+        //当裁剪比例不为0时 进入裁剪状态
+        if ([BKTool sharedManager].clipSize_width_height_ratio != 0) {
+            
+            [[BKTool sharedManager] getOriginalImageSizeWithAsset:model.asset complete:^(UIImage *originalImage) {
+                BKEditImageViewController * vc = [[BKEditImageViewController alloc] init];
+                vc.editImageArr = @[originalImage];
+                vc.fromModule = BKEditImageFromModulePhotoAlbum;
+                [self.navigationController pushViewController:vc animated:YES];
+            }];
+            
         }else{
-            [self previewWithCell:cell imageListArray:self.imageListArray tapModel:model];
+            BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
+            if (!cell) {
+                [self.albumCollectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:YES];
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    BKImagePickerCollectionViewCell * cell = (BKImagePickerCollectionViewCell*)[self.albumCollectionView cellForItemAtIndexPath:indexPath];
+                    [self previewWithCell:cell imageListArray:self.imageListArray tapModel:model];
+                });
+            }else{
+                [self previewWithCell:cell imageListArray:self.imageListArray tapModel:model];
+            }
         }
         
     }else{

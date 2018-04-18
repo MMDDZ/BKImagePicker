@@ -97,11 +97,14 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
         
         [[UIApplication sharedApplication].keyWindow addSubview:self.bottomNav];
         
-        UIPanGestureRecognizer * panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(windowPanGesture:)];
-        panGesture.delegate = self;
-        panGesture.maximumNumberOfTouches = 1;
-        panGesture.dicTag = @{@"type":@"window",@"angle":@""};
-        [[UIApplication sharedApplication].keyWindow addGestureRecognizer:panGesture];
+        //预定裁剪模式不能修改裁剪框大小
+        if ([BKTool sharedManager].clipSize_width_height_ratio == 0) {
+            UIPanGestureRecognizer * panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(windowPanGesture:)];
+            panGesture.delegate = self;
+            panGesture.maximumNumberOfTouches = 1;
+            panGesture.dicTag = @{@"type":@"window",@"angle":@""};
+            [[UIApplication sharedApplication].keyWindow addGestureRecognizer:panGesture];
+        }
     }
     return self;
 }
@@ -411,6 +414,20 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
 {
     if (CGRectEqualToRect(_shadowViewClipRect, CGRectZero)) {
         _shadowViewClipRect = _editImageBgView.contentView.bounds;
+        
+        //如果是预定裁剪模式 按照预定比例修改裁剪框大小
+        if ([BKTool sharedManager].clipSize_width_height_ratio != 0) {
+            CGFloat clipRect_width_height_ratio = _shadowViewClipRect.size.width / _shadowViewClipRect.size.height;
+            if (clipRect_width_height_ratio > [BKTool sharedManager].clipSize_width_height_ratio) {
+                CGFloat new_clipRect_width = _shadowViewClipRect.size.height * [BKTool sharedManager].clipSize_width_height_ratio;
+                _shadowViewClipRect.origin.x = (_shadowViewClipRect.size.width - new_clipRect_width)/2;
+                _shadowViewClipRect.size.width = new_clipRect_width;
+            }else{
+                CGFloat new_clipRect_height = _shadowViewClipRect.size.width / [BKTool sharedManager].clipSize_width_height_ratio;
+                _shadowViewClipRect.origin.y = (_shadowViewClipRect.size.height - new_clipRect_height)/2;
+                _shadowViewClipRect.size.height = new_clipRect_height;
+            }
+        }
     }
     return _shadowViewClipRect;
 }
@@ -466,7 +483,7 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
 {
     if (!_clipFrameView) {
         
-        CGRect contentFrame;
+        CGRect contentFrame = CGRectZero;
         if (CGRectEqualToRect(_shadowViewClipRect, CGRectZero)) {
             contentFrame = [[_editImageBgView.contentView superview] convertRect:_editImageBgView.contentView.frame toView:self];
         }else{
@@ -509,16 +526,19 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
         finishImageView.image = [[BKTool sharedManager] editImageWithImageName:@"clip_finish"];
         [finishBtn addSubview:finishImageView];
         
-        UIButton * rotationBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        rotationBtn.frame = CGRectMake((_bottomNav.bk_width - 64)/2, 0, 64, BK_SYSTEM_TABBAR_UI_HEIGHT);
-        [rotationBtn addTarget:self action:@selector(rotationBtnClick:) forControlEvents:UIControlEventTouchUpInside];
-        [_bottomNav addSubview:rotationBtn];
-        
-        UIImageView * rotationImageView = [[UIImageView alloc]initWithFrame:CGRectMake((rotationBtn.bk_width - 20)/2, (rotationBtn.bk_height - 20)/2, 20, 20)];
-        rotationImageView.clipsToBounds = YES;
-        rotationImageView.contentMode = UIViewContentModeScaleAspectFit;
-        rotationImageView.image = [[BKTool sharedManager] editImageWithImageName:@"left_rotation_90"];
-        [rotationBtn addSubview:rotationImageView];
+        //不是预定裁剪模式有旋转
+        if ([BKTool sharedManager].clipSize_width_height_ratio == 0) {
+            UIButton * rotationBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+            rotationBtn.frame = CGRectMake((_bottomNav.bk_width - 64)/2, 0, 64, BK_SYSTEM_TABBAR_UI_HEIGHT);
+            [rotationBtn addTarget:self action:@selector(rotationBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+            [_bottomNav addSubview:rotationBtn];
+            
+            UIImageView * rotationImageView = [[UIImageView alloc]initWithFrame:CGRectMake((rotationBtn.bk_width - 20)/2, (rotationBtn.bk_height - 20)/2, 20, 20)];
+            rotationImageView.clipsToBounds = YES;
+            rotationImageView.contentMode = UIViewContentModeScaleAspectFit;
+            rotationImageView.image = [[BKTool sharedManager] editImageWithImageName:@"left_rotation_90"];
+            [rotationBtn addSubview:rotationImageView];
+        }
         
         UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, _bottomNav.bk_width, BK_ONE_PIXEL)];
         line.backgroundColor = BKLineColor;
