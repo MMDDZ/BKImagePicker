@@ -675,11 +675,18 @@
     if (scrollView == _exampleImageCollectionView) {
         if (_isLoadOver) {
             
-            CGPoint p = [self.view convertPoint:self.exampleImageCollectionView.center toView:self.exampleImageCollectionView];
-            NSIndexPath * indexPath = [self.exampleImageCollectionView indexPathForItemAtPoint:p];
-            NSInteger item = indexPath.item;
+            CGPoint point = [self.view convertPoint:self.exampleImageCollectionView.center toView:self.exampleImageCollectionView];
+            NSIndexPath * currentIndexPath = [self.exampleImageCollectionView indexPathForItemAtPoint:point];
             
-            self.currentImageIndex = item;
+            self.currentImageIndex = currentIndexPath.item;
+            
+            BOOL flag = [_exampleImageCollectionView.indexPathsForVisibleItems containsObject:currentIndexPath];
+            if (flag) {
+                BKShowExampleImageCollectionViewCell * currentCell = (BKShowExampleImageCollectionViewCell*)[_exampleImageCollectionView cellForItemAtIndexPath:currentIndexPath];
+                
+                self.interactiveTransition.startImageView = currentCell.showImageView;
+                self.interactiveTransition.supperScrollView = currentCell.imageScrollView;
+            }
         }
     }
 }
