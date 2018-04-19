@@ -87,25 +87,25 @@
     [containerView insertSubview:toVC.view atIndex:0];
     [containerView addSubview:_startImageView];
     
-    [UIView animateWithDuration:[self transitionDuration:transitionContext] animations:^{
-        
-        if (CGRectEqualToRect(self.endRect, CGRectZero)) {
-            self.startImageView.alpha = 0;
-            fromVC.view.alpha = 0;
-        }else{
-            self.startImageView.frame = self.endRect;
-            fromVC.view.alpha = 0.3;
-        }
-        
-    } completion:^(BOOL finished) {
-        
-        [self.startImageView removeFromSuperview];
-        [transitionContext completeTransition:YES];
-        
-        if (self.endTransitionAnimateAction) {
-            self.endTransitionAnimateAction();
-        }
-    }];
+    //延迟0秒 在ios 11.3 iphone7 状况下不延迟 有可能卡死不动
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [UIView animateWithDuration:[self transitionDuration:transitionContext] animations:^{
+            if (CGRectEqualToRect(self.endRect, CGRectZero)) {
+                self.startImageView.alpha = 0;
+                fromVC.view.alpha = 0;
+            }else{
+                self.startImageView.frame = self.endRect;
+                fromVC.view.alpha = 0.3;
+            }
+        } completion:^(BOOL finished) {
+            [self.startImageView removeFromSuperview];
+            [transitionContext completeTransition:YES];
+            
+            if (self.endTransitionAnimateAction) {
+                self.endTransitionAnimateAction();
+            }
+        }];
+    });
 }
 
 @end
