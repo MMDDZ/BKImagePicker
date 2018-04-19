@@ -10,11 +10,12 @@
 #import "BKTool.h"
 #import "BKEditImageClipFrameView.h"
 
-typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
-    BKEditImagePanAngleLeftTop = 0,
-    BKEditImagePanAngleRightTop,
-    BKEditImagePanAngleLeftBottom,
-    BKEditImagePanAngleRightBottom,
+typedef NS_OPTIONS(NSUInteger, BKEditImagePanContains) {
+    BKEditImagePanContainsNone = 1 << 0,
+    BKEditImagePanContainsLineLeft = 1 << 1,
+    BKEditImagePanContainsLineRight = 1 << 2,
+    BKEditImagePanContainsLineTop = 1 << 3,
+    BKEditImagePanContainsLineBottom = 1 << 4,
 };
 
 @interface BKEditImageClipView()<UIGestureRecognizerDelegate>
@@ -102,7 +103,7 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
             UIPanGestureRecognizer * panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(windowPanGesture:)];
             panGesture.delegate = self;
             panGesture.maximumNumberOfTouches = 1;
-            panGesture.dicTag = @{@"type":@"window",@"angle":@""};
+            panGesture.dicTag = @{@"type":@"window",@"line":@""};
             [[UIApplication sharedApplication].keyWindow addGestureRecognizer:panGesture];
         }
     }
@@ -113,7 +114,7 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
 
 -(void)windowPanGesture:(UIPanGestureRecognizer*)panGesture
 {
-    if ([panGesture.dicTag[@"angle"] isEqual:@""]) {
+    if ([panGesture.dicTag[@"line"] isEqual:@""]) {
 
         panGesture.enabled = NO;
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -140,106 +141,35 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
     CGFloat maxW = _editImageBgView.bk_width * 0.8 > CGRectGetWidth(contentRect) ? CGRectGetWidth(contentRect) : _editImageBgView.bk_width * 0.8;
     CGFloat maxH = _editImageBgView.bk_height * 0.8 > CGRectGetHeight(contentRect) ? CGRectGetHeight(contentRect) : _editImageBgView.bk_height * 0.8;
     
-    CGFloat X = _clipFrameView.bk_x;
-    CGFloat Y = _clipFrameView.bk_y;
-    CGFloat width = _clipFrameView.bk_width;
-    CGFloat height = _clipFrameView.bk_height;
+    __block CGFloat X = _clipFrameView.bk_x;
+    __block CGFloat Y = _clipFrameView.bk_y;
+    __block CGFloat width = _clipFrameView.bk_width;
+    __block CGFloat height = _clipFrameView.bk_height;
     
-    switch ([panGesture.dicTag[@"angle"] integerValue]) {
-        case BKEditImagePanAngleLeftTop:
-        {
-            if (X + translation.x < minX) {
-                X = minX;
-                width = CGRectGetMaxX(_clipFrameView.frame) - X;
-            }else if (width - translation.x < minL) {
-                width = minL;
-                X = CGRectGetMaxX(_clipFrameView.frame) - width;
-            }else{
-                X = X + translation.x;
-                width = width - translation.x;
-            }
-            
-            if (Y + translation.y < minY) {
-                Y = minY;
-                height = CGRectGetMaxY(_clipFrameView.frame) - Y;
-            }else if (height - translation.y < minL) {
-                height = minL;
-                Y = CGRectGetMaxY(_clipFrameView.frame) - height;
-            }else{
-                Y = Y + translation.y;
-                height = height - translation.y;
-            }
-        }
-            break;
-        case BKEditImagePanAngleRightTop:
-        {
-            if (width + translation.x < minL) {
-                width = minL;
-            }else if (X + width + translation.x > maxX) {
-                width = maxX - X;
-                X = maxX - width;
-            }else{
-                width = width + translation.x;
-            }
-            
-            if (Y + translation.y < minY) {
-                Y = minY;
-                height = CGRectGetMaxY(_clipFrameView.frame) - Y;
-            }else if (height - translation.y < minL) {
-                height = minL;
-                Y = CGRectGetMaxY(_clipFrameView.frame) - height;
-            }else{
-                Y = Y + translation.y;
-                height = height - translation.y;
-            }
-        }
-            break;
-        case BKEditImagePanAngleLeftBottom:
-        {
-            if (X + translation.x < minX) {
-                X = minX;
-                width = CGRectGetMaxX(_clipFrameView.frame) - X;
-            }else if (width - translation.x < minL) {
-                width = minL;
-                X = CGRectGetMaxX(_clipFrameView.frame) - width;
-            }else{
-                X = X + translation.x;
-                width = width - translation.x;
-            }
-            
-            if (height + translation.y < minL) {
-                height = minL;
-            }else if (Y + height + translation.y > maxY) {
-                height = maxY - Y;
-                Y = maxY - height;
-            }else{
-                height = height + translation.y;
-            }
-        }
-            break;
-        case BKEditImagePanAngleRightBottom:
-        {
-            if (width + translation.x < minL) {
-                width = minL;
-            }else if (X + width + translation.x > maxX) {
-                width = maxX - X;
-                X = maxX - width;
-            }else{
-                width = width + translation.x;
-            }
-            
-            if (height + translation.y < minL) {
-                height = minL;
-            }else if (Y + height + translation.y > maxY) {
-                height = maxY - Y;
-                Y = maxY - height;
-            }else{
-                height = height + translation.y;
-            }
-        }
-            break;
-        default:
-            break;
+    BKEditImagePanContains panContains = [panGesture.dicTag[@"line"] integerValue];
+    
+    if (panContains & BKEditImagePanContainsLineLeft) {
+        [self moveClipFrameContainsLeftLineWithBeginX:X beginWidth:width translation:translation minX:minX minL:minL calculateComplete:^(CGFloat result_X, CGFloat result_width) {
+            X = result_X;
+            width = result_width;
+        }];
+    }else if (panContains & BKEditImagePanContainsLineRight) {
+        [self moveClipFrameContainsRightLineWithBeginX:X beginWidth:width translation:translation maxX:maxX minL:minL calculateComplete:^(CGFloat result_X, CGFloat result_width) {
+            X = result_X;
+            width = result_width;
+        }];
+    }
+    
+    if (panContains & BKEditImagePanContainsLineTop) {
+        [self moveClipFrameContainsTopLineWithBeginY:Y beginHeight:height translation:translation minY:minY minL:minL calculateComplete:^(CGFloat result_Y, CGFloat result_height) {
+            Y = result_Y;
+            height = result_height;
+        }];
+    }else if (panContains & BKEditImagePanContainsLineBottom) {
+        [self moveClipFrameContainsBottomLineWithBeginY:Y beginHeight:height translation:translation maxY:maxY minL:minL calculateComplete:^(CGFloat result_Y, CGFloat result_height) {
+            Y = result_Y;
+            height = result_height;
+        }];
     }
     
     if (width > maxW) {
@@ -254,7 +184,7 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
     [self changeShadowViewRect];
     
     if (panGesture.state == UIGestureRecognizerStateEnded || panGesture.state == UIGestureRecognizerStateFailed || panGesture.state == UIGestureRecognizerStateCancelled) {
-        panGesture.dicTag = @{@"type":@"window",@"angle":@""};
+        panGesture.dicTag = @{@"type":@"window",@"line":@""};
         
         if (![UIApplication sharedApplication].keyWindow.userInteractionEnabled) {
             return;
@@ -302,6 +232,78 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
     [panGesture setTranslation:CGPointZero inView:panGesture.view];
 }
 
+//移动包含左边线
+-(void)moveClipFrameContainsLeftLineWithBeginX:(CGFloat)X beginWidth:(CGFloat)width translation:(CGPoint)translation minX:(CGFloat)minX minL:(CGFloat)minL calculateComplete:(void (^)(CGFloat result_X, CGFloat result_width))complete
+{
+    if (X + translation.x < minX) {
+        X = minX;
+        width = CGRectGetMaxX(_clipFrameView.frame) - X;
+    }else if (width - translation.x < minL) {
+        width = minL;
+        X = CGRectGetMaxX(_clipFrameView.frame) - width;
+    }else{
+        X = X + translation.x;
+        width = width - translation.x;
+    }
+    
+    if (complete) {
+        complete(X,width);
+    }
+}
+
+//移动包含右边线
+-(void)moveClipFrameContainsRightLineWithBeginX:(CGFloat)X beginWidth:(CGFloat)width translation:(CGPoint)translation maxX:(CGFloat)maxX minL:(CGFloat)minL calculateComplete:(void (^)(CGFloat result_X, CGFloat result_width))complete
+{
+    if (width + translation.x < minL) {
+        width = minL;
+    }else if (X + width + translation.x > maxX) {
+        width = maxX - X;
+        X = maxX - width;
+    }else{
+        width = width + translation.x;
+    }
+    
+    if (complete) {
+        complete(X,width);
+    }
+}
+
+//移动包含上边线
+-(void)moveClipFrameContainsTopLineWithBeginY:(CGFloat)Y beginHeight:(CGFloat)height translation:(CGPoint)translation minY:(CGFloat)minY minL:(CGFloat)minL calculateComplete:(void (^)(CGFloat result_Y, CGFloat result_height))complete
+{
+    if (Y + translation.y < minY) {
+        Y = minY;
+        height = CGRectGetMaxY(_clipFrameView.frame) - Y;
+    }else if (height - translation.y < minL) {
+        height = minL;
+        Y = CGRectGetMaxY(_clipFrameView.frame) - height;
+    }else{
+        Y = Y + translation.y;
+        height = height - translation.y;
+    }
+    
+    if (complete) {
+        complete(Y,height);
+    }
+}
+
+//移动包含底边线
+-(void)moveClipFrameContainsBottomLineWithBeginY:(CGFloat)Y beginHeight:(CGFloat)height translation:(CGPoint)translation maxY:(CGFloat)maxY minL:(CGFloat)minL calculateComplete:(void (^)(CGFloat result_Y, CGFloat result_height))complete
+{
+    if (height + translation.y < minL) {
+        height = minL;
+    }else if (Y + height + translation.y > maxY) {
+        height = maxY - Y;
+        Y = maxY - height;
+    }else{
+        height = height + translation.y;
+    }
+    
+    if (complete) {
+        complete(Y,height);
+    }
+}
+
 #pragma mark - UIGestureRecognizerDelegate
 
 -(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
@@ -310,12 +312,34 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
         
         CGPoint point = [gestureRecognizer locationInView:self];
         
-        NSArray * frame_angle_rectArr = @[NSStringFromCGRect(CGRectMake(CGRectGetMinX(_clipFrameView.frame) - 25, CGRectGetMinY(_clipFrameView.frame) - 25, 50, 50)),
+        NSMutableArray * frame_all_rectArr = [NSMutableArray array];
+        //四个角
+        NSArray * frame_angle_rectArr = @[
+                                          NSStringFromCGRect(CGRectMake(CGRectGetMinX(_clipFrameView.frame) - 25, CGRectGetMinY(_clipFrameView.frame) - 25, 50, 50)),
                                           NSStringFromCGRect(CGRectMake(CGRectGetMaxX(_clipFrameView.frame) - 25, CGRectGetMinY(_clipFrameView.frame) - 25, 50, 50)),
                                           NSStringFromCGRect(CGRectMake(CGRectGetMinX(_clipFrameView.frame) - 25, CGRectGetMaxY(_clipFrameView.frame) - 25, 50, 50)),
                                           NSStringFromCGRect(CGRectMake(CGRectGetMaxX(_clipFrameView.frame) - 25, CGRectGetMaxY(_clipFrameView.frame) - 25, 50, 50))];
+        [frame_all_rectArr addObjectsFromArray:frame_angle_rectArr];
         
-        [frame_angle_rectArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        //当裁剪框高大于2个角的高度(50)时 添加左右两条边拖动框
+        if (_clipFrameView.bk_height > 50) {
+            //左右两条边
+            NSArray * frame_line_rectArr = @[
+                                             NSStringFromCGRect(CGRectMake(CGRectGetMinX(_clipFrameView.frame) - 25, CGRectGetMinY(_clipFrameView.frame) + 25, 50, _clipFrameView.bk_height - 50)),
+                                             NSStringFromCGRect(CGRectMake(CGRectGetMaxX(_clipFrameView.frame) - 25, CGRectGetMinY(_clipFrameView.frame) + 25, 50, _clipFrameView.bk_height - 50))];
+            [frame_all_rectArr addObjectsFromArray:frame_line_rectArr];
+        }
+        
+        //当裁剪框宽大于2个角的宽度(50)时 添加上线两条边拖动框
+        if (_clipFrameView.bk_width > 50) {
+            //左右两条边
+            NSArray * frame_line_rectArr = @[
+                                             NSStringFromCGRect(CGRectMake(CGRectGetMinX(_clipFrameView.frame) + 25, CGRectGetMinY(_clipFrameView.frame) - 25, _clipFrameView.bk_width - 50, 50)),
+                                             NSStringFromCGRect(CGRectMake(CGRectGetMinX(_clipFrameView.frame) + 25, CGRectGetMaxY(_clipFrameView.frame) - 25, _clipFrameView.bk_width - 50, 50))];
+            [frame_all_rectArr addObjectsFromArray:frame_line_rectArr];
+        }
+        
+        [frame_all_rectArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             
             CGRect rect = CGRectFromString(obj);
             
@@ -324,22 +348,42 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
                 switch (idx) {
                     case 0:
                     {
-                        gestureRecognizer.dicTag = @{@"type":@"window",@"angle":@(BKEditImagePanAngleLeftTop)};
+                        gestureRecognizer.dicTag = @{@"type":@"window",@"line":@(BKEditImagePanContainsLineLeft | BKEditImagePanContainsLineTop)};
                     }
                         break;
                     case 1:
                     {
-                        gestureRecognizer.dicTag = @{@"type":@"window",@"angle":@(BKEditImagePanAngleRightTop)};
+                        gestureRecognizer.dicTag = @{@"type":@"window",@"line":@(BKEditImagePanContainsLineRight | BKEditImagePanContainsLineTop)};
                     }
                         break;
                     case 2:
                     {
-                        gestureRecognizer.dicTag = @{@"type":@"window",@"angle":@(BKEditImagePanAngleLeftBottom)};
+                        gestureRecognizer.dicTag = @{@"type":@"window",@"line":@(BKEditImagePanContainsLineLeft | BKEditImagePanContainsLineBottom)};
                     }
                         break;
                     case 3:
                     {
-                        gestureRecognizer.dicTag = @{@"type":@"window",@"angle":@(BKEditImagePanAngleRightBottom)};
+                        gestureRecognizer.dicTag = @{@"type":@"window",@"line":@(BKEditImagePanContainsLineRight | BKEditImagePanContainsLineBottom)};
+                    }
+                        break;
+                    case 4:
+                    {
+                        gestureRecognizer.dicTag = @{@"type":@"window",@"line":@(BKEditImagePanContainsLineLeft)};
+                    }
+                        break;
+                    case 5:
+                    {
+                        gestureRecognizer.dicTag = @{@"type":@"window",@"line":@(BKEditImagePanContainsLineRight)};
+                    }
+                        break;
+                    case 6:
+                    {
+                        gestureRecognizer.dicTag = @{@"type":@"window",@"line":@(BKEditImagePanContainsLineTop)};
+                    }
+                        break;
+                    case 7:
+                    {
+                        gestureRecognizer.dicTag = @{@"type":@"window",@"line":@(BKEditImagePanContainsLineBottom)};
                     }
                         break;
                     default:
