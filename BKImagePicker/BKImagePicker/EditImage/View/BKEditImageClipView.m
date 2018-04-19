@@ -368,18 +368,23 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
     _editImageBgView.clipsToBounds = NO;
     _editImageBgView.bk_height = self.bk_height - self.bottomNav.bk_height;
  
-    CGFloat minZoomScale = 0.8;
-    if (_editImageBgView.contentView.bk_height > _editImageBgView.contentView.bk_width) {
-        CGFloat editImageBgViewHeight = _editImageBgView.contentView.bk_height/_editImageBgView.zoomScale;
-        if (editImageBgViewHeight > _editImageBgView.bk_height) {
-            CGFloat gap = editImageBgViewHeight - _editImageBgView.bk_height;
-            minZoomScale = (1 - gap/editImageBgViewHeight)*0.8;
-        }
-    }
-    _editImageBgView.minimumZoomScale = minZoomScale;
+    _editImageBgView.minimumZoomScale = 0.8;
     
     [UIView animateWithDuration:0.2 animations:^{
-        [self.editImageBgView setZoomScale:minZoomScale];
+        
+        [self.editImageBgView setZoomScale:0.8];
+        
+        if (self.editImageBgView.contentView.bk_height > self.editImageBgView.contentView.bk_width) {
+            CGFloat editImageBgViewHeight = self.editImageBgView.contentView.bk_height/self.editImageBgView.zoomScale;
+            if (editImageBgViewHeight > self.editImageBgView.bk_height && editImageBgViewHeight < self.bk_height) {
+                
+                CGFloat contentOffsetY = (editImageBgViewHeight - self.editImageBgView.bk_height)*0.8/2;
+                self.editImageBgView.contentOffset = CGPointMake(0, -contentOffsetY);
+            }else if (editImageBgViewHeight > self.bk_height) {
+                self.editImageBgView.contentOffset = CGPointMake(0, -self.editImageBgView.bk_height*0.1);
+            }
+        }
+        
     } completion:^(BOOL finished) {
         
         [self addShadowView];
@@ -414,6 +419,9 @@ typedef NS_ENUM(NSUInteger, BKEditImagePanAngle) {
 {
     if (CGRectEqualToRect(_shadowViewClipRect, CGRectZero)) {
         _shadowViewClipRect = _editImageBgView.contentView.bounds;
+        if (_shadowViewClipRect.size.height > _editImageBgView.bk_height) {
+            _shadowViewClipRect.size.height = _editImageBgView.bk_height;
+        }
         
         //如果是预定裁剪模式 按照预定比例修改裁剪框大小
         if ([BKTool sharedManager].clipSize_width_height_ratio != 0) {
