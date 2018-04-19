@@ -115,26 +115,13 @@
                 
                 PHAsset * asset = assets[coverCount];
                 
-                PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
-                options.resizeMode = PHImageRequestOptionsResizeModeFast;
-                options.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
-                options.synchronous = YES;
-                options.networkAccessAllowed = YES;
-                
-                [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:CGSizeMake(BK_SCREENW/2.0f, BK_SCREENW/2.0f) contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+                [[BKTool sharedManager] getThumbImageSizeWithAsset:asset complete:^(UIImage *thumbImage) {
+                    model.albumName = collection.localizedTitle;
+                    model.albumFirstImage = thumbImage;
+                    model.albumImageCount = assetsCount;
                     
-                    // 排除取消，错误，低清图三种情况，即已经获取到了高清图
-                    BOOL downImageloadFinined = ![[info objectForKey:PHImageCancelledKey] boolValue] && ![info objectForKey:PHImageErrorKey] && ![[info objectForKey:PHImageResultIsDegradedKey] boolValue];
-                    if (downImageloadFinined) {
-                        if(result) {
-                            model.albumName = collection.localizedTitle;
-                            model.albumFirstImage = result;
-                            model.albumImageCount = assetsCount;
-                            
-                            [self.imageClassArray addObject:model];
-                            [self.imageClassTableView reloadData];
-                        }
-                    }
+                    [self.imageClassArray addObject:model];
+                    [self.imageClassTableView reloadData];
                 }];
             }
         }
