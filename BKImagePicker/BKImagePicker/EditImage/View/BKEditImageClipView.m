@@ -315,27 +315,27 @@ typedef NS_OPTIONS(NSUInteger, BKEditImagePanContains) {
         NSMutableArray * frame_all_rectArr = [NSMutableArray array];
         //四个角
         NSArray * frame_angle_rectArr = @[
-                                          NSStringFromCGRect(CGRectMake(CGRectGetMinX(_clipFrameView.frame) - 25, CGRectGetMinY(_clipFrameView.frame) - 25, 50, 50)),
-                                          NSStringFromCGRect(CGRectMake(CGRectGetMaxX(_clipFrameView.frame) - 25, CGRectGetMinY(_clipFrameView.frame) - 25, 50, 50)),
-                                          NSStringFromCGRect(CGRectMake(CGRectGetMinX(_clipFrameView.frame) - 25, CGRectGetMaxY(_clipFrameView.frame) - 25, 50, 50)),
-                                          NSStringFromCGRect(CGRectMake(CGRectGetMaxX(_clipFrameView.frame) - 25, CGRectGetMaxY(_clipFrameView.frame) - 25, 50, 50))];
+                                          NSStringFromCGRect(CGRectMake(CGRectGetMinX(_clipFrameView.frame) - 30, CGRectGetMinY(_clipFrameView.frame) - 30, 60, 60)),
+                                          NSStringFromCGRect(CGRectMake(CGRectGetMaxX(_clipFrameView.frame) - 30, CGRectGetMinY(_clipFrameView.frame) - 30, 60, 60)),
+                                          NSStringFromCGRect(CGRectMake(CGRectGetMinX(_clipFrameView.frame) - 30, CGRectGetMaxY(_clipFrameView.frame) - 30, 60, 60)),
+                                          NSStringFromCGRect(CGRectMake(CGRectGetMaxX(_clipFrameView.frame) - 30, CGRectGetMaxY(_clipFrameView.frame) - 30, 60, 60))];
         [frame_all_rectArr addObjectsFromArray:frame_angle_rectArr];
         
-        //当裁剪框高大于2个角的高度(50)时 添加左右两条边拖动框
-        if (_clipFrameView.bk_height > 50) {
+        //当裁剪框高大于2个角的高度(60)时 添加左右两条边拖动框
+        if (_clipFrameView.bk_height > 60) {
             //左右两条边
             NSArray * frame_line_rectArr = @[
-                                             NSStringFromCGRect(CGRectMake(CGRectGetMinX(_clipFrameView.frame) - 25, CGRectGetMinY(_clipFrameView.frame) + 25, 50, _clipFrameView.bk_height - 50)),
-                                             NSStringFromCGRect(CGRectMake(CGRectGetMaxX(_clipFrameView.frame) - 25, CGRectGetMinY(_clipFrameView.frame) + 25, 50, _clipFrameView.bk_height - 50))];
+                                             NSStringFromCGRect(CGRectMake(CGRectGetMinX(_clipFrameView.frame) - 30, CGRectGetMinY(_clipFrameView.frame) + 30, 60, _clipFrameView.bk_height - 60)),
+                                             NSStringFromCGRect(CGRectMake(CGRectGetMaxX(_clipFrameView.frame) - 30, CGRectGetMinY(_clipFrameView.frame) + 30, 60, _clipFrameView.bk_height - 60))];
             [frame_all_rectArr addObjectsFromArray:frame_line_rectArr];
         }
         
-        //当裁剪框宽大于2个角的宽度(50)时 添加上线两条边拖动框
-        if (_clipFrameView.bk_width > 50) {
+        //当裁剪框宽大于2个角的宽度(60)时 添加上线两条边拖动框
+        if (_clipFrameView.bk_width > 60) {
             //左右两条边
             NSArray * frame_line_rectArr = @[
-                                             NSStringFromCGRect(CGRectMake(CGRectGetMinX(_clipFrameView.frame) + 25, CGRectGetMinY(_clipFrameView.frame) - 25, _clipFrameView.bk_width - 50, 50)),
-                                             NSStringFromCGRect(CGRectMake(CGRectGetMinX(_clipFrameView.frame) + 25, CGRectGetMaxY(_clipFrameView.frame) - 25, _clipFrameView.bk_width - 50, 50))];
+                                             NSStringFromCGRect(CGRectMake(CGRectGetMinX(_clipFrameView.frame) + 30, CGRectGetMinY(_clipFrameView.frame) - 30, _clipFrameView.bk_width - 60, 60)),
+                                             NSStringFromCGRect(CGRectMake(CGRectGetMinX(_clipFrameView.frame) + 30, CGRectGetMaxY(_clipFrameView.frame) - 30, _clipFrameView.bk_width - 60, 60))];
             [frame_all_rectArr addObjectsFromArray:frame_line_rectArr];
         }
         
