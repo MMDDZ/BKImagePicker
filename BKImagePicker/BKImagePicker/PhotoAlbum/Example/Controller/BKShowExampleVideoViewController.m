@@ -169,18 +169,32 @@
         _playerView = [[UIView alloc]initWithFrame:self.view.bounds];
         _playerView.backgroundColor = [UIColor blackColor];
         
-        [[BKTool sharedManager] getVideoDataWithAsset:self.tapVideoModel.asset complete:^(AVPlayerItem *playerItem) {
-            self.player = [AVPlayer playerWithPlayerItem:playerItem];
-            [self.playerView.layer addSublayer:self.playerLayer];
-            
-            [self addProgressObserver];
-        }];
+        [self loadVideoDataComplete:nil];
     }
     return _playerView;
 }
 
+-(void)loadVideoDataComplete:(void (^)(void))complete
+{
+    [[BKTool sharedManager] getVideoDataWithAsset:self.tapVideoModel.asset complete:^(AVPlayerItem *playerItem) {
+        
+        if (playerItem) {
+            self.player = [AVPlayer playerWithPlayerItem:playerItem];
+            [self.playerView.layer addSublayer:self.playerLayer];
+            
+            [self addProgressObserver];
+        }else{
+            [[BKTool sharedManager] showRemind:@"视频加载失败"];
+        }
+        
+        if (complete) {
+            complete();
+        }
+    }];
+}
+
 //进度监控
-- (void)addProgressObserver
+-(void)addProgressObserver
 {
     AVPlayerItem *playerItem = _player.currentItem;
     UIProgressView *progress = _progress;

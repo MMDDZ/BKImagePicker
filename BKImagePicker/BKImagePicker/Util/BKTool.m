@@ -526,8 +526,6 @@ float const BKThumbImageCompressSizeMultiplier = 0.5;//图片长宽压缩比例 
         dispatch_async(dispatch_get_main_queue(), ^{
             if (complete) {
                 complete(playerItem);
-            }else{
-                [[BKTool sharedManager] showRemind:@"视频加载失败"];
             }
         });
     }];
