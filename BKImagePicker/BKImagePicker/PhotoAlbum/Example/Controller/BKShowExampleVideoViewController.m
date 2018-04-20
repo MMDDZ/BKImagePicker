@@ -12,46 +12,20 @@
 
 @interface BKShowExampleVideoViewController ()
 
+@property (nonatomic,strong) UIImageView * coverImageView;//封面
+@property (nonatomic,strong) UIProgressView * progress;//进度条(没加载显示)
+
 @property (nonatomic,strong) AVPlayer * player;
 @property (nonatomic,strong) UIView * playerView;
 @property (nonatomic,strong) AVPlayerLayer * playerLayer;
+
+@property (nonatomic,assign) id timeObserver;
 
 @property (nonatomic,strong) UIButton * start_pause;
 
 @end
 
 @implementation BKShowExampleVideoViewController
-
-#pragma mark - 原图属性
-
-/**
- 获取对应原图data
- 
- @param asset 相簿
- */
--(void)getOriginalImageDataSizeWithAsset:(PHAsset*)asset
-{
-    PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
-    options.resizeMode = PHImageRequestOptionsResizeModeExact;
-    options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
-    options.synchronous = NO;
-    options.networkAccessAllowed = YES;
-    
-    [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
-        
-        self.tapVideoModel.originalImageData = imageData;
-    }];
-}
-
-#pragma mark - NSNotification
-
--(void)playbackFinished:(NSNotification *)notification
-{
-    UIImage * start_image = [[BKTool sharedManager] imageWithImageName:@"video_start"];
-    [_start_pause setImage:start_image forState:UIControlStateNormal];
-    
-    [self.player seekToTime:CMTimeMake(0, 1)];
-}
 
 #pragma mark - viewDidLoad
 
@@ -61,10 +35,11 @@
     
     self.view.backgroundColor = [UIColor blackColor];
     self.topNavView.hidden = YES;
+    
     [self initBottomNav];
     
     [self.view insertSubview:self.playerView atIndex:0];
-    [self getOriginalImageDataSizeWithAsset:self.tapVideoModel.asset];
+    [self.view insertSubview:self.coverImageView aboveSubview:self.playerView];
 }
 
 -(void)viewWillLayoutSubviews
@@ -91,8 +66,21 @@
 {
     [super viewWillDisappear:animated];
     
+    if (_timeObserver) {
+        [_player removeTimeObserver:_timeObserver];
+    }
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+}
+
+#pragma mark - NSNotification
+
+-(void)playbackFinished:(NSNotification *)notification
+{
+    UIImage * start_image = [[BKTool sharedManager] imageWithImageName:@"video_start"];
+    [_start_pause setImage:start_image forState:UIControlStateNormal];
+    
+    [self.player seekToTime:CMTimeMake(0, 1)];
 }
 
 #pragma mark - initBottomNav
@@ -100,7 +88,7 @@
 -(void)initBottomNav
 {
     self.bottomLine.hidden = YES;
-    self.bottomNavViewHeight = 64;
+    self.bottomNavViewHeight = BK_IPONEX ? BK_SYSTEM_TABBAR_HEIGHT : 64;
     
     self.bottomNavView.backgroundColor = [UIColor colorWithWhite:0.2 alpha:0.5];
     
@@ -152,19 +140,22 @@
     [[BKTool sharedManager].selectImageArray addObject:self.tapVideoModel];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:BKFinishSelectImageNotification object:nil userInfo:nil];
-    [self.getCurrentVC dismissViewControllerAnimated:YES completion:nil];
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 -(void)start_pauseBtnClick:(UIButton*)button
 {
+    [_coverImageView removeFromSuperview];
+    _coverImageView = nil;
+    
     if (self.player.rate == 0) {
         UIImage * pause_image = [[BKTool sharedManager] imageWithImageName:@"video_pause"];
-        [button setImage:pause_image forState:UIControlStateNormal];
+        [_start_pause setImage:pause_image forState:UIControlStateNormal];
         
         [self.player play];
     }else {
         UIImage * start_image = [[BKTool sharedManager] imageWithImageName:@"video_start"];
-        [button setImage:start_image forState:UIControlStateNormal];
+        [_start_pause setImage:start_image forState:UIControlStateNormal];
         
         [self.player pause];
     }
@@ -178,24 +169,28 @@
         _playerView = [[UIView alloc]initWithFrame:self.view.bounds];
         _playerView.backgroundColor = [UIColor blackColor];
         
-        [self requestPlayerItemHandler:^(AVPlayerItem *playerItem) {
+        [[BKTool sharedManager] getVideoDataWithAsset:self.tapVideoModel.asset complete:^(AVPlayerItem *playerItem) {
             self.player = [AVPlayer playerWithPlayerItem:playerItem];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self.playerView.layer addSublayer:self.playerLayer];
-            });
+            [self.playerView.layer addSublayer:self.playerLayer];
+            
+            [self addProgressObserver];
         }];
     }
     return _playerView;
 }
 
--(void)requestPlayerItemHandler:(void (^)(AVPlayerItem * playerItem))handler
+//进度监控
+- (void)addProgressObserver
 {
-    PHVideoRequestOptions * options = [[PHVideoRequestOptions alloc]init];
-    options.networkAccessAllowed = YES;
-    
-    [[PHImageManager defaultManager] requestPlayerItemForVideo:self.tapVideoModel.asset options:options resultHandler:^(AVPlayerItem * _Nullable playerItem, NSDictionary * _Nullable info) {
-        if (handler) {
-            handler(playerItem);
+    AVPlayerItem *playerItem = _player.currentItem;
+    UIProgressView *progress = _progress;
+    self.timeObserver = [_player addPeriodicTimeObserverForInterval:CMTimeMake(1, 1) queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
+        if (progress) {
+            float current = CMTimeGetSeconds(time);
+            float total = CMTimeGetSeconds([playerItem duration]);
+            if (current) {
+                [progress setProgress:(current/total) animated:YES];
+            }
         }
     }];
 }
@@ -210,6 +205,43 @@
         _playerLayer.videoGravity = AVLayerVideoGravityResizeAspect;
     }
     return _playerLayer;
+}
+
+#pragma mark - coverImageView
+
+-(UIImageView*)coverImageView
+{
+    if (!_coverImageView) {
+        _coverImageView = [[UIImageView alloc]initWithFrame:self.view.bounds];
+        _coverImageView.clipsToBounds = YES;
+        _coverImageView.contentMode = UIViewContentModeScaleAspectFit;
+        
+        if (self.tapVideoModel.isHaveOriginalImageFlag) {
+            self.coverImageView.image = [UIImage imageWithData:self.tapVideoModel.originalImageData];
+        }else if (self.tapVideoModel.thumbImage) {
+            self.coverImageView.image = self.tapVideoModel.thumbImage;
+            
+            [[BKTool sharedManager] getOriginalImageDataWithAsset:self.tapVideoModel.asset complete:^(NSData *originalImageData, NSURL *url) {
+                self.tapVideoModel.originalImageData = originalImageData;
+                self.tapVideoModel.isHaveOriginalImageFlag = YES;
+                
+                self.coverImageView.image = [UIImage imageWithData:originalImageData];
+            }];
+        }else{
+            [[BKTool sharedManager] getThumbImageWithAsset:self.tapVideoModel.asset complete:^(UIImage *thumbImage) {
+                self.tapVideoModel.thumbImage = thumbImage;
+                self.coverImageView.image = thumbImage;
+            }];
+            
+            [[BKTool sharedManager] getOriginalImageDataWithAsset:self.tapVideoModel.asset complete:^(NSData *originalImageData, NSURL *url) {
+                self.tapVideoModel.originalImageData = originalImageData;
+                self.tapVideoModel.isHaveOriginalImageFlag = YES;
+                
+                self.coverImageView.image = [UIImage imageWithData:originalImageData];
+            }];
+        }
+    }
+    return _coverImageView;
 }
 
 @end

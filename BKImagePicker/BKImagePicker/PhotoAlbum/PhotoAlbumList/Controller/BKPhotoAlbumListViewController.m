@@ -115,7 +115,7 @@
                 
                 PHAsset * asset = assets[coverCount];
                 
-                [[BKTool sharedManager] getThumbImageSizeWithAsset:asset complete:^(UIImage *thumbImage) {
+                [[BKTool sharedManager] getThumbImageWithAsset:asset complete:^(UIImage *thumbImage) {
                     model.albumName = collection.localizedTitle;
                     model.albumFirstImage = thumbImage;
                     model.albumImageCount = assetsCount;

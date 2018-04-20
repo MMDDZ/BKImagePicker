@@ -435,10 +435,10 @@ float const BKThumbImageCompressSizeMultiplier = 0.5;//图片长宽压缩比例 
 /**
  获取对应缩略图
  
- @param asset 相簿
+ @param asset 相片
  @param complete 完成方法
  */
--(void)getThumbImageSizeWithAsset:(PHAsset*)asset complete:(void (^)(UIImage * thumbImage))complete
+-(void)getThumbImageWithAsset:(PHAsset*)asset complete:(void (^)(UIImage * thumbImage))complete
 {
     [[BKTool sharedManager].cachingImageManager requestImageForAsset:asset targetSize:CGSizeMake(BK_SCREENW/2.0f, BK_SCREENW/2.0f) contentMode:PHImageContentModeAspectFill options:self.thumbImageOptions resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
         
@@ -471,10 +471,10 @@ float const BKThumbImageCompressSizeMultiplier = 0.5;//图片长宽压缩比例 
 /**
  获取对应原图
  
- @param asset 相簿
+ @param asset 相片
  @param complete 完成方法
  */
--(void)getOriginalImageSizeWithAsset:(PHAsset*)asset complete:(void (^)(UIImage * originalImage))complete
+-(void)getOriginalImageWithAsset:(PHAsset*)asset complete:(void (^)(UIImage * originalImage))complete
 {
     [[BKTool sharedManager].cachingImageManager requestImageForAsset:asset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:self.originalImageOptions resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
         
@@ -495,10 +495,10 @@ float const BKThumbImageCompressSizeMultiplier = 0.5;//图片长宽压缩比例 
 /**
  获取对应原图data
  
- @param asset 相簿
+ @param asset 相片
  @param complete 完成方法
  */
--(void)getOriginalImageDataSizeWithAsset:(PHAsset*)asset complete:(void (^)(NSData * originalImageData,NSURL * url))complete
+-(void)getOriginalImageDataWithAsset:(PHAsset*)asset complete:(void (^)(NSData * originalImageData,NSURL * url))complete
 {
     [[BKTool sharedManager].cachingImageManager requestImageDataForAsset:asset options:self.originalImageOptions resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
         
@@ -506,6 +506,28 @@ float const BKThumbImageCompressSizeMultiplier = 0.5;//图片长宽压缩比例 
         dispatch_async(dispatch_get_main_queue(), ^{
             if (complete) {
                 complete(imageData,url);
+            }
+        });
+    }];
+}
+
+/**
+ 获取视频
+
+ @param asset 相片
+ @param complete 完成方法
+ */
+-(void)getVideoDataWithAsset:(PHAsset*)asset complete:(void (^)(AVPlayerItem * playerItem))complete
+{
+    PHVideoRequestOptions * options = [[PHVideoRequestOptions alloc]init];
+    options.networkAccessAllowed = YES;
+    
+    [[PHImageManager defaultManager] requestPlayerItemForVideo:asset options:options resultHandler:^(AVPlayerItem *playerItem, NSDictionary *info) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (complete) {
+                complete(playerItem);
+            }else{
+                [[BKTool sharedManager] showRemind:@"视频加载失败"];
             }
         });
     }];

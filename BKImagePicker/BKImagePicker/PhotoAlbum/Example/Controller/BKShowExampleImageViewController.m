@@ -403,7 +403,7 @@
             complete([UIImage imageWithData:imageModel.originalImageData]);
         }
     }else{
-        [[BKTool sharedManager] getOriginalImageDataSizeWithAsset:imageModel.asset complete:^(NSData *originalImageData, NSURL *url) {
+        [[BKTool sharedManager] getOriginalImageDataWithAsset:imageModel.asset complete:^(NSData *originalImageData, NSURL *url) {
             
             imageModel.originalImageData = originalImageData;
             imageModel.isHaveOriginalImageFlag = YES;
@@ -563,17 +563,17 @@
     
     if (model.thumbImage) {
         [self editImageView:currentCell.showImageView image:model.thumbImage imageData:nil scrollView:currentCell.imageScrollView];
-        [[BKTool sharedManager] getOriginalImageSizeWithAsset:model.asset complete:^(UIImage *originalImage) {
+        [[BKTool sharedManager] getOriginalImageWithAsset:model.asset complete:^(UIImage *originalImage) {
             [self editImageView:currentCell.showImageView image:originalImage imageData:nil scrollView:currentCell.imageScrollView];
             
             self.currentOriginalImageLoadedFlag = YES;
         }];
     }else{
-        [[BKTool sharedManager] getThumbImageSizeWithAsset:model.asset complete:^(UIImage *thumbImage) {
+        [[BKTool sharedManager] getThumbImageWithAsset:model.asset complete:^(UIImage *thumbImage) {
             model.thumbImage = thumbImage;
             [self editImageView:currentCell.showImageView image:thumbImage imageData:nil scrollView:currentCell.imageScrollView];
             
-            [[BKTool sharedManager] getOriginalImageSizeWithAsset:model.asset complete:^(UIImage *originalImage) {
+            [[BKTool sharedManager] getOriginalImageWithAsset:model.asset complete:^(UIImage *originalImage) {
                 [self editImageView:currentCell.showImageView image:originalImage imageData:nil scrollView:currentCell.imageScrollView];
                 
                 self.currentOriginalImageLoadedFlag = YES;
@@ -613,7 +613,7 @@
             [self calculataImageSize];
         }
     }else{
-        [[BKTool sharedManager] getOriginalImageDataSizeWithAsset:model.asset complete:^(NSData * originalImageData,NSURL * url) {
+        [[BKTool sharedManager] getOriginalImageDataWithAsset:model.asset complete:^(NSData * originalImageData,NSURL * url) {
             
             model.originalImageData = originalImageData;
             model.isHaveOriginalImageFlag = YES;

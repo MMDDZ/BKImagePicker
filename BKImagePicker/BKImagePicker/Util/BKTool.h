@@ -202,23 +202,31 @@ UIKIT_EXTERN const float BKThumbImageCompressSizeMultiplier;
 /**
  获取对应缩略图
  
- @param asset 相簿
+ @param asset 相片
  @param complete 完成方法
  */
--(void)getThumbImageSizeWithAsset:(PHAsset*)asset complete:(void (^)(UIImage * thumbImage))complete;
+-(void)getThumbImageWithAsset:(PHAsset*)asset complete:(void (^)(UIImage * thumbImage))complete;
 /**
  获取对应原图
  
- @param asset 相簿
+ @param asset 相片
  @param complete 完成方法
  */
--(void)getOriginalImageSizeWithAsset:(PHAsset*)asset complete:(void (^)(UIImage * originalImage))complete;
+-(void)getOriginalImageWithAsset:(PHAsset*)asset complete:(void (^)(UIImage * originalImage))complete;
 /**
  获取对应原图data
  
- @param asset 相簿
+ @param asset 相片
  @param complete 完成方法
  */
--(void)getOriginalImageDataSizeWithAsset:(PHAsset*)asset complete:(void (^)(NSData * originalImageData,NSURL * url))complete;
+-(void)getOriginalImageDataWithAsset:(PHAsset*)asset complete:(void (^)(NSData * originalImageData,NSURL * url))complete;
+
+/**
+ 获取视频
+ 
+ @param asset 相片
+ @param complete 完成方法
+ */
+-(void)getVideoDataWithAsset:(PHAsset*)asset complete:(void (^)(AVPlayerItem * playerItem))complete;
 
 @end

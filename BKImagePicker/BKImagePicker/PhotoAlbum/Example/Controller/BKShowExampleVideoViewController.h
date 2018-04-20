@@ -13,8 +13,6 @@
 
 @interface BKShowExampleVideoViewController : BKImageBaseViewController
 
-@property (nonatomic,weak) UIViewController * getCurrentVC;
-
 /**
  选取的Video model
  */

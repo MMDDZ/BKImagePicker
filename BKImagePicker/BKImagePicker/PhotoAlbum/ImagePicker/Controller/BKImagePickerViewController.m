@@ -297,7 +297,7 @@
         [currentCell revaluateIndexPath:indexPath listArr:[self.listArray copy] selectImageArr:[[BKTool sharedManager].selectImageArray copy]];
     }else{
         
-        [[BKTool sharedManager] getThumbImageSizeWithAsset:model.asset complete:^(UIImage *thumbImage) {
+        [[BKTool sharedManager] getThumbImageWithAsset:model.asset complete:^(UIImage *thumbImage) {
             model.thumbImage = thumbImage;
             
             [self.listArray replaceObjectAtIndex:indexPath.item withObject:model];
@@ -357,7 +357,7 @@
         //当裁剪比例不为0时 进入裁剪状态
         if ([BKTool sharedManager].clipSize_width_height_ratio != 0) {
             
-            [[BKTool sharedManager] getOriginalImageSizeWithAsset:model.asset complete:^(UIImage *originalImage) {
+            [[BKTool sharedManager] getOriginalImageWithAsset:model.asset complete:^(UIImage *originalImage) {
                 BKEditImageViewController * vc = [[BKEditImageViewController alloc] init];
                 vc.editImageArr = @[originalImage];
                 vc.fromModule = BKEditImageFromModulePhotoAlbum;
@@ -523,7 +523,7 @@
                 [self calculataImageSize];
             }
         }else{
-            [[BKTool sharedManager] getOriginalImageDataSizeWithAsset:imageModel.asset complete:^(NSData * originalImageData,NSURL * url) {
+            [[BKTool sharedManager] getOriginalImageDataWithAsset:imageModel.asset complete:^(NSData * originalImageData,NSURL * url) {
                 
                 dispatch_async(dispatch_get_global_queue(0, 0), ^{
                     imageModel.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];

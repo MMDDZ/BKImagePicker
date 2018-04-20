@@ -431,7 +431,7 @@
                             }
                             pthread_mutex_destroy(&mutex);
                         }else{
-                            [[BKTool sharedManager] getOriginalImageDataSizeWithAsset:asset complete:^(NSData *originalImageData, NSURL *url) {
+                            [[BKTool sharedManager] getOriginalImageDataWithAsset:asset complete:^(NSData *originalImageData, NSURL *url) {
                                 BKImageModel * imageModel = [[BKImageModel alloc]init];
                                 imageModel.originalImageData = originalImageData;
                                 imageModel.url = url;
@@ -479,7 +479,7 @@
             [[BKTool sharedManager] hideLoad];
             
         }else{
-            [[BKTool sharedManager] getOriginalImageDataSizeWithAsset:asset complete:^(NSData *originalImageData, NSURL *url) {
+            [[BKTool sharedManager] getOriginalImageDataWithAsset:asset complete:^(NSData *originalImageData, NSURL *url) {
                 BKImageModel * imageModel = [[BKImageModel alloc]init];
                 imageModel.originalImageData = originalImageData;
                 imageModel.url = url;
