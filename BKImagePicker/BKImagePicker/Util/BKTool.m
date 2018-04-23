@@ -192,26 +192,25 @@ float const BKThumbImageCompressSizeMultiplier = 0.5;//图片长宽压缩比例 
         [self hideLoad];
     }
     
-    CALayer * loadLayer = [CALayer layer];
-    loadLayer.bounds = CGRectMake(0, 0, view.bounds.size.width/4.0f, view.bounds.size.width/4.0f);
-    loadLayer.position = view.center;
-    loadLayer.backgroundColor = [UIColor colorWithWhite:0 alpha:0.75f].CGColor;
-    loadLayer.cornerRadius = loadLayer.bounds.size.width/10.0f;
-    loadLayer.masksToBounds = YES;
-    [view.layer addSublayer:loadLayer];
-    
-    self.loadLayer = loadLayer;
+    self.loadLayer = [CALayer layer];
+    self.loadLayer.bounds = CGRectMake(0, 0, view.bounds.size.width/4.0f, view.bounds.size.width/4.0f);
+    self.loadLayer.position = view.center;
+    self.loadLayer.backgroundColor = [UIColor colorWithWhite:0 alpha:0.75f].CGColor;
+    self.loadLayer.cornerRadius = self.loadLayer.bounds.size.width/10.0f;
+    self.loadLayer.masksToBounds = YES;
+    [view.layer addSublayer:self.loadLayer];
     
     NSTimeInterval beginTime = CACurrentMediaTime();
     
     for (int i = 0; i < 2; i++) {
         CALayer * circle = [CALayer layer];
-        circle.bounds = CGRectMake(0, 0, loadLayer.bounds.size.width/2.0f, loadLayer.bounds.size.height/2.0f);
-        circle.position = CGPointMake(loadLayer.bounds.size.width/2.0f, loadLayer.bounds.size.height/2.0f);
+        circle.bounds = CGRectMake(0, 0, self.loadLayer.bounds.size.width/2.0f, self.loadLayer.bounds.size.height/2.0f);
+        circle.position = CGPointMake(self.loadLayer.bounds.size.width/2.0f, self.loadLayer.bounds.size.height/2.0f);
         circle.backgroundColor = [UIColor whiteColor].CGColor;
         circle.opacity = 0.6;
         circle.cornerRadius = CGRectGetHeight(circle.bounds) * 0.5;
         circle.transform = CATransform3DMakeScale(0.0, 0.0, 0.0);
+        circle.name = @"loadCircleLayer";
         
         CAKeyframeAnimation * animation = [CAKeyframeAnimation animationWithKeyPath:@"transform"];
         animation.removedOnCompletion = NO;
@@ -228,8 +227,50 @@ float const BKThumbImageCompressSizeMultiplier = 0.5;//图片长宽压缩比例 
                         [NSValue valueWithCATransform3D:CATransform3DMakeScale(1.0, 1.0, 0.0)],
                         [NSValue valueWithCATransform3D:CATransform3DMakeScale(0.0, 0.0, 0.0)]];
         
-        [loadLayer addSublayer:circle];
+        [self.loadLayer addSublayer:circle];
         [circle addAnimation:animation forKey:@"loading_admin"];
+    }
+}
+
+/**
+ 加载Loading 带下载进度
+ 
+ @param view 加载Loading
+ @param progress 进度
+ */
+-(void)showLoadInView:(UIView*)view downLoadProgress:(CGFloat)progress
+{
+    if (![[view.layer sublayers] containsObject:self.loadLayer]) {
+        
+        [self showLoadInView:view];
+        
+        UIFont * font = [UIFont systemFontOfSize:10.0 * [UIScreen mainScreen].bounds.size.width/320.0f];
+        NSString * string = [NSString stringWithFormat:@"%.0f%%",progress*100];
+        
+        CGFloat height = [[BKTool sharedManager] sizeWithString:string UIWidth:self.loadLayer.frame.size.width font:font].height;
+        
+        CATextLayer * textLayer = [CATextLayer layer];
+        textLayer.bounds = CGRectMake(0, 0, self.loadLayer.frame.size.width, height);
+        textLayer.position = CGPointMake(self.loadLayer.frame.size.width/2, self.loadLayer.frame.size.height/2);
+        textLayer.string = string;
+        textLayer.contentsScale = [UIScreen mainScreen].scale;
+        textLayer.foregroundColor = BKNavGrayTitleColor.CGColor;
+        textLayer.alignmentMode = kCAAlignmentCenter;
+        textLayer.name = @"loadTextLayer";
+        [self.loadLayer addSublayer:textLayer];
+        
+        CFStringRef fontName = (__bridge CFStringRef)font.fontName;
+        CGFontRef fontRef = CGFontCreateWithFontName(fontName);
+        textLayer.font = fontRef;
+        textLayer.fontSize = font.pointSize;
+        CGFontRelease(fontRef);
+    }else{
+        [[self.loadLayer sublayers] enumerateObjectsUsingBlock:^(CALayer * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if ([obj.name isEqualToString:@"loadTextLayer"]) {
+                CATextLayer * textLayer = (CATextLayer*)obj;
+                textLayer.string = [NSString stringWithFormat:@"%.0f%%",progress*100];
+            }
+        }];
     }
 }
 
@@ -239,7 +280,9 @@ float const BKThumbImageCompressSizeMultiplier = 0.5;//图片长宽压缩比例 
 -(void)hideLoad
 {
     [[self.loadLayer sublayers] enumerateObjectsUsingBlock:^(CALayer * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        [obj removeAnimationForKey:@"loading_admin"];
+        if ([obj.name isEqualToString:@"loadCircleLayer"]) {
+            [obj removeAnimationForKey:@"loading_admin"];
+        }
     }];
     [self.loadLayer removeFromSuperlayer];
     self.loadLayer = nil;
@@ -515,17 +558,30 @@ float const BKThumbImageCompressSizeMultiplier = 0.5;//图片长宽压缩比例 
  获取视频
 
  @param asset 相片
+ @param progressHandler 下载进度返回
  @param complete 完成方法
  */
--(void)getVideoDataWithAsset:(PHAsset*)asset complete:(void (^)(AVPlayerItem * playerItem))complete
+-(void)getVideoDataWithAsset:(PHAsset*)asset progressHandler:(void (^)(double progress, NSError * error, PHImageRequestID imageRequestID))progressHandler complete:(void (^)(BOOL isInCloud, AVPlayerItem * playerItem, PHImageRequestID imageRequestID))complete
 {
     PHVideoRequestOptions * options = [[PHVideoRequestOptions alloc]init];
+    options.version = PHVideoRequestOptionsVersionOriginal;
+    options.deliveryMode = PHVideoRequestOptionsDeliveryModeAutomatic;
     options.networkAccessAllowed = YES;
-    
-    [[PHImageManager defaultManager] requestPlayerItemForVideo:asset options:options resultHandler:^(AVPlayerItem *playerItem, NSDictionary *info) {
+    [options setProgressHandler:^(double progress, NSError * _Nullable error, BOOL * _Nonnull stop, NSDictionary * _Nullable info) {
         dispatch_async(dispatch_get_main_queue(), ^{
+            PHImageRequestID imageRequestID = [info[PHImageResultRequestIDKey] intValue];
+            if (progressHandler) {
+                progressHandler(progress,error,imageRequestID);
+            }
+        });
+    }];
+    
+    __block PHImageRequestID imageRequestID = [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
+        AVPlayerItem * playerItem = [[AVPlayerItem alloc] initWithAsset:asset];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            BOOL isInCloud = [info[PHImageResultIsInCloudKey] floatValue];
             if (complete) {
-                complete(playerItem);
+                complete(isInCloud,playerItem,imageRequestID);
             }
         });
     }];

@@ -12,14 +12,22 @@
 
 @interface BKShowExampleVideoViewController ()
 
-@property (nonatomic,strong) UIImageView * coverImageView;//封面
-@property (nonatomic,strong) UIProgressView * progress;//进度条(没加载显示)
+@property (nonatomic,assign) BOOL isInCloud;//是否在云盘里 需要下载
+@property (nonatomic,assign) PHImageRequestID currentImageRequestID;//当前下载的ID
+@property (nonatomic,assign) BOOL downloadProgress;//下载进度
+@property (nonatomic,assign) BOOL isPlayAfterDownload;//下载完成后是否播放
 
-@property (nonatomic,strong) AVPlayer * player;
+@property (nonatomic,assign) BOOL isLeaveFlag;//是否离开该界面
+
+@property (nonatomic,strong) UIImageView * coverImageView;//封面
+@property (nonatomic,strong) UIProgressView * progress;//播放进度条(没加载显示)
+@property (nonatomic,assign) id timeObserver;
+
 @property (nonatomic,strong) UIView * playerView;
+@property (nonatomic,strong) AVPlayer * player;
 @property (nonatomic,strong) AVPlayerLayer * playerLayer;
 
-@property (nonatomic,assign) id timeObserver;
+@property (nonatomic,assign) BOOL isSendFlag;//是否点击发送
 
 @property (nonatomic,strong) UIButton * start_pause;
 
@@ -71,6 +79,9 @@
     }
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+    
+    self.isLeaveFlag = YES;
+    [[PHImageManager defaultManager] cancelImageRequest:self.currentImageRequestID];
 }
 
 #pragma mark - NSNotification
@@ -136,6 +147,13 @@
 
 -(void)selectBtnClick
 {
+    if (self.isInCloud) {
+        if (self.downloadProgress != 1) {
+            self.isSendFlag = YES;
+            return;
+        }
+    }
+    
     self.tapVideoModel.url = ((AVURLAsset*)self.player.currentItem.asset).URL;
     [[BKTool sharedManager].selectImageArray addObject:self.tapVideoModel];
     
@@ -145,6 +163,19 @@
 
 -(void)start_pauseBtnClick:(UIButton*)button
 {
+    if (self.isSendFlag) {
+        return;
+    }
+    
+    if (self.isInCloud) {
+        if (self.downloadProgress != 1) {
+            self.isPlayAfterDownload = YES;
+            return;
+        }
+    }
+    
+    self.isPlayAfterDownload = NO;
+    
     [_coverImageView removeFromSuperview];
     _coverImageView = nil;
     
@@ -176,19 +207,44 @@
 
 -(void)loadVideoDataComplete:(void (^)(void))complete
 {
-    [[BKTool sharedManager] getVideoDataWithAsset:self.tapVideoModel.asset complete:^(AVPlayerItem *playerItem) {
+    [[BKTool sharedManager] getVideoDataWithAsset:self.tapVideoModel.asset progressHandler:^(double progress, NSError *error, PHImageRequestID imageRequestID) {
+        
+        self.isInCloud = YES;
+        
+        self.currentImageRequestID = imageRequestID;
+        [[BKTool sharedManager] showLoadInView:self.view downLoadProgress:progress];
+        
+        if (error) {
+            [[BKTool sharedManager] hideLoad];
+            if (!self.isLeaveFlag) {
+                [[BKTool sharedManager] showRemind:@"视频加载失败"];
+            }
+            return;
+        }
+        
+        self.downloadProgress = progress;
+        
+    } complete:^(BOOL isInCloud, AVPlayerItem *playerItem, PHImageRequestID imageRequestID) {
+        
+        [[BKTool sharedManager] hideLoad];
         
         if (playerItem) {
+            
             self.player = [AVPlayer playerWithPlayerItem:playerItem];
             [self.playerView.layer addSublayer:self.playerLayer];
             
             [self addProgressObserver];
+            
+            if (self.isPlayAfterDownload) {
+                [self start_pauseBtnClick:self.start_pause];
+            }
+            
+            if (complete) {
+                complete();
+            }
+            
         }else{
             [[BKTool sharedManager] showRemind:@"视频加载失败"];
-        }
-        
-        if (complete) {
-            complete();
         }
     }];
 }

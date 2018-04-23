@@ -149,6 +149,14 @@ UIKIT_EXTERN const float BKThumbImageCompressSizeMultiplier;
 -(void)showLoadInView:(UIView*)view;
 
 /**
+ 加载Loading 带下载进度
+
+ @param view 加载Loading
+ @param progress 进度
+ */
+-(void)showLoadInView:(UIView*)view downLoadProgress:(CGFloat)progress;
+
+/**
  隐藏Loading
  */
 -(void)hideLoad;
@@ -225,8 +233,9 @@ UIKIT_EXTERN const float BKThumbImageCompressSizeMultiplier;
  获取视频
  
  @param asset 相片
+ @param progressHandler 下载进度返回
  @param complete 完成方法
  */
--(void)getVideoDataWithAsset:(PHAsset*)asset complete:(void (^)(AVPlayerItem * playerItem))complete;
+-(void)getVideoDataWithAsset:(PHAsset*)asset progressHandler:(void (^)(double progress, NSError * error, PHImageRequestID imageRequestID))progressHandler complete:(void (^)(BOOL isInCloud, AVPlayerItem * playerItem, PHImageRequestID imageRequestID))complete;
 
 @end
