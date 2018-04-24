@@ -14,10 +14,11 @@
 
 @property (nonatomic,assign) BOOL isInCloud;//是否在云盘里 需要下载
 @property (nonatomic,assign) PHImageRequestID currentImageRequestID;//当前下载的ID
-@property (nonatomic,assign) BOOL downloadProgress;//下载进度
+@property (nonatomic,assign) double downloadProgress;//下载进度
 @property (nonatomic,assign) BOOL isPlayAfterDownload;//下载完成后是否播放
-
+@property (nonatomic,assign) BOOL isDownloadError;//是否下载失败
 @property (nonatomic,assign) BOOL isLeaveFlag;//是否离开该界面
+@property (nonatomic,assign) BOOL isSendFlag;//是否点击发送
 
 @property (nonatomic,strong) UIImageView * coverImageView;//封面
 @property (nonatomic,strong) UIProgressView * progress;//播放进度条(没加载显示)
@@ -27,7 +28,7 @@
 @property (nonatomic,strong) AVPlayer * player;
 @property (nonatomic,strong) AVPlayerLayer * playerLayer;
 
-@property (nonatomic,assign) BOOL isSendFlag;//是否点击发送
+
 
 @property (nonatomic,strong) UIButton * start_pause;
 
@@ -147,6 +148,13 @@
 
 -(void)selectBtnClick
 {
+    if (self.isDownloadError) {
+        [self loadVideoDataComplete:^{
+            [self selectBtnClick];
+        }];
+        return;
+    }
+    
     if (self.isInCloud) {
         if (self.downloadProgress != 1) {
             self.isSendFlag = YES;
@@ -164,6 +172,13 @@
 -(void)start_pauseBtnClick:(UIButton*)button
 {
     if (self.isSendFlag) {
+        return;
+    }
+    
+    if (self.isDownloadError) {
+        [self loadVideoDataComplete:^{
+            [self start_pauseBtnClick:self.start_pause];
+        }];
         return;
     }
     
@@ -217,6 +232,7 @@
         if (error) {
             [[BKTool sharedManager] hideLoad];
             if (!self.isLeaveFlag) {
+                self.isDownloadError = YES;
                 [[BKTool sharedManager] showRemind:@"视频加载失败"];
             }
             return;
@@ -235,6 +251,17 @@
             
             [self addProgressObserver];
             
+            self.isDownloadError = NO;
+            
+            if (self.isLeaveFlag) {
+                return;
+            }
+            
+            if (self.isSendFlag) {
+                [self selectBtnClick];
+                return;
+            }
+            
             if (self.isPlayAfterDownload) {
                 [self start_pauseBtnClick:self.start_pause];
             }
@@ -244,7 +271,10 @@
             }
             
         }else{
-            [[BKTool sharedManager] showRemind:@"视频加载失败"];
+            self.isDownloadError = YES;
+            if (!self.isLeaveFlag) {
+                [[BKTool sharedManager] showRemind:@"视频加载失败"];
+            }
         }
     }];
 }
