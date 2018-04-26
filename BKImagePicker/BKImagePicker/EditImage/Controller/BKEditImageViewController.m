@@ -131,7 +131,7 @@
         if (saveImage) {
             
             [[BKImagePicker sharedManager] saveImage:saveImage complete:^(PHAsset *asset, BOOL success) {
-                [[BKTool sharedManager] hideLoad];
+                [[BKTool sharedManager] hideLoadInView:window];
                 window.userInteractionEnabled = YES;
                 
                 if (!success) {
@@ -374,7 +374,7 @@
         [self removeEditImageTemplate];
         [self editImageView];
         
-        [[BKTool sharedManager] hideLoad];
+        [[BKTool sharedManager] hideLoadInView:window];
         window.userInteractionEnabled = YES;
     }];
 }
@@ -424,35 +424,51 @@
                     
                     dispatch_async(dispatch_get_main_queue(), ^{
                         if (!success) {
-                            [[BKTool sharedManager] hideLoad];
+                            [[BKTool sharedManager] hideLoadInView:window];
                             if (!saveError) {
                                 [[BKTool sharedManager] showRemind:@"图片发送失败"];
                                 saveError = YES;
                             }
                             pthread_mutex_destroy(&mutex);
                         }else{
-                            [[BKTool sharedManager] getOriginalImageDataWithAsset:asset complete:^(NSData *originalImageData, NSURL *url) {
-                                BKImageModel * imageModel = [[BKImageModel alloc]init];
-                                imageModel.originalImageData = originalImageData;
-                                imageModel.url = url;
-                                imageModel.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];
-                                imageModel.photoType = BKSelectPhotoTypeImage;
-                                [resultArr addObject:imageModel];
-
-                                [[BKTool sharedManager].selectImageArray removeAllObjects];
-                                [[BKTool sharedManager].selectImageArray addObjectsFromArray:resultArr];
-
-                                if ([resultArr count] == [editImageArr count] && !saveError) {
-                                    [[BKTool sharedManager] hideLoad];
-                                    pthread_mutex_destroy(&mutex);
-
-                                    if (self.fromModule == BKEditImageFromModulePhotoAlbum) {
-                                        [[NSNotificationCenter defaultCenter] postNotificationName:BKFinishSelectImageNotification object:nil userInfo:nil];
-                                    }else if (self.fromModule == BKEditImageFromModuleTakePhoto) {
-                                        [[NSNotificationCenter defaultCenter] postNotificationName:BKFinishTakePhotoNotification object:nil userInfo:nil];
+                            [[BKTool sharedManager] getOriginalImageDataWithAsset:asset progressHandler:^(double progress, NSError *error, PHImageRequestID imageRequestID) {
+                                
+                            } complete:^(NSData *originalImageData, NSURL *url, PHImageRequestID imageRequestID) {
+                                
+                                if (originalImageData) {
+                                    
+                                    BKImageModel * imageModel = [[BKImageModel alloc]init];
+                                    imageModel.originalImageData = originalImageData;
+                                    imageModel.loadingState = BKImageDataLoadingStateDownloadFinish;
+                                    imageModel.url = url;
+                                    imageModel.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];
+                                    imageModel.photoType = BKSelectPhotoTypeImage;
+                                    [resultArr addObject:imageModel];
+                                    
+                                    [[BKTool sharedManager].selectImageArray removeAllObjects];
+                                    [[BKTool sharedManager].selectImageArray addObjectsFromArray:resultArr];
+                                    
+                                    if ([resultArr count] == [editImageArr count] && !saveError) {
+                                        [[BKTool sharedManager] hideLoadInView:window];
+                                        pthread_mutex_destroy(&mutex);
+                                        
+                                        if (self.fromModule == BKEditImageFromModulePhotoAlbum) {
+                                            [[NSNotificationCenter defaultCenter] postNotificationName:BKFinishSelectImageNotification object:nil userInfo:nil];
+                                        }else if (self.fromModule == BKEditImageFromModuleTakePhoto) {
+                                            [[NSNotificationCenter defaultCenter] postNotificationName:BKFinishTakePhotoNotification object:nil userInfo:nil];
+                                        }
+                                        [self dismissViewControllerAnimated:YES completion:nil];
                                     }
-                                    [self dismissViewControllerAnimated:YES completion:nil];
+                                    
+                                }else{
+                                    [[BKTool sharedManager] hideLoadInView:window];
+                                    if (!saveError) {
+                                        [[BKTool sharedManager] showRemind:@"图片发送失败"];
+                                        saveError = YES;
+                                    }
+                                    pthread_mutex_destroy(&mutex);
                                 }
+                                
                             }];
                         }
                     });
@@ -476,31 +492,39 @@
     [[BKImagePicker sharedManager] saveImage:[self reCreateImage:sendImage] complete:^(PHAsset *asset, BOOL success) {
         if (!success) {
             [[BKTool sharedManager] showRemind:@"图片发送失败"];
-            [[BKTool sharedManager] hideLoad];
+            [[BKTool sharedManager] hideLoadInView:window];
             
         }else{
-            [[BKTool sharedManager] getOriginalImageDataWithAsset:asset complete:^(NSData *originalImageData, NSURL *url) {
-                BKImageModel * imageModel = [[BKImageModel alloc]init];
-                imageModel.originalImageData = originalImageData;
-                imageModel.url = url;
-                imageModel.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];
-                imageModel.photoType = BKSelectPhotoTypeImage;
-
-                [[BKTool sharedManager].selectImageArray removeAllObjects];
-                [[BKTool sharedManager].selectImageArray addObject:imageModel];
-
-                [[BKTool sharedManager] hideLoad];
+            [[BKTool sharedManager] getOriginalImageDataWithAsset:asset progressHandler:^(double progress, NSError *error, PHImageRequestID imageRequestID) {
                 
-                if (successBlock) {
-                    successBlock();
+            } complete:^(NSData *originalImageData, NSURL *url, PHImageRequestID imageRequestID) {
+                if (originalImageData) {
+                    BKImageModel * imageModel = [[BKImageModel alloc]init];
+                    imageModel.originalImageData = originalImageData;
+                    imageModel.loadingState = BKImageDataLoadingStateDownloadFinish;
+                    imageModel.url = url;
+                    imageModel.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];
+                    imageModel.photoType = BKSelectPhotoTypeImage;
+                    
+                    [[BKTool sharedManager].selectImageArray removeAllObjects];
+                    [[BKTool sharedManager].selectImageArray addObject:imageModel];
+                    
+                    [[BKTool sharedManager] hideLoadInView:window];
+                    
+                    if (successBlock) {
+                        successBlock();
+                    }
+                    
+                    if (self.fromModule == BKEditImageFromModulePhotoAlbum) {
+                        [[NSNotificationCenter defaultCenter] postNotificationName:BKFinishSelectImageNotification object:nil userInfo:nil];
+                    }else if (self.fromModule == BKEditImageFromModuleTakePhoto) {
+                        [[NSNotificationCenter defaultCenter] postNotificationName:BKFinishTakePhotoNotification object:nil userInfo:nil];
+                    }
+                    [self dismissViewControllerAnimated:YES completion:nil];
+                }else{
+                    [[BKTool sharedManager] showRemind:@"图片发送失败"];
+                    [[BKTool sharedManager] hideLoadInView:window];
                 }
-
-                if (self.fromModule == BKEditImageFromModulePhotoAlbum) {
-                    [[NSNotificationCenter defaultCenter] postNotificationName:BKFinishSelectImageNotification object:nil userInfo:nil];
-                }else if (self.fromModule == BKEditImageFromModuleTakePhoto) {
-                    [[NSNotificationCenter defaultCenter] postNotificationName:BKFinishTakePhotoNotification object:nil userInfo:nil];
-                }
-                [self dismissViewControllerAnimated:YES completion:nil];
             }];
         }
     }];

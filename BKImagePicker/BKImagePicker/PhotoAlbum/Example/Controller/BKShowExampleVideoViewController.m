@@ -28,8 +28,6 @@
 @property (nonatomic,strong) AVPlayer * player;
 @property (nonatomic,strong) AVPlayerLayer * playerLayer;
 
-
-
 @property (nonatomic,strong) UIButton * start_pause;
 
 @end
@@ -227,22 +225,22 @@
         self.isInCloud = YES;
         
         self.currentImageRequestID = imageRequestID;
-        [[BKTool sharedManager] showLoadInView:self.view downLoadProgress:progress];
         
         if (error) {
-            [[BKTool sharedManager] hideLoad];
+            [[BKTool sharedManager] hideLoadInView:self.view];
             if (!self.isLeaveFlag) {
                 self.isDownloadError = YES;
-                [[BKTool sharedManager] showRemind:@"视频加载失败"];
             }
             return;
         }
         
+        [[BKTool sharedManager] showLoadInView:self.view downLoadProgress:progress];
+        
         self.downloadProgress = progress;
         
-    } complete:^(BOOL isInCloud, AVPlayerItem *playerItem, PHImageRequestID imageRequestID) {
+    } complete:^(AVPlayerItem *playerItem, PHImageRequestID imageRequestID) {
         
-        [[BKTool sharedManager] hideLoad];
+        [[BKTool sharedManager] hideLoadInView:self.view];
         
         if (playerItem) {
             
@@ -273,7 +271,7 @@
         }else{
             self.isDownloadError = YES;
             if (!self.isLeaveFlag) {
-                [[BKTool sharedManager] showRemind:@"视频加载失败"];
+                [[BKTool sharedManager] showRemind:@"视频下载失败"];
             }
         }
     }];
@@ -316,32 +314,44 @@
         _coverImageView.clipsToBounds = YES;
         _coverImageView.contentMode = UIViewContentModeScaleAspectFit;
         
-        if (self.tapVideoModel.isHaveOriginalImageFlag) {
+        if (self.tapVideoModel.loadingState == BKImageDataLoadingStateDownloadFinish) {
             self.coverImageView.image = [UIImage imageWithData:self.tapVideoModel.originalImageData];
         }else if (self.tapVideoModel.thumbImage) {
             self.coverImageView.image = self.tapVideoModel.thumbImage;
             
-            [[BKTool sharedManager] getOriginalImageDataWithAsset:self.tapVideoModel.asset complete:^(NSData *originalImageData, NSURL *url) {
-                self.tapVideoModel.originalImageData = originalImageData;
-                self.tapVideoModel.isHaveOriginalImageFlag = YES;
-                
-                self.coverImageView.image = [UIImage imageWithData:originalImageData];
-            }];
+            [self getOriginalImageDataComplete:nil];
         }else{
             [[BKTool sharedManager] getThumbImageWithAsset:self.tapVideoModel.asset complete:^(UIImage *thumbImage) {
                 self.tapVideoModel.thumbImage = thumbImage;
                 self.coverImageView.image = thumbImage;
             }];
             
-            [[BKTool sharedManager] getOriginalImageDataWithAsset:self.tapVideoModel.asset complete:^(NSData *originalImageData, NSURL *url) {
-                self.tapVideoModel.originalImageData = originalImageData;
-                self.tapVideoModel.isHaveOriginalImageFlag = YES;
-                
-                self.coverImageView.image = [UIImage imageWithData:originalImageData];
-            }];
+            [self getOriginalImageDataComplete:nil];
         }
     }
     return _coverImageView;
+}
+
+-(void)getOriginalImageDataComplete:(void (^)(void))complete
+{
+    [[BKTool sharedManager] getOriginalImageDataWithAsset:self.tapVideoModel.asset progressHandler:^(double progress, NSError *error, PHImageRequestID imageRequestID) {
+        
+        self.tapVideoModel.loadingState = BKImageDataLoadingStateLoading;
+        
+    } complete:^(NSData *originalImageData, NSURL *url, PHImageRequestID imageRequestID) {
+        
+        UIImage * originalImage = [UIImage imageWithData:originalImageData];
+        
+        if (originalImage) {
+            self.tapVideoModel.originalImageData = originalImageData;
+            self.tapVideoModel.loadingState = BKImageDataLoadingStateDownloadFinish;
+            
+            self.coverImageView.image = originalImage;
+        }else{
+            self.tapVideoModel.loadingState = BKImageDataLoadingStateNone;
+            [[BKTool sharedManager] showRemind:@"封面下载失败"];
+        }
+    }];
 }
 
 @end

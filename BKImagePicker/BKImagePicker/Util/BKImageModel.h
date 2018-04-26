@@ -10,6 +10,12 @@
 #import <Photos/Photos.h>
 #import "BKTool.h"
 
+typedef NS_ENUM(NSUInteger, BKImageDataLoadingState) {
+    BKImageDataLoadingStateNone = 0,
+    BKImageDataLoadingStateLoading,
+    BKImageDataLoadingStateDownloadFinish,
+};
+
 @interface BKImageModel : NSObject
 
 /**
@@ -37,9 +43,9 @@
  */
 @property (nonatomic,strong) NSData * originalImageData;
 /**
- 是否有原图data
+ 原图data目前状态
  */
-@property (nonatomic,assign) BOOL isHaveOriginalImageFlag;
+@property (nonatomic,assign) BKImageDataLoadingState loadingState;
 /**
  原图大小
  */

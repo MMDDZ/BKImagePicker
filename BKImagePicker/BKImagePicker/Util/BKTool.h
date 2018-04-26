@@ -142,24 +142,35 @@ UIKIT_EXTERN const float BKThumbImageCompressSizeMultiplier;
 #pragma mark - Loading
 
 /**
- 加载Loading
-
- @param view 加载Loading
+ 查找view中是否存在loadLayer
+ 
+ @param view 显示loading的视图
+ @return loadLayer
  */
--(void)showLoadInView:(UIView*)view;
+-(CALayer*)findLoadLayerInView:(UIView*)view;
+
+/**
+ 加载Loading
+ 
+ @param view 显示loading的视图
+ @return loadLayer
+ */
+-(CALayer*)showLoadInView:(UIView*)view;
 
 /**
  加载Loading 带下载进度
-
- @param view 加载Loading
+ 
+ @param view 显示loading的视图
  @param progress 进度
  */
 -(void)showLoadInView:(UIView*)view downLoadProgress:(CGFloat)progress;
 
 /**
  隐藏Loading
+ 
+ @param view 显示loading的视图
  */
--(void)hideLoad;
+-(void)hideLoadInView:(UIView*)view;
 
 #pragma mark - 图片路径
 
@@ -225,10 +236,10 @@ UIKIT_EXTERN const float BKThumbImageCompressSizeMultiplier;
  获取对应原图data
  
  @param asset 相片
+ @param progressHandler 下载进度返回
  @param complete 完成方法
  */
--(void)getOriginalImageDataWithAsset:(PHAsset*)asset complete:(void (^)(NSData * originalImageData,NSURL * url))complete;
-
+-(void)getOriginalImageDataWithAsset:(PHAsset*)asset progressHandler:(void (^)(double progress, NSError * error, PHImageRequestID imageRequestID))progressHandler complete:(void (^)(NSData * originalImageData, NSURL * url, PHImageRequestID imageRequestID))complete;
 /**
  获取视频
  
@@ -236,6 +247,6 @@ UIKIT_EXTERN const float BKThumbImageCompressSizeMultiplier;
  @param progressHandler 下载进度返回
  @param complete 完成方法
  */
--(void)getVideoDataWithAsset:(PHAsset*)asset progressHandler:(void (^)(double progress, NSError * error, PHImageRequestID imageRequestID))progressHandler complete:(void (^)(BOOL isInCloud, AVPlayerItem * playerItem, PHImageRequestID imageRequestID))complete;
+-(void)getVideoDataWithAsset:(PHAsset*)asset progressHandler:(void (^)(double progress, NSError * error, PHImageRequestID imageRequestID))progressHandler complete:(void (^)(AVPlayerItem * playerItem, PHImageRequestID imageRequestID))complete;
 
 @end

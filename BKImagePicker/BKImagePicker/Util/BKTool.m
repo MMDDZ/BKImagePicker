@@ -21,8 +21,6 @@ float const BKThumbImageCompressSizeMultiplier = 0.5;//图片长宽压缩比例 
 
 @interface BKTool()
 
-@property (nonatomic,strong) CALayer * loadLayer;//加载layer
-
 @property (nonatomic,copy) NSString * imagePath;//图片路径
 
 @property (nonatomic,strong) PHCachingImageManager * cachingImageManager;//图片缓存管理者
@@ -182,30 +180,54 @@ float const BKThumbImageCompressSizeMultiplier = 0.5;//图片长宽压缩比例 
 #pragma mark - Loading
 
 /**
- 加载Loading
- 
- @param view 加载Loading
+ 查找view中是否存在loadLayer
+
+ @param view 显示loading的视图
+ @return loadLayer
  */
--(void)showLoadInView:(UIView*)view
+-(CALayer*)findLoadLayerInView:(UIView*)view
 {
-    if (self.loadLayer) {
-        [self hideLoad];
-    }
+    __block CALayer * loadLayer = nil;
+    [[view.layer sublayers] enumerateObjectsUsingBlock:^(CALayer * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ([obj.name isEqualToString:@"loadLayer"]) {
+            loadLayer = obj;
+            *stop = YES;
+        }
+    }];
+    return loadLayer;
+}
+
+/**
+ 加载Loading
+
+ @param view 显示loading的视图
+ @return loadLayer
+ */
+-(CALayer*)showLoadInView:(UIView*)view
+{
+    [self hideLoadInView:view];
     
-    self.loadLayer = [CALayer layer];
-    self.loadLayer.bounds = CGRectMake(0, 0, view.bounds.size.width/4.0f, view.bounds.size.width/4.0f);
-    self.loadLayer.position = view.center;
-    self.loadLayer.backgroundColor = [UIColor colorWithWhite:0 alpha:0.75f].CGColor;
-    self.loadLayer.cornerRadius = self.loadLayer.bounds.size.width/10.0f;
-    self.loadLayer.masksToBounds = YES;
-    [view.layer addSublayer:self.loadLayer];
+    CGFloat scale = BK_SCREENW / 320.0f;
+    CGFloat prepare_layer_width = view.bounds.size.width/4.0f;
+    CGFloat min_layer_width = 60 * scale;
+    
+    CGFloat loadLayer_width = prepare_layer_width < min_layer_width ? min_layer_width : prepare_layer_width;
+    
+    CALayer * loadLayer = [CALayer layer];
+    loadLayer.bounds = CGRectMake(0, 0, loadLayer_width, loadLayer_width);
+    loadLayer.position = CGPointMake(view.bk_width/2, view.bk_height/2);
+    loadLayer.backgroundColor = [UIColor colorWithWhite:0 alpha:0.75f].CGColor;
+    loadLayer.cornerRadius = loadLayer.bounds.size.width/10.0f;
+    loadLayer.masksToBounds = YES;
+    loadLayer.name = @"loadLayer";
+    [view.layer addSublayer:loadLayer];
     
     NSTimeInterval beginTime = CACurrentMediaTime();
     
     for (int i = 0; i < 2; i++) {
         CALayer * circle = [CALayer layer];
-        circle.bounds = CGRectMake(0, 0, self.loadLayer.bounds.size.width/2.0f, self.loadLayer.bounds.size.height/2.0f);
-        circle.position = CGPointMake(self.loadLayer.bounds.size.width/2.0f, self.loadLayer.bounds.size.height/2.0f);
+        circle.bounds = CGRectMake(0, 0, loadLayer.bounds.size.width/2.0f, loadLayer.bounds.size.height/2.0f);
+        circle.position = CGPointMake(loadLayer.bounds.size.width/2.0f, loadLayer.bounds.size.height/2.0f);
         circle.backgroundColor = [UIColor whiteColor].CGColor;
         circle.opacity = 0.6;
         circle.cornerRadius = CGRectGetHeight(circle.bounds) * 0.5;
@@ -227,37 +249,43 @@ float const BKThumbImageCompressSizeMultiplier = 0.5;//图片长宽压缩比例 
                         [NSValue valueWithCATransform3D:CATransform3DMakeScale(1.0, 1.0, 0.0)],
                         [NSValue valueWithCATransform3D:CATransform3DMakeScale(0.0, 0.0, 0.0)]];
         
-        [self.loadLayer addSublayer:circle];
+        [loadLayer addSublayer:circle];
         [circle addAnimation:animation forKey:@"loading_admin"];
     }
+    
+    return loadLayer;
 }
 
 /**
  加载Loading 带下载进度
  
- @param view 加载Loading
+ @param view 显示loading的视图
  @param progress 进度
  */
 -(void)showLoadInView:(UIView*)view downLoadProgress:(CGFloat)progress
 {
-    if (![[view.layer sublayers] containsObject:self.loadLayer]) {
+    CALayer * loadLayer = [self findLoadLayerInView:view];
+    if (!loadLayer) {
         
-        [self showLoadInView:view];
+        loadLayer = [self showLoadInView:view];
         
-        UIFont * font = [UIFont systemFontOfSize:10.0 * [UIScreen mainScreen].bounds.size.width/320.0f];
-        NSString * string = [NSString stringWithFormat:@"%.0f%%",progress*100];
+        CGFloat scale = BK_SCREENW / 320.0f;
         
-        CGFloat height = [[BKTool sharedManager] sizeWithString:string UIWidth:self.loadLayer.frame.size.width font:font].height;
+        UIFont * font = [UIFont systemFontOfSize:10.0 * scale];
+        NSString * string = [NSString stringWithFormat:@"iCloud同步\n%.0f%%",progress*100];
+        
+        CGFloat height = [[BKTool sharedManager] sizeWithString:string UIWidth:loadLayer.frame.size.width font:font].height;
         
         CATextLayer * textLayer = [CATextLayer layer];
-        textLayer.bounds = CGRectMake(0, 0, self.loadLayer.frame.size.width, height);
-        textLayer.position = CGPointMake(self.loadLayer.frame.size.width/2, self.loadLayer.frame.size.height/2);
+        textLayer.bounds = CGRectMake(0, 0, loadLayer.frame.size.width, height);
+        textLayer.position = CGPointMake(loadLayer.frame.size.width/2, loadLayer.frame.size.height/2);
         textLayer.string = string;
+        textLayer.wrapped = YES;
         textLayer.contentsScale = [UIScreen mainScreen].scale;
         textLayer.foregroundColor = BKNavGrayTitleColor.CGColor;
         textLayer.alignmentMode = kCAAlignmentCenter;
         textLayer.name = @"loadTextLayer";
-        [self.loadLayer addSublayer:textLayer];
+        [loadLayer addSublayer:textLayer];
         
         CFStringRef fontName = (__bridge CFStringRef)font.fontName;
         CGFontRef fontRef = CGFontCreateWithFontName(fontName);
@@ -265,27 +293,35 @@ float const BKThumbImageCompressSizeMultiplier = 0.5;//图片长宽压缩比例 
         textLayer.fontSize = font.pointSize;
         CGFontRelease(fontRef);
     }else{
-        [[self.loadLayer sublayers] enumerateObjectsUsingBlock:^(CALayer * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [[loadLayer sublayers] enumerateObjectsUsingBlock:^(CALayer * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if ([obj.name isEqualToString:@"loadTextLayer"]) {
                 CATextLayer * textLayer = (CATextLayer*)obj;
-                textLayer.string = [NSString stringWithFormat:@"%.0f%%",progress*100];
+                textLayer.string = [NSString stringWithFormat:@"iCloud同步\n%.0f%%",progress*100];
             }
         }];
     }
 }
 
+
 /**
  隐藏Loading
+
+ @param view 显示loading的视图
  */
--(void)hideLoad
+-(void)hideLoadInView:(UIView*)view
 {
-    [[self.loadLayer sublayers] enumerateObjectsUsingBlock:^(CALayer * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    CALayer * loadLayer = [self findLoadLayerInView:view];
+    if (!loadLayer) {
+        return;
+    }
+    
+    [[loadLayer sublayers] enumerateObjectsUsingBlock:^(CALayer * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         if ([obj.name isEqualToString:@"loadCircleLayer"]) {
             [obj removeAnimationForKey:@"loading_admin"];
         }
     }];
-    [self.loadLayer removeFromSuperlayer];
-    self.loadLayer = nil;
+    [loadLayer removeFromSuperlayer];
+    loadLayer = nil;
 }
 
 #pragma mark - 图片路径
@@ -539,16 +575,26 @@ float const BKThumbImageCompressSizeMultiplier = 0.5;//图片长宽压缩比例 
  获取对应原图data
  
  @param asset 相片
+ @param progressHandler 下载进度返回
  @param complete 完成方法
  */
--(void)getOriginalImageDataWithAsset:(PHAsset*)asset complete:(void (^)(NSData * originalImageData,NSURL * url))complete
+-(void)getOriginalImageDataWithAsset:(PHAsset*)asset progressHandler:(void (^)(double progress, NSError * error, PHImageRequestID imageRequestID))progressHandler complete:(void (^)(NSData * originalImageData, NSURL * url, PHImageRequestID imageRequestID))complete
 {
-    [[BKTool sharedManager].cachingImageManager requestImageDataForAsset:asset options:self.originalImageOptions resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
+    [self.originalImageOptions setProgressHandler:^(double progress, NSError * _Nullable error, BOOL * _Nonnull stop, NSDictionary * _Nullable info) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            PHImageRequestID imageRequestID = [info[PHImageResultRequestIDKey] intValue];
+            if (progressHandler) {
+                progressHandler(progress, error, imageRequestID);
+            }
+        });
+    }];
+    
+    __block PHImageRequestID imageRequestID = [[BKTool sharedManager].cachingImageManager requestImageDataForAsset:asset options:self.originalImageOptions resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
         
         NSURL * url = info[@"PHImageFileURLKey"];
         dispatch_async(dispatch_get_main_queue(), ^{
             if (complete) {
-                complete(imageData,url);
+                complete(imageData, url, imageRequestID);
             }
         });
     }];
@@ -561,7 +607,7 @@ float const BKThumbImageCompressSizeMultiplier = 0.5;//图片长宽压缩比例 
  @param progressHandler 下载进度返回
  @param complete 完成方法
  */
--(void)getVideoDataWithAsset:(PHAsset*)asset progressHandler:(void (^)(double progress, NSError * error, PHImageRequestID imageRequestID))progressHandler complete:(void (^)(BOOL isInCloud, AVPlayerItem * playerItem, PHImageRequestID imageRequestID))complete
+-(void)getVideoDataWithAsset:(PHAsset*)asset progressHandler:(void (^)(double progress, NSError * error, PHImageRequestID imageRequestID))progressHandler complete:(void (^)(AVPlayerItem * playerItem, PHImageRequestID imageRequestID))complete
 {
     PHVideoRequestOptions * options = [[PHVideoRequestOptions alloc]init];
     options.version = PHVideoRequestOptionsVersionOriginal;
@@ -579,9 +625,8 @@ float const BKThumbImageCompressSizeMultiplier = 0.5;//图片长宽压缩比例 
     __block PHImageRequestID imageRequestID = [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
         AVPlayerItem * playerItem = [[AVPlayerItem alloc] initWithAsset:asset];
         dispatch_async(dispatch_get_main_queue(), ^{
-            BOOL isInCloud = [info[PHImageResultIsInCloudKey] floatValue];
             if (complete) {
-                complete(isInCloud,playerItem,imageRequestID);
+                complete(playerItem, imageRequestID);
             }
         });
     }];

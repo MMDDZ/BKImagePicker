@@ -233,8 +233,43 @@
         [button selectClickNum:[[BKTool sharedManager].selectImageArray count]];
     }
     
-    if ([BKTool sharedManager].isOriginal) {
-        [self calculataImageSize];
+    if (model.loadingState == BKImageDataLoadingStateDownloadFinish) {
+        if ([BKTool sharedManager].isOriginal) {
+            [self calculataImageSize];
+        }
+    }else{
+        [[BKTool sharedManager] getOriginalImageDataWithAsset:model.asset progressHandler:^(double progress, NSError *error, PHImageRequestID imageRequestID) {
+            
+            if (error) {
+                [[BKTool sharedManager] hideLoadInView:self.view];
+                model.loadingState = BKImageDataLoadingStateNone;
+                return;
+            }
+            
+            [[BKTool sharedManager] showLoadInView:self.view downLoadProgress:progress];
+            model.loadingState = BKImageDataLoadingStateLoading;
+            
+        } complete:^(NSData *originalImageData, NSURL *url, PHImageRequestID imageRequestID) {
+            
+            [[BKTool sharedManager] hideLoadInView:self.view];
+            
+            if (originalImageData) {
+                model.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];
+                model.originalImageData = originalImageData;
+                model.loadingState = BKImageDataLoadingStateDownloadFinish;
+                model.originalImageSize = (double)originalImageData.length/1024/1024;
+                model.url = url;
+                
+                if ([BKTool sharedManager].isOriginal) {
+                    [self calculataImageSize];
+                }
+            }else{
+                model.loadingState = BKImageDataLoadingStateNone;
+                [[BKTool sharedManager] showRemind:@"原图下载失败"];
+                //删除选中的自己
+                [self rightBtnClick:button];
+            }
+        }];
     }
     
     __block BOOL canEidtFlag = YES;
@@ -398,23 +433,32 @@
 
 -(void)prepareEditWithImageModel:(BKImageModel*)imageModel complete:(void (^)(UIImage * image))complete
 {
-    if (imageModel.isHaveOriginalImageFlag) {
+    if (imageModel.loadingState == BKImageDataLoadingStateDownloadFinish) {
         if (complete) {
             complete([UIImage imageWithData:imageModel.originalImageData]);
         }
     }else{
-        [[BKTool sharedManager] getOriginalImageDataWithAsset:imageModel.asset complete:^(NSData *originalImageData, NSURL *url) {
+        [[BKTool sharedManager] getOriginalImageDataWithAsset:imageModel.asset progressHandler:^(double progress, NSError *error, PHImageRequestID imageRequestID) {
             
-            imageModel.originalImageData = originalImageData;
-            imageModel.isHaveOriginalImageFlag = YES;
-            dispatch_async(dispatch_get_global_queue(0, 0), ^{
-                imageModel.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];
-            });
-            imageModel.url = url;
-            imageModel.originalImageSize = (double)originalImageData.length/1024/1024;
+            imageModel.loadingState = BKImageDataLoadingStateLoading;
             
-            if (complete) {
-                complete([UIImage imageWithData:imageModel.originalImageData]);
+        } complete:^(NSData *originalImageData, NSURL *url, PHImageRequestID imageRequestID) {
+            
+            UIImage * resultImage = [UIImage imageWithData:imageModel.originalImageData];
+            if (resultImage) {
+                imageModel.originalImageData = originalImageData;
+                imageModel.loadingState = BKImageDataLoadingStateDownloadFinish;
+                dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                    imageModel.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];
+                });
+                imageModel.url = url;
+                imageModel.originalImageSize = (double)originalImageData.length/1024/1024;
+                
+                if (complete) {
+                    complete(resultImage);
+                }
+            }else{
+                imageModel.loadingState = BKImageDataLoadingStateNone;
             }
         }];
     }
@@ -601,7 +645,7 @@
     
     BKImageModel * model = self.imageListArray[currentIndexPath.item];
     
-    if (model.isHaveOriginalImageFlag) {
+    if (model.loadingState == BKImageDataLoadingStateDownloadFinish) {
         
         if (model.photoType == BKSelectPhotoTypeGIF) {
             if (![model.originalImageData isEqualToData:currentCell.showImageView.animatedImage.data]) {
@@ -613,23 +657,34 @@
             [self calculataImageSize];
         }
     }else{
-        [[BKTool sharedManager] getOriginalImageDataWithAsset:model.asset complete:^(NSData * originalImageData,NSURL * url) {
+        [[BKTool sharedManager] getOriginalImageDataWithAsset:model.asset progressHandler:^(double progress, NSError *error, PHImageRequestID imageRequestID) {
             
-            model.originalImageData = originalImageData;
-            model.isHaveOriginalImageFlag = YES;
+            model.loadingState = BKImageDataLoadingStateLoading;
             
-            if (model.photoType == BKSelectPhotoTypeGIF) {
-                [self editImageView:currentCell.showImageView image:nil imageData:model.originalImageData scrollView:currentCell.imageScrollView];
+        } complete:^(NSData *originalImageData, NSURL *url, PHImageRequestID imageRequestID) {
+            
+            if (originalImageData) {
+                
+                model.originalImageData = originalImageData;
+                model.loadingState = BKImageDataLoadingStateDownloadFinish;
+                
+                if (model.photoType == BKSelectPhotoTypeGIF) {
+                    [self editImageView:currentCell.showImageView image:nil imageData:model.originalImageData scrollView:currentCell.imageScrollView];
+                }
+                
+                dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                    model.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];
+                });
+                model.url = url;
+                model.originalImageSize = (double)originalImageData.length/1024/1024;
+                if ([BKTool sharedManager].isOriginal && [BKTool sharedManager].max_select == 1) {
+                    [self calculataImageSize];
+                }
+                
+            }else{
+                model.loadingState = BKImageDataLoadingStateNone;
             }
             
-            dispatch_async(dispatch_get_global_queue(0, 0), ^{
-                model.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];
-            });
-            model.url = url;
-            model.originalImageSize = (double)originalImageData.length/1024/1024;
-            if ([BKTool sharedManager].isOriginal && [BKTool sharedManager].max_select == 1) {
-                [self calculataImageSize];
-            }
         }];
     }
 }
