@@ -10,12 +10,6 @@
 #import <Photos/Photos.h>
 #import "BKTool.h"
 
-typedef NS_ENUM(NSUInteger, BKImageDataLoadingState) {
-    BKImageDataLoadingStateNone = 0,
-    BKImageDataLoadingStateLoading,
-    BKImageDataLoadingStateDownloadFinish,
-};
-
 @interface BKImageModel : NSObject
 
 /**
@@ -43,9 +37,9 @@ typedef NS_ENUM(NSUInteger, BKImageDataLoadingState) {
  */
 @property (nonatomic,strong) NSData * originalImageData;
 /**
- 原图data目前状态
+ 加载的进度0~1 0代表未加载或者加载失败 1代表加载完成 其余代表加载中
  */
-@property (nonatomic,assign) BKImageDataLoadingState loadingState;
+@property (nonatomic,assign) CGFloat loadingProgress;
 /**
  原图大小
  */

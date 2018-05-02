@@ -29,11 +29,6 @@
  */
 -(CGRect)getFrameOfCurrentImageInListVCWithImageModel:(BKImageModel*)model;
 
-/**
- 刷新选中
- */
--(void)refreshSelectPhoto;
-
 @end
 
 @interface BKShowExampleImageViewController : BKImageBaseViewController

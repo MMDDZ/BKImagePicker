@@ -439,7 +439,7 @@
                                     
                                     BKImageModel * imageModel = [[BKImageModel alloc]init];
                                     imageModel.originalImageData = originalImageData;
-                                    imageModel.loadingState = BKImageDataLoadingStateDownloadFinish;
+                                    imageModel.loadingProgress = 1;
                                     imageModel.url = url;
                                     imageModel.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];
                                     imageModel.photoType = BKSelectPhotoTypeImage;
@@ -501,7 +501,7 @@
                 if (originalImageData) {
                     BKImageModel * imageModel = [[BKImageModel alloc]init];
                     imageModel.originalImageData = originalImageData;
-                    imageModel.loadingState = BKImageDataLoadingStateDownloadFinish;
+                    imageModel.loadingProgress = 1;
                     imageModel.url = url;
                     imageModel.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];
                     imageModel.photoType = BKSelectPhotoTypeImage;

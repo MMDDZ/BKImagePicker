@@ -233,7 +233,7 @@
         [button selectClickNum:[[BKTool sharedManager].selectImageArray count]];
     }
     
-    if (model.loadingState == BKImageDataLoadingStateDownloadFinish) {
+    if (model.loadingProgress == 1) {
         if ([BKTool sharedManager].isOriginal) {
             [self calculataImageSize];
         }
@@ -242,12 +242,12 @@
             
             if (error) {
                 [[BKTool sharedManager] hideLoadInView:self.view];
-                model.loadingState = BKImageDataLoadingStateNone;
+                model.loadingProgress = 0;
                 return;
             }
             
             [[BKTool sharedManager] showLoadInView:self.view downLoadProgress:progress];
-            model.loadingState = BKImageDataLoadingStateLoading;
+            model.loadingProgress = progress;
             
         } complete:^(NSData *originalImageData, NSURL *url, PHImageRequestID imageRequestID) {
             
@@ -256,7 +256,7 @@
             if (originalImageData) {
                 model.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];
                 model.originalImageData = originalImageData;
-                model.loadingState = BKImageDataLoadingStateDownloadFinish;
+                model.loadingProgress = 1;
                 model.originalImageSize = (double)originalImageData.length/1024/1024;
                 model.url = url;
                 
@@ -264,7 +264,7 @@
                     [self calculataImageSize];
                 }
             }else{
-                model.loadingState = BKImageDataLoadingStateNone;
+                model.loadingProgress = 0;
                 [[BKTool sharedManager] showRemind:@"原图下载失败"];
                 //删除选中的自己
                 [self rightBtnClick:button];
@@ -291,10 +291,6 @@
         [_sendBtn setTitle:@"确认" forState:UIControlStateNormal];
     }else {
         [_sendBtn setTitle:[NSString stringWithFormat:@"确认(%ld)",[[BKTool sharedManager].selectImageArray count]] forState:UIControlStateNormal];
-    }
-    
-    if ([self.delegate respondsToSelector:@selector(refreshSelectPhoto)]) {
-        [self.delegate refreshSelectPhoto];
     }
 }
 
@@ -433,21 +429,21 @@
 
 -(void)prepareEditWithImageModel:(BKImageModel*)imageModel complete:(void (^)(UIImage * image))complete
 {
-    if (imageModel.loadingState == BKImageDataLoadingStateDownloadFinish) {
+    if (imageModel.loadingProgress == 1) {
         if (complete) {
             complete([UIImage imageWithData:imageModel.originalImageData]);
         }
     }else{
         [[BKTool sharedManager] getOriginalImageDataWithAsset:imageModel.asset progressHandler:^(double progress, NSError *error, PHImageRequestID imageRequestID) {
             
-            imageModel.loadingState = BKImageDataLoadingStateLoading;
+            imageModel.loadingProgress = progress;
             
         } complete:^(NSData *originalImageData, NSURL *url, PHImageRequestID imageRequestID) {
             
             UIImage * resultImage = [UIImage imageWithData:imageModel.originalImageData];
             if (resultImage) {
                 imageModel.originalImageData = originalImageData;
-                imageModel.loadingState = BKImageDataLoadingStateDownloadFinish;
+                imageModel.loadingProgress = 1;
                 dispatch_async(dispatch_get_global_queue(0, 0), ^{
                     imageModel.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];
                 });
@@ -458,7 +454,7 @@
                     complete(resultImage);
                 }
             }else{
-                imageModel.loadingState = BKImageDataLoadingStateNone;
+                imageModel.loadingProgress = 0;
             }
         }];
     }
@@ -483,9 +479,6 @@
         [_originalBtn setTitle:@"原图"];
     }
     [BKTool sharedManager].isOriginal = ![BKTool sharedManager].isOriginal;
-    if ([self.delegate respondsToSelector:@selector(refreshSelectPhoto)]) {
-        [self.delegate refreshSelectPhoto];
-    }
 }
 
 -(void)calculataImageSize
@@ -645,7 +638,7 @@
     
     BKImageModel * model = self.imageListArray[currentIndexPath.item];
     
-    if (model.loadingState == BKImageDataLoadingStateDownloadFinish) {
+    if (model.loadingProgress == 1) {
         
         if (model.photoType == BKSelectPhotoTypeGIF) {
             if (![model.originalImageData isEqualToData:currentCell.showImageView.animatedImage.data]) {
@@ -659,14 +652,14 @@
     }else{
         [[BKTool sharedManager] getOriginalImageDataWithAsset:model.asset progressHandler:^(double progress, NSError *error, PHImageRequestID imageRequestID) {
             
-            model.loadingState = BKImageDataLoadingStateLoading;
+            model.loadingProgress = progress;
             
         } complete:^(NSData *originalImageData, NSURL *url, PHImageRequestID imageRequestID) {
             
             if (originalImageData) {
                 
                 model.originalImageData = originalImageData;
-                model.loadingState = BKImageDataLoadingStateDownloadFinish;
+                model.loadingProgress = 1;
                 
                 if (model.photoType == BKSelectPhotoTypeGIF) {
                     [self editImageView:currentCell.showImageView image:nil imageData:model.originalImageData scrollView:currentCell.imageScrollView];
@@ -682,7 +675,7 @@
                 }
                 
             }else{
-                model.loadingState = BKImageDataLoadingStateNone;
+                model.loadingProgress = 0;
             }
             
         }];

@@ -314,7 +314,7 @@
         _coverImageView.clipsToBounds = YES;
         _coverImageView.contentMode = UIViewContentModeScaleAspectFit;
         
-        if (self.tapVideoModel.loadingState == BKImageDataLoadingStateDownloadFinish) {
+        if (self.tapVideoModel.loadingProgress == 1) {
             self.coverImageView.image = [UIImage imageWithData:self.tapVideoModel.originalImageData];
         }else if (self.tapVideoModel.thumbImage) {
             self.coverImageView.image = self.tapVideoModel.thumbImage;
@@ -336,7 +336,7 @@
 {
     [[BKTool sharedManager] getOriginalImageDataWithAsset:self.tapVideoModel.asset progressHandler:^(double progress, NSError *error, PHImageRequestID imageRequestID) {
         
-        self.tapVideoModel.loadingState = BKImageDataLoadingStateLoading;
+        self.tapVideoModel.loadingProgress = progress;
         
     } complete:^(NSData *originalImageData, NSURL *url, PHImageRequestID imageRequestID) {
         
@@ -344,11 +344,11 @@
         
         if (originalImage) {
             self.tapVideoModel.originalImageData = originalImageData;
-            self.tapVideoModel.loadingState = BKImageDataLoadingStateDownloadFinish;
+            self.tapVideoModel.loadingProgress = 1;
             
             self.coverImageView.image = originalImage;
         }else{
-            self.tapVideoModel.loadingState = BKImageDataLoadingStateNone;
+            self.tapVideoModel.loadingProgress = 0;
             [[BKTool sharedManager] showRemind:@"封面下载失败"];
         }
     }];
