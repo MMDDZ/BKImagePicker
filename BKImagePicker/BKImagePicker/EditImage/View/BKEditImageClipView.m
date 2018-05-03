@@ -103,7 +103,7 @@ typedef NS_OPTIONS(NSUInteger, BKEditImagePanContains) {
             UIPanGestureRecognizer * panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(windowPanGesture:)];
             panGesture.delegate = self;
             panGesture.maximumNumberOfTouches = 1;
-            panGesture.dicTag = @{@"type":@"window",@"line":@""};
+            panGesture.bk_dicTag = @{@"type":@"window",@"line":@""};
             [[UIApplication sharedApplication].keyWindow addGestureRecognizer:panGesture];
         }
     }
@@ -114,7 +114,7 @@ typedef NS_OPTIONS(NSUInteger, BKEditImagePanContains) {
 
 -(void)windowPanGesture:(UIPanGestureRecognizer*)panGesture
 {
-    if ([panGesture.dicTag[@"line"] isEqual:@""]) {
+    if ([panGesture.bk_dicTag[@"line"] isEqual:@""]) {
 
         panGesture.enabled = NO;
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -146,7 +146,7 @@ typedef NS_OPTIONS(NSUInteger, BKEditImagePanContains) {
     __block CGFloat width = _clipFrameView.bk_width;
     __block CGFloat height = _clipFrameView.bk_height;
     
-    BKEditImagePanContains panContains = [panGesture.dicTag[@"line"] integerValue];
+    BKEditImagePanContains panContains = [panGesture.bk_dicTag[@"line"] integerValue];
     
     if (panContains & BKEditImagePanContainsLineLeft) {
         [self moveClipFrameContainsLeftLineWithBeginX:X beginWidth:width translation:translation minX:minX minL:minL calculateComplete:^(CGFloat result_X, CGFloat result_width) {
@@ -184,7 +184,7 @@ typedef NS_OPTIONS(NSUInteger, BKEditImagePanContains) {
     [self changeShadowViewRect];
     
     if (panGesture.state == UIGestureRecognizerStateEnded || panGesture.state == UIGestureRecognizerStateFailed || panGesture.state == UIGestureRecognizerStateCancelled) {
-        panGesture.dicTag = @{@"type":@"window",@"line":@""};
+        panGesture.bk_dicTag = @{@"type":@"window",@"line":@""};
         
         if (![UIApplication sharedApplication].keyWindow.userInteractionEnabled) {
             return;
@@ -308,7 +308,7 @@ typedef NS_OPTIONS(NSUInteger, BKEditImagePanContains) {
 
 -(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
-    if ([gestureRecognizer.dicTag[@"type"] isEqualToString:@"window"]) {
+    if ([gestureRecognizer.bk_dicTag[@"type"] isEqualToString:@"window"]) {
         
         CGPoint point = [gestureRecognizer locationInView:self];
         
@@ -348,42 +348,42 @@ typedef NS_OPTIONS(NSUInteger, BKEditImagePanContains) {
                 switch (idx) {
                     case 0:
                     {
-                        gestureRecognizer.dicTag = @{@"type":@"window",@"line":@(BKEditImagePanContainsLineLeft | BKEditImagePanContainsLineTop)};
+                        gestureRecognizer.bk_dicTag = @{@"type":@"window",@"line":@(BKEditImagePanContainsLineLeft | BKEditImagePanContainsLineTop)};
                     }
                         break;
                     case 1:
                     {
-                        gestureRecognizer.dicTag = @{@"type":@"window",@"line":@(BKEditImagePanContainsLineRight | BKEditImagePanContainsLineTop)};
+                        gestureRecognizer.bk_dicTag = @{@"type":@"window",@"line":@(BKEditImagePanContainsLineRight | BKEditImagePanContainsLineTop)};
                     }
                         break;
                     case 2:
                     {
-                        gestureRecognizer.dicTag = @{@"type":@"window",@"line":@(BKEditImagePanContainsLineLeft | BKEditImagePanContainsLineBottom)};
+                        gestureRecognizer.bk_dicTag = @{@"type":@"window",@"line":@(BKEditImagePanContainsLineLeft | BKEditImagePanContainsLineBottom)};
                     }
                         break;
                     case 3:
                     {
-                        gestureRecognizer.dicTag = @{@"type":@"window",@"line":@(BKEditImagePanContainsLineRight | BKEditImagePanContainsLineBottom)};
+                        gestureRecognizer.bk_dicTag = @{@"type":@"window",@"line":@(BKEditImagePanContainsLineRight | BKEditImagePanContainsLineBottom)};
                     }
                         break;
                     case 4:
                     {
-                        gestureRecognizer.dicTag = @{@"type":@"window",@"line":@(BKEditImagePanContainsLineLeft)};
+                        gestureRecognizer.bk_dicTag = @{@"type":@"window",@"line":@(BKEditImagePanContainsLineLeft)};
                     }
                         break;
                     case 5:
                     {
-                        gestureRecognizer.dicTag = @{@"type":@"window",@"line":@(BKEditImagePanContainsLineRight)};
+                        gestureRecognizer.bk_dicTag = @{@"type":@"window",@"line":@(BKEditImagePanContainsLineRight)};
                     }
                         break;
                     case 6:
                     {
-                        gestureRecognizer.dicTag = @{@"type":@"window",@"line":@(BKEditImagePanContainsLineTop)};
+                        gestureRecognizer.bk_dicTag = @{@"type":@"window",@"line":@(BKEditImagePanContainsLineTop)};
                     }
                         break;
                     case 7:
                     {
-                        gestureRecognizer.dicTag = @{@"type":@"window",@"line":@(BKEditImagePanContainsLineBottom)};
+                        gestureRecognizer.bk_dicTag = @{@"type":@"window",@"line":@(BKEditImagePanContainsLineBottom)};
                     }
                         break;
                     default:

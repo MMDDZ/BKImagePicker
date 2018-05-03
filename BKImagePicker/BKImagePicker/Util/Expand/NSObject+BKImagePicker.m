@@ -10,24 +10,24 @@
 
 @implementation NSObject (BKExpand)
 
--(NSDictionary*)dicTag
+-(NSDictionary*)bk_dicTag
 {
-    return objc_getAssociatedObject(self, @"dicTag");
+    return objc_getAssociatedObject(self, @"bk_dicTag");
 }
 
-- (void)setDicTag:(NSDictionary *)dicTag
+- (void)setBk_dicTag:(NSDictionary *)bk_dicTag
 {
-    objc_setAssociatedObject(self, @"dicTag", dicTag, OBJC_ASSOCIATION_COPY_NONATOMIC);
+    objc_setAssociatedObject(self, @"bk_dicTag", bk_dicTag, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 
--(NSString*)strTag
+-(NSString*)bk_strTag
 {
-    return objc_getAssociatedObject(self, @"strTag");
+    return objc_getAssociatedObject(self, @"bk_strTag");
 }
 
--(void)setStrTag:(NSString *)strTag
+-(void)setBk_strTag:(NSString *)bk_strTag
 {
-    objc_setAssociatedObject(self, @"strTag", strTag, OBJC_ASSOCIATION_COPY_NONATOMIC);
+    objc_setAssociatedObject(self, @"bk_strTag", bk_strTag, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 
 @end

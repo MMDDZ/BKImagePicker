@@ -426,7 +426,7 @@
     
     UIBezierPath * path = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(x, y, width, height) cornerRadius:4];
     [self.pointArray removeAllObjects];
-    [self.pointArray addObjectsFromArray:[path points]];
+    [self.pointArray addObjectsFromArray:[path bk_points]];
     
     [self setNeedsDisplay];
 }

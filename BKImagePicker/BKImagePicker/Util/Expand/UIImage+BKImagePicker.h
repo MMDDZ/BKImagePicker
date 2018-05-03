@@ -10,6 +10,6 @@
 
 @interface UIImage (BKOrientationExpand)
 
--(UIImage*)editImageOrientation;
+-(UIImage*)bk_editImageOrientation;
 
 @end

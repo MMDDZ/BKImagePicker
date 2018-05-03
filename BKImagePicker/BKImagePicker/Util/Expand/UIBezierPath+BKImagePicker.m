@@ -12,7 +12,7 @@
 
 @implementation UIBezierPath (BKExpand)
 
-void getPointsFromBezier(void *info,const CGPathElement *element)
+void getPointsFromBezier(void *info, const CGPathElement *element)
 {
     NSMutableArray *bezierPoints = (__bridge NSMutableArray *)info;
     CGPathElementType type = element->type;
@@ -30,7 +30,7 @@ void getPointsFromBezier(void *info,const CGPathElement *element)
     }
 }
 
-- (NSArray *)points
+- (NSArray *)bk_points
 {
     NSMutableArray *points = [NSMutableArray array];
     CGPathApply(self.CGPath, (__bridge void *)points, getPointsFromBezier);

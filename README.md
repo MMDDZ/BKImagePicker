@@ -9,3 +9,7 @@
     [[BKImagePicker sharedManager] takePhotoWithComplete:^(UIImage *image, NSData *data) {
         NSLog(@"image:%@, dataLength:%ld",image,[data length]);
     }];
+    
+## 版本
+    1.0 图库第一版完成
+    1.1 图库优化加载iCloud图片

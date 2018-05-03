@@ -10,6 +10,6 @@
 
 @interface UIBezierPath (BKExpand)
 
--(NSArray *)points;
+-(NSArray *)bk_points;
 
 @end

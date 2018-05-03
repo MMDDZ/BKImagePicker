@@ -37,7 +37,7 @@
 {
     _customTransition = nil;
     
-    viewController.dicTag = @{@"direction":@(_direction),@"popVC":_popVC?_popVC:[NSNull null]};
+    viewController.bk_dicTag = @{@"direction":@(_direction),@"popVC":_popVC?_popVC:[NSNull null]};
     _nextVC = viewController;
     
     _direction = BKImageTransitionAnimaterDirectionRight;
@@ -165,7 +165,7 @@
 {
     self.customTransition = nil;
     
-    NSDictionary * vcMessageDic = vc.dicTag;
+    NSDictionary * vcMessageDic = vc.bk_dicTag;
     self.popVC = [vcMessageDic[@"popVC"] isKindOfClass:[NSNull class]]?nil:vcMessageDic[@"popVC"];
     self.direction = [vcMessageDic[@"direction"] integerValue];
     self.nextVC = vc;

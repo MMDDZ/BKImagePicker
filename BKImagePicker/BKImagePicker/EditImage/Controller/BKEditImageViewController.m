@@ -822,7 +822,7 @@
     if (!_editImageView) {
         _editImageView = [[UIImageView alloc]initWithFrame:self.editImageBgView.contentView.bounds];
         
-        _currentEditImage = [_currentEditImage editImageOrientation];
+        _currentEditImage = [_currentEditImage bk_editImageOrientation];
         _editImageView.image = _currentEditImage;
         
         [self.editImageBgView.contentView addSubview:_editImageView];

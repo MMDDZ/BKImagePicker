@@ -10,7 +10,7 @@
 
 @implementation UIImage (BKOrientationExpand)
 
--(UIImage*)editImageOrientation
+-(UIImage*)bk_editImageOrientation
 {
     if ([self isKindOfClass:[UIImage class]]) {
         

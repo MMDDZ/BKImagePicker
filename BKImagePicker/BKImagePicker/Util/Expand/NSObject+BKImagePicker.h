@@ -14,11 +14,11 @@
 /**
  字典Tag
  */
-@property (nonatomic,strong) NSDictionary * dicTag;
+@property (nonatomic,strong) NSDictionary * bk_dicTag;
 
 /**
  字符串Tag
  */
-@property (nonatomic,strong) NSString * strTag;
+@property (nonatomic,strong) NSString * bk_strTag;
 
 @end
