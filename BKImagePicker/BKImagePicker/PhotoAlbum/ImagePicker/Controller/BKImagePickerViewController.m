@@ -20,7 +20,7 @@
 
 @interface BKImagePickerViewController ()<UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout,BKImagePickerCollectionViewCellDelegate,BKShowExampleImageViewControllerDelegate>
 
-@property (nonatomic,strong) PHImageRequestOptions * options;
+@property (nonatomic,assign) BOOL isFirstEnterIntoVC;//是否第一次进入vc
 
 @property (nonatomic,strong) UICollectionView * albumCollectionView;
 
@@ -78,17 +78,6 @@
 
 #pragma mark - 获取图片
 
--(PHImageRequestOptions*)options
-{
-    if (!_options) {
-        _options = [[PHImageRequestOptions alloc] init];
-        _options.resizeMode = PHImageRequestOptionsResizeModeFast;
-        _options.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
-        _options.synchronous = NO;
-    }
-    return _options;
-}
-
 -(void)getAllImageClassData
 {
     //系统的相簿
@@ -123,7 +112,6 @@
             fetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:YES]];
             fetchOptions.predicate = [NSPredicate predicateWithFormat:@"mediaType = %d || mediaType = %d",PHAssetMediaTypeImage,PHAssetMediaTypeVideo];
 
-            
             PHFetchResult<PHAsset *> * assets  = [PHAsset fetchAssetsInAssetCollection:collection options:fetchOptions];
             
             self.allAlbumImageNum = [assets count];
@@ -224,6 +212,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    self.isFirstEnterIntoVC = YES;
+    
     self.allNormalImageNum = 0;
     self.allGifImageNum = 0;
     self.allVideoNum = 0;
@@ -241,16 +231,19 @@
     [super viewWillLayoutSubviews];
     
     self.albumCollectionView.frame = CGRectMake(0, 0, self.view.bk_width, self.view.bk_height - self.bottomNavView.bk_height);
-    
-    [self calculataImageSize];
-    [self refreshBottomNavBtnState];
 }
 
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     
-    [_albumCollectionView reloadItemsAtIndexPaths:[_albumCollectionView indexPathsForVisibleItems]];
+    if (!self.isFirstEnterIntoVC) {
+        [_albumCollectionView reloadItemsAtIndexPaths:[_albumCollectionView indexPathsForVisibleItems]];
+        
+        [self calculataImageSize];
+        [self refreshBottomNavBtnState];
+    }
+    self.isFirstEnterIntoVC = NO;
 }
 
 #pragma mark - UICollectionView
@@ -524,37 +517,42 @@
         [[BKTool sharedManager].selectImageArray addObject:imageModel];
         [button selectClickNum:[[BKTool sharedManager].selectImageArray count]];
         
-        [[BKTool sharedManager] getOriginalImageDataWithAsset:imageModel.asset progressHandler:^(double progress, NSError *error, PHImageRequestID imageRequestID) {
+        if (imageModel.loadingProgress != 1) {
             
-            if (error) {
-                [[BKTool sharedManager] hideLoadInView:currentSelectCell];
-                imageModel.loadingProgress = 0;
-                return;
-            }
+            [[BKTool sharedManager] showLoadInView:currentSelectCell];
             
-            [[BKTool sharedManager] showLoadInView:currentSelectCell downLoadProgress:progress];
-            imageModel.loadingProgress = progress;
-            
-        } complete:^(NSData *originalImageData, NSURL *url, PHImageRequestID imageRequestID) {
-            
-            [[BKTool sharedManager] hideLoadInView:currentSelectCell];
-            
-            if (originalImageData) {
-                imageModel.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];
-                imageModel.originalImageData = originalImageData;
-                imageModel.loadingProgress = 1;
-                imageModel.originalImageSize = (double)originalImageData.length/1024/1024;
-                imageModel.url = url;
+            [[BKTool sharedManager] getOriginalImageDataWithAsset:imageModel.asset progressHandler:^(double progress, NSError *error, PHImageRequestID imageRequestID) {
                 
-                [self calculataImageSize];
-                [self refreshBottomNavBtnState];
-            }else{
-                imageModel.loadingProgress = 0;
-                [[BKTool sharedManager] showRemind:@"原图下载失败"];
-                //删除选中的自己
-                [self selectImageBtnClick:button withImageModel:imageModel];
-            }
-        }];
+                if (error) {
+                    [[BKTool sharedManager] hideLoadInView:currentSelectCell];
+                    imageModel.loadingProgress = 0;
+                    return;
+                }
+                
+                [[BKTool sharedManager] showLoadInView:currentSelectCell downLoadProgress:progress];
+                imageModel.loadingProgress = progress;
+                
+            } complete:^(NSData *originalImageData, NSURL *url, PHImageRequestID imageRequestID) {
+                
+                [[BKTool sharedManager] hideLoadInView:currentSelectCell];
+                
+                if (originalImageData) {
+                    imageModel.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];
+                    imageModel.originalImageData = originalImageData;
+                    imageModel.loadingProgress = 1;
+                    imageModel.originalImageSize = (double)originalImageData.length/1024/1024;
+                    imageModel.url = url;
+                    
+                    [self calculataImageSize];
+                    [self refreshBottomNavBtnState];
+                }else{
+                    imageModel.loadingProgress = 0;
+                    [[BKTool sharedManager] showRemind:@"原图下载失败"];
+                    //删除选中的自己
+                    [self selectImageBtnClick:button withImageModel:imageModel];
+                }
+            }];
+        }
     }
     
     [self calculataImageSize];
@@ -586,15 +584,7 @@
     }
     [self.bottomNavView addSubview:[self sendBtn]];
     
-    if ([[BKTool sharedManager].selectImageArray count] >= 1) {
-        
-        [_previewBtn setTitleColor:BKHighlightColor forState:UIControlStateNormal];
-        
-        [_sendBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [_sendBtn setBackgroundColor:BKHighlightColor];
-        
-        [_sendBtn setTitle:[NSString stringWithFormat:@"确认(%ld)",[[BKTool sharedManager].selectImageArray count]] forState:UIControlStateNormal];
-    }
+    [self refreshBottomNavBtnState];
 }
 
 /**
@@ -717,7 +707,6 @@
     [BKTool sharedManager].isOriginal = ![BKTool sharedManager].isOriginal;
     
     [self calculataImageSize];
-    [self refreshBottomNavBtnState];
 }
 
 -(void)calculataImageSize

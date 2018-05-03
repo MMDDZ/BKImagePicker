@@ -268,40 +268,52 @@ float const BKThumbImageCompressSizeMultiplier = 0.5;//图片长宽压缩比例 
     if (!loadLayer) {
         
         loadLayer = [self showLoadInView:view];
+        [self createProgressTextLayerInSupperLayer:loadLayer downLoadProgress:progress];
         
-        CGFloat scale = BK_SCREENW / 320.0f;
-        
-        UIFont * font = [UIFont systemFontOfSize:10.0 * scale];
-        NSString * string = [NSString stringWithFormat:@"iCloud同步\n%.0f%%",progress*100];
-        
-        CGFloat height = [[BKTool sharedManager] sizeWithString:string UIWidth:loadLayer.frame.size.width font:font].height;
-        
-        CATextLayer * textLayer = [CATextLayer layer];
-        textLayer.bounds = CGRectMake(0, 0, loadLayer.frame.size.width, height);
-        textLayer.position = CGPointMake(loadLayer.frame.size.width/2, loadLayer.frame.size.height/2);
-        textLayer.string = string;
-        textLayer.wrapped = YES;
-        textLayer.contentsScale = [UIScreen mainScreen].scale;
-        textLayer.foregroundColor = BKNavGrayTitleColor.CGColor;
-        textLayer.alignmentMode = kCAAlignmentCenter;
-        textLayer.name = @"loadTextLayer";
-        [loadLayer addSublayer:textLayer];
-        
-        CFStringRef fontName = (__bridge CFStringRef)font.fontName;
-        CGFontRef fontRef = CGFontCreateWithFontName(fontName);
-        textLayer.font = fontRef;
-        textLayer.fontSize = font.pointSize;
-        CGFontRelease(fontRef);
     }else{
+        
+        __block BOOL isFindFlag = NO;
         [[loadLayer sublayers] enumerateObjectsUsingBlock:^(CALayer * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if ([obj.name isEqualToString:@"loadTextLayer"]) {
                 CATextLayer * textLayer = (CATextLayer*)obj;
                 textLayer.string = [NSString stringWithFormat:@"iCloud同步\n%.0f%%",progress*100];
+                isFindFlag = YES;
+                *stop = YES;
             }
         }];
+        
+        if (isFindFlag == NO) {
+            [self createProgressTextLayerInSupperLayer:loadLayer downLoadProgress:progress];
+        }
     }
 }
 
+-(void)createProgressTextLayerInSupperLayer:(CALayer*)supperLayer downLoadProgress:(CGFloat)progress
+{
+    CGFloat scale = BK_SCREENW / 320.0f;
+    
+    UIFont * font = [UIFont systemFontOfSize:10.0 * scale];
+    NSString * string = [NSString stringWithFormat:@"iCloud同步\n%.0f%%",progress*100];
+    
+    CGFloat height = [[BKTool sharedManager] sizeWithString:string UIWidth:supperLayer.frame.size.width font:font].height;
+    
+    CATextLayer * textLayer = [CATextLayer layer];
+    textLayer.bounds = CGRectMake(0, 0, supperLayer.frame.size.width, height);
+    textLayer.position = CGPointMake(supperLayer.frame.size.width/2, supperLayer.frame.size.height/2);
+    textLayer.string = string;
+    textLayer.wrapped = YES;
+    textLayer.contentsScale = [UIScreen mainScreen].scale;
+    textLayer.foregroundColor = BKNavGrayTitleColor.CGColor;
+    textLayer.alignmentMode = kCAAlignmentCenter;
+    textLayer.name = @"loadTextLayer";
+    [supperLayer addSublayer:textLayer];
+    
+    CFStringRef fontName = (__bridge CFStringRef)font.fontName;
+    CGFontRef fontRef = CGFontCreateWithFontName(fontName);
+    textLayer.font = fontRef;
+    textLayer.fontSize = font.pointSize;
+    CGFontRelease(fontRef);
+}
 
 /**
  隐藏Loading
@@ -539,6 +551,7 @@ float const BKThumbImageCompressSizeMultiplier = 0.5;//图片长宽压缩比例 
 {
     if (!_originalImageOptions) {
         _originalImageOptions = [[PHImageRequestOptions alloc] init];
+        _originalImageOptions.version = PHImageRequestOptionsVersionOriginal;
         _originalImageOptions.resizeMode = PHImageRequestOptionsResizeModeExact;
         _originalImageOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
         _originalImageOptions.synchronous = NO;
