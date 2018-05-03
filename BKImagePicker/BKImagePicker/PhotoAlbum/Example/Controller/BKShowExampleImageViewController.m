@@ -168,8 +168,8 @@
     if (!self.isFirstEnterIntoVC) {
         [_exampleImageCollectionView reloadItemsAtIndexPaths:[_exampleImageCollectionView indexPathsForVisibleItems]];
         
-        [self calculataImageSize];
-        [self refreshBottomNavBtnState];
+        [self calculataImageSizeWithSelectIndex:INT_MAX];
+        [self refreshBottomNavBtnStateWithSelectIndex:INT_MAX];
     }
     self.isFirstEnterIntoVC = NO;
 }
@@ -281,8 +281,8 @@
                     model.originalImageSize = (double)originalImageData.length/1024/1024;
                     model.url = url;
                     
-                    [self calculataImageSize];
-                    [self refreshBottomNavBtnState];
+                    [self calculataImageSizeWithSelectIndex:INT_MAX];
+                    [self refreshBottomNavBtnStateWithSelectIndex:INT_MAX];
                 }else{
                     model.loadingProgress = 0;
                     [[BKTool sharedManager] showRemind:@"原图下载失败"];
@@ -293,8 +293,8 @@
         }
     }
     
-    [self calculataImageSize];
-    [self refreshBottomNavBtnState];
+    [self calculataImageSizeWithSelectIndex:INT_MAX];
+    [self refreshBottomNavBtnStateWithSelectIndex:INT_MAX];
 }
 
 #pragma mark - initBottomNav
@@ -309,13 +309,16 @@
     }
     [self.bottomNavView addSubview:self.sendBtn];
     
-    [self refreshBottomNavBtnState];
+    [self refreshBottomNavBtnStateWithSelectIndex:INT_MAX];
 }
+
 
 /**
  更新底部按钮状态
+
+ @param selectIndex 即将选中显示cell的index
  */
--(void)refreshBottomNavBtnState
+-(void)refreshBottomNavBtnStateWithSelectIndex:(NSInteger)selectIndex
 {
     __block BOOL canEidtFlag = YES;
     __block BOOL isContainsLoading = NO;
@@ -333,7 +336,7 @@
             }
         }];
     }else{
-        BKImageModel * currentImageModel = self.imageListArray[_currentImageIndex];
+        BKImageModel * currentImageModel = self.imageListArray[selectIndex==INT_MAX?_currentImageIndex:selectIndex];
         if (currentImageModel.photoType != BKSelectPhotoTypeImage) {
             canEidtFlag = NO;
         }
@@ -379,7 +382,7 @@
 {
     if (!_originalBtn) {
         _originalBtn = [[BKImageOriginalButton alloc] initWithFrame:CGRectMake(BK_SCREENW/6, 0, BK_SCREENW/7*3, BK_SYSTEM_TABBAR_UI_HEIGHT)];
-        [self calculataImageSize];
+        [self calculataImageSizeWithSelectIndex:INT_MAX];
         
         BK_WEAK_SELF(self);
         [_originalBtn setTapSelctAction:^{
@@ -495,10 +498,15 @@
 {
     [BKTool sharedManager].isOriginal = ![BKTool sharedManager].isOriginal;
     
-    [self calculataImageSize];
+    [self calculataImageSizeWithSelectIndex:INT_MAX];
 }
 
--(void)calculataImageSize
+/**
+ 计算图的大小
+
+ @param selectIndex 即将选中显示cell的index
+ */
+-(void)calculataImageSizeWithSelectIndex:(NSInteger)selectIndex
 {
     if ([BKTool sharedManager].isOriginal) {
         
@@ -509,7 +517,7 @@
         __block BOOL isContainsLoading = NO;
         
         if ([BKTool sharedManager].max_select == 1) {
-            BKImageModel * model = self.imageListArray[_currentImageIndex];
+            BKImageModel * model = self.imageListArray[selectIndex==INT_MAX?_currentImageIndex:selectIndex];
             allSize = model.originalImageSize;
         }else{
             [[BKTool sharedManager].selectImageArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -717,9 +725,6 @@
             }
         }
         
-        if ([BKTool sharedManager].isOriginal && [BKTool sharedManager].max_select == 1) {
-            [self calculataImageSize];
-        }
     }else{
         [[BKTool sharedManager] getOriginalImageDataWithAsset:model.asset progressHandler:^(double progress, NSError *error, PHImageRequestID imageRequestID) {
             
@@ -751,14 +756,31 @@
                 model.url = url;
                 model.originalImageSize = (double)originalImageData.length/1024/1024;
                
-                [self calculataImageSize];
+                [self calculataImageSizeWithSelectIndex:currentIndexPath.item];
+                [self refreshBottomNavBtnStateWithSelectIndex:currentIndexPath.item];
                
             }else{
                 model.loadingProgress = 0;
+                
+                NSArray * visibleIndexPathArr = [self.exampleImageCollectionView indexPathsForVisibleItems];
+                [visibleIndexPathArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                    NSIndexPath * indexPath = obj;
+                    if (indexPath.item == currentIndexPath.item && indexPath.section == currentIndexPath.section) {
+                        [[BKTool sharedManager] showRemind:@"原图下载失败"];
+                        *stop = YES;
+                    }
+                }];
+                
+                [self calculataImageSizeWithSelectIndex:currentIndexPath.item];
+                [self refreshBottomNavBtnStateWithSelectIndex:currentIndexPath.item];
+                
             }
             
         }];
     }
+    
+    [self calculataImageSizeWithSelectIndex:currentIndexPath.item];
+    [self refreshBottomNavBtnStateWithSelectIndex:currentIndexPath.item];
 }
 
 #pragma mark - 整合image与imageView

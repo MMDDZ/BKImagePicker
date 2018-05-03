@@ -475,9 +475,9 @@
             isHave = YES;
         }
         
-        NSArray * currentDisplayCellArr = [self.albumCollectionView visibleCells];
-        for (int i = 0; i<[currentDisplayCellArr count]; i++) {
-            BKImagePickerCollectionViewCell * cell = currentDisplayCellArr[i];
+        NSArray * visibleCellArr = [self.albumCollectionView visibleCells];
+        for (int i = 0; i<[visibleCellArr count]; i++) {
+            BKImagePickerCollectionViewCell * cell = visibleCellArr[i];
             if ([selectModel.fileName isEqualToString:cell.currentImageModel.fileName]) {
                 if (isHave) {
                     if (currentIndex == idx) {

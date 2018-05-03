@@ -24,8 +24,6 @@ float const BKThumbImageCompressSizeMultiplier = 0.5;//图片长宽压缩比例 
 @property (nonatomic,copy) NSString * imagePath;//图片路径
 
 @property (nonatomic,strong) PHCachingImageManager * cachingImageManager;//图片缓存管理者
-@property (nonatomic,strong) PHImageRequestOptions * thumbImageOptions;//缩略图请求选项
-@property (nonatomic,strong) PHImageRequestOptions * originalImageOptions;//原图请求选项
 
 @end
 
@@ -511,18 +509,6 @@ float const BKThumbImageCompressSizeMultiplier = 0.5;//图片长宽压缩比例 
 
 #pragma mark - 获取图片
 
--(PHImageRequestOptions*)thumbImageOptions
-{
-    if (!_thumbImageOptions) {
-        _thumbImageOptions = [[PHImageRequestOptions alloc] init];
-        _thumbImageOptions.resizeMode = PHImageRequestOptionsResizeModeFast;
-        _thumbImageOptions.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
-        _thumbImageOptions.synchronous = NO;
-        _thumbImageOptions.networkAccessAllowed = YES;
-    }
-    return _thumbImageOptions;
-}
-
 /**
  获取对应缩略图
  
@@ -531,33 +517,20 @@ float const BKThumbImageCompressSizeMultiplier = 0.5;//图片长宽压缩比例 
  */
 -(void)getThumbImageWithAsset:(PHAsset*)asset complete:(void (^)(UIImage * thumbImage))complete
 {
-    [[BKTool sharedManager].cachingImageManager requestImageForAsset:asset targetSize:CGSizeMake(BK_SCREENW/2.0f, BK_SCREENW/2.0f) contentMode:PHImageContentModeAspectFill options:self.thumbImageOptions resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+    PHImageRequestOptions * thumbImageOptions = [[PHImageRequestOptions alloc] init];
+    thumbImageOptions.resizeMode = PHImageRequestOptionsResizeModeFast;
+    thumbImageOptions.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
+    thumbImageOptions.synchronous = NO;
+    thumbImageOptions.networkAccessAllowed = YES;
+    
+    [[BKTool sharedManager].cachingImageManager requestImageForAsset:asset targetSize:CGSizeMake(BK_SCREENW/2.0f, BK_SCREENW/2.0f) contentMode:PHImageContentModeAspectFill options:thumbImageOptions resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
         
-        // 排除取消，错误，低清图三种情况，即已经获取到了高清图
-        BOOL downImageloadFinined = ![[info objectForKey:PHImageCancelledKey] boolValue] && ![info objectForKey:PHImageErrorKey] && ![[info objectForKey:PHImageResultIsDegradedKey] boolValue];
-        if (downImageloadFinined) {
-            if(result) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if (complete) {
-                        complete(result);
-                    }
-                });
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (complete) {
+                complete(result);
             }
-        }
+        });
     }];
-}
-
--(PHImageRequestOptions*)originalImageOptions
-{
-    if (!_originalImageOptions) {
-        _originalImageOptions = [[PHImageRequestOptions alloc] init];
-        _originalImageOptions.version = PHImageRequestOptionsVersionOriginal;
-        _originalImageOptions.resizeMode = PHImageRequestOptionsResizeModeExact;
-        _originalImageOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
-        _originalImageOptions.synchronous = NO;
-        _originalImageOptions.networkAccessAllowed = YES;
-    }
-    return _originalImageOptions;
 }
 
 /**
@@ -568,7 +541,14 @@ float const BKThumbImageCompressSizeMultiplier = 0.5;//图片长宽压缩比例 
  */
 -(void)getOriginalImageWithAsset:(PHAsset*)asset complete:(void (^)(UIImage * originalImage))complete
 {
-    [[BKTool sharedManager].cachingImageManager requestImageForAsset:asset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:self.originalImageOptions resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+    PHImageRequestOptions * originalImageOptions = [[PHImageRequestOptions alloc] init];
+    originalImageOptions.version = PHImageRequestOptionsVersionOriginal;
+    originalImageOptions.resizeMode = PHImageRequestOptionsResizeModeExact;
+    originalImageOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+    originalImageOptions.synchronous = NO;
+    originalImageOptions.networkAccessAllowed = YES;
+    
+    [[BKTool sharedManager].cachingImageManager requestImageForAsset:asset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:originalImageOptions resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
         
         // 排除取消，错误，低清图三种情况，即已经获取到了高清图
         BOOL downImageloadFinined = ![[info objectForKey:PHImageCancelledKey] boolValue] && ![info objectForKey:PHImageErrorKey] && ![[info objectForKey:PHImageResultIsDegradedKey] boolValue];
@@ -580,6 +560,12 @@ float const BKThumbImageCompressSizeMultiplier = 0.5;//图片长宽压缩比例 
                     }
                 });
             }
+        }else{
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (complete) {
+                    complete(nil);
+                }
+            });
         }
     }];
 }
@@ -593,7 +579,13 @@ float const BKThumbImageCompressSizeMultiplier = 0.5;//图片长宽压缩比例 
  */
 -(void)getOriginalImageDataWithAsset:(PHAsset*)asset progressHandler:(void (^)(double progress, NSError * error, PHImageRequestID imageRequestID))progressHandler complete:(void (^)(NSData * originalImageData, NSURL * url, PHImageRequestID imageRequestID))complete
 {
-    [self.originalImageOptions setProgressHandler:^(double progress, NSError * _Nullable error, BOOL * _Nonnull stop, NSDictionary * _Nullable info) {
+    PHImageRequestOptions * originalImageOptions = [[PHImageRequestOptions alloc] init];
+    originalImageOptions.version = PHImageRequestOptionsVersionOriginal;
+    originalImageOptions.resizeMode = PHImageRequestOptionsResizeModeExact;
+    originalImageOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+    originalImageOptions.synchronous = NO;
+    originalImageOptions.networkAccessAllowed = YES;
+    [originalImageOptions setProgressHandler:^(double progress, NSError * _Nullable error, BOOL * _Nonnull stop, NSDictionary * _Nullable info) {
         dispatch_async(dispatch_get_main_queue(), ^{
             PHImageRequestID imageRequestID = [info[PHImageResultRequestIDKey] intValue];
             if (progressHandler) {
@@ -602,7 +594,7 @@ float const BKThumbImageCompressSizeMultiplier = 0.5;//图片长宽压缩比例 
         });
     }];
     
-    __block PHImageRequestID imageRequestID = [[BKTool sharedManager].cachingImageManager requestImageDataForAsset:asset options:self.originalImageOptions resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
+    __block PHImageRequestID imageRequestID = [[BKTool sharedManager].cachingImageManager requestImageDataForAsset:asset options:originalImageOptions resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
         
         NSURL * url = info[@"PHImageFileURLKey"];
         dispatch_async(dispatch_get_main_queue(), ^{
