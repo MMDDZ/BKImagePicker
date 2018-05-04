@@ -84,7 +84,7 @@
         CGRect endRect = [self.delegate getFrameOfCurrentImageInListVCWithImageModel:self.imageListArray[_currentImageIndex]];
         
         BKShowExampleTransitionAnimater * transitionAnimater = [[BKShowExampleTransitionAnimater alloc] initWithTransitionType:BKShowExampleTransitionPop];
-        transitionAnimater.startImageView = CGRectEqualToRect(self.interactiveTransition.panImageView.frame, CGRectZero)?self.interactiveTransition.startImageView:self.interactiveTransition.panImageView;
+        transitionAnimater.startImageView = self.interactiveTransition.startImageView;
         transitionAnimater.endRect = endRect;
         BK_WEAK_SELF(self);
         [transitionAnimater setEndTransitionAnimateAction:^{

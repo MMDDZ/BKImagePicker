@@ -11,33 +11,17 @@
 @interface BKShowExampleInteractiveTransition()<UIGestureRecognizerDelegate>
 
 @property (nonatomic,weak) BKShowExampleImageViewController * vc;//添加手势的vc
-@property (nonatomic,assign) CGRect startImageViewRect;//图片起始位置
+@property (nonatomic,assign) CGFloat startZoomScale;//图片起始在scrollview中缩放大小
+@property (nonatomic,assign) CGPoint startContentOffset;//图片起始在scrollview中的偏移量
+@property (nonatomic,assign) CGRect startImageViewRect;//图片起始在scrollview中的大小
 @property (nonatomic,assign) CGPoint startPoint;//手势起始点
+@property (nonatomic,assign) CGRect startPanRect;//手势起始滑动时图片的大小
 
 @property (nonatomic,strong) UIPanGestureRecognizer * panGesture;
 
 @end
 
 @implementation BKShowExampleInteractiveTransition
-@synthesize panImageView = _panImageView;
-
-#pragma mark - panImageView
-
--(FLAnimatedImageView*)panImageView
-{
-    if (!_panImageView) {
-        _panImageView = [[FLAnimatedImageView alloc] initWithFrame:_startImageViewRect];
-        if (_startImageView.animatedImage) {
-            _panImageView.animatedImage = _startImageView.animatedImage;
-        }else{
-            _panImageView.image = _startImageView.image;
-        }
-        _panImageView.clipsToBounds = YES;
-        _panImageView.contentMode = UIViewContentModeScaleAspectFill;
-        _panImageView.runLoopMode = NSRunLoopCommonModes;
-    }
-    return _panImageView;
-}
 
 #pragma mark - 手势
 
@@ -71,6 +55,8 @@
         case UIGestureRecognizerStateBegan:
         {
             _interation = YES;
+            _startZoomScale = _supperScrollView.zoomScale;
+            _startContentOffset = _supperScrollView.contentOffset;
             _startPoint = [panGesture locationInView:_panGesture.view];
             
             CGPoint velocity = [panGesture velocityInView:panGesture.view];
@@ -88,22 +74,29 @@
             
             [[_vc.view superview] insertSubview:lastVC.view atIndex:0];
             
-            _startImageViewRect = [_startImageView.superview convertRect:_startImageView.frame toView:self.vc.view];
-            [[_vc.view superview] addSubview:self.panImageView];
+            _startPanRect = [_supperScrollView convertRect:_startImageView.frame toView:self.vc.view];
+            
+            _supperScrollView.contentOffset = CGPointZero;
+            _supperScrollView.zoomScale = 1;
+            _startImageViewRect = _startImageView.frame;
+            
+            _startImageView.frame = _startPanRect;
+            
+            [[_vc.view superview] addSubview:_startImageView];
         }
             break;
         case UIGestureRecognizerStateChanged:
         {
             CGPoint translation = [panGesture translationInView:panGesture.view];
-            CGFloat newY = _panImageView.bk_y + translation.y;
+            CGFloat newY = _startImageView.bk_y + translation.y;
             if (newY <= 0) {
                 _vc.view.alpha = 1;
-                _panImageView.transform = CGAffineTransformMakeScale(1, 1);
-                _panImageView.bk_y = _panImageView.bk_y + translation.y/3.f;
-            }else if (newY > 0 && newY <= _startImageViewRect.origin.y) {
+                _startImageView.transform = CGAffineTransformMakeScale(1, 1);
+                _startImageView.bk_y = _startImageView.bk_y + translation.y/3.f;
+            }else if (newY > 0 && newY <= _startPanRect.origin.y) {
                 _vc.view.alpha = 1;
-                _panImageView.transform = CGAffineTransformMakeScale(1, 1);
-                _panImageView.bk_y = newY;
+                _startImageView.transform = CGAffineTransformMakeScale(1, 1);
+                _startImageView.bk_y = newY;
             }else {
                 CGFloat scale = 0;
                 if (percentage < 0) {
@@ -112,10 +105,10 @@
                     scale = 1 - fabs(0.7*percentage);
                 }
                 _vc.view.alpha = scale;
-                _panImageView.transform = CGAffineTransformMakeScale(scale, scale);
-                _panImageView.bk_y = newY;
+                _startImageView.transform = CGAffineTransformMakeScale(scale, scale);
+                _startImageView.bk_y = newY;
             }
-            _panImageView.bk_x = _panImageView.bk_x + translation.x;
+            _startImageView.bk_x = _startImageView.bk_x + translation.x;
         }
             break;
         case UIGestureRecognizerStateEnded:
@@ -160,25 +153,27 @@
 {
     CGFloat duration = percentage < 0 ? fabs(0.75 * percentage) : (1 * percentage);
     
-    BK_WEAK_SELF(self);
+    
     [UIView animateWithDuration:duration animations:^{
-        BK_STRONG_SELF(self);
         
-        strongSelf.panImageView.center = CGPointMake(CGRectGetMidX(strongSelf.startImageViewRect), CGRectGetMidY(strongSelf.startImageViewRect));
-        strongSelf.panImageView.transform = CGAffineTransformMakeScale(1, 1);
+        self.startImageView.center = CGPointMake(CGRectGetMidX(self.startPanRect), CGRectGetMidY(self.startPanRect));
+        self.startImageView.transform = CGAffineTransformMakeScale(1, 1);
         
-        strongSelf.vc.view.alpha = 1;
+        self.vc.view.alpha = 1;
         
     } completion:^(BOOL finished) {
-        BK_STRONG_SELF(self);
+        
+        [self.supperScrollView addSubview:self.startImageView];
+        self.startImageView.frame = self.startImageViewRect;
+        self.supperScrollView.zoomScale = self.startZoomScale;
+        self.supperScrollView.contentOffset = self.startContentOffset;
         
         [lastVC.view removeFromSuperview];
-        [strongSelf.panImageView removeFromSuperview];
         
-        [[strongSelf.vc.view subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [[self.vc.view subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             [obj setHidden:NO];
         }];
-        if (strongSelf.isNavHidden) {
+        if (self.isNavHidden) {
             [UIApplication sharedApplication].statusBarHidden = YES;
         }else{
             [UIApplication sharedApplication].statusBarHidden = NO;
