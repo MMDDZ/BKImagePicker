@@ -29,7 +29,17 @@
  */
 @property (nonatomic,strong) UIScrollView * supperScrollView;
 
-
+/**
+ 添加手势
+ 
+ @param viewController 控制器
+ */
 - (void)addPanGestureForViewController:(BKShowExampleImageViewController *)viewController;
+/**
+ 获取当前显示view的透明百分比
+ 
+ @return 透明百分比
+ */
+-(CGFloat)getCurrentViewAlphaPercentage;
 
 @end

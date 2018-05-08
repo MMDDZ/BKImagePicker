@@ -79,13 +79,12 @@
         return transitionAnimater;
     }else{
         
-        _exampleImageCollectionView.hidden = YES;
-        
         CGRect endRect = [self.delegate getFrameOfCurrentImageInListVCWithImageModel:self.imageListArray[_currentImageIndex]];
         
         BKShowExampleTransitionAnimater * transitionAnimater = [[BKShowExampleTransitionAnimater alloc] initWithTransitionType:BKShowExampleTransitionPop];
         transitionAnimater.startImageView = self.interactiveTransition.startImageView;
         transitionAnimater.endRect = endRect;
+        transitionAnimater.alphaPercentage = self.interactiveTransition.interation?[self.interactiveTransition getCurrentViewAlphaPercentage]:1;
         BK_WEAK_SELF(self);
         [transitionAnimater setEndTransitionAnimateAction:^{
             BK_STRONG_SELF(self);
@@ -807,6 +806,8 @@
         FLAnimatedImage * gifImage = [FLAnimatedImage animatedImageWithGIFData:imageData];
         if (gifImage) {
             showImageView.animatedImage = gifImage;
+        }else{
+            showImageView.image = [UIImage imageWithData:imageData];
         }
     }
     

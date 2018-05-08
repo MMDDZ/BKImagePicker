@@ -19,6 +19,9 @@
 
 @property (nonatomic,strong) UIPanGestureRecognizer * panGesture;
 
+@property (nonatomic,strong) UIView * original_lastVCSupperView;//原来上一个vc的supperView
+@property (nonatomic,assign) CGFloat changeScale;//过程中改变的大小程度
+
 @end
 
 @implementation BKShowExampleInteractiveTransition
@@ -68,11 +71,13 @@
             [[_vc.view subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 [obj setHidden:YES];
             }];
+            
             if (_isNavHidden) {
                 [UIApplication sharedApplication].statusBarHidden = NO;
             }
             
-            [[_vc.view superview] insertSubview:lastVC.view atIndex:0];
+            self.original_lastVCSupperView = [lastVC.view superview];
+            [[_vc.view superview] insertSubview:lastVC.view belowSubview:_vc.view];
             
             _startPanRect = [_supperScrollView convertRect:_startImageView.frame toView:self.vc.view];
             
@@ -82,7 +87,7 @@
             
             _startImageView.frame = _startPanRect;
             
-            [[_vc.view superview] addSubview:_startImageView];
+            [_vc.view addSubview:_startImageView];
         }
             break;
         case UIGestureRecognizerStateChanged:
@@ -98,14 +103,18 @@
                 _startImageView.transform = CGAffineTransformMakeScale(1, 1);
                 _startImageView.bk_y = newY;
             }else {
-                CGFloat scale = 0;
                 if (percentage < 0) {
-                    scale = 1;
+                    self.changeScale = 1;
                 }else{
-                    scale = 1 - fabs(0.7*percentage);
+                    self.changeScale = 1 - fabs(0.7*percentage);
                 }
-                _vc.view.alpha = scale;
-                _startImageView.transform = CGAffineTransformMakeScale(scale, scale);
+                
+                if (_vc.navigationController) {
+                    _vc.navigationController.view.backgroundColor = [UIColor colorWithWhite:1 alpha:0];
+                }
+                _vc.view.backgroundColor = [UIColor colorWithWhite:0 alpha:self.changeScale];
+                
+                _startImageView.transform = CGAffineTransformMakeScale(self.changeScale, self.changeScale);
                 _startImageView.bk_y = newY;
             }
             _startImageView.bk_x = _startImageView.bk_x + translation.x;
@@ -118,14 +127,15 @@
                 return;
             }
             
-            _interation = NO;
-            _startPoint = CGPointZero;
-            
             if (percentage > 0.2) {
+                [self.original_lastVCSupperView addSubview:lastVC.view];
                 [_vc.navigationController popViewControllerAnimated:YES];
             }else{
                 [self cancelRecognizerMethodWithPercentage:percentage lastVC:lastVC];
             }
+            
+            _interation = NO;
+            _startPoint = CGPointZero;
         }
             break;
         case UIGestureRecognizerStateCancelled:
@@ -136,10 +146,10 @@
                 return;
             }
             
+            [self cancelRecognizerMethodWithPercentage:percentage lastVC:lastVC];
+            
             _interation = NO;
             _startPoint = CGPointZero;
-            
-            [self cancelRecognizerMethodWithPercentage:percentage lastVC:lastVC];
         }
             break;
         default:
@@ -151,15 +161,17 @@
 
 -(void)cancelRecognizerMethodWithPercentage:(CGFloat)percentage lastVC:(UIViewController*)lastVC
 {
-    CGFloat duration = percentage < 0 ? fabs(0.75 * percentage) : (1 * percentage);
-    
+    CGFloat duration = percentage < 0 ? fabs(0.75 * percentage) : (1.25 * percentage);
     
     [UIView animateWithDuration:duration animations:^{
         
-        self.startImageView.center = CGPointMake(CGRectGetMidX(self.startPanRect), CGRectGetMidY(self.startPanRect));
-        self.startImageView.transform = CGAffineTransformMakeScale(1, 1);
+        self.startImageView.transform = CGAffineTransformIdentity;
+        self.startImageView.frame = self.startPanRect;
         
-        self.vc.view.alpha = 1;
+        if (self.vc.navigationController) {
+            self.vc.navigationController.view.backgroundColor = [UIColor colorWithWhite:1 alpha:0];
+        }
+        self.vc.view.backgroundColor = [UIColor colorWithWhite:0 alpha:1];
         
     } completion:^(BOOL finished) {
         
@@ -169,6 +181,7 @@
         self.supperScrollView.contentOffset = self.startContentOffset;
         
         [lastVC.view removeFromSuperview];
+        [self.original_lastVCSupperView addSubview:lastVC.view];
         
         [[self.vc.view subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             [obj setHidden:NO];
@@ -195,6 +208,18 @@
         }
     }
     return NO;
+}
+
+#pragma mark - 获取当前显示view的透明百分比
+
+/**
+ 获取当前显示view的透明百分比
+ 
+ @return 透明百分比
+ */
+-(CGFloat)getCurrentViewAlphaPercentage
+{
+    return self.changeScale;
 }
 
 @end

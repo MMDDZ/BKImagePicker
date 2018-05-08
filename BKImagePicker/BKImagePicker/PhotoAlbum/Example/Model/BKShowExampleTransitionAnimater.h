@@ -17,6 +17,10 @@ typedef NS_ENUM(NSUInteger, BKShowExampleTransition) {
 @interface BKShowExampleTransitionAnimater : NSObject <UIViewControllerAnimatedTransitioning>
 
 /**
+ 返回时背景透明百分比
+ */
+@property (nonatomic,assign) CGFloat alphaPercentage;
+/**
  起始imageView
  */
 @property (nonatomic,strong) UIImageView * startImageView;
