@@ -8,7 +8,7 @@
 
 #import "UIView+BKImagePicker.h"
 
-@implementation UIView (BKExpand)
+@implementation UIView (BKImagePicker)
 
 -(void)setBk_x:(CGFloat)bk_x
 {

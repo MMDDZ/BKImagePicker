@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface UIBezierPath (BKExpand)
+@interface UIBezierPath (BKImagePicker)
 
 -(NSArray *)bk_points;
 

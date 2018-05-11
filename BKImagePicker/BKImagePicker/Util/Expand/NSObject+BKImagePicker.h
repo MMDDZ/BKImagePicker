@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <objc/runtime.h>
 
-@interface NSObject (BKExpand)
+@interface NSObject (BKImagePicker)
 
 /**
  字典Tag

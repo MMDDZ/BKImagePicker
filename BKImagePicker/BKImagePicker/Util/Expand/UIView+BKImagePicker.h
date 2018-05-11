@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface UIView (BKExpand)
+@interface UIView (BKImagePicker)
 
 //X
 @property (nonatomic,assign) CGFloat bk_x;

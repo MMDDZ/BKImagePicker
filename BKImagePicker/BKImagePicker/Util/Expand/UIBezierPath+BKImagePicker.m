@@ -10,7 +10,7 @@
 
 #define VALUE(_INDEX_) [NSValue valueWithCGPoint:points[_INDEX_]]
 
-@implementation UIBezierPath (BKExpand)
+@implementation UIBezierPath (BKImagePicker)
 
 void getPointsFromBezier(void *info, const CGPathElement *element)
 {

@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface UIImage (BKOrientationExpand)
+@interface UIImage (BKImagePicker)
 
 -(UIImage*)bk_editImageOrientation;
 

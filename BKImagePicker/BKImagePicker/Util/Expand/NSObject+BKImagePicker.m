@@ -8,7 +8,7 @@
 
 #import "NSObject+BKImagePicker.h"
 
-@implementation NSObject (BKExpand)
+@implementation NSObject (BKImagePicker)
 
 -(NSDictionary*)bk_dicTag
 {
