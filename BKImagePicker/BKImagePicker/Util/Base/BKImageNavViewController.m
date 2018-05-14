@@ -35,12 +35,11 @@
 
 - (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated
 {
-    _customTransition = nil;
-    
     viewController.bk_dicTag = @{@"direction":@(_direction),@"popVC":_popVC?_popVC:[NSNull null]};
-    _nextVC = viewController;
     
+    _nextVC = viewController;
     _direction = BKImageTransitionAnimaterDirectionRight;
+    _customTransition = nil;
     _popVC = nil;
     
     [super pushViewController:viewController animated:animated];
@@ -97,6 +96,8 @@
 {
     _popVC = popVC;
     
+    _nextVC.bk_dicTag = @{@"direction":_nextVC.bk_dicTag[@"direction"],@"popVC":_popVC?_popVC:[NSNull null]};
+    
     if (_customTransition) {
         _customTransition.backVC = _popVC;
     }
@@ -108,7 +109,9 @@
 {
     if (!_customTransition) {
         
-        switch (_direction) {
+        NSDictionary * vcMessageDic = _nextVC.bk_dicTag;
+        
+        switch ([vcMessageDic[@"direction"] integerValue]) {
             case BKImageTransitionAnimaterDirectionRight:
             {
                 _customTransition = [[BKImagePercentDrivenInteractiveTransition alloc] initWithTransitionGestureDirection:BKImagePercentDrivenInteractiveTransitionGestureDirectionRight];
@@ -122,9 +125,12 @@
             default:
                 break;
         }
+        
         [_customTransition addPanGestureForViewController:_nextVC];
-        if (_popVC) {
-            _customTransition.backVC = _popVC;
+        
+        UIViewController * popVC = [vcMessageDic[@"popVC"] isKindOfClass:[NSNull class]]?nil:vcMessageDic[@"popVC"];
+        if (popVC) {
+            _customTransition.backVC = popVC;
         }
     }
     
@@ -135,14 +141,16 @@
 
 - (id<UIViewControllerAnimatedTransitioning>)navigationController:(UINavigationController *)navigationController animationControllerForOperation:(UINavigationControllerOperation)operation fromViewController:(UIViewController *)fromVC toViewController:(UIViewController *)toVC
 {
+    NSDictionary * vcMessageDic = _nextVC.bk_dicTag;
+    
     if (operation == UINavigationControllerOperationPush) {
         
-        BKImageTransitionAnimater * transitionAnimater = [[BKImageTransitionAnimater alloc] initWithTransitionType:BKImageTransitionAnimaterTypePush transitionAnimaterDirection:_direction];
+        BKImageTransitionAnimater * transitionAnimater = [[BKImageTransitionAnimater alloc] initWithTransitionType:BKImageTransitionAnimaterTypePush transitionAnimaterDirection:[vcMessageDic[@"direction"] integerValue]];
         
         return transitionAnimater;
     }else{
         
-        BKImageTransitionAnimater * transitionAnimater = [[BKImageTransitionAnimater alloc] initWithTransitionType:BKImageTransitionAnimaterTypePop transitionAnimaterDirection:_direction];
+        BKImageTransitionAnimater * transitionAnimater = [[BKImageTransitionAnimater alloc] initWithTransitionType:BKImageTransitionAnimaterTypePop transitionAnimaterDirection:[vcMessageDic[@"direction"] integerValue]];
         transitionAnimater.interation = self.customTransition.interation;
         BK_WEAK_SELF(self);
         [transitionAnimater setBackFinishAction:^{
@@ -161,14 +169,14 @@
 
 #pragma mark - 重置上一个VC导航设置
 
--(void)resetNavSettingWithVC:(UIViewController*)vc
+-(void)resetNavSettingWithVC:(UIViewController*)currentVC
 {
     self.customTransition = nil;
     
-    NSDictionary * vcMessageDic = vc.bk_dicTag;
+    NSDictionary * vcMessageDic = currentVC.bk_dicTag;
     self.popVC = [vcMessageDic[@"popVC"] isKindOfClass:[NSNull class]]?nil:vcMessageDic[@"popVC"];
     self.direction = [vcMessageDic[@"direction"] integerValue];
-    self.nextVC = vc;
+    self.nextVC = currentVC;
     [self customTransition];//重置上一个VC导航设置
 }
 
