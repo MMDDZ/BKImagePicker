@@ -7,6 +7,7 @@
 //
 
 #import "BKImageNavViewController.h"
+#import "BKImagePercentDrivenInteractiveTransition.h"
 #import "BKTool.h"
 
 @interface BKImageNavViewController ()<UIGestureRecognizerDelegate,UINavigationControllerDelegate>
@@ -15,6 +16,11 @@
  下一个VC
  */
 @property (nonatomic,weak) UIViewController * nextVC;
+
+/**
+ 交互方法
+ */
+@property (nonatomic,strong) BKImagePercentDrivenInteractiveTransition * customTransition;
 
 @end
 
@@ -35,12 +41,22 @@
 
 - (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated
 {
-    viewController.bk_dicTag = @{@"direction":@(_direction),@"popVC":_popVC?_popVC:[NSNull null]};
+    //    NSInteger count = self.viewControllers.count;
+    //    if (count != 0) {
+    //        viewController.hidesBottomBarWhenPushed = YES;
+    //    }
+    
+    _popVC = nil;
+    _popGestureRecognizerEnable = YES;
+    
+    viewController.bk_dicTag = @{@"direction":@(_direction),
+                              @"popVC":_popVC?_popVC:[NSNull null],
+                              @"popGestureRecognizerEnable":@(_popGestureRecognizerEnable)
+                              };
     
     _nextVC = viewController;
     _direction = BKImageTransitionAnimaterDirectionRight;
     _customTransition = nil;
-    _popVC = nil;
     
     [super pushViewController:viewController animated:animated];
 }
@@ -53,7 +69,7 @@
             [tabBarVC.view addSubview:tabBarVC.tabBar];
         }
     }
-    
+
     return [super popViewControllerAnimated:animated];
 }
 
@@ -65,7 +81,7 @@
             [tabBarVC.view addSubview:tabBarVC.tabBar];
         }
     }
-    
+
     return [super popToViewController:viewController animated:animated];
 }
 
@@ -76,7 +92,7 @@
     if (tabBarVC) {
         [tabBarVC.view addSubview:tabBarVC.tabBar];
     }
-    
+
     return [super popToRootViewControllerAnimated:animated];
 }
 
@@ -95,12 +111,26 @@
 -(void)setPopVC:(UIViewController *)popVC
 {
     _popVC = popVC;
+
+    _nextVC.bk_dicTag = @{@"direction":_nextVC.bk_dicTag[@"direction"],
+                       @"popVC":_popVC?_popVC:[NSNull null],
+                       @"popGestureRecognizerEnable":@(_popGestureRecognizerEnable)
+                       };
+
+    self.customTransition.backVC = _popVC;
+}
+
+-(void)setPopGestureRecognizerEnable:(BOOL)popGestureRecognizerEnable
+{
+    _popGestureRecognizerEnable = popGestureRecognizerEnable;
     
-    _nextVC.bk_dicTag = @{@"direction":_nextVC.bk_dicTag[@"direction"],@"popVC":_popVC?_popVC:[NSNull null]};
+    self.interactivePopGestureRecognizer.enabled = _popGestureRecognizerEnable;
     
-    if (_customTransition) {
-        _customTransition.backVC = _popVC;
-    }
+    _nextVC.bk_dicTag = @{@"direction":_nextVC.bk_dicTag[@"direction"],
+                       @"popVC":_popVC?_popVC:[NSNull null],
+                       @"popGestureRecognizerEnable":@(_popGestureRecognizerEnable)};
+    
+    self.customTransition.enble = _popGestureRecognizerEnable;
 }
 
 #pragma mark - BKImagePercentDrivenInteractiveTransition
@@ -108,9 +138,9 @@
 -(BKImagePercentDrivenInteractiveTransition*)customTransition
 {
     if (!_customTransition) {
-        
+
         NSDictionary * vcMessageDic = _nextVC.bk_dicTag;
-        
+
         switch ([vcMessageDic[@"direction"] integerValue]) {
             case BKImageTransitionAnimaterDirectionRight:
             {
@@ -125,15 +155,10 @@
             default:
                 break;
         }
-        
+
         [_customTransition addPanGestureForViewController:_nextVC];
-        
-        UIViewController * popVC = [vcMessageDic[@"popVC"] isKindOfClass:[NSNull class]]?nil:vcMessageDic[@"popVC"];
-        if (popVC) {
-            _customTransition.backVC = popVC;
-        }
     }
-    
+
     return _customTransition;
 }
 
@@ -142,14 +167,14 @@
 - (id<UIViewControllerAnimatedTransitioning>)navigationController:(UINavigationController *)navigationController animationControllerForOperation:(UINavigationControllerOperation)operation fromViewController:(UIViewController *)fromVC toViewController:(UIViewController *)toVC
 {
     NSDictionary * vcMessageDic = _nextVC.bk_dicTag;
-    
+
     if (operation == UINavigationControllerOperationPush) {
-        
+
         BKImageTransitionAnimater * transitionAnimater = [[BKImageTransitionAnimater alloc] initWithTransitionType:BKImageTransitionAnimaterTypePush transitionAnimaterDirection:[vcMessageDic[@"direction"] integerValue]];
-        
+
         return transitionAnimater;
     }else{
-        
+
         BKImageTransitionAnimater * transitionAnimater = [[BKImageTransitionAnimater alloc] initWithTransitionType:BKImageTransitionAnimaterTypePop transitionAnimaterDirection:[vcMessageDic[@"direction"] integerValue]];
         transitionAnimater.interation = self.customTransition.interation;
         BK_WEAK_SELF(self);
@@ -157,7 +182,7 @@
             BK_STRONG_SELF(self);
             [strongSelf resetNavSettingWithVC:toVC];
         }];
-        
+
         return transitionAnimater;
     }
 }
@@ -171,13 +196,20 @@
 
 -(void)resetNavSettingWithVC:(UIViewController*)currentVC
 {
-    self.customTransition = nil;
-    
     NSDictionary * vcMessageDic = currentVC.bk_dicTag;
     self.popVC = [vcMessageDic[@"popVC"] isKindOfClass:[NSNull class]]?nil:vcMessageDic[@"popVC"];
     self.direction = [vcMessageDic[@"direction"] integerValue];
     self.nextVC = currentVC;
-    [self customTransition];//重置上一个VC导航设置
+    self.popGestureRecognizerEnable = [vcMessageDic[@"popGestureRecognizerEnable"] boolValue];
+    
+    //重置上一个VC导航交互设置
+    self.customTransition = nil;
+    [self customTransition];
+    UIViewController * popVC = [vcMessageDic[@"popVC"] isKindOfClass:[NSNull class]]?nil:vcMessageDic[@"popVC"];
+    if (popVC) {
+        self.customTransition.backVC = popVC;
+    }
+    self.customTransition.enble = [vcMessageDic[@"popGestureRecognizerEnable"] boolValue];
 }
 
 #pragma mark - UIGestureRecognizerDelegate 在根视图时不响应interactivePopGestureRecognizer手势

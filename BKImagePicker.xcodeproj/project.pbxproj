@@ -7,10 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1D627B17207DDA7C00E7B3F0 /* NSObject+BKImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D627ABB207DDA7C00E7B3F0 /* NSObject+BKImagePicker.m */; };
-		1D627B18207DDA7C00E7B3F0 /* UIView+BKImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D627ABD207DDA7C00E7B3F0 /* UIView+BKImagePicker.m */; };
-		1D627B19207DDA7C00E7B3F0 /* UIImage+BKImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D627ABE207DDA7C00E7B3F0 /* UIImage+BKImagePicker.m */; };
-		1D627B1A207DDA7C00E7B3F0 /* UIBezierPath+BKImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D627AC0207DDA7C00E7B3F0 /* UIBezierPath+BKImagePicker.m */; };
+		1D344C5720EB0F8D008B058F /* UINavigationController+BKImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D344C5620EB0F8D008B058F /* UINavigationController+BKImagePicker.m */; };
+		1D344C6120EB0FBA008B058F /* NSObject+BKImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D344C5920EB0FBA008B058F /* NSObject+BKImagePicker.m */; };
+		1D344C6220EB0FBA008B058F /* UIView+BKImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D344C5B20EB0FBA008B058F /* UIView+BKImagePicker.m */; };
+		1D344C6320EB0FBA008B058F /* UIImage+BKImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D344C5C20EB0FBA008B058F /* UIImage+BKImagePicker.m */; };
+		1D344C6420EB0FBA008B058F /* UIBezierPath+BKImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D344C5E20EB0FBA008B058F /* UIBezierPath+BKImagePicker.m */; };
 		1D627B1B207DDA7C00E7B3F0 /* BKTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D627AC3207DDA7C00E7B3F0 /* BKTool.m */; };
 		1D627B1C207DDA7C00E7B3F0 /* BKImageModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D627AC5207DDA7C00E7B3F0 /* BKImageModel.m */; };
 		1D627B1D207DDA7C00E7B3F0 /* BKImage.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 1D627AC7207DDA7C00E7B3F0 /* BKImage.bundle */; };
@@ -57,15 +58,17 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1D344C5520EB0F8D008B058F /* UINavigationController+BKImagePicker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UINavigationController+BKImagePicker.h"; sourceTree = "<group>"; };
+		1D344C5620EB0F8D008B058F /* UINavigationController+BKImagePicker.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UINavigationController+BKImagePicker.m"; sourceTree = "<group>"; };
+		1D344C5920EB0FBA008B058F /* NSObject+BKImagePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+BKImagePicker.m"; sourceTree = "<group>"; };
+		1D344C5A20EB0FBA008B058F /* UIBezierPath+BKImagePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIBezierPath+BKImagePicker.h"; sourceTree = "<group>"; };
+		1D344C5B20EB0FBA008B058F /* UIView+BKImagePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+BKImagePicker.m"; sourceTree = "<group>"; };
+		1D344C5C20EB0FBA008B058F /* UIImage+BKImagePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+BKImagePicker.m"; sourceTree = "<group>"; };
+		1D344C5D20EB0FBA008B058F /* NSObject+BKImagePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+BKImagePicker.h"; sourceTree = "<group>"; };
+		1D344C5E20EB0FBA008B058F /* UIBezierPath+BKImagePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIBezierPath+BKImagePicker.m"; sourceTree = "<group>"; };
+		1D344C5F20EB0FBA008B058F /* UIImage+BKImagePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+BKImagePicker.h"; sourceTree = "<group>"; };
+		1D344C6020EB0FBA008B058F /* UIView+BKImagePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+BKImagePicker.h"; sourceTree = "<group>"; };
 		1D627AB8207DDA7C00E7B3F0 /* BKImagePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKImagePicker.h; sourceTree = "<group>"; };
-		1D627ABB207DDA7C00E7B3F0 /* NSObject+BKImagePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+BKImagePicker.m"; sourceTree = "<group>"; };
-		1D627ABC207DDA7C00E7B3F0 /* UIBezierPath+BKImagePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIBezierPath+BKImagePicker.h"; sourceTree = "<group>"; };
-		1D627ABD207DDA7C00E7B3F0 /* UIView+BKImagePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+BKImagePicker.m"; sourceTree = "<group>"; };
-		1D627ABE207DDA7C00E7B3F0 /* UIImage+BKImagePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+BKImagePicker.m"; sourceTree = "<group>"; };
-		1D627ABF207DDA7C00E7B3F0 /* NSObject+BKImagePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+BKImagePicker.h"; sourceTree = "<group>"; };
-		1D627AC0207DDA7C00E7B3F0 /* UIBezierPath+BKImagePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIBezierPath+BKImagePicker.m"; sourceTree = "<group>"; };
-		1D627AC1207DDA7C00E7B3F0 /* UIImage+BKImagePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+BKImagePicker.h"; sourceTree = "<group>"; };
-		1D627AC2207DDA7C00E7B3F0 /* UIView+BKImagePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+BKImagePicker.h"; sourceTree = "<group>"; };
 		1D627AC3207DDA7C00E7B3F0 /* BKTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKTool.m; sourceTree = "<group>"; };
 		1D627AC4207DDA7C00E7B3F0 /* BKImageModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKImageModel.h; sourceTree = "<group>"; };
 		1D627AC5207DDA7C00E7B3F0 /* BKImageModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKImageModel.m; sourceTree = "<group>"; };
@@ -162,6 +165,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1D344C5820EB0FBA008B058F /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				1D344C6020EB0FBA008B058F /* UIView+BKImagePicker.h */,
+				1D344C5B20EB0FBA008B058F /* UIView+BKImagePicker.m */,
+				1D344C5D20EB0FBA008B058F /* NSObject+BKImagePicker.h */,
+				1D344C5920EB0FBA008B058F /* NSObject+BKImagePicker.m */,
+				1D344C5A20EB0FBA008B058F /* UIBezierPath+BKImagePicker.h */,
+				1D344C5E20EB0FBA008B058F /* UIBezierPath+BKImagePicker.m */,
+				1D344C5F20EB0FBA008B058F /* UIImage+BKImagePicker.h */,
+				1D344C5C20EB0FBA008B058F /* UIImage+BKImagePicker.m */,
+			);
+			path = Extension;
+			sourceTree = "<group>";
+		};
 		1D627AB7207DDA7C00E7B3F0 /* BKImagePicker */ = {
 			isa = PBXGroup;
 			children = (
@@ -178,7 +196,7 @@
 		1D627AB9207DDA7C00E7B3F0 /* Util */ = {
 			isa = PBXGroup;
 			children = (
-				1D627ABA207DDA7C00E7B3F0 /* Expand */,
+				1D344C5820EB0FBA008B058F /* Extension */,
 				1D627AC6207DDA7C00E7B3F0 /* BKTool.h */,
 				1D627AC3207DDA7C00E7B3F0 /* BKTool.m */,
 				1D627AC4207DDA7C00E7B3F0 /* BKImageModel.h */,
@@ -189,21 +207,6 @@
 			path = Util;
 			sourceTree = "<group>";
 		};
-		1D627ABA207DDA7C00E7B3F0 /* Expand */ = {
-			isa = PBXGroup;
-			children = (
-				1D627ABF207DDA7C00E7B3F0 /* NSObject+BKImagePicker.h */,
-				1D627ABB207DDA7C00E7B3F0 /* NSObject+BKImagePicker.m */,
-				1D627ABC207DDA7C00E7B3F0 /* UIBezierPath+BKImagePicker.h */,
-				1D627AC0207DDA7C00E7B3F0 /* UIBezierPath+BKImagePicker.m */,
-				1D627AC2207DDA7C00E7B3F0 /* UIView+BKImagePicker.h */,
-				1D627ABD207DDA7C00E7B3F0 /* UIView+BKImagePicker.m */,
-				1D627AC1207DDA7C00E7B3F0 /* UIImage+BKImagePicker.h */,
-				1D627ABE207DDA7C00E7B3F0 /* UIImage+BKImagePicker.m */,
-			);
-			path = Expand;
-			sourceTree = "<group>";
-		};
 		1D627AC8207DDA7C00E7B3F0 /* Base */ = {
 			isa = PBXGroup;
 			children = (
@@ -211,6 +214,8 @@
 				1D627AD0207DDA7C00E7B3F0 /* BKImageBaseViewController.m */,
 				1D627AC9207DDA7C00E7B3F0 /* BKImageNavViewController.h */,
 				1D627ACD207DDA7C00E7B3F0 /* BKImageNavViewController.m */,
+				1D344C5520EB0F8D008B058F /* UINavigationController+BKImagePicker.h */,
+				1D344C5620EB0F8D008B058F /* UINavigationController+BKImagePicker.m */,
 				1D627ACA207DDA7C00E7B3F0 /* BKImagePercentDrivenInteractiveTransition.h */,
 				1D627ACE207DDA7C00E7B3F0 /* BKImagePercentDrivenInteractiveTransition.m */,
 				1D627ACF207DDA7C00E7B3F0 /* BKImageTransitionAnimater.h */,
@@ -535,6 +540,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1D627B29207DDA7C00E7B3F0 /* BKEditImageClipView.m in Sources */,
+				1D344C6320EB0FBA008B058F /* UIImage+BKImagePicker.m in Sources */,
 				2A06DE381EB6C67500C2CCDF /* FLAnimatedImage.m in Sources */,
 				1D627B31207DDA7C00E7B3F0 /* BKImagePickerFooterCollectionReusableView.m in Sources */,
 				1D627B24207DDA7C00E7B3F0 /* BKImageTakePhotoBtn.m in Sources */,
@@ -544,19 +550,19 @@
 				1D627B35207DDA7C00E7B3F0 /* BKShowExampleImageViewController.m in Sources */,
 				1D627B1E207DDA7C00E7B3F0 /* BKImageTransitionAnimater.m in Sources */,
 				1D627B23207DDA7C00E7B3F0 /* BKImageTakePhotoViewController.m in Sources */,
+				1D344C6120EB0FBA008B058F /* NSObject+BKImagePicker.m in Sources */,
 				1D627B3B207DDA7C00E7B3F0 /* BKPhotoAlbumListModel.m in Sources */,
 				2A06DE391EB6C67500C2CCDF /* FLAnimatedImageView.m in Sources */,
 				1D627B26207DDA7C00E7B3F0 /* BKEditImageDrawModel.m in Sources */,
 				1D627B28207DDA7C00E7B3F0 /* BKEditImageClipFrameView.m in Sources */,
+				1D344C6420EB0FBA008B058F /* UIBezierPath+BKImagePicker.m in Sources */,
 				1D627B20207DDA7C00E7B3F0 /* BKImagePercentDrivenInteractiveTransition.m in Sources */,
-				1D627B1A207DDA7C00E7B3F0 /* UIBezierPath+BKImagePicker.m in Sources */,
 				1D627B36207DDA7C00E7B3F0 /* BKShowExampleInteractiveTransition.m in Sources */,
-				1D627B18207DDA7C00E7B3F0 /* UIView+BKImagePicker.m in Sources */,
+				1D344C6220EB0FBA008B058F /* UIView+BKImagePicker.m in Sources */,
 				1D627B2C207DDA7C00E7B3F0 /* BKEditImageBottomView.m in Sources */,
 				1D627B1C207DDA7C00E7B3F0 /* BKImageModel.m in Sources */,
 				1D627B22207DDA7C00E7B3F0 /* BKImagePicker.m in Sources */,
 				1D627B34207DDA7C00E7B3F0 /* BKShowExampleVideoViewController.m in Sources */,
-				1D627B19207DDA7C00E7B3F0 /* UIImage+BKImagePicker.m in Sources */,
 				1D627B2F207DDA7C00E7B3F0 /* BKImagePickerViewController.m in Sources */,
 				1D627B2E207DDA7C00E7B3F0 /* BKEditImagePreviewCollectionViewCell.m in Sources */,
 				1D627B1B207DDA7C00E7B3F0 /* BKTool.m in Sources */,
@@ -564,7 +570,6 @@
 				1D627B2D207DDA7C00E7B3F0 /* BKEditImageBgView.m in Sources */,
 				1D627B38207DDA7C00E7B3F0 /* BKShowExampleImageCollectionViewFlowLayout.m in Sources */,
 				1D627B3A207DDA7C00E7B3F0 /* BKPhotoAlbumListViewController.m in Sources */,
-				1D627B17207DDA7C00E7B3F0 /* NSObject+BKImagePicker.m in Sources */,
 				1D627B30207DDA7C00E7B3F0 /* BKImageAlbumItemView.m in Sources */,
 				1D627B25207DDA7C00E7B3F0 /* BKEditImageViewController.m in Sources */,
 				1D627B33207DDA7C00E7B3F0 /* BKImagePickerCollectionViewCell.m in Sources */,
@@ -574,6 +579,7 @@
 				1D627B21207DDA7C00E7B3F0 /* BKImageBaseViewController.m in Sources */,
 				1D627B1F207DDA7C00E7B3F0 /* BKImageNavViewController.m in Sources */,
 				1DA7B800208055B400644D89 /* BKImageOriginalButton.m in Sources */,
+				1D344C5720EB0F8D008B058F /* UINavigationController+BKImagePicker.m in Sources */,
 				1D627B2B207DDA7C00E7B3F0 /* BKEditImageWriteView.m in Sources */,
 				1D627B2A207DDA7C00E7B3F0 /* BKEditImageDrawView.m in Sources */,
 				1D627B39207DDA7C00E7B3F0 /* BKShowExampleImageCollectionViewCell.m in Sources */,

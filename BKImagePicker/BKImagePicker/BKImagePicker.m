@@ -306,7 +306,7 @@ static BKImagePicker * sharedManagerInstance = nil;
             
             BKImageNavViewController * nav = [[BKImageNavViewController alloc]initWithRootViewController:imageClassVC];
             [nav pushViewController:imageVC animated:NO];
-            nav.customTransition.backVC = imageClassVC;
+            nav.popVC = imageClassVC;
             [lastVC presentViewController:nav animated:YES completion:nil];
         }
     }];

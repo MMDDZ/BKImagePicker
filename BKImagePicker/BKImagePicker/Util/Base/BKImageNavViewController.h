@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "BKImageTransitionAnimater.h"
-#import "BKImagePercentDrivenInteractiveTransition.h"
+#import "UINavigationController+BKImagePicker.h"
 
 @interface BKImageNavViewController : UINavigationController
 
@@ -26,9 +26,9 @@
 @property (nonatomic,assign) BKImageTransitionAnimaterDirection direction;
 
 /**
- 交互方法
+ 返回手势是否可用 默认可用
  */
-@property (nonatomic,strong) BKImagePercentDrivenInteractiveTransition * customTransition;
+@property (nonatomic,assign) BOOL popGestureRecognizerEnable;
 
 /**
  过场动画返回指定VC

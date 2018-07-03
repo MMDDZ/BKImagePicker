@@ -71,14 +71,13 @@
     if ([BKTool sharedManager].clipSize_width_height_ratio != 0) {
         [self.bottomView selectClipOption];
     }
+    
+    self.navigationController.bk_popGestureRecognizerEnable = NO;
 }
 
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
-    self.navigationController.interactivePopGestureRecognizer.enabled = NO;
-    ((BKImageNavViewController*)self.navigationController).customTransition.enble = NO;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
@@ -87,9 +86,6 @@
 -(void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    
-    self.navigationController.interactivePopGestureRecognizer.enabled = YES;
-    ((BKImageNavViewController*)self.navigationController).customTransition.enble = YES;
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
