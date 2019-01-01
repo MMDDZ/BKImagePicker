@@ -7,7 +7,10 @@
 //
 
 #import "BKEditImageWriteView.h"
-#import "BKTool.h"
+#import "BKImagePickerMacro.h"
+#import "NSString+BKImagePicker.h"
+#import "UIView+BKImagePicker.h"
+#import "NSObject+BKImagePicker.h"
 
 @interface BKEditImageWriteView()<UIGestureRecognizerDelegate>
 
@@ -30,12 +33,12 @@
         return;
     }
     
-    _width = [[BKTool sharedManager] sizeWithString:_writeString UIHeight:MAXFLOAT font:[UIFont systemFontOfSize:50]].width + 20;
+    _width = [_writeString bk_calculateSizeWithUIHeight:MAXFLOAT font:[UIFont systemFontOfSize:50]].width + 20;
     if (_width > (BK_SCREENW - 20)*2) {
         _width = (BK_SCREENW - 20)*2;
     }
     
-    _height = [[BKTool sharedManager] sizeWithString:_writeString UIWidth:_width font:[UIFont systemFontOfSize:50]].height + 20;
+    _height = [_writeString bk_calculateSizeWithUIWidth:_width font:[UIFont systemFontOfSize:50]].height + 20;
     
     self.transform = CGAffineTransformIdentity;
     
@@ -64,7 +67,7 @@
 {
     self = [super init];
     if (self) {
-        self.backgroundColor = [UIColor clearColor];
+        self.backgroundColor = BKClearColor;
         [self addGesture];
     }
     return self;
@@ -74,7 +77,7 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self.backgroundColor = [UIColor clearColor];
+        self.backgroundColor = BKClearColor;
         [self addGesture];
     }
     return self;
@@ -86,7 +89,7 @@
 {
     [super drawRect:rect];
     
-    NSDictionary * attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:50],NSForegroundColorAttributeName:_writeColor?_writeColor:[UIColor redColor]};
+    NSDictionary * attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:50],NSForegroundColorAttributeName:_writeColor?_writeColor:BKRedColor};
     [self.writeString drawWithRect:CGRectMake(10, 10, self.bk_width - 20, self.bk_height - 20) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil];
     
     [self resetTransform];
@@ -146,7 +149,7 @@
         self.layer.borderColor = nil;
     }else{
         self.layer.borderWidth = 1/_scale;
-        self.layer.borderColor = BKHighlightColor.CGColor;
+        self.layer.borderColor = BKEditImageTextFrameColor.CGColor;
     }
     
     [panGesture setTranslation:CGPointZero inView:panGesture.view];
@@ -162,7 +165,7 @@
         self.layer.borderColor = nil;
     }else{
         self.layer.borderWidth = 1/_scale;
-        self.layer.borderColor = BKHighlightColor.CGColor;
+        self.layer.borderColor = BKEditImageTextFrameColor.CGColor;
     }
     
     rotationGesture.rotation = 0;
@@ -183,7 +186,7 @@
         self.layer.borderColor = nil;
     }else{
         self.layer.borderWidth = 1/_scale;
-        self.layer.borderColor = BKHighlightColor.CGColor;
+        self.layer.borderColor = BKEditImageTextFrameColor.CGColor;
     }
     
     pinchGesture.scale = 1;

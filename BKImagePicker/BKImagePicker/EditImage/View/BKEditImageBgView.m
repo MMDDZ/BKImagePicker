@@ -7,7 +7,8 @@
 //
 
 #import "BKEditImageBgView.h"
-#import "BKTool.h"
+#import "BKImagePickerMacro.h"
+#import "UIView+BKImagePicker.h"
 
 @interface BKEditImageBgView()<UIScrollViewDelegate>
 
@@ -40,7 +41,7 @@
     self.showsHorizontalScrollIndicator = NO;
     self.showsVerticalScrollIndicator = NO;
     self.delegate = self;
-    self.backgroundColor = [UIColor clearColor];
+    self.backgroundColor = BKClearColor;
     self.minimumZoomScale = 1;
     if (@available(iOS 11.0, *)) {
         self.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;

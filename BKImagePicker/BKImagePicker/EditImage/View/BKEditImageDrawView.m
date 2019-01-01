@@ -7,7 +7,8 @@
 //
 
 #import "BKEditImageDrawView.h"
-#import "BKTool.h"
+#import "BKImagePickerMacro.h"
+#import "UIBezierPath+BKImagePicker.h"
 
 @interface BKEditImageDrawView()
 
@@ -19,7 +20,7 @@
 {
     [super layoutSubviews];
     
-    [self setBackgroundColor:[UIColor clearColor]];
+    [self setBackgroundColor:BKClearColor];
 }
 
 -(NSMutableArray*)pointArray

@@ -7,8 +7,12 @@
 //
 
 #import "BKEditImageClipView.h"
-#import "BKTool.h"
 #import "BKEditImageClipFrameView.h"
+#import "UIView+BKImagePicker.h"
+#import "NSObject+BKImagePicker.h"
+#import "UIImage+BKImagePicker.h"
+#import "BKImagePicker.h"
+#import "BKImagePickerMacro.h"
 
 typedef NS_OPTIONS(NSUInteger, BKEditImagePanContains) {
     BKEditImagePanContainsNone = 1 << 0,
@@ -93,13 +97,13 @@ typedef NS_OPTIONS(NSUInteger, BKEditImagePanContains) {
     self = [super initWithFrame:frame];
     if (self) {
         
-        self.backgroundColor = [UIColor clearColor];
+        self.backgroundColor = BKClearColor;
         self.userInteractionEnabled = NO;
         
         [[UIApplication sharedApplication].keyWindow addSubview:self.bottomNav];
         
         //预定裁剪模式不能修改裁剪框大小
-        if ([BKTool sharedManager].clipSize_width_height_ratio == 0) {
+        if ([BKImagePicker sharedManager].imageManageModel.clipSize_width_height_ratio == 0) {
             UIPanGestureRecognizer * panGesture = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(windowPanGesture:)];
             panGesture.delegate = self;
             panGesture.maximumNumberOfTouches = 1;
@@ -420,7 +424,8 @@ typedef NS_OPTIONS(NSUInteger, BKEditImagePanContains) {
         
         if (self.editImageBgView.contentView.bk_height > self.editImageBgView.contentView.bk_width) {
             CGFloat editImageBgViewHeight = self.editImageBgView.contentView.bk_height/self.editImageBgView.zoomScale;
-            if (editImageBgViewHeight > self.editImageBgView.bk_height && editImageBgViewHeight < self.bk_height) {
+            //小数点精度不准 CGFloat类型0.8 = 0.80000000000000004
+            if (editImageBgViewHeight > self.editImageBgView.bk_height && floor(editImageBgViewHeight) <= self.bk_height) {
                 
                 CGFloat contentOffsetY = (editImageBgViewHeight - self.editImageBgView.bk_height)*0.8/2;
                 self.editImageBgView.contentOffset = CGPointMake(0, -contentOffsetY);
@@ -468,14 +473,14 @@ typedef NS_OPTIONS(NSUInteger, BKEditImagePanContains) {
         }
         
         //如果是预定裁剪模式 按照预定比例修改裁剪框大小
-        if ([BKTool sharedManager].clipSize_width_height_ratio != 0) {
+        if ([BKImagePicker sharedManager].imageManageModel.clipSize_width_height_ratio != 0) {
             CGFloat clipRect_width_height_ratio = _shadowViewClipRect.size.width / _shadowViewClipRect.size.height;
-            if (clipRect_width_height_ratio > [BKTool sharedManager].clipSize_width_height_ratio) {
-                CGFloat new_clipRect_width = _shadowViewClipRect.size.height * [BKTool sharedManager].clipSize_width_height_ratio;
+            if (clipRect_width_height_ratio > [BKImagePicker sharedManager].imageManageModel.clipSize_width_height_ratio) {
+                CGFloat new_clipRect_width = _shadowViewClipRect.size.height * [BKImagePicker sharedManager].imageManageModel.clipSize_width_height_ratio;
                 _shadowViewClipRect.origin.x = (_shadowViewClipRect.size.width - new_clipRect_width)/2;
                 _shadowViewClipRect.size.width = new_clipRect_width;
             }else{
-                CGFloat new_clipRect_height = _shadowViewClipRect.size.width / [BKTool sharedManager].clipSize_width_height_ratio;
+                CGFloat new_clipRect_height = _shadowViewClipRect.size.width / [BKImagePicker sharedManager].imageManageModel.clipSize_width_height_ratio;
                 _shadowViewClipRect.origin.y = (_shadowViewClipRect.size.height - new_clipRect_height)/2;
                 _shadowViewClipRect.size.height = new_clipRect_height;
             }
@@ -509,7 +514,7 @@ typedef NS_OPTIONS(NSUInteger, BKEditImagePanContains) {
         CAShapeLayer * shapeLayer = [CAShapeLayer layer];
         shapeLayer.path = path.CGPath;
         shapeLayer.fillRule = kCAFillRuleEvenOdd;
-        shapeLayer.fillColor = [UIColor colorWithWhite:0 alpha:0.6].CGColor;
+        shapeLayer.fillColor = BKEditImageClipShadowBackgroundColor.CGColor;
         [_shadowView.layer addSublayer:shapeLayer];
     }
     return _shadowView;
@@ -553,42 +558,42 @@ typedef NS_OPTIONS(NSUInteger, BKEditImagePanContains) {
 -(UIView*)bottomNav
 {
     if (!_bottomNav) {
-        _bottomNav = [[UIView alloc]initWithFrame:CGRectMake(0, self.bk_height - BK_SYSTEM_TABBAR_HEIGHT, self.bk_width, BK_SYSTEM_TABBAR_HEIGHT)];
+        _bottomNav = [[UIView alloc]initWithFrame:CGRectMake(0, self.bk_height - BKImagePicker_get_system_tabbar_height(), self.bk_width, BKImagePicker_get_system_tabbar_height())];
         _bottomNav.backgroundColor = BKNavBackgroundColor;
         
         UIButton * backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        backBtn.frame = CGRectMake(0, 0, 64, BK_SYSTEM_TABBAR_UI_HEIGHT);
+        backBtn.frame = CGRectMake(0, 0, 64, BKImagePicker_get_system_tabbar_ui_height());
         [backBtn addTarget:self action:@selector(backBtnClick) forControlEvents:UIControlEventTouchUpInside];
         [_bottomNav addSubview:backBtn];
         
         UIImageView * backImageView = [[UIImageView alloc]initWithFrame:CGRectMake((backBtn.bk_width - 20)/2, (backBtn.bk_height - 20)/2, 20, 20)];
         backImageView.clipsToBounds = YES;
         backImageView.contentMode = UIViewContentModeScaleAspectFit;
-        backImageView.image = [[BKTool sharedManager] editImageWithImageName:@"clip_back"];
+        backImageView.image = [UIImage bk_editImageWithImageName:@"clip_back"];
         [backBtn addSubview:backImageView];
         
         UIButton * finishBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        finishBtn.frame = CGRectMake(_bottomNav.bk_width - 64, 0, 64, BK_SYSTEM_TABBAR_UI_HEIGHT);
+        finishBtn.frame = CGRectMake(_bottomNav.bk_width - 64, 0, 64, BKImagePicker_get_system_tabbar_ui_height());
         [finishBtn addTarget:self action:@selector(finishBtnClick) forControlEvents:UIControlEventTouchUpInside];
         [_bottomNav addSubview:finishBtn];
         
         UIImageView * finishImageView = [[UIImageView alloc]initWithFrame:CGRectMake((finishBtn.bk_width - 20)/2, (finishBtn.bk_height - 20)/2, 20, 20)];
         finishImageView.clipsToBounds = YES;
         finishImageView.contentMode = UIViewContentModeScaleAspectFit;
-        finishImageView.image = [[BKTool sharedManager] editImageWithImageName:@"clip_finish"];
+        finishImageView.image = [UIImage bk_editImageWithImageName:@"clip_finish"];
         [finishBtn addSubview:finishImageView];
         
         //不是预定裁剪模式有旋转
-        if ([BKTool sharedManager].clipSize_width_height_ratio == 0) {
+        if ([BKImagePicker sharedManager].imageManageModel.clipSize_width_height_ratio == 0) {
             UIButton * rotationBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-            rotationBtn.frame = CGRectMake((_bottomNav.bk_width - 64)/2, 0, 64, BK_SYSTEM_TABBAR_UI_HEIGHT);
+            rotationBtn.frame = CGRectMake((_bottomNav.bk_width - 64)/2, 0, 64, BKImagePicker_get_system_tabbar_ui_height());
             [rotationBtn addTarget:self action:@selector(rotationBtnClick:) forControlEvents:UIControlEventTouchUpInside];
             [_bottomNav addSubview:rotationBtn];
             
             UIImageView * rotationImageView = [[UIImageView alloc]initWithFrame:CGRectMake((rotationBtn.bk_width - 20)/2, (rotationBtn.bk_height - 20)/2, 20, 20)];
             rotationImageView.clipsToBounds = YES;
             rotationImageView.contentMode = UIViewContentModeScaleAspectFit;
-            rotationImageView.image = [[BKTool sharedManager] editImageWithImageName:@"left_rotation_90"];
+            rotationImageView.image = [UIImage bk_editImageWithImageName:@"left_rotation_90"];
             [rotationBtn addSubview:rotationImageView];
         }
         

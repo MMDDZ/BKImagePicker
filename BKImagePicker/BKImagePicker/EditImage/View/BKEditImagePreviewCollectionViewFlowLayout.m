@@ -1,13 +1,14 @@
 //
 //  BKEditImagePreviewCollectionViewFlowLayout.m
-//  zhaolin
+//  BIKE
 //
 //  Created by BIKE on 2018/4/4.
 //  Copyright © 2018年 BIKE. All rights reserved.
 //
 
 #import "BKEditImagePreviewCollectionViewFlowLayout.h"
-#import "BKTool.h"
+#import "BKImagePickerMacro.h"
+#import "UIView+BKImagePicker.h"
 
 @implementation BKEditImagePreviewCollectionViewFlowLayout
 
@@ -15,7 +16,7 @@
 {
     [super prepareLayout];
     
-    self.itemSize = CGSizeMake(floor(BK_SYSTEM_NAV_UI_HEIGHT/16*9), BK_SYSTEM_NAV_UI_HEIGHT);
+    self.itemSize = CGSizeMake(floor(BKImagePicker_get_system_nav_ui_height()/16*9), BKImagePicker_get_system_nav_ui_height());
     self.minimumLineSpacing = 2;
     self.minimumInteritemSpacing = 0;
     self.scrollDirection = UICollectionViewScrollDirectionHorizontal;

@@ -1,6 +1,6 @@
 //
 //  BKEditImagePreviewCollectionViewCell.h
-//  zhaolin
+//  BIKE
 //
 //  Created by BIKE on 2018/4/3.
 //  Copyright © 2018年 BIKE. All rights reserved.

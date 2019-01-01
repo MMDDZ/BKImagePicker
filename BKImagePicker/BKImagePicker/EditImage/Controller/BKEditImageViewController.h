@@ -6,7 +6,7 @@
 //  Copyright © 2018年 BIKE. All rights reserved.
 //
 
-#import "BKImageBaseViewController.h"
+#import "BKImagePickerBaseViewController.h"
 
 typedef NS_ENUM(NSUInteger, BKEditImageSelectEditType) {
     BKEditImageSelectEditTypeNone = 0,
@@ -29,7 +29,7 @@ typedef NS_ENUM(NSUInteger, BKEditImageFromModule) {
     BKEditImageFromModuleTakePhoto
 };
 
-@interface BKEditImageViewController : BKImageBaseViewController
+@interface BKEditImageViewController : BKImagePickerBaseViewController
 
 /**
  要修改的图片

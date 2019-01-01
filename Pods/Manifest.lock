@@ -1,0 +1,20 @@
+PODS:
+  - FLAnimatedImage (1.0.12)
+  - GPUImage (0.1.7)
+
+DEPENDENCIES:
+  - FLAnimatedImage
+  - GPUImage
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - FLAnimatedImage
+    - GPUImage
+
+SPEC CHECKSUMS:
+  FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
+  GPUImage: 733a5f0fab92df9de1c37ba9df520a833ccb406d
+
+PODFILE CHECKSUM: b81ed631bb95227786323cffcc7353445d203fa0
+
+COCOAPODS: 1.5.3

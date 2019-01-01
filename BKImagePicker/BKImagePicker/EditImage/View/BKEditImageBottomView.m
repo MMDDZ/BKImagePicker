@@ -7,7 +7,9 @@
 //
 
 #import "BKEditImageBottomView.h"
-#import "BKTool.h"
+#import "UIView+BKImagePicker.h"
+#import "BKImagePickerMacro.h"
+#import "UIImage+BKImagePicker.h"
 
 @interface BKEditImageBottomView()
 
@@ -106,12 +108,12 @@
 
 -(instancetype)init
 {
-    self = [super initWithFrame:CGRectMake(0, 0, BK_SCREENW, BK_SYSTEM_TABBAR_UI_HEIGHT)];
+    self = [super initWithFrame:CGRectMake(0, 0, BK_SCREENW, BKImagePicker_get_system_tabbar_ui_height())];
     if (self) {
-        self.backgroundColor = [UIColor clearColor];
+        self.backgroundColor = BKClearColor;
         
-        UIImage * masaike = [[BKTool sharedManager] editImageWithImageName:@"masaike"];
-        self.colorArr = @[[UIColor redColor],[UIColor orangeColor],[UIColor yellowColor],[UIColor greenColor],[UIColor blueColor],[UIColor purpleColor],[UIColor blackColor],[UIColor whiteColor],[UIColor lightGrayColor],masaike];
+        UIImage * masaike = [UIImage bk_editImageWithImageName:@"masaike"];
+        self.colorArr = @[BKRedColor, BKOrangeColor, BKYellowColor, BKGreenColor, BKBlueColor, BKPurpleColor, BKBlackColor, BKWhiteColor, BKLightGrayColor, masaike];
         
         [self addSubview:self.firstLevelView];
     }
@@ -124,21 +126,21 @@
 {
     if (!_firstLevelView) {
         
-        _firstLevelView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.bk_width, BK_SYSTEM_TABBAR_UI_HEIGHT)];
-        _firstLevelView.backgroundColor = [UIColor clearColor];
+        _firstLevelView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.bk_width, BKImagePicker_get_system_tabbar_ui_height())];
+        _firstLevelView.backgroundColor = BKClearColor;
         
         _firstLevelScrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, _firstLevelView.bk_width/5*4 - 6, _firstLevelView.bk_height)];
-        _firstLevelScrollView.backgroundColor = [UIColor clearColor];
+        _firstLevelScrollView.backgroundColor = BKClearColor;
         _firstLevelScrollView.showsVerticalScrollIndicator = NO;
         _firstLevelScrollView.showsHorizontalScrollIndicator = NO;
         [_firstLevelView addSubview:_firstLevelScrollView];
         
-        NSArray * imageArr_n = @[[[BKTool sharedManager] editImageWithImageName:@"draw_n"],
-                                 [[BKTool sharedManager] editImageWithImageName:@"write_n"],
-                                 [[BKTool sharedManager] editImageWithImageName:@"clip_n"]];
-//        NSArray * imageArr_s = @[[[BKTool sharedManager] editImageWithImageName:@"draw_s"],
-//                                 [[BKTool sharedManager] editImageWithImageName:@"write_s"],
-//                                 [[BKTool sharedManager] editImageWithImageName:@"clip_s"]];
+        NSArray * imageArr_n = @[[UIImage bk_editImageWithImageName:@"draw_n"],
+                                 [UIImage bk_editImageWithImageName:@"write_n"],
+                                 [UIImage bk_editImageWithImageName:@"clip_n"]];
+//        NSArray * imageArr_s = @[[UIImage bk_editImageWithImageName:@"draw_s"],
+//                                 [UIImage bk_editImageWithImageName:@"write_s"],
+//                                 [UIImage bk_editImageWithImageName:@"clip_s"]];
         
         __block UIView * lastView;
         [imageArr_n enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -162,8 +164,8 @@
         _cancelWriteBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         _cancelWriteBtn.frame = CGRectMake(6, (_firstLevelView.bk_height - 37)/2, _firstLevelView.bk_width/5-6, 37);
         [_cancelWriteBtn setTitle:@"取消" forState:UIControlStateNormal];
-        [_cancelWriteBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [_cancelWriteBtn setBackgroundColor:BKHighlightColor];
+        [_cancelWriteBtn setTitleColor:BKEditImageBottomTitleColor forState:UIControlStateNormal];
+        [_cancelWriteBtn setBackgroundColor:BKEditImageBottomBtnBackgroundColor];
         _cancelWriteBtn.titleLabel.font = [UIFont systemFontOfSize:14];
         _cancelWriteBtn.layer.cornerRadius = 4;
         _cancelWriteBtn.clipsToBounds = YES;
@@ -174,8 +176,8 @@
         _affirmBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         _affirmBtn.frame = CGRectMake(_firstLevelView.bk_width/5*4, (_firstLevelView.bk_height - 37)/2, _firstLevelView.bk_width/5-6, 37);
         [_affirmBtn setTitle:@"确认" forState:UIControlStateNormal];
-        [_affirmBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [_affirmBtn setBackgroundColor:BKHighlightColor];
+        [_affirmBtn setTitleColor:BKEditImageBottomTitleColor forState:UIControlStateNormal];
+        [_affirmBtn setBackgroundColor:BKEditImageBottomBtnBackgroundColor];
         _affirmBtn.titleLabel.font = [UIFont systemFontOfSize:14];
         _affirmBtn.layer.cornerRadius = 4;
         _affirmBtn.clipsToBounds = YES;
@@ -191,12 +193,12 @@
 
 -(void)editBtnClick:(UIButton*)button
 {
-    NSArray * imageArr_n = @[[[BKTool sharedManager] editImageWithImageName:@"draw_n"],
-                             [[BKTool sharedManager] editImageWithImageName:@"write_n"],
-                             [[BKTool sharedManager] editImageWithImageName:@"clip_n"]];
-    NSArray * imageArr_s = @[[[BKTool sharedManager] editImageWithImageName:@"draw_s"],
-                             [[BKTool sharedManager] editImageWithImageName:@"write_s"],
-                             [[BKTool sharedManager] editImageWithImageName:@"clip_s"]];
+    NSArray * imageArr_n = @[[UIImage bk_editImageWithImageName:@"draw_n"],
+                             [UIImage bk_editImageWithImageName:@"write_n"],
+                             [UIImage bk_editImageWithImageName:@"clip_n"]];
+    NSArray * imageArr_s = @[[UIImage bk_editImageWithImageName:@"draw_s"],
+                             [UIImage bk_editImageWithImageName:@"write_s"],
+                             [UIImage bk_editImageWithImageName:@"clip_s"]];
     
     if (_selectFirstLevelBtn) {
         UIImageView * oldImageView = (UIImageView*)[self.selectFirstLevelBtn viewWithTag:self.selectFirstLevelBtn.tag+1];
@@ -313,22 +315,22 @@
 {
     if (!_drawTypeView) {
         _drawTypeView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.bk_width, 40)];
-        _drawTypeView.backgroundColor = [UIColor clearColor];
+        _drawTypeView.backgroundColor = BKClearColor;
         
         UIScrollView * scrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, _drawTypeView.bk_width, _drawTypeView.bk_height)];
-        scrollView.backgroundColor = [UIColor clearColor];
+        scrollView.backgroundColor = BKClearColor;
         scrollView.showsVerticalScrollIndicator = NO;
         scrollView.showsHorizontalScrollIndicator = NO;
         [_drawTypeView addSubview:scrollView];
         
-        NSArray * imageArr_n = @[[[BKTool sharedManager] editImageWithImageName:@"line_n"],
-                                 [[BKTool sharedManager] editImageWithImageName:@"circle_n"],
-                                 [[BKTool sharedManager] editImageWithImageName:@"rounded_rectangle_n"],
-                                 [[BKTool sharedManager] editImageWithImageName:@"arrow_n"]];
-        NSArray * imageArr_s = @[[[BKTool sharedManager] editImageWithImageName:@"line_s"],
-                                 [[BKTool sharedManager] editImageWithImageName:@"circle_s"],
-                                 [[BKTool sharedManager] editImageWithImageName:@"rounded_rectangle_s"],
-                                 [[BKTool sharedManager] editImageWithImageName:@"arrow_s"]];
+        NSArray * imageArr_n = @[[UIImage bk_editImageWithImageName:@"line_n"],
+                                 [UIImage bk_editImageWithImageName:@"circle_n"],
+                                 [UIImage bk_editImageWithImageName:@"rounded_rectangle_n"],
+                                 [UIImage bk_editImageWithImageName:@"arrow_n"]];
+        NSArray * imageArr_s = @[[UIImage bk_editImageWithImageName:@"line_s"],
+                                 [UIImage bk_editImageWithImageName:@"circle_s"],
+                                 [UIImage bk_editImageWithImageName:@"rounded_rectangle_s"],
+                                 [UIImage bk_editImageWithImageName:@"arrow_s"]];
         
         __block UIView * lastView;
         [imageArr_n enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -367,14 +369,14 @@
         return;
     }
     
-    NSArray * imageArr_n = @[[[BKTool sharedManager] editImageWithImageName:@"line_n"],
-                             [[BKTool sharedManager] editImageWithImageName:@"circle_n"],
-                             [[BKTool sharedManager] editImageWithImageName:@"rounded_rectangle_n"],
-                             [[BKTool sharedManager] editImageWithImageName:@"arrow_n"]];
-    NSArray * imageArr_s = @[[[BKTool sharedManager] editImageWithImageName:@"line_s"],
-                             [[BKTool sharedManager] editImageWithImageName:@"circle_s"],
-                             [[BKTool sharedManager] editImageWithImageName:@"rounded_rectangle_s"],
-                             [[BKTool sharedManager] editImageWithImageName:@"arrow_s"]];
+    NSArray * imageArr_n = @[[UIImage bk_editImageWithImageName:@"line_n"],
+                             [UIImage bk_editImageWithImageName:@"circle_n"],
+                             [UIImage bk_editImageWithImageName:@"rounded_rectangle_n"],
+                             [UIImage bk_editImageWithImageName:@"arrow_n"]];
+    NSArray * imageArr_s = @[[UIImage bk_editImageWithImageName:@"line_s"],
+                             [UIImage bk_editImageWithImageName:@"circle_s"],
+                             [UIImage bk_editImageWithImageName:@"rounded_rectangle_s"],
+                             [UIImage bk_editImageWithImageName:@"arrow_s"]];
     
     if (_selectDrawTypeBtn) {
         UIImageView * oldImageView = (UIImageView*)[self.selectDrawTypeBtn viewWithTag:self.selectDrawTypeBtn.tag+1];
@@ -437,10 +439,10 @@
 {
     if (!_paintingView) {
         _paintingView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.bk_width, 40)];
-        _paintingView.backgroundColor = [UIColor clearColor];
+        _paintingView.backgroundColor = BKClearColor;
         
         _paintingScrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, _paintingView.bk_width/5*4 - 6, _paintingView.bk_height)];
-        _paintingScrollView.backgroundColor = [UIColor clearColor];
+        _paintingScrollView.backgroundColor = BKClearColor;
         _paintingScrollView.showsVerticalScrollIndicator = NO;
         _paintingScrollView.showsHorizontalScrollIndicator = NO;
         [_paintingView addSubview:_paintingScrollView];
@@ -475,13 +477,13 @@
                 if ([obj isKindOfClass:[UIColor class]]) {
                     if (CGColorEqualToColor(((UIColor*)obj).CGColor, self.selectPaintingColor.CGColor)) {
                         self.selectPaintingBtn = button;
-                        imageBgView.backgroundColor = BKHighlightColor;
+                        imageBgView.backgroundColor = BKEditImageBottomBtnBackgroundColor;
                     }
                 }
             }else{
                 if (idx == 0) {
                     self.selectPaintingBtn = button;
-                    imageBgView.backgroundColor = BKHighlightColor;
+                    imageBgView.backgroundColor = BKEditImageBottomBtnBackgroundColor;
                 }
             }
             
@@ -497,7 +499,7 @@
         UIImageView * revocationImageView = [[UIImageView alloc]initWithFrame:CGRectMake((_revocationBtn.bk_width - 20)/2, (_revocationBtn.bk_height - 20)/2, 20, 20)];
         revocationImageView.clipsToBounds = YES;
         revocationImageView.contentMode = UIViewContentModeScaleAspectFit;
-        revocationImageView.image = [[BKTool sharedManager] editImageWithImageName:@"revocation"];
+        revocationImageView.image = [UIImage bk_editImageWithImageName:@"revocation"];
         [_revocationBtn addSubview:revocationImageView];
         
         UIImageView * line = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, BK_ONE_PIXEL, _paintingView.bk_height)];
@@ -516,11 +518,11 @@
     
     if (_selectPaintingBtn) {
         UIImageView * oldImageBgView = (UIImageView*)[self.selectPaintingBtn viewWithTag:self.selectPaintingBtn.tag+1];
-        oldImageBgView.backgroundColor = [UIColor clearColor];
+        oldImageBgView.backgroundColor = BKClearColor;
     }
     self.selectPaintingBtn = button;
     UIImageView * imageBgView = (UIImageView*)[self.selectPaintingBtn viewWithTag:self.selectPaintingBtn.tag+1];
-    imageBgView.backgroundColor = BKHighlightColor;
+    imageBgView.backgroundColor = BKEditImageBottomBtnBackgroundColor;
     
     NSObject * obj = self.colorArr[self.selectPaintingBtn.tag/100-1];
     if ([obj isKindOfClass:[UIColor class]]) {

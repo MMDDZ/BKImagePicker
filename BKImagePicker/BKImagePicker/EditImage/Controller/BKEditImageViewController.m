@@ -7,7 +7,10 @@
 //
 
 #import "BKEditImageViewController.h"
-#import "BKTool.h"
+#import "BKImagePickerMacro.h"
+#import "BKImagePickerConstant.h"
+#import "UIView+BKImagePicker.h"
+#import "UIImage+BKImagePicker.h"
 #import "BKImagePicker.h"
 #import "BKEditImagePreviewCollectionViewFlowLayout.h"
 #import "BKEditImagePreviewCollectionViewCell.h"
@@ -57,7 +60,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    self.view.backgroundColor = [UIColor blackColor];
+    self.view.backgroundColor = BKEditImageBackgroundColor;
     
     _currentEditImage = [self.editImageArr firstObject];
     _currentEditIndex = 0;
@@ -68,11 +71,11 @@
     [self editImageView];
     
     //如果是预定裁剪模式 显示裁剪模式状态
-    if ([BKTool sharedManager].clipSize_width_height_ratio != 0) {
+    if ([BKImagePicker sharedManager].imageManageModel.clipSize_width_height_ratio != 0) {
         [self.bottomView selectClipOption];
     }
     
-    self.navigationController.bk_popGestureRecognizerEnable = NO;
+    self.navigationController.popGestureRecognizerEnable = NO;
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -94,23 +97,29 @@
 
 -(void)initTopNav
 {
-    self.leftImageView.image = nil;
-    self.leftLab.text = @"取消";
+    BKImagePickerNavButton * leftBtn = [[BKImagePickerNavButton alloc] initWithTitle:@"取消" font:[UIFont systemFontOfSize:16] titleColor:BKNavBtnTitleColor];
+    [leftBtn addTarget:self action:@selector(leftNavBtnAction)];
+    self.leftNavBtns = @[leftBtn];
     
-    self.rightImageView.image = [[BKTool sharedManager] editImageWithImageName:@"save"];
+    BKImagePickerNavButton * rightBtn = [[BKImagePickerNavButton alloc] initWithImage:[UIImage bk_editImageWithImageName:@"save"] imageSize:CGSizeMake(20, 20)];
+    [rightBtn addTarget:self action:@selector(rightNavBtnAction)];
+    self.rightNavBtns = @[rightBtn];
     
     if ([_editImageArr count] > 1) {
         [self.topNavView addSubview:self.previewCollectionView];
     }
 }
 
--(void)leftNavBtnAction:(UIButton *)button
+-(void)leftNavBtnAction
 {
+    [self.view endEditing:YES];
     [self.navigationController popViewControllerAnimated:YES];
 }
 
--(void)rightNavBtnAction:(UIButton *)button
+-(void)rightNavBtnAction
 {
+    [self.view endEditing:YES];
+    
     UIWindow * window = [[UIApplication sharedApplication].delegate window];
     
     if (!window.userInteractionEnabled) {
@@ -118,7 +127,7 @@
     }
     window.userInteractionEnabled = NO;
     
-    [[BKTool sharedManager] showLoadInView:window];
+    [window bk_showLoadLayer];
     
     [self createNewImageWithFrame:CGRectZero editImageRotation:BKEditImageRotationPortrait complete:^(UIImage *resultImage) {
         
@@ -127,13 +136,13 @@
         if (saveImage) {
             
             [[BKImagePicker sharedManager] saveImage:saveImage complete:^(PHAsset *asset, BOOL success) {
-                [[BKTool sharedManager] hideLoadInView:window];
+                [window bk_hideLoadLayer];
                 window.userInteractionEnabled = YES;
                 
                 if (!success) {
-                    [[BKTool sharedManager] showRemind:@"图片保存失败"];
+                    [self.view bk_showRemind:BKImageSaveFailedRemind];
                 }else{
-                    [[BKTool sharedManager] showRemind:@"图片保存成功"];
+                    [self.view bk_showRemind:BKImageSavedSuccessRemind];
                 }
             }];
         }
@@ -149,7 +158,7 @@
 -(UIImage*)reCreateImage:(UIImage*)image
 {
     CGImageRef editImageRef = image.CGImage;
-    BOOL hasAlpha = [[BKTool sharedManager] checkHaveAlphaWithImageRef:editImageRef];
+    BOOL hasAlpha = [[BKImagePicker sharedManager] checkHaveAlphaWithImageRef:editImageRef];
     
     NSData * imageData;
     NSString * path;
@@ -185,7 +194,7 @@
     }
     
     CGImageRef editImageRef = self.currentEditImage.CGImage;
-    BOOL hasAlpha = [[BKTool sharedManager] checkHaveAlphaWithImageRef:editImageRef];
+    BOOL hasAlpha = [[BKImagePicker sharedManager] checkHaveAlphaWithImageRef:editImageRef];
     
     CGFloat scale = self.currentEditImage.size.width / self.view.bk_width;
     
@@ -309,10 +318,10 @@
         
         BKEditImagePreviewCollectionViewFlowLayout * layout = [[BKEditImagePreviewCollectionViewFlowLayout alloc]init];
         
-        _previewCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(80, BK_SYSTEM_STATUSBAR_HEIGHT, self.topNavView.bk_width - 160, BK_SYSTEM_NAV_UI_HEIGHT) collectionViewLayout:layout];
+        _previewCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(80, BKImagePicker_get_system_statusBar_height(), self.topNavView.bk_width - 160, BKImagePicker_get_system_nav_ui_height()) collectionViewLayout:layout];
         _previewCollectionView.delegate = self;
         _previewCollectionView.dataSource = self;
-        _previewCollectionView.backgroundColor = [UIColor clearColor];
+        _previewCollectionView.backgroundColor = BKClearColor;
         _previewCollectionView.showsHorizontalScrollIndicator = NO;
         if (@available(iOS 11.0, *)) {
             _previewCollectionView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
@@ -353,7 +362,7 @@
     }
     window.userInteractionEnabled = NO;
     
-    [[BKTool sharedManager] showLoadInView:window];
+    [window bk_showLoadLayer];
     
     [self createNewImageWithFrame:CGRectZero editImageRotation:BKEditImageRotationPortrait complete:^(UIImage *resultImage) {
         
@@ -370,7 +379,7 @@
         [self removeEditImageTemplate];
         [self editImageView];
         
-        [[BKTool sharedManager] hideLoadInView:window];
+        [window bk_hideLoadLayer];
         window.userInteractionEnabled = YES;
     }];
 }
@@ -379,7 +388,7 @@
 
 -(void)initBottomNav
 {
-    self.bottomNavViewHeight = BK_SYSTEM_TABBAR_HEIGHT;
+    self.bottomNavViewHeight = BKImagePicker_get_system_tabbar_height();
     [self.bottomNavView addSubview:self.bottomView];
 }
 
@@ -390,7 +399,7 @@
     [self.bottomView cancelEditOperation];
     
     UIWindow * window = [UIApplication sharedApplication].keyWindow;
-    [[BKTool sharedManager] showLoadInView:window];
+    [window bk_showLoadLayer];
     
     [self createNewImageWithFrame:CGRectZero editImageRotation:BKEditImageRotationPortrait complete:^(UIImage *resultImage) {
         
@@ -420,14 +429,14 @@
                     
                     dispatch_async(dispatch_get_main_queue(), ^{
                         if (!success) {
-                            [[BKTool sharedManager] hideLoadInView:window];
+                            [window bk_hideLoadLayer];
                             if (!saveError) {
-                                [[BKTool sharedManager] showRemind:@"图片发送失败"];
+                                [self.view bk_showRemind:BKImageSaveFailedRemind];
                                 saveError = YES;
                             }
                             pthread_mutex_destroy(&mutex);
                         }else{
-                            [[BKTool sharedManager] getOriginalImageDataWithAsset:asset progressHandler:^(double progress, NSError *error, PHImageRequestID imageRequestID) {
+                            [[BKImagePicker sharedManager] getOriginalImageDataWithAsset:asset progressHandler:^(double progress, NSError *error, PHImageRequestID imageRequestID) {
                                 
                             } complete:^(NSData *originalImageData, NSURL *url, PHImageRequestID imageRequestID) {
                                 
@@ -437,15 +446,15 @@
                                     imageModel.originalImageData = originalImageData;
                                     imageModel.loadingProgress = 1;
                                     imageModel.url = url;
-                                    imageModel.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];
+                                    imageModel.thumbImageData = [[BKImagePicker sharedManager] compressImageData:originalImageData];
                                     imageModel.photoType = BKSelectPhotoTypeImage;
                                     [resultArr addObject:imageModel];
                                     
-                                    [[BKTool sharedManager].selectImageArray removeAllObjects];
-                                    [[BKTool sharedManager].selectImageArray addObjectsFromArray:resultArr];
+                                    [[BKImagePicker sharedManager].imageManageModel.selectImageArray removeAllObjects];
+                                    [[BKImagePicker sharedManager].imageManageModel.selectImageArray addObjectsFromArray:resultArr];
                                     
                                     if ([resultArr count] == [editImageArr count] && !saveError) {
-                                        [[BKTool sharedManager] hideLoadInView:window];
+                                        [window bk_hideLoadLayer];
                                         pthread_mutex_destroy(&mutex);
                                         
                                         if (self.fromModule == BKEditImageFromModulePhotoAlbum) {
@@ -457,9 +466,9 @@
                                     }
                                     
                                 }else{
-                                    [[BKTool sharedManager] hideLoadInView:window];
+                                    [window bk_hideLoadLayer];
                                     if (!saveError) {
-                                        [[BKTool sharedManager] showRemind:@"图片发送失败"];
+                                        [self.view bk_showRemind:BKImageSaveFailedRemind];
                                         saveError = YES;
                                     }
                                     pthread_mutex_destroy(&mutex);
@@ -483,15 +492,15 @@
 -(void)sendClipPhotoWithImage:(UIImage*)sendImage successBlock:(void (^)(void))successBlock
 {
     UIWindow * window = [UIApplication sharedApplication].keyWindow;
-    [[BKTool sharedManager] showLoadInView:window];
+    [window bk_showLoadLayer];
     
     [[BKImagePicker sharedManager] saveImage:[self reCreateImage:sendImage] complete:^(PHAsset *asset, BOOL success) {
         if (!success) {
-            [[BKTool sharedManager] showRemind:@"图片发送失败"];
-            [[BKTool sharedManager] hideLoadInView:window];
+            [self.view bk_showRemind:BKImageSaveFailedRemind];
+            [window bk_hideLoadLayer];
             
         }else{
-            [[BKTool sharedManager] getOriginalImageDataWithAsset:asset progressHandler:^(double progress, NSError *error, PHImageRequestID imageRequestID) {
+            [[BKImagePicker sharedManager] getOriginalImageDataWithAsset:asset progressHandler:^(double progress, NSError *error, PHImageRequestID imageRequestID) {
                 
             } complete:^(NSData *originalImageData, NSURL *url, PHImageRequestID imageRequestID) {
                 if (originalImageData) {
@@ -499,13 +508,13 @@
                     imageModel.originalImageData = originalImageData;
                     imageModel.loadingProgress = 1;
                     imageModel.url = url;
-                    imageModel.thumbImageData = [[BKTool sharedManager] compressImageData:originalImageData];
+                    imageModel.thumbImageData = [[BKImagePicker sharedManager] compressImageData:originalImageData];
                     imageModel.photoType = BKSelectPhotoTypeImage;
                     
-                    [[BKTool sharedManager].selectImageArray removeAllObjects];
-                    [[BKTool sharedManager].selectImageArray addObject:imageModel];
+                    [[BKImagePicker sharedManager].imageManageModel.selectImageArray removeAllObjects];
+                    [[BKImagePicker sharedManager].imageManageModel.selectImageArray addObject:imageModel];
                     
-                    [[BKTool sharedManager] hideLoadInView:window];
+                    [window bk_hideLoadLayer];
                     
                     if (successBlock) {
                         successBlock();
@@ -518,8 +527,8 @@
                     }
                     [self dismissViewControllerAnimated:YES completion:nil];
                 }else{
-                    [[BKTool sharedManager] showRemind:@"图片发送失败"];
-                    [[BKTool sharedManager] hideLoadInView:window];
+                    [self.view bk_showRemind:BKImageSaveFailedRemind];
+                    [window bk_hideLoadLayer];
                 }
             }];
         }
@@ -539,7 +548,7 @@
             switch (strongSelf.bottomView.selectEditType) {
                 case BKEditImageSelectEditTypeDrawLine:
                 {
-                    strongSelf.bottomNavViewHeight = strongSelf.bottomView.bk_height + BK_SYSTEM_TABBAR_HEIGHT - BK_SYSTEM_TABBAR_UI_HEIGHT;
+                    strongSelf.bottomNavViewHeight = strongSelf.bottomView.bk_height + BKImagePicker_get_system_tabbar_height() - BKImagePicker_get_system_tabbar_ui_height();
                     
                     strongSelf.drawView.drawType = BKEditImageSelectEditTypeDrawLine;
                     strongSelf.drawView.selectColor = strongSelf.bottomView.selectPaintingColor;
@@ -548,7 +557,7 @@
                     break;
                 case BKEditImageSelectEditTypeDrawCircle:
                 {
-                    strongSelf.bottomNavViewHeight = strongSelf.bottomView.bk_height + BK_SYSTEM_TABBAR_HEIGHT - BK_SYSTEM_TABBAR_UI_HEIGHT;
+                    strongSelf.bottomNavViewHeight = strongSelf.bottomView.bk_height + BKImagePicker_get_system_tabbar_height() - BKImagePicker_get_system_tabbar_ui_height();
                     
                     strongSelf.drawView.drawType = BKEditImageSelectEditTypeDrawCircle;
                     strongSelf.drawView.selectColor = strongSelf.bottomView.selectPaintingColor;
@@ -557,7 +566,7 @@
                     break;
                 case BKEditImageSelectEditTypeDrawRoundedRectangle:
                 {
-                    strongSelf.bottomNavViewHeight = strongSelf.bottomView.bk_height + BK_SYSTEM_TABBAR_HEIGHT - BK_SYSTEM_TABBAR_UI_HEIGHT;
+                    strongSelf.bottomNavViewHeight = strongSelf.bottomView.bk_height + BKImagePicker_get_system_tabbar_height() - BKImagePicker_get_system_tabbar_ui_height();
                     
                     strongSelf.drawView.drawType = BKEditImageSelectEditTypeDrawRoundedRectangle;
                     strongSelf.drawView.selectColor = strongSelf.bottomView.selectPaintingColor;
@@ -566,7 +575,7 @@
                     break;
                 case BKEditImageSelectEditTypeDrawArrow:
                 {
-                    strongSelf.bottomNavViewHeight = strongSelf.bottomView.bk_height + BK_SYSTEM_TABBAR_HEIGHT - BK_SYSTEM_TABBAR_UI_HEIGHT;
+                    strongSelf.bottomNavViewHeight = strongSelf.bottomView.bk_height + BKImagePicker_get_system_tabbar_height() - BKImagePicker_get_system_tabbar_ui_height();
                     
                     strongSelf.drawView.drawType = BKEditImageSelectEditTypeDrawArrow;
                     strongSelf.drawView.selectColor = strongSelf.bottomView.selectPaintingColor;
@@ -584,18 +593,18 @@
                     break;
                 case BKEditImageSelectEditTypeClip:
                 {
-                    strongSelf.bottomNavViewHeight = strongSelf.bottomView.bk_height + BK_SYSTEM_TABBAR_HEIGHT - BK_SYSTEM_TABBAR_UI_HEIGHT;
+                    strongSelf.bottomNavViewHeight = strongSelf.bottomView.bk_height + BKImagePicker_get_system_tabbar_height() - BKImagePicker_get_system_tabbar_ui_height();
                     
                     strongSelf.topNavView.alpha = 0;
                     strongSelf.bottomNavView.alpha = 0;
-                    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+                    strongSelf.statusBarStyle = UIStatusBarStyleLightContent;
                     
                     [strongSelf.clipView showClipView];
                 }
                     break;
                 default:
                 {
-                    strongSelf.bottomNavViewHeight = strongSelf.bottomView.bk_height + BK_SYSTEM_TABBAR_HEIGHT - BK_SYSTEM_TABBAR_UI_HEIGHT;
+                    strongSelf.bottomNavViewHeight = strongSelf.bottomView.bk_height + BKImagePicker_get_system_tabbar_height() - BKImagePicker_get_system_tabbar_ui_height();
                 }
                     break;
             }
@@ -678,13 +687,13 @@
         [UIView animateWithDuration:0.2 animations:^{
             self.topNavView.alpha = 0;
             self.bottomNavView.alpha = 0;
-            [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
+            [self setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
         }];
     }else{
         [UIView animateWithDuration:0.2 animations:^{
             self.topNavView.alpha = 1;
             self.bottomNavView.alpha = 1;
-            [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+            [self setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
         }];
     }
 }
@@ -797,7 +806,7 @@
         [UIView animateWithDuration:0.2 animations:^{
             self.topNavView.alpha = 1;
             self.bottomNavView.alpha = 1;
-            [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+            [self setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
         }];
         
         [_drawTimer invalidate];
@@ -806,7 +815,7 @@
         [UIView animateWithDuration:0.2 animations:^{
             self.topNavView.alpha = 0;
             self.bottomNavView.alpha = 0;
-            [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
+            [self setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
         }];
     }
 }
@@ -824,7 +833,7 @@
         [self.editImageBgView.contentView addSubview:_editImageView];
         
         //不是预定裁剪模式 添加马赛克layer
-        if ([BKTool sharedManager].clipSize_width_height_ratio == 0) {
+        if ([BKImagePicker sharedManager].imageManageModel.clipSize_width_height_ratio == 0) {
             //延迟0.5秒 优化切换速度
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 
@@ -898,7 +907,7 @@
         _mosaicImageShapeLayer.lineJoin = kCALineJoinRound;
         _mosaicImageShapeLayer.lineWidth = 20;
         _mosaicImageShapeLayer.strokeColor = [UIColor whiteColor].CGColor;
-        _mosaicImageShapeLayer.fillColor = [UIColor clearColor].CGColor;
+        _mosaicImageShapeLayer.fillColor = BKClearColor.CGColor;
     }
     return _mosaicImageShapeLayer;
 }
@@ -958,7 +967,7 @@
     CGRect keyboardFrame = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
     CGFloat height = keyboardFrame.size.height;
     
-    self.bottomNavViewHeight = height + self.bottomView.bk_height + BK_SYSTEM_TABBAR_HEIGHT - BK_SYSTEM_TABBAR_UI_HEIGHT;
+    self.bottomNavViewHeight = height + self.bottomView.bk_height + BKImagePicker_get_system_tabbar_height() - BKImagePicker_get_system_tabbar_ui_height();
     self.writeTextView.bk_height = self.view.bk_height - self.bottomNavView.bk_height - CGRectGetMaxY(self.topNavView.frame);
     self.writeTextView.bk_y = CGRectGetMaxY(self.topNavView.frame);
     self.writeTextView.hidden = NO;
@@ -968,7 +977,7 @@
 
 -(void)keyboardWillHide:(NSNotification*)notification
 {
-    self.bottomNavViewHeight = self.bottomView.bk_height + BK_SYSTEM_TABBAR_HEIGHT - BK_SYSTEM_TABBAR_UI_HEIGHT;
+    self.bottomNavViewHeight = self.bottomView.bk_height + BKImagePicker_get_system_tabbar_height() - BKImagePicker_get_system_tabbar_ui_height();
     self.writeTextView.bk_height = 0;
     self.writeTextView.bk_y = CGRectGetMinY(self.bottomNavView.frame);
     self.writeTextView.hidden = YES;
@@ -982,7 +991,7 @@
 {
     if (!_writeTextView) {
         _writeTextView = [[UITextView alloc] initWithFrame:CGRectMake(0, CGRectGetMinY(self.bottomNavView.frame), self.view.bk_width, 0)];
-        _writeTextView.backgroundColor = BKNavBackgroundColor;
+        _writeTextView.backgroundColor = BKEditImageTextViewBackgroundColor;
         _writeTextView.textColor = self.bottomView.selectPaintingColor;
         _writeTextView.font = [UIFont systemFontOfSize:20];
         _writeTextView.textContainerInset = UIEdgeInsetsMake(12, 8, 12, 8);
@@ -1058,7 +1067,7 @@ static BOOL writeDeleteFlag = NO;
                     strongSelf.bottomNavView.alpha = 1;
                     [UIView animateWithDuration:0.2 animations:^{
                         strongSelf.topNavView.alpha = 1;
-                        [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+                        [strongSelf setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
                     }];
                     
                     [strongSelf.bottomView reeditWriteWithWriteStringColor:strongSelf.writeView.writeColor];
@@ -1079,7 +1088,7 @@ static BOOL writeDeleteFlag = NO;
             switch (panGesture.state) {
                 case UIGestureRecognizerStateBegan:
                 {
-                    [UIApplication sharedApplication].statusBarHidden = YES;
+                    strongSelf.statusBarHidden = YES;
                     strongSelf.topNavView.alpha = 0;
                     strongSelf.bottomNavView.alpha = 0;
                     
@@ -1092,11 +1101,11 @@ static BOOL writeDeleteFlag = NO;
                 {
                     CGPoint point = [panGesture locationInView:strongSelf.view];
                     if (CGRectContainsPoint(strongSelf.bottomDeleteWriteView.frame, point) || !CGRectIntersectsRect(strongSelf.editImageView.frame, writeView.frame)) {
-                        strongSelf.bottomDeleteWriteView.backgroundColor = BK_HEX_RGB(0xff725c);
+                        strongSelf.bottomDeleteWriteView.backgroundColor = BKEditImageDeleteWriteHighlightedBackgroundColor;
                         strongSelf.bottomDeleteWriteView.alpha = 0.5;
                         writeDeleteFlag = YES;
                     }else{
-                        strongSelf.bottomDeleteWriteView.backgroundColor = BKHighlightColor;
+                        strongSelf.bottomDeleteWriteView.backgroundColor = BKEditImageDeleteWriteNormalBackgroundColor;
                         strongSelf.bottomDeleteWriteView.alpha = 1;
                         writeDeleteFlag = NO;
                     }
@@ -1106,7 +1115,7 @@ static BOOL writeDeleteFlag = NO;
                 case UIGestureRecognizerStateCancelled:
                 case UIGestureRecognizerStateFailed:
                 {
-                    [UIApplication sharedApplication].statusBarHidden = NO;
+                    strongSelf.statusBarHidden = NO;
                     strongSelf.topNavView.alpha = 1;
                     strongSelf.bottomNavView.alpha = 1;
                     
@@ -1153,11 +1162,11 @@ static BOOL writeDeleteFlag = NO;
 -(UIView*)bottomDeleteWriteView
 {
     if (!_bottomDeleteWriteView) {
-        _bottomDeleteWriteView = [[UIView alloc]initWithFrame:CGRectMake(0, self.view.bk_height - BK_SYSTEM_TABBAR_HEIGHT, self.view.bk_width, BK_SYSTEM_TABBAR_HEIGHT)];
-        _bottomDeleteWriteView.backgroundColor = BKHighlightColor;
+        _bottomDeleteWriteView = [[UIView alloc]initWithFrame:CGRectMake(0, self.view.bk_height - BKImagePicker_get_system_tabbar_height(), self.view.bk_width, BKImagePicker_get_system_tabbar_height())];
+        _bottomDeleteWriteView.backgroundColor = BKEditImageDeleteWriteNormalBackgroundColor;
         
-        UIImageView * deleteImageView = [[UIImageView alloc]initWithFrame:CGRectMake((_bottomDeleteWriteView.bk_width - 30)/2, (BK_SYSTEM_TABBAR_UI_HEIGHT - 30)/2, 30, 30)];
-        deleteImageView.image = [[BKTool sharedManager] editImageWithImageName:@"delete_write"];
+        UIImageView * deleteImageView = [[UIImageView alloc]initWithFrame:CGRectMake((_bottomDeleteWriteView.bk_width - 30)/2, (BKImagePicker_get_system_tabbar_ui_height() - 30)/2, 30, 30)];
+        deleteImageView.image = [UIImage bk_editImageWithImageName:@"delete_write"];
         deleteImageView.clipsToBounds = YES;
         deleteImageView.contentMode = UIViewContentModeScaleAspectFit;
         [_bottomDeleteWriteView addSubview:deleteImageView];
@@ -1179,10 +1188,10 @@ static BOOL writeDeleteFlag = NO;
             BK_STRONG_SELF(self);
             
             //如果是预定裁剪模式 返回就是返回上一级
-            if ([BKTool sharedManager].clipSize_width_height_ratio != 0) {
+            if ([BKImagePicker sharedManager].imageManageModel.clipSize_width_height_ratio != 0) {
                 
                 [strongSelf.clipView removeSelfAuxiliaryUI];
-                [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+                [strongSelf setStatusBarStyle:UIStatusBarStyleDefault];
                 
                 [strongSelf.navigationController popViewControllerAnimated:YES];
                 
@@ -1232,7 +1241,7 @@ static BOOL writeDeleteFlag = NO;
     
     self.topNavView.alpha = 1;
     self.bottomNavView.alpha = 1;
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+    [self setStatusBarStyle:UIStatusBarStyleDefault];
 }
 
 -(void)removeEditImageTemplate
@@ -1267,11 +1276,11 @@ static BOOL writeDeleteFlag = NO;
     [self createNewImageWithFrame:clipFrame editImageRotation:rotation complete:^(UIImage *resultImage) {
         
         //如果是预定裁剪模式 裁剪完成就代表发送
-        if ([BKTool sharedManager].clipSize_width_height_ratio != 0) {
+        if ([BKImagePicker sharedManager].imageManageModel.clipSize_width_height_ratio != 0) {
             
             [self sendClipPhotoWithImage:resultImage successBlock:^{
                 [self.clipView removeSelfAuxiliaryUI];
-                [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+                [self setStatusBarStyle:UIStatusBarStyleDefault];
             }];
             
             self.view.userInteractionEnabled = YES;

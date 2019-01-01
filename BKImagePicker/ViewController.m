@@ -20,7 +20,7 @@
     // Do any additional setup after loading the view, typically from a nib.
     
     UIButton * button = [UIButton buttonWithType:UIButtonTypeCustom];
-    button.frame = CGRectMake(0, self.view.frame.size.height/4, self.view.frame.size.width, self.view.frame.size.height/4);
+    button.frame = CGRectMake(0, self.view.frame.size.height/10, self.view.frame.size.width, self.view.frame.size.height/10*2);
     [button setTitle:@"选择" forState:UIControlStateNormal];
     [button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     button.titleLabel.font = [UIFont systemFontOfSize:20];
@@ -28,12 +28,20 @@
     [self.view addSubview:button];
     
     UIButton * clip_button = [UIButton buttonWithType:UIButtonTypeCustom];
-    clip_button.frame = CGRectMake(0, self.view.frame.size.height/2, self.view.frame.size.width, self.view.frame.size.height/4);
+    clip_button.frame = CGRectMake(0, self.view.frame.size.height/10*3, self.view.frame.size.width, self.view.frame.size.height/10*2);
     [clip_button setTitle:@"裁剪选择" forState:UIControlStateNormal];
     [clip_button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     clip_button.titleLabel.font = [UIFont systemFontOfSize:20];
     [clip_button addTarget:self action:@selector(clipButtonClick) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:clip_button];
+    
+    UIButton * record_button = [UIButton buttonWithType:UIButtonTypeCustom];
+    record_button.frame = CGRectMake(0, self.view.frame.size.height/10*5, self.view.frame.size.width, self.view.frame.size.height/10*2);
+    [record_button setTitle:@"裁剪选择" forState:UIControlStateNormal];
+    [record_button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    record_button.titleLabel.font = [UIFont systemFontOfSize:20];
+    [record_button addTarget:self action:@selector(recordButtonClick) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:record_button];
 }
 
 -(void)buttonClick
@@ -44,6 +52,13 @@
 -(void)clipButtonClick
 {
     [self showClipImagePickerView];
+}
+
+-(void)recordButtonClick
+{
+    [[BKImagePicker sharedManager] recordVideoComplete:^(UIImage *image, NSData *data, NSURL *url) {
+        NSLog(@"image:%@, dataLength:%ld, url:%@",image, [data length], url);
+    }];
 }
 
 -(void)showImagePickerView
